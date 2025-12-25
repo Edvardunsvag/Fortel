@@ -168,6 +168,13 @@
   margin: $spacing-sm 0 $spacing-md 0;
 }
 
+.success {
+  color: $color-success;
+  font-size: 0.875rem;
+  margin: $spacing-sm 0 $spacing-md 0;
+  font-weight: 500;
+}
+
 .tokenActions {
   display: flex;
   gap: $spacing-md;
@@ -186,13 +193,19 @@
   cursor: pointer;
   transition: background-color $transition-normal;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: darken($color-link-blue, 10%);
   }
 
   &:focus {
     outline: 2px solid $color-focus-outline;
     outline-offset: 2px;
+  }
+
+  &:disabled {
+    background-color: $color-light-grey;
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 }
 

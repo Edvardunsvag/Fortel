@@ -4,9 +4,7 @@ import {
   loadEmployees,
   selectEmployees,
   selectEmployeesStatus,
-  selectDataSource,
 } from '@/features/employees';
-import { selectAccessToken } from '@/features/auth';
 import {
   initializeGame,
   makeGuess,
@@ -27,8 +25,6 @@ const Game = () => {
   const dispatch = useAppDispatch();
   const employees = useAppSelector(selectEmployees);
   const employeesStatus = useAppSelector(selectEmployeesStatus);
-  const dataSource = useAppSelector(selectDataSource);
-  const accessToken = useAppSelector(selectAccessToken);
   const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
   const guesses = useAppSelector(selectGuesses);
   const gameStatus = useAppSelector(selectGameStatus);
@@ -36,20 +32,13 @@ const Game = () => {
 
   const [inputValue, setInputValue] = useState('');
 
-  // Load employees on mount or when data source/token changes
+  // Load employees on mount only if status is idle
   useEffect(() => {
-    if (employeesStatus === 'idle') {
-      dispatch(loadEmployees({ dataSource, accessToken }));
-    }
-  }, [dispatch, employeesStatus, dataSource, accessToken]);
-
-  // Reload when data source changes (even if already loaded)
-  useEffect(() => {
-    if (employeesStatus === 'succeeded' || employeesStatus === 'failed') {
-      dispatch(loadEmployees({ dataSource, accessToken }));
+    if (employeesStatus === 'idle' && employees.length === 0) {
+      dispatch(loadEmployees());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSource]);
+  }, []); // Only run once on mount
 
   useEffect(() => {
     if (employeesStatus === 'succeeded' && employees.length > 0) {

@@ -11,12 +11,9 @@ export interface Employee {
   supervisor?: string; // Supervisor name or '-' if unknown
 }
 
-export type DataSource = 'mock' | 'api';
-
 export interface EmployeesState {
   employees: Employee[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
-  dataSource: DataSource;
 }
 

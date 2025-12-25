@@ -18,23 +18,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api/huma': {
-        target: 'https://api.humahr.com',
+      '/api': {
+        target: 'http://localhost:3001',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/huma/, ''),
-        secure: true,
-        configure: (proxy, _options) => {
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            // Log to debug - remove in production
-            console.log('Proxying request:', req.url);
-            console.log('Auth header:', req.headers.authorization);
-            
-            // Ensure Authorization header is forwarded
-            if (req.headers.authorization) {
-              proxyReq.setHeader('Authorization', req.headers.authorization);
-            }
-          });
-        },
+        secure: false,
       },
     },
   },

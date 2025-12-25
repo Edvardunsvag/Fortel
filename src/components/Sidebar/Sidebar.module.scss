@@ -1,0 +1,85 @@
+@import '../../shared/styles/variables.scss';
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 16rem;
+  background-color: $color-white;
+  border-right: 1px solid $color-border-light;
+  box-shadow: 2px 0 8px $color-shadow-light;
+  z-index: 100;
+  padding: $spacing-xl 0;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color $transition-normal, color $transition-normal;
+  color: $color-dark-fill;
+  font-size: 1rem;
+  font-weight: 500;
+
+  &:hover {
+    background-color: $color-overlay-beige;
+  }
+
+  &:focus {
+    outline: 2px solid $color-focus-outline;
+    outline-offset: -2px;
+  }
+
+  &:active {
+    background-color: $color-secondary-beige;
+  }
+
+  &.active {
+    background-color: rgba($color-link-blue, 0.1);
+    color: $color-link-blue;
+    border-right: 3px solid $color-link-blue;
+  }
+}
+
+.icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.label {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 4rem;
+    padding: $spacing-lg 0;
+  }
+
+  .navItem {
+    padding: $spacing-md;
+    justify-content: center;
+  }
+
+  .label {
+    display: none;
+  }
+}
+

@@ -2,6 +2,7 @@ export enum FeatureKey {
   Employees = 'employees',
   Game = 'game',
   Settings = 'settings',
+  Navigation = 'navigation',
 }
 
 export enum AsyncStatus {

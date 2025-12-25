@@ -1,25 +1,27 @@
+@import '../../shared/styles/variables.scss';
+
 .container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: $spacing-xl $spacing-md;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: $spacing-xl;
 }
 
 .title {
   font-size: 3rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0 0 $spacing-sm 0;
+  color: $color-dark-accent;
+  text-shadow: 2px 2px 4px $color-shadow-medium;
 }
 
 .subtitle {
   font-size: 1.25rem;
-  color: #cccccc;
+  color: $color-dark-accent;
   margin: 0;
 }
 
@@ -27,19 +29,19 @@
 .error,
 .empty {
   text-align: center;
-  padding: 2rem;
+  padding: $spacing-xl;
   font-size: 1.125rem;
 }
 
 .error {
-  color: #d32f2f;
-  background-color: #ffebee;
-  border-radius: 0.5rem;
-  border: 1px solid #ffcdd2;
+  color: $color-dark-accent;
+  background-color: $color-overlay-accent;
+  border-radius: $radius-md;
+  border: 1px solid $color-dark-accent;
 }
 
 .empty {
-  color: #666;
+  color: $color-dark-accent;
 }
 
 @media (max-width: 768px) {

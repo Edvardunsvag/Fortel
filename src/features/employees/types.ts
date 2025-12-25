@@ -5,6 +5,8 @@ export interface Employee {
   office: string;
   skills: string[];
   seniority: number; // Higher number = more senior
+  age: number;
+  yearStarted: number; // Year the employee started at the company
 }
 
 export interface EmployeesState {

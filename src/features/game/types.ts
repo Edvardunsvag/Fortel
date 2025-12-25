@@ -3,6 +3,8 @@ export enum HintType {
   Office = 'office',
   Skills = 'skills',
   Seniority = 'seniority',
+  Age = 'age',
+  YearStarted = 'yearStarted',
 }
 
 export enum HintResult {

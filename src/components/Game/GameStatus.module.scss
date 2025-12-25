@@ -1,55 +1,56 @@
+@import '../../shared/styles/variables.scss';
+
 .status {
   text-align: center;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  border-radius: 0.5rem;
-  background-color: rgba(45, 45, 45, 0.8);
-  border: 2px solid #404040;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  color: $color-primary-beige;
 }
 
 .won {
-  background-color: rgba(76, 175, 80, 0.2);
-  border: 2px solid #4caf50;
-  color: #4caf50;
+  background-color: $color-overlay-green;
+  border: 2px solid $color-success;
+  color: $color-success;
 
   h2 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 $spacing-sm 0;
     font-size: 1.75rem;
-    color: #4caf50;
+    color: $color-success;
   }
 
   p {
     margin: 0;
     font-size: 1.125rem;
-    color: #ffffff;
+    color: $color-dark-accent;
   }
 }
 
 .lost {
-  background-color: rgba(244, 67, 54, 0.2);
-  border: 2px solid #f44336;
-  color: #f44336;
+  background-color: $color-overlay-red;
+  border: 2px solid $color-dark-accent;
+  color: $color-dark-accent;
 
   h2 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 $spacing-sm 0;
     font-size: 1.75rem;
-    color: #f44336;
+    color: $color-dark-accent;
   }
 
   p {
     margin: 0;
     font-size: 1.125rem;
-    color: #ffffff;
+    color: $color-dark-accent;
   }
 }
 
 .guessCount {
   margin: 0;
   font-size: 1.125rem;
-  color: #ffffff;
+  color: $color-dark-accent;
+
 
   strong {
-    color: #4caf50;
+    color: $color-success;
     font-size: 1.25rem;
   }
 }

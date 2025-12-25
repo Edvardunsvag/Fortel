@@ -1,0 +1,61 @@
+// Color Palette
+// Based on provided design system
+
+// Primary Colors
+$color-primary-beige: #f2f0e7; // Light cream/off-white
+$color-secondary-beige: #ede6c3; // Light beige/yellowish cream
+$color-light-grey: #bbc6c5; // Light grey/blue-grey
+$color-dark-accent: #511e29; // Dark reddish-brown
+$color-light-grey-text: #d6dddc; // Light grey (for text)
+$color-link-blue: #0000ee; // Vibrant blue
+$color-dark-fill: #39344b; // Dark blue/indigo
+$color-black: #000000;
+$color-white: #ffffff;
+
+
+// Border Colors
+$color-border-light: #eeeeee; // Very light grey/off-white
+$color-border-medium: rgba($color-dark-accent, 0.3);
+
+// Semantic Colors (mapped to palette)
+$color-success: #4caf50; // Keep green for success states
+$color-warning: #ff9800; // Orange for warnings
+$color-error: #d13d3d; // Red for errors
+
+// Overlay and Transparency
+$color-overlay-dark: rgba(0, 0, 0, 0.5);
+$color-overlay-light: rgba(255, 255, 255, 0.1);
+$color-overlay-beige: rgba(242, 240, 231, 0.1);
+$color-overlay-accent: rgba(81, 30, 41, 0.1);
+$color-overlay-red: rgba(81, 30, 41, 0.1); // Error overlay using dark accent
+$color-overlay-green: rgba(76, 175, 80, 0.1); // Success overlay
+$color-overlay-blue: rgba(0, 0, 238, 0.1); // Info overlay using link blue
+
+// Shadow Colors
+$color-shadow-light: rgba(0, 0, 0, 0.1);
+$color-shadow-medium: rgba(0, 0, 0, 0.3);
+$color-shadow-dark: rgba(0, 0, 0, 0.5);
+
+// Focus States
+$color-focus-outline: rgba(81, 30, 41, 0.3);
+
+// Game-specific colors (removed aliases - use base colors directly)
+
+// Spacing (for consistency)
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// Border Radius
+$radius-sm: 0.25rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+$radius-full: 50%;
+
+// Transitions
+$transition-fast: 0.15s;
+$transition-normal: 0.2s;
+$transition-slow: 0.3s;

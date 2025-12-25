@@ -1,6 +1,8 @@
+@import './shared/styles/variables.scss';
+
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, $color-primary-beige 0%, $color-secondary-beige 50%, $color-light-grey 100%);
   position: relative;
   overflow-x: hidden;
 
@@ -13,8 +15,8 @@
     right: 0;
     bottom: 0;
     background-image: 
-      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+      radial-gradient(circle at 20% 50%, $color-overlay-light 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, $color-overlay-light 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }

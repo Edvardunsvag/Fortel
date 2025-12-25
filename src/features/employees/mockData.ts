@@ -12,6 +12,8 @@ export const mockEmployees: Employee[] = [
     office: 'Oslo',
     skills: ['React', 'TypeScript', 'Node.js', 'Docker'],
     seniority: 5,
+    age: 32,
+    yearStarted: 2019,
   },
   {
     id: '2',
@@ -20,6 +22,8 @@ export const mockEmployees: Employee[] = [
     office: 'Stockholm',
     skills: ['Figma', 'UI/UX', 'Prototyping'],
     seniority: 4,
+    age: 28,
+    yearStarted: 2020,
   },
   {
     id: '3',
@@ -28,6 +32,8 @@ export const mockEmployees: Employee[] = [
     office: 'Oslo',
     skills: ['Python', 'Django', 'PostgreSQL', 'AWS'],
     seniority: 6,
+    age: 35,
+    yearStarted: 2018,
   },
   {
     id: '4',
@@ -36,6 +42,8 @@ export const mockEmployees: Employee[] = [
     office: 'Copenhagen',
     skills: ['Product Strategy', 'Analytics', 'User Research'],
     seniority: 5,
+    age: 30,
+    yearStarted: 2019,
   },
   {
     id: '5',
@@ -44,6 +52,8 @@ export const mockEmployees: Employee[] = [
     office: 'Stockholm',
     skills: ['React', 'TypeScript', 'GraphQL', 'Jest'],
     seniority: 3,
+    age: 26,
+    yearStarted: 2021,
   },
   {
     id: '6',
@@ -52,6 +62,8 @@ export const mockEmployees: Employee[] = [
     office: 'Oslo',
     skills: ['Figma', 'Illustration', 'Brand Design'],
     seniority: 4,
+    age: 29,
+    yearStarted: 2020,
   },
   {
     id: '7',
@@ -60,6 +72,8 @@ export const mockEmployees: Employee[] = [
     office: 'Copenhagen',
     skills: ['Go', 'Kubernetes', 'Microservices', 'gRPC'],
     seniority: 7,
+    age: 38,
+    yearStarted: 2016,
   },
   {
     id: '8',
@@ -68,6 +82,8 @@ export const mockEmployees: Employee[] = [
     office: 'Stockholm',
     skills: ['Product Management', 'Data Analysis', 'Agile'],
     seniority: 5,
+    age: 31,
+    yearStarted: 2019,
   },
 ];
 

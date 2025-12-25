@@ -1,9 +1,11 @@
+@import '../../shared/styles/variables.scss';
+
 .hint {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  border-radius: $radius-sm;
   font-size: 0.875rem;
 }
 
@@ -17,46 +19,46 @@
 .type {
   font-weight: 600;
   text-transform: capitalize;
-  color: #666;
+  color: $color-dark-accent;
 }
 
 .message {
-  color: #333;
+  color: $color-dark-accent;
 }
 
 .correct {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: $color-overlay-green;
+  color: darken($color-success, 20%);
 
   .icon {
-    color: #4caf50;
+    color: $color-success;
   }
 }
 
 .partial {
-  background-color: #fff3e0;
-  color: #e65100;
+  background-color: rgba($color-warning, 0.1);
+  color: darken($color-warning, 20%);
 
   .icon {
-    color: #ff9800;
+    color: $color-warning;
   }
 }
 
 .incorrect {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: $color-overlay-accent;
+  color: $color-dark-accent;
 
   .icon {
-    color: #f44336;
+    color: $color-dark-accent;
   }
 }
 
 .neutral {
-  background-color: #e3f2fd;
-  color: #1565c0;
+  background-color: $color-overlay-blue;
+  color: $color-link-blue;
 
   .icon {
-    color: #2196f3;
+    color: $color-link-blue;
   }
 }
 

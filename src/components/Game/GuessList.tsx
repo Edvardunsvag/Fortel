@@ -41,11 +41,11 @@ const GuessList = ({ guesses }: GuessListProps) => {
 
   const getHintArrow = (guess: Guess, hintType: HintType) => {
     const hint = guess.hints.find((h) => h.type === hintType);
-    if (hint?.result === 'higher') {
-      return { show: true, direction: 'up' as const };
-    }
-    if (hint?.result === 'lower') {
+    if (hint?.result === HintResult.Higher) {
       return { show: true, direction: 'down' as const };
+    }
+    if (hint?.result === HintResult.Lower) {
+      return { show: true, direction: 'up' as const };
     }
     return { show: false, direction: 'up' as const };
   };
@@ -62,6 +62,8 @@ const GuessList = ({ guesses }: GuessListProps) => {
               <th className={styles.headerCell}>Office</th>
               <th className={styles.headerCell}>Skills</th>
               <th className={styles.headerCell}>Seniority</th>
+              <th className={styles.headerCell}>Age</th>
+              <th className={styles.headerCell}>Year Started</th>
             </tr>
           </thead>
           <tbody>
@@ -115,6 +117,28 @@ const GuessList = ({ guesses }: GuessListProps) => {
                       }
                       arrowDirection={
                         getHintArrow(guess, HintType.Seniority).direction
+                      }
+                    />
+                  </td>
+                  <td className={styles.hintCell}>
+                    <FlipBox
+                      label="Age"
+                      value={getHintValue(guess, HintType.Age)}
+                      result={getHintResult(guess, HintType.Age)}
+                      delay={isAnimated ? baseDelay + delayPerBox * 4 : -1}
+                      showArrow={getHintArrow(guess, HintType.Age).show}
+                      arrowDirection={getHintArrow(guess, HintType.Age).direction}
+                    />
+                  </td>
+                  <td className={styles.hintCell}>
+                    <FlipBox
+                      label="Year Started"
+                      value={getHintValue(guess, HintType.YearStarted)}
+                      result={getHintResult(guess, HintType.YearStarted)}
+                      delay={isAnimated ? baseDelay + delayPerBox * 5 : -1}
+                      showArrow={getHintArrow(guess, HintType.YearStarted).show}
+                      arrowDirection={
+                        getHintArrow(guess, HintType.YearStarted).direction
                       }
                     />
                   </td>

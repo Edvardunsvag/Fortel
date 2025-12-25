@@ -1,3 +1,5 @@
+@import '../../shared/styles/variables.scss';
+
 .flipContainer {
   perspective: 1000px;
   width: 100%;
@@ -10,7 +12,7 @@
   height: 80px;
   transform-style: preserve-3d;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: $radius-sm;
   overflow: hidden;
 }
 
@@ -32,26 +34,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: $spacing-sm;
+  border-radius: $radius-sm;
   font-weight: 600;
   font-size: 0.875rem;
   text-align: center;
 }
 
 .flipFront {
-  background-color: #2d2d2d;
-  color: #ffffff;
-  border: 2px solid #404040;
+  background-color: $color-dark-fill;
+  color: $color-white;
+  border: 2px solid $color-border-medium;
   transform: rotateY(0deg);
   z-index: 2;
 }
 
 .flipBack {
   transform: rotateY(180deg);
-  color: #ffffff;
+  color: $color-white;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: $spacing-xs;
   z-index: 1;
 }
 
@@ -78,47 +80,47 @@
 }
 
 .arrowUp {
-  color: #ff4444;
+  color: $color-white;
 }
 
 .arrowDown {
-  color: #ff4444;
+  color: $color-white;
 }
 
 // Result colors
 .correct {
   .flipBack {
-    background-color: #4caf50;
+    background-color: $color-success;
   }
 }
 
 .partial {
   .flipBack {
-    background-color: #ff9800;
+    background-color: $color-warning;
   }
 }
 
 .incorrect {
   .flipBack {
-    background-color: #f44336;
+    background-color: $color-error;
   }
 }
 
 .higher {
   .flipBack {
-    background-color: #f44336;
+    background-color: $color-error;
   }
 }
 
 .lower {
   .flipBack {
-    background-color: #f44336;
+    background-color: $color-error;
   }
 }
 
 .equal {
   .flipBack {
-    background-color: #2196f3;
+    background-color: $color-success;
   }
 }
 

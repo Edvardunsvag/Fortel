@@ -30,10 +30,7 @@ const calculateHints = (
       guessed.department === target.department
         ? HintResult.Correct
         : HintResult.Incorrect,
-    message:
-      guessed.department === target.department
-        ? 'Correct department'
-        : 'Wrong department',
+    message: guessed.department,
   });
 
   // Office hint
@@ -43,8 +40,7 @@ const calculateHints = (
       guessed.office === target.office
         ? HintResult.Correct
         : HintResult.Incorrect,
-    message:
-      guessed.office === target.office ? 'Correct office' : 'Wrong office',
+    message: guessed.office,
   });
 
   // Skills hint
@@ -60,13 +56,13 @@ const calculateHints = (
 
   if (intersection.size === union.size && intersection.size > 0) {
     skillsResult = HintResult.Correct;
-    skillsMessage = 'Exact skill match';
+    skillsMessage = guessed.skills.join(', ');
   } else if (intersection.size > 0) {
     skillsResult = HintResult.Partial;
-    skillsMessage = `Some skills overlap (${intersection.size} common)`;
+    skillsMessage = guessed.skills.join(', ');
   } else {
     skillsResult = HintResult.None;
-    skillsMessage = 'No skill overlap';
+    skillsMessage = guessed.skills.join(', ');
   }
 
   hints.push({
@@ -81,19 +77,63 @@ const calculateHints = (
 
   if (guessed.seniority === target.seniority) {
     seniorityResult = HintResult.Equal;
-    seniorityMessage = 'Equal seniority';
+    seniorityMessage = guessed.seniority.toString();
   } else if (guessed.seniority > target.seniority) {
     seniorityResult = HintResult.Higher;
-    seniorityMessage = 'Higher seniority';
+    seniorityMessage = guessed.seniority.toString();
   } else {
     seniorityResult = HintResult.Lower;
-    seniorityMessage = 'Lower seniority';
+    seniorityMessage = guessed.seniority.toString();
   }
 
   hints.push({
     type: HintType.Seniority,
     result: seniorityResult,
     message: seniorityMessage,
+  });
+
+  // Age hint
+  let ageResult: HintResult;
+  let ageMessage: string;
+
+  if (guessed.age === target.age) {
+    ageResult = HintResult.Equal;
+    ageMessage = guessed.age.toString();
+  } else if (guessed.age > target.age) {
+    ageResult = HintResult.Higher;
+    ageMessage = guessed.age.toString();
+  } else {
+    ageResult = HintResult.Lower;
+    ageMessage = guessed.age.toString();
+  }
+
+  hints.push({
+    type: HintType.Age,
+    result: ageResult,
+    message: ageMessage,
+  });
+
+  // Year Started hint
+  let yearStartedResult: HintResult;
+  let yearStartedMessage: string;
+
+  if (guessed.yearStarted === target.yearStarted) {
+    yearStartedResult = HintResult.Equal;
+    yearStartedMessage = guessed.yearStarted.toString();
+  } else if (guessed.yearStarted < target.yearStarted) {
+    // Earlier year = higher (started longer ago)
+    yearStartedResult = HintResult.Higher;
+    yearStartedMessage = guessed.yearStarted.toString();
+  } else {
+    // Later year = lower (started more recently)
+    yearStartedResult = HintResult.Lower;
+    yearStartedMessage = guessed.yearStarted.toString();
+  }
+
+  hints.push({
+    type: HintType.YearStarted,
+    result: yearStartedResult,
+    message: yearStartedMessage,
   });
 
   return hints;

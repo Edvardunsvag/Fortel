@@ -1,0 +1,62 @@
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.icon {
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+.type {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #666;
+}
+
+.message {
+  color: #333;
+}
+
+.correct {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+
+  .icon {
+    color: #4caf50;
+  }
+}
+
+.partial {
+  background-color: #fff3e0;
+  color: #e65100;
+
+  .icon {
+    color: #ff9800;
+  }
+}
+
+.incorrect {
+  background-color: #ffebee;
+  color: #c62828;
+
+  .icon {
+    color: #f44336;
+  }
+}
+
+.neutral {
+  background-color: #e3f2fd;
+  color: #1565c0;
+
+  .icon {
+    color: #2196f3;
+  }
+}
+

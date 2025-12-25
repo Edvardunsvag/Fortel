@@ -1,0 +1,138 @@
+.flipContainer {
+  perspective: 1000px;
+  width: 100%;
+  height: 100%;
+}
+
+.flipBox {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.flipInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 1s ease-in-out;
+  transform: rotateY(0deg);
+}
+
+.flipFront,
+.flipBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.flipFront {
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border: 2px solid #404040;
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.flipBack {
+  transform: rotateY(180deg);
+  color: #ffffff;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 1;
+}
+
+.flipBox.flipped .flipInner {
+  transform: rotateY(180deg);
+}
+
+.value {
+  font-size: 0.75rem;
+  word-break: break-word;
+  line-height: 1.2;
+}
+
+.label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.arrow {
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.arrowUp {
+  color: #ff4444;
+}
+
+.arrowDown {
+  color: #ff4444;
+}
+
+// Result colors
+.correct {
+  .flipBack {
+    background-color: #4caf50;
+  }
+}
+
+.partial {
+  .flipBack {
+    background-color: #ff9800;
+  }
+}
+
+.incorrect {
+  .flipBack {
+    background-color: #f44336;
+  }
+}
+
+.higher {
+  .flipBack {
+    background-color: #f44336;
+  }
+}
+
+.lower {
+  .flipBack {
+    background-color: #f44336;
+  }
+}
+
+.equal {
+  .flipBack {
+    background-color: #2196f3;
+  }
+}
+
+@media (max-width: 768px) {
+  .flipBox {
+    height: 70px;
+  }
+
+  .value {
+    font-size: 0.7rem;
+  }
+
+  .label {
+    font-size: 0.65rem;
+  }
+}
+

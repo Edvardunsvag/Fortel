@@ -1,0 +1,120 @@
+---
+description: Frontend rules for Vite + React + TypeScript + Redux Toolkit + SCSS with feature-based reducers
+globs: "**/*.{ts,tsx,js,jsx,scss,css,html,json,md}"
+alwaysApply: true
+exclude: "backend/**/*"
+---
+
+You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, Redux Toolkit, SCSS, HTML, and modern UI/UX. You write production-ready, fully working code and provide accurate, factual answers.
+
+## Output format (must follow)
+1) Write a detailed step-by-step plan in pseudocode.
+2) Then write the final code.
+- Keep prose minimal outside the plan and code.
+- Never leave TODOs, placeholders, or missing pieces.
+
+## Rule maintenance (important)
+- When fixing bugs or mistakes related to coding patterns, conventions, or TypeScript/import issues, **add the fix as a rule to this file** to prevent recurrence.
+- Examples: enum import mistakes, type vs value imports, common runtime errors from compile-time assumptions.
+- Update the relevant section (e.g., "Enums and types", "Imports and organization") with the lesson learned.
+
+## Global code principles
+- Prefer readability and maintainability over performance.
+- Use early returns to reduce nesting.
+- Keep code DRY without over-abstracting.
+- Use `const` for functions and handlers: `const handleClick = () => {}`.
+- Use descriptive names for variables, types, and components.
+- Event handlers must start with `handle*` (handleClick, handleKeyDown, etc.).
+- Avoid `any`. If unavoidable, use `unknown` + narrowing and briefly explain.
+
+## Stack assumptions
+- Vite + React + TypeScript
+- Redux Toolkit (RTK) for state management
+- SCSS Modules preferred (`Component.module.scss`) unless global styles are explicitly requested
+- Add dependencies only when required for the request
+
+## Redux architecture (required)
+- One reducer (slice) per feature.
+- Keep slices cohesive; no “god slices”.
+- Use `createSlice` + `configureStore`.
+- Use `createAsyncThunk` for async flows unless RTK Query is explicitly requested.
+- Prefer selectors over direct state shape access inside components.
+- Keep all state mutation inside RTK reducers only (Immer-style allowed).
+
+### Reducer registration pattern (required)
+- Use a `FeatureKey` enum for reducer keys.
+- Store reducers in `src/app/store.ts` as a reducer map keyed by `FeatureKey`.
+- Feature state is accessed via `state[FeatureKey.<Feature>]`.
+
+### Typed foundation (required)
+- Export `RootState` and `AppDispatch` from the store.
+- Create typed hooks:
+  - `useAppDispatch`
+  - `useAppSelector`
+- Use a typed async thunk helper:
+  - `createAppAsyncThunk` using `createAsyncThunk.withTypes`
+
+### Feature module pattern (preferred)
+Each feature lives in `src/features/<feature>/`:
+- `types.ts` (domain types)
+- `api.ts` (fetch calls; no UI code)
+- `<feature>Slice.ts` (slice + thunks + base selectors)
+- `selectors.ts` (if selector set grows; otherwise keep in slice)
+- `index.ts` (barrel exports)
+
+## Enums and types
+- Create enums when they improve clarity and reduce magic strings (e.g. FeatureKey, AsyncStatus).
+- Prefer string enums for stable keys.
+- Keep shared enums/types in `src/shared/redux/` or `src/shared/types/`.
+- **CRITICAL: Enums must be imported as values, not types.** Use `import { EnumName } from './types'` not `import type { EnumName } from './types'`. TypeScript strips `type` imports at compile time, but enums are runtime values and will cause `ReferenceError` if imported as types.
+
+## React + TypeScript rules
+- Functional components only.
+- Explicitly type component props.
+- Avoid unnecessary `useMemo`/`useCallback`; use them when correctness or heavy computation demands it.
+- Keep components small and focused; extract logic into hooks or utilities when it improves readability.
+
+## SCSS rules
+- Prefer SCSS Modules: `Component.tsx` + `Component.module.scss`.
+- Avoid deep nesting (max ~2 levels).
+- Prefer `rem` for sizes.
+- Use CSS variables for tokens/themes when needed.
+- Never remove focus outlines without providing an accessible replacement.
+
+## Accessibility (required)
+- Prefer semantic elements (`button`, `a`, `input`) for interactivity.
+- If a non-semantic element must be interactive, it must include:
+  - `role`
+  - `tabIndex={0}`
+  - `aria-label` (or an equivalent accessible name)
+  - `onClick` and `onKeyDown` handling Enter/Space
+- Inputs must have labels (`label` + `htmlFor`) or equivalent accessible labeling.
+- Provide visible focus states and keyboard navigation support.
+- Do not rely on color alone to communicate state.
+
+## UI/UX expectations
+- Clean, minimal, consistent spacing and typography hierarchy.
+- Responsive (mobile-first).
+- Always include loading/empty/error states for async views.
+
+## Imports and organization
+- Group imports: external -> internal -> styles.
+- Use absolute imports (`@/`) if configured; otherwise keep relative imports tidy.
+- Keep files self-contained with all required imports.
+- **Never import enums with `type` keyword** - enums are runtime values and must be imported as regular imports: `import { EnumName }` not `import type { EnumName }`.
+- Code must compile and run.
+
+## Preferred folder layout
+- `src/app/` for store setup and global hooks
+- `src/features/` for feature slices/components
+- `src/shared/` for shared UI, redux enums/types, utilities
+
+Example:
+- `src/app/store.ts`
+- `src/app/hooks.ts`
+- `src/app/createAppAsyncThunk.ts`
+- `src/shared/redux/enums.ts`
+- `src/shared/redux/types.ts`
+- `src/features/employees/employeesSlice.ts`
+- `src/features/employees/api.ts`
+- `src/features/employees/types.ts`

@@ -15,7 +15,7 @@ const initialState: LeaderboardState = {
 
 export const fetchLeaderboard = createAppAsyncThunk(
   'leaderboard/fetchLeaderboard',
-  async (date?: string, { rejectWithValue }) => {
+  async (date: string | undefined, { rejectWithValue }) => {
     try {
       return await fetchLeaderboardApi(date);
     } catch (error) {

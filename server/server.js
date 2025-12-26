@@ -29,7 +29,9 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Log rejected origin but don't throw error - let CORS library handle it
+      console.warn(`CORS: Rejected origin: ${origin}`);
+      callback(null, false); // Return false instead of error
     }
   },
   credentials: true,
@@ -37,11 +39,27 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Type'],
   maxAge: 86400, // 24 hours
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+  preflightContinue: false, // Let CORS handle preflight
 };
 
-// Middleware
+// CORS middleware - must be before body parsing
 app.use(cors(corsOptions));
-app.use(express.json());
+
+// Body parsing - only for non-OPTIONS requests
+app.use((req, res, next) => {
+  // Skip body parsing for OPTIONS requests
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+  express.json()(req, res, next);
+});
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin || 'none'}`);
+  next();
+});
 
 // Enhanced health check with database status
 app.get('/health', async (req, res) => {
@@ -78,9 +96,21 @@ app.get('/api/employees', getEmployees);
 app.get('/api/leaderboard', getLeaderboard);
 app.post('/api/leaderboard', submitScore);
 
+// Explicit OPTIONS handler as fallback (shouldn't be needed with CORS middleware, but just in case)
+app.options('*', cors(corsOptions));
+
 // Error handling middleware (must be last)
 app.use((err, req, res, next) => {
+  // If it's a CORS error, let CORS middleware handle it
+  if (err.message && err.message.includes('CORS')) {
+    return res.status(403).json({ error: 'CORS policy violation' });
+  }
+  
   console.error('Unhandled error:', err);
+  // Don't send error response if headers already sent (CORS might have sent them)
+  if (res.headersSent) {
+    return next(err);
+  }
   res.status(500).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined,
@@ -126,6 +156,7 @@ process.on('SIGTERM', async () => {
 try {
   server = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Allowed CORS origins: ${allowedOrigins.join(', ')}`);
     console.log('Initializing database...');
     
     // Initialize database in background (non-blocking)

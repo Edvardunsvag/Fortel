@@ -3,6 +3,7 @@ import { pool } from '../db/init.js';
 /**
  * Get employees endpoint
  * GET /api/employees
+ * 
  */
 export const getEmployees = async (req, res) => {
   try {

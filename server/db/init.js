@@ -15,12 +15,23 @@ console.log('Database configuration:', {
   password: dbConfig.password,
 });
 
+// Determine if we should use SSL (Azure PostgreSQL requires it)
+const isAzurePostgres = process.env.DB_HOST && 
+  !process.env.DB_HOST.includes('localhost') && 
+  !process.env.DB_HOST.includes('127.0.0.1');
+
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432'),
   database: process.env.DB_NAME || 'fortedle',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
+  // SSL configuration for Azure PostgreSQL
+  // Azure PostgreSQL requires SSL connections and uses self-signed certificates
+  ssl: isAzurePostgres ? {
+    // Azure PostgreSQL uses self-signed certificates, so we need to accept them
+    rejectUnauthorized: false,
+  } : false, // Disable SSL for local development
   // Connection pool settings for Azure
   max: 20,
   idleTimeoutMillis: 30000,

@@ -51,16 +51,5 @@ export const selectEmployees = (state: RootState): Employee[] =>
 export const selectEmployeesStatus = (state: RootState): EmployeesState['status'] =>
   state.employees.status;
 
-export const selectEmployeesError = (state: RootState): string | null =>
-  state.employees.error;
-
-export const selectEmployeeById = (state: RootState, id: string): Employee | undefined =>
-  state.employees.employees.find((emp) => emp.id === id);
-
-export const selectEmployeeByName = (state: RootState, name: string): Employee | undefined =>
-  state.employees.employees.find(
-    (emp) => emp.name.toLowerCase() === name.toLowerCase()
-  );
-
 export default employeesSlice.reducer;
 

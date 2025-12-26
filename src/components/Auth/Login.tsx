@@ -81,10 +81,9 @@ const Login = () => {
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent) => {
+  const handlePaste = () => {
     // Allow paste to work normally - the onChange handler will update the state
     // This handler is here to ensure paste events are not blocked
-    console.log('Paste event detected');
   };
 
   if (hasEmployees) {

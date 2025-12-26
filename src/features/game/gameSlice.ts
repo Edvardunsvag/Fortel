@@ -157,18 +157,10 @@ const gameSlice = createSlice({
         state.status = 'won';
       }
     },
-    resetGame: (state) => {
-      state.guesses = [];
-      state.status = 'idle';
-      state.employeeOfTheDayId = null;
-      state.currentDate = getTodayDateString();
-    },
   },
 });
 
-export const { initializeGame, makeGuess, resetGame } = gameSlice.actions;
-
-export const selectGameState = (state: RootState): GameState => state.game;
+export const { initializeGame, makeGuess } = gameSlice.actions;
 
 export const selectEmployeeOfTheDayId = (state: RootState): string | null =>
   state.game.employeeOfTheDayId;
@@ -177,9 +169,6 @@ export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
 
 export const selectGameStatus = (state: RootState): GameState['status'] =>
   state.game.status;
-
-export const selectRemainingGuesses = (state: RootState): number =>
-  state.game.maxGuesses - state.game.guesses.length;
 
 export const selectCanGuess = (state: RootState): boolean =>
   state.game.status === 'playing';

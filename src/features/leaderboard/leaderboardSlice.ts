@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
 import type { RootState } from '@/app/store';
 

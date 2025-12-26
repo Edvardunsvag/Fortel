@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import type { Guess } from '@/features/game';
 import { HintType, HintResult } from '@/features/game';
-import FlipBox from './FlipBox';
+import { FlipBox } from './FlipBox';
 import styles from './GuessList.module.scss';
 
 interface GuessListProps {
   guesses: Guess[];
 }
 
-const GuessList = ({ guesses }: GuessListProps) => {
+export const GuessList = ({ guesses }: GuessListProps) => {
   const [animatedGuesses, setAnimatedGuesses] = useState<Set<number>>(new Set());
   const previousLengthRef = useRef<number>(0);
 
@@ -59,7 +59,7 @@ const GuessList = ({ guesses }: GuessListProps) => {
               <th className={styles.headerCell}>Employee</th>
               <th className={styles.headerCell}>Department</th>
               <th className={styles.headerCell}>Office</th>
-              <th className={styles.headerCell}>Skills</th>
+              <th className={styles.headerCell}>Teams</th>
               <th className={styles.headerCell}>Age</th>
               <th className={styles.headerCell}>Supervisor</th>
             </tr>
@@ -108,9 +108,9 @@ const GuessList = ({ guesses }: GuessListProps) => {
                   </td>
                   <td className={styles.hintCell}>
                     <FlipBox
-                      label="Skills"
-                      value={getHintValue(guess, HintType.Skills)}
-                      result={getHintResult(guess, HintType.Skills)}
+                      label="Teams"
+                      value={getHintValue(guess, HintType.Teams)}
+                      result={getHintResult(guess, HintType.Teams)}
                       delay={isAnimated ? baseDelay + delayPerBox * 2 : -1}
                     />
                   </td>
@@ -141,5 +141,3 @@ const GuessList = ({ guesses }: GuessListProps) => {
     </div>
   );
 };
-
-export default GuessList;

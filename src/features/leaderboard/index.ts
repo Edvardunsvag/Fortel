@@ -1,4 +1,4 @@
-export { default as leaderboardReducer } from './leaderboardSlice';
+export { leaderboardReducer } from './leaderboardSlice';
 export {
   fetchLeaderboard,
   submitScore,

@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from './app/hooks';
-import { selectActiveTab, ActiveTab } from './features/navigation';
-import { selectEmployees, selectEmployeesStatus, loadEmployees } from './features/employees';
-import Sidebar from './components/Sidebar/Sidebar';
-import Login from './components/Auth/Login';
-import Play from './components/Pages/Play';
-import Leaderboard from './components/Pages/Leaderboard';
-import Rules from './components/Pages/Rules';
 import styles from './App.module.scss';
+import { useAppDispatch, useAppSelector } from './app/hooks';
+import { Leaderboard } from './components/Pages/Leaderboard';
+import { Play } from './components/Pages/Play';
+import { Rules } from './components/Pages/Rules';
+import { Sync } from './components/Pages/Sync';
+import { Sidebar } from './components/Sidebar/Sidebar';
+import { loadEmployees, selectEmployees, selectEmployeesStatus } from './features/employees';
+import { ActiveTab, selectActiveTab } from './features/navigation';
 
-const App = () => {
+export const App = () => {
   const dispatch = useAppDispatch();
   const activeTab = useAppSelector(selectActiveTab);
   const employees = useAppSelector(selectEmployees);
@@ -33,6 +33,8 @@ const App = () => {
         return <Leaderboard />;
       case ActiveTab.Rules:
         return <Rules />;
+      case ActiveTab.Sync:
+        return <Sync />;
       default:
         return <Play />;
     }
@@ -40,7 +42,6 @@ const App = () => {
 
   return (
     <div className={styles.app}>
-      {!hasEmployees && <Login />}
       {hasEmployees && (
         <>
           <Sidebar />
@@ -50,6 +51,4 @@ const App = () => {
     </div>
   );
 };
-
-export default App;
 

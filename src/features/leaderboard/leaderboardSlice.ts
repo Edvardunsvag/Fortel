@@ -129,5 +129,5 @@ export const selectSubmitStatus = (state: RootState): LeaderboardState['submitSt
 export const selectSubmitError = (state: RootState): string | null =>
   state.leaderboard.submitError;
 
-export default leaderboardSlice.reducer;
+export const leaderboardReducer = leaderboardSlice.reducer;
 

@@ -6,7 +6,7 @@ interface GameStatusProps {
   guesses: GameState['guesses'];
 }
 
-const GameStatus = ({ status, guesses }: GameStatusProps) => {
+export const GameStatus = ({ status, guesses }: GameStatusProps) => {
   if (status === 'won') {
     return (
       <div className={`${styles.status} ${styles.won}`} role="status">
@@ -33,6 +33,4 @@ const GameStatus = ({ status, guesses }: GameStatusProps) => {
     </div>
   );
 };
-
-export default GameStatus;
 

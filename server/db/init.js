@@ -26,7 +26,7 @@ export const initDatabase = async () => {
         avatar_image_url TEXT,
         department VARCHAR(255) NOT NULL,
         office VARCHAR(255) NOT NULL,
-        skills TEXT[] DEFAULT '{}',
+        teams TEXT[] DEFAULT '{}',
         age VARCHAR(50),
         supervisor VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

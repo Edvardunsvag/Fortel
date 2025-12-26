@@ -11,7 +11,7 @@ interface FlipBoxProps {
   arrowDirection?: 'up' | 'down';
 }
 
-const FlipBox = ({
+export const FlipBox = ({
   label,
   value,
   result,
@@ -78,6 +78,4 @@ const FlipBox = ({
     </div>
   );
 };
-
-export default FlipBox;
 

@@ -6,6 +6,7 @@ export enum ActiveTab {
   Play = 'play',
   Leaderboard = 'leaderboard',
   Rules = 'rules',
+  Sync = 'sync',
 }
 
 interface NavigationState {
@@ -30,5 +31,5 @@ export const { setActiveTab } = navigationSlice.actions;
 
 export const selectActiveTab = (state: RootState): ActiveTab => state.navigation.activeTab;
 
-export default navigationSlice.reducer;
+export const navigationReducer = navigationSlice.reducer;
 

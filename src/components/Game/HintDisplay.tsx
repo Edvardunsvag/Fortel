@@ -5,7 +5,7 @@ interface HintDisplayProps {
   hint: GuessHint;
 }
 
-const HintDisplay = ({ hint }: HintDisplayProps) => {
+export const HintDisplay = ({ hint }: HintDisplayProps) => {
   const getResultClass = (result: HintResult): string => {
     switch (result) {
       case 'correct':
@@ -56,6 +56,4 @@ const HintDisplay = ({ hint }: HintDisplayProps) => {
     </div>
   );
 };
-
-export default HintDisplay;
 

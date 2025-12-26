@@ -1,3 +1,2 @@
-export { default as navigationReducer } from './navigationSlice';
-export { setActiveTab, selectActiveTab, ActiveTab } from './navigationSlice';
+export { navigationReducer, setActiveTab, selectActiveTab, ActiveTab } from './navigationSlice';
 

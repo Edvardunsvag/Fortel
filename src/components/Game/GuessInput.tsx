@@ -10,7 +10,7 @@ interface GuessInputProps {
   disabled?: boolean;
 }
 
-const GuessInput = ({
+export const GuessInput = ({
   value,
   onChange,
   onGuess,
@@ -196,6 +196,4 @@ const GuessInput = ({
     </div>
   );
 };
-
-export default GuessInput;
 

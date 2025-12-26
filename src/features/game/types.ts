@@ -1,7 +1,7 @@
 export enum HintType {
   Department = 'department',
   Office = 'office',
-  Skills = 'skills',
+  Teams = 'teams',
   Age = 'age',
   Supervisor = 'supervisor',
 }

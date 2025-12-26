@@ -21,7 +21,7 @@ export const getEmployees = async (req, res) => {
         avatarImageUrl: row.avatar_image_url,
         department: row.department,
         office: row.office,
-        skills: row.skills || [],
+        teams: row.teams || [],
         age: row.age === '-' ? '-' : parseInt(row.age, 10) || '-',
         supervisor: row.supervisor || '-',
       }));

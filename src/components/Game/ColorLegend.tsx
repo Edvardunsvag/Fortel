@@ -1,6 +1,6 @@
 import styles from './ColorLegend.module.scss';
 
-const ColorLegend = () => {
+export const ColorLegend = () => {
   return (
     <div className={styles.legend}>
       <div className={styles.indicators}>
@@ -32,6 +32,4 @@ const ColorLegend = () => {
     </div>
   );
 };
-
-export default ColorLegend;
 

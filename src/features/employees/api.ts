@@ -27,3 +27,35 @@ export const fetchEmployees = async (): Promise<Employee[]> => {
   }
 };
 
+export interface SyncResult {
+  success: boolean;
+  message: string;
+  count: number;
+}
+
+export const syncEmployees = async (accessToken: string): Promise<SyncResult> => {
+  try {
+    const response = await fetch('/api/sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        accessToken: accessToken.trim(),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to sync data');
+    }
+
+    const result: SyncResult = await response.json();
+    return result;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to sync employees'
+    );
+  }
+};
+

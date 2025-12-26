@@ -37,5 +37,5 @@ const authSlice = createSlice({
 
 export const selectAccessToken = (state: RootState): string | null => state.auth.accessToken;
 
-export default authSlice.reducer;
+export const authReducer = authSlice.reducer;
 

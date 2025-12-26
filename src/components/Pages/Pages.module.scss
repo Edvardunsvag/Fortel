@@ -108,3 +108,91 @@
   font-weight: 600;
 }
 
+// Token form styles (used in Sync component)
+.tokenForm {
+  margin-top: $spacing-xl;
+}
+
+.tokenLabel {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  margin-bottom: $spacing-sm;
+}
+
+.tokenInput {
+  width: 100%;
+  padding: $spacing-md;
+  border: 1px solid $color-border-light;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 6rem;
+
+  &:focus {
+    outline: none;
+    border-color: $color-link-blue;
+    box-shadow: 0 0 0 3px rgba($color-link-blue, 0.1);
+  }
+
+  &:disabled {
+    background-color: $color-light-grey;
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  color: $color-error;
+  font-size: 0.875rem;
+  margin-top: $spacing-sm;
+}
+
+.success {
+  color: $color-success;
+  font-size: 0.875rem;
+  margin-top: $spacing-sm;
+}
+
+.tokenActions {
+  margin-top: $spacing-md;
+}
+
+.submitButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-link-blue;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-link-blue, 10%);
+  }
+
+  &:disabled {
+    background-color: $color-light-grey;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.instructions {
+  margin-top: $spacing-lg;
+  font-size: 0.875rem;
+  color: $color-light-grey-text;
+  line-height: 1.6;
+
+  code {
+    background-color: $color-light-grey;
+    padding: 0.125rem 0.25rem;
+    border-radius: $radius-sm;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875em;
+  }
+}
+

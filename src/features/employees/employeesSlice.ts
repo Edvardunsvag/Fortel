@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
-import { fetchEmployees } from './api';
+import { fetchEmployees, syncEmployees } from './api';
 import type { Employee, EmployeesState } from './types';
 import type { RootState } from '@/app/store';
 
@@ -24,6 +24,22 @@ export const loadEmployees = createAppAsyncThunk(
   }
 );
 
+export const syncEmployeesData = createAppAsyncThunk(
+  'employees/syncEmployeesData',
+  async (accessToken: string, { rejectWithValue, dispatch }) => {
+    try {
+      const result = await syncEmployees(accessToken);
+      // After successful sync, reload employees
+      await dispatch(loadEmployees());
+      return result;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to sync employees'
+      );
+    }
+  }
+);
+
 const employeesSlice = createSlice({
   name: 'employees',
   initialState,
@@ -41,6 +57,17 @@ const employeesSlice = createSlice({
       .addCase(loadEmployees.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to load employees';
+      })
+      .addCase(syncEmployeesData.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(syncEmployeesData.fulfilled, (state) => {
+        // Status will be updated by loadEmployees that runs after sync
+      })
+      .addCase(syncEmployeesData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to sync employees';
       });
   },
 });
@@ -51,5 +78,5 @@ export const selectEmployees = (state: RootState): Employee[] =>
 export const selectEmployeesStatus = (state: RootState): EmployeesState['status'] =>
   state.employees.status;
 
-export default employeesSlice.reducer;
+export const employeesReducer = employeesSlice.reducer;
 

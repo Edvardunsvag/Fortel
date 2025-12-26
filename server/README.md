@@ -100,7 +100,7 @@ Returns all employees from the PostgreSQL database.
     "avatarImageUrl": "https://...",
     "department": "Engineering",
     "office": "Oslo",
-    "skills": ["React", "TypeScript"],
+    "teams": ["Technology", "Experience Design"],
     "age": 32,
     "supervisor": "Jane Smith"
   },
@@ -119,7 +119,7 @@ The `employees` table is automatically created on server startup with the follow
 - `avatar_image_url` (TEXT)
 - `department` (VARCHAR)
 - `office` (VARCHAR)
-- `skills` (TEXT[])
+- `teams` (TEXT[])
 - `age` (VARCHAR)
 - `supervisor` (VARCHAR)
 - `created_at` (TIMESTAMP)

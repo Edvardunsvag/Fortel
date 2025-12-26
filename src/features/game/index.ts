@@ -1,5 +1,4 @@
-export { default as gameReducer } from './gameSlice';
-export { initializeGame, makeGuess } from './gameSlice';
+export { gameReducer, initializeGame, makeGuess } from './gameSlice';
 export {
   selectEmployeeOfTheDayId,
   selectGuesses,

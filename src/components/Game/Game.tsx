@@ -14,13 +14,13 @@ import {
   selectCanGuess,
 } from '@/features/game';
 import { getTodayDateString, getDateSeed, selectIndexBySeed } from '@/shared/utils/dateUtils';
-import GuessInput from './GuessInput';
-import GuessList from './GuessList';
-import GameStatus from './GameStatus';
-import ShareResults from './ShareResults';
+import { GuessInput } from './GuessInput';
+import { GuessList } from './GuessList';
+import { GameStatus } from './GameStatus';
+import { ShareResults } from './ShareResults';
 import styles from './Game.module.scss';
 
-const Game = () => {
+export const Game = () => {
   const dispatch = useAppDispatch();
   const employees = useAppSelector(selectEmployees);
   const employeesStatus = useAppSelector(selectEmployeesStatus);
@@ -155,6 +155,4 @@ const Game = () => {
     </div>
   );
 };
-
-export default Game;
 

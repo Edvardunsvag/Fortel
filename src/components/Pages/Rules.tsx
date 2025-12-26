@@ -1,7 +1,7 @@
-import ColorLegend from '../Game/ColorLegend';
+import { ColorLegend } from '../Game/ColorLegend';
 import styles from './Pages.module.scss';
 
-const Rules = () => {
+export const Rules = () => {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -22,7 +22,7 @@ const Rules = () => {
             <ul className={styles.list}>
               <li><strong>Department:</strong> Whether the guessed employee is in the same department</li>
               <li><strong>Office:</strong> Whether they work in the same office location</li>
-              <li><strong>Skills:</strong> How many skills match between the guessed and target employee</li>
+              <li><strong>Teams:</strong> Whether the guessed employee is on the same teams as the target employee</li>
               <li><strong>Age:</strong> Whether the guessed employee is older, younger, or the same age</li>
               <li><strong>Supervisor:</strong> Whether the guessed employee has the same supervisor</li>
             </ul>
@@ -44,6 +44,4 @@ const Rules = () => {
     </div>
   );
 };
-
-export default Rules;
 

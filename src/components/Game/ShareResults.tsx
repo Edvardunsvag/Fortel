@@ -8,7 +8,7 @@ interface ShareResultsProps {
   isWon: boolean;
 }
 
-const ShareResults = ({ guesses, isWon }: ShareResultsProps) => {
+export const ShareResults = ({ guesses, isWon }: ShareResultsProps) => {
   const dispatch = useAppDispatch();
   const submitStatus = useAppSelector(selectSubmitStatus);
   const submitError = useAppSelector(selectSubmitError);
@@ -114,6 +114,4 @@ const ShareResults = ({ guesses, isWon }: ShareResultsProps) => {
     </div>
   );
 };
-
-export default ShareResults;
 

@@ -6,7 +6,7 @@ export interface Employee {
   avatarImageUrl?: string;
   department: string;
   office: string;
-  skills: string[];
+  teams: string[];
   age: number | string; // Age or '-' if unknown
   supervisor?: string; // Supervisor name or '-' if unknown
 }

@@ -43,32 +43,33 @@ const calculateHints = (
     message: guessed.office,
   });
 
-  // Skills hint
-  const guessedSkills = new Set(guessed.skills.map((s) => s.toLowerCase()));
-  const targetSkills = new Set(target.skills.map((s) => s.toLowerCase()));
-  const intersection = new Set(
-    [...guessedSkills].filter((s) => targetSkills.has(s))
-  );
-  const union = new Set([...guessedSkills, ...targetSkills]);
+  // Teams hint - check for matches (exact, partial, or none)
+  const guessedTeams = guessed.teams.map((t) => t.toLowerCase().trim()).filter(Boolean);
+  const targetTeams = target.teams.map((t) => t.toLowerCase().trim()).filter(Boolean);
+  const guessedTeamsStr = guessed.teams.join(', ') || '-';
 
-  let skillsResult: HintResult;
-  let skillsMessage: string;
+  // Count matching teams
+  const matchingTeams = guessedTeams.filter((team) => targetTeams.includes(team));
+  const matchCount = matchingTeams.length;
+  const guessedCount = guessedTeams.length;
+  const targetCount = targetTeams.length;
 
-  if (intersection.size === union.size && intersection.size > 0) {
-    skillsResult = HintResult.Correct;
-    skillsMessage = guessed.skills.join(', ');
-  } else if (intersection.size > 0) {
-    skillsResult = HintResult.Partial;
-    skillsMessage = guessed.skills.join(', ');
+  let teamsResult: HintResult;
+  if (matchCount === 0) {
+    // No teams match
+    teamsResult = HintResult.Incorrect;
+  } else if (matchCount === guessedCount && matchCount === targetCount) {
+    // All teams match exactly
+    teamsResult = HintResult.Correct;
   } else {
-    skillsResult = HintResult.None;
-    skillsMessage = guessed.skills.join(', ');
+    // Some teams match (partial)
+    teamsResult = HintResult.Partial;
   }
 
   hints.push({
-    type: HintType.Skills,
-    result: skillsResult,
-    message: skillsMessage,
+    type: HintType.Teams,
+    result: teamsResult,
+    message: guessedTeamsStr,
   });
 
   // Age hint
@@ -173,5 +174,5 @@ export const selectGameStatus = (state: RootState): GameState['status'] =>
 export const selectCanGuess = (state: RootState): boolean =>
   state.game.status === 'playing';
 
-export default gameSlice.reducer;
+export const gameReducer = gameSlice.reducer;
 

@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { setActiveTab, selectActiveTab, ActiveTab } from '@/features/navigation';
 import styles from './Sidebar.module.scss';
 
-const Sidebar = () => {
+export const Sidebar = () => {
   const dispatch = useAppDispatch();
   const activeTab = useAppSelector(selectActiveTab);
 
@@ -56,10 +56,20 @@ const Sidebar = () => {
             <span className={styles.label}>Rules</span>
           </button>
         </li>
+        <li>
+          <button
+            className={`${styles.navItem} ${activeTab === ActiveTab.Sync ? styles.active : ''}`}
+            onClick={() => handleTabClick(ActiveTab.Sync)}
+            onKeyDown={(e) => handleKeyDown(e, ActiveTab.Sync)}
+            aria-label="Sync"
+            aria-current={activeTab === ActiveTab.Sync ? 'page' : undefined}
+          >
+            <span className={styles.icon}>🔄</span>
+            <span className={styles.label}>Sync</span>
+          </button>
+        </li>
       </ul>
     </nav>
   );
 };
-
-export default Sidebar;
 

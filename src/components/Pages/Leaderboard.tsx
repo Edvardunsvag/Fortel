@@ -9,7 +9,7 @@ import {
 } from '@/features/leaderboard';
 import styles from './Pages.module.scss';
 
-const Leaderboard = () => {
+export const Leaderboard = () => {
   const dispatch = useAppDispatch();
   const leaderboard = useAppSelector(selectLeaderboard);
   const status = useAppSelector(selectLeaderboardStatus);
@@ -189,6 +189,4 @@ const Leaderboard = () => {
     </div>
   );
 };
-
-export default Leaderboard;
 

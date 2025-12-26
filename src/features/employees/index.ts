@@ -1,5 +1,4 @@
-export { default as employeesReducer } from './employeesSlice';
-export { loadEmployees } from './employeesSlice';
+export { employeesReducer, loadEmployees, syncEmployeesData } from './employeesSlice';
 export {
   selectEmployees,
   selectEmployeesStatus,

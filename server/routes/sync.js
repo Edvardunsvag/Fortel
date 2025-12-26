@@ -96,51 +96,8 @@ const mapHumaUserToEmployee = (user) => {
   const locations = getValue(user.locations) || [];
   const office = locations[0]?.name || '-';
   
-  // Derive skills from job title and teams
-  const jobTitle = getValue(user.jobTitle);
-  const skills = [];
-  
-  if (jobTitle) {
-    const title = jobTitle.name.toLowerCase();
-    if (title.includes('developer') || title.includes('engineer') || title.includes('architect')) {
-      if (title.includes('react') || title.includes('frontend') || title.includes('experience platform')) {
-        skills.push('React', 'TypeScript', 'JavaScript');
-      }
-      if (title.includes('cloud') || title.includes('platform')) {
-        skills.push('Cloud', 'DevOps', 'Kubernetes');
-      }
-      if (title.includes('dynamics')) {
-        skills.push('Dynamics', 'Microsoft', 'CRM');
-      }
-    }
-    if (title.includes('designer') || title.includes('ux') || title.includes('ui')) {
-      skills.push('Figma', 'UI/UX', 'Design');
-    }
-    if (title.includes('product')) {
-      skills.push('Product Management', 'Analytics', 'Strategy');
-    }
-    if (title.includes('business design')) {
-      skills.push('Business Design', 'Strategy', 'Consulting');
-    }
-    if (title.includes('hr')) {
-      skills.push('HR', 'Recruitment', 'People Management');
-    }
-  }
-  
-  if (teams) {
-    teams.forEach((team) => {
-      const teamName = team.name.toLowerCase();
-      if (teamName.includes('technology') && !skills.includes('Technology')) {
-        skills.push('Technology');
-      }
-      if (teamName.includes('experience') && !skills.includes('Experience Design')) {
-        skills.push('Experience Design');
-      }
-      if (teamName.includes('product') && !skills.includes('Product')) {
-        skills.push('Product');
-      }
-    });
-  }
+  // Extract teams directly from API - just get team names, no processing
+  const teamsArray = teams ? teams.map((team) => team.name || team).filter(Boolean) : [];
   
   // Calculate age
   const birthDate = getValue(user.birthDate);
@@ -175,7 +132,7 @@ const mapHumaUserToEmployee = (user) => {
     avatarImageUrl,
     department,
     office,
-    skills,
+    teams: teamsArray,
     age,
     supervisor,
   };
@@ -231,7 +188,7 @@ export const syncEmployees = async (req, res) => {
         await client.query(
           `INSERT INTO employees (
             id, name, first_name, surname, avatar_image_url,
-            department, office, skills, age, supervisor, updated_at
+            department, office, teams, age, supervisor, updated_at
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
@@ -240,7 +197,7 @@ export const syncEmployees = async (req, res) => {
             avatar_image_url = EXCLUDED.avatar_image_url,
             department = EXCLUDED.department,
             office = EXCLUDED.office,
-            skills = EXCLUDED.skills,
+            teams = EXCLUDED.teams,
             age = EXCLUDED.age,
             supervisor = EXCLUDED.supervisor,
             updated_at = CURRENT_TIMESTAMP`,
@@ -252,7 +209,7 @@ export const syncEmployees = async (req, res) => {
             employee.avatarImageUrl || null,
             employee.department,
             employee.office,
-            employee.skills,
+            employee.teams || [],
             employee.age,
             employee.supervisor || null,
           ]

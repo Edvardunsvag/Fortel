@@ -1,0 +1,91 @@
+@import '../../shared/styles/variables.scss';
+
+.loginScreen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary-beige 0%, $color-secondary-beige 50%, $color-light-grey 100%);
+  position: relative;
+  padding: $spacing-lg;
+
+  // Subtle background pattern
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 50%, $color-overlay-light 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, $color-overlay-light 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.languageToggleContainer {
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  z-index: 10;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 32rem;
+  width: 100%;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $color-dark-fill;
+  margin-bottom: $spacing-md;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: $color-dark-fill;
+  margin-bottom: $spacing-xl;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.loginButton {
+  padding: $spacing-md $spacing-xl;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  background-color: $color-link-blue;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  min-width: 12rem;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(0, 0, 238, 0.9);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+

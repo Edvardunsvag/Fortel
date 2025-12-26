@@ -129,6 +129,10 @@
     "logout": "Logg ut",
     "loggingIn": "Logger inn...",
     "loggingOut": "Logger ut..."
+  },
+  "loginScreen": {
+    "title": "Velkommen til Fortedle",
+    "subtitle": "Vennligst logg inn med din Microsoft-konto for å få tilgang til spillet og topplisten."
   }
 }
 

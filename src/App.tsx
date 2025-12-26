@@ -7,16 +7,19 @@ import { Rules } from './components/Pages/Rules';
 import { Sync } from './components/Pages/Sync';
 import { Employees } from './components/Pages/Employees';
 import { Sidebar } from './components/Sidebar/Sidebar';
+import { LoginScreen } from './components/LoginScreen/LoginScreen';
 import { loadEmployees, selectEmployees, selectEmployeesStatus } from './features/employees';
 import { ActiveTab, selectActiveTab } from './features/navigation';
 import { useI18nSync } from './features/i18n/useI18nSync';
 import { useMsalAuth } from './features/auth/useMsalAuth';
+import { selectIsAuthenticated } from './features/auth';
 
 export const App = () => {
   const dispatch = useAppDispatch();
   const activeTab = useAppSelector(selectActiveTab);
   const employees = useAppSelector(selectEmployees);
   const employeesStatus = useAppSelector(selectEmployeesStatus);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   
   // Sync i18n with Redux language state
   useI18nSync();
@@ -27,11 +30,17 @@ export const App = () => {
   useEffect(() => {
     // Try to load employees from database on mount only
     // Only load if status is 'idle' (initial state) and we haven't loaded yet
-    if (employeesStatus === 'idle' && employees.length === 0) {
+    // Only load if authenticated
+    if (isAuthenticated && employeesStatus === 'idle' && employees.length === 0) {
       dispatch(loadEmployees());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, [isAuthenticated]); // Run when authentication state changes
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
 
   const renderPage = () => {
     switch (activeTab) {

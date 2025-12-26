@@ -91,9 +91,11 @@
   "sync": {
     "title": "Data Sync",
     "subtitle": "Enter your Huma access token to sync employee data to the database.",
+    "subtitleAuthenticated": "You are logged in. Click the button below to sync employee data using your Azure AD token.",
     "accessToken": "Access Token",
     "tokenPlaceholder": "Paste your Huma access token here (Ctrl+V or Cmd+V)...",
     "pleaseEnterToken": "Please enter an access token",
+    "failedToGetToken": "Failed to get access token. Please try logging in again.",
     "failedToSync": "Failed to sync data",
     "dataSynced": "Data synced successfully!",
     "employeesLoaded": "Employees have been loaded.",
@@ -121,6 +123,12 @@
     "department": "Department",
     "office": "Office",
     "supervisor": "Supervisor"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "loggingIn": "Logging in...",
+    "loggingOut": "Logging out..."
   }
 }
 

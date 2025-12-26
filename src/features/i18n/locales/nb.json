@@ -91,9 +91,11 @@
   "sync": {
     "title": "Datasynkronisering",
     "subtitle": "Skriv inn din Huma tilgangstoken for å synkronisere ansattdata til databasen.",
+    "subtitleAuthenticated": "Du er logget inn. Klikk knappen under for å synkronisere ansattdata ved hjelp av din Azure AD-token.",
     "accessToken": "Tilgangstoken",
     "tokenPlaceholder": "Lim inn din Huma tilgangstoken her (Ctrl+V eller Cmd+V)...",
     "pleaseEnterToken": "Vennligst skriv inn en tilgangstoken",
+    "failedToGetToken": "Kunne ikke hente tilgangstoken. Vennligst prøv å logge inn igjen.",
     "failedToSync": "Kunne ikke synkronisere data",
     "dataSynced": "Data synkronisert!",
     "employeesLoaded": "Ansatte har blitt lastet.",
@@ -121,6 +123,12 @@
     "department": "Avdeling",
     "office": "Kontor",
     "supervisor": "Leder"
+  },
+  "auth": {
+    "login": "Logg inn",
+    "logout": "Logg ut",
+    "loggingIn": "Logger inn...",
+    "loggingOut": "Logger ut..."
   }
 }
 

@@ -67,6 +67,13 @@
   flex: 1;
 }
 
+.authContainer {
+  position: absolute;
+  bottom: 6rem;
+  left: $spacing-lg;
+  right: $spacing-lg;
+}
+
 .languageToggleContainer {
   position: absolute;
   bottom: $spacing-xl;
@@ -87,6 +94,12 @@
 
   .label {
     display: none;
+  }
+
+  .authContainer {
+    left: $spacing-md;
+    right: $spacing-md;
+    bottom: 5rem;
   }
 
   .languageToggleContainer {

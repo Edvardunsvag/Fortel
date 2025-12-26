@@ -10,6 +10,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@azure/msal-browser": "^4.27.0",
+    "@azure/msal-react": "^3.0.23",
     "@reduxjs/toolkit": "^2.0.1",
     "i18next": "^25.7.3",
     "react": "^18.2.0",

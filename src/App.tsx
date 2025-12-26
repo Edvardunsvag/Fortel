@@ -10,6 +10,7 @@ import { Sidebar } from './components/Sidebar/Sidebar';
 import { loadEmployees, selectEmployees, selectEmployeesStatus } from './features/employees';
 import { ActiveTab, selectActiveTab } from './features/navigation';
 import { useI18nSync } from './features/i18n/useI18nSync';
+import { useMsalAuth } from './features/auth/useMsalAuth';
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,9 @@ export const App = () => {
   
   // Sync i18n with Redux language state
   useI18nSync();
+  
+  // Initialize MSAL auth state
+  useMsalAuth();
 
   useEffect(() => {
     // Try to load employees from database on mount only

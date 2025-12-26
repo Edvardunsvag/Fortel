@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { setActiveTab, selectActiveTab, ActiveTab } from '@/features/navigation';
 import { SidebarItem } from './SidebarItem';
 import { LanguageToggle } from '../LanguageToggle/LanguageToggle';
+import { LoginButton } from '../LoginButton/LoginButton';
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = () => {
@@ -65,6 +66,9 @@ export const Sidebar = () => {
           onKeyDown={handleKeyDown}
         />
       </ul>
+      <div className={styles.authContainer}>
+        <LoginButton />
+      </div>
       <div className={styles.languageToggleContainer}>
         <LanguageToggle />
       </div>

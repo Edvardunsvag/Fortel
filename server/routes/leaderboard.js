@@ -2,6 +2,7 @@ import { pool } from '../db/init.js';
 
 /**
  * Get leaderboard for current day
+ * 
  * GET /api/leaderboard
  * Query params: ?date=YYYY-MM-DD (optional, defaults to today)
  */

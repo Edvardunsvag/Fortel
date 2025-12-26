@@ -169,6 +169,28 @@ export const syncEmployees = async (req, res) => {
       }
     }
 
+    // Check if employees already exist in the database
+    const checkClient = await pool.connect();
+    let existingCount = 0;
+    try {
+      const existingEmployeesResult = await checkClient.query('SELECT COUNT(*) as count FROM employees');
+      existingCount = parseInt(existingEmployeesResult.rows[0].count, 10);
+    } catch (checkError) {
+      // If table doesn't exist or error checking, continue with sync
+      console.warn('Error checking existing employees, proceeding with sync:', checkError.message);
+    } finally {
+      checkClient.release();
+    }
+    
+    if (existingCount > 0) {
+      return res.json({
+        success: true,
+        message: 'Database is already synced',
+        count: existingCount,
+        alreadySynced: true,
+      });
+    }
+
     // Fetch employees from Huma API
     const userDetails = await fetchEmployeesFromHuma(accessToken);
     
@@ -222,6 +244,7 @@ export const syncEmployees = async (req, res) => {
         success: true,
         message: `Successfully synced ${employees.length} employees`,
         count: employees.length,
+        alreadySynced: false,
       });
     } catch (dbError) {
       await client.query('ROLLBACK');

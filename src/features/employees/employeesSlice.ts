@@ -29,8 +29,10 @@ export const syncEmployeesData = createAppAsyncThunk(
   async (accessToken: string, { rejectWithValue, dispatch }) => {
     try {
       const result = await syncEmployees(accessToken);
-      // After successful sync, reload employees
-      await dispatch(loadEmployees());
+      // After successful sync, reload employees (unless already synced)
+      if (!result.alreadySynced) {
+        await dispatch(loadEmployees());
+      }
       return result;
     } catch (error) {
       return rejectWithValue(

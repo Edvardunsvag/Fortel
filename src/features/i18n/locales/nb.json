@@ -99,6 +99,7 @@
     "failedToSync": "Kunne ikke synkronisere data",
     "dataSynced": "Data synkronisert!",
     "employeesLoaded": "Ansatte har blitt lastet.",
+    "alreadySynced": "Databasen er allerede synkronisert. Ingen handling nødvendig.",
     "syncing": "Synkroniserer...",
     "syncData": "Synkroniser data",
     "howToGetToken": "Hvordan få din token:",

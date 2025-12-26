@@ -99,6 +99,7 @@
     "failedToSync": "Failed to sync data",
     "dataSynced": "Data synced successfully!",
     "employeesLoaded": "Employees have been loaded.",
+    "alreadySynced": "Database is already synced. No action needed.",
     "syncing": "Syncing...",
     "syncData": "Sync Data",
     "howToGetToken": "How to get your token:",

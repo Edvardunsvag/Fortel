@@ -32,6 +32,7 @@ export interface SyncResult {
   success: boolean;
   message: string;
   count: number;
+  alreadySynced?: boolean;
 }
 
 export const syncEmployees = async (accessToken: string): Promise<SyncResult> => {

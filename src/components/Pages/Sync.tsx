@@ -1,22 +1,26 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { syncEmployeesData, selectEmployeesStatus } from '@/features/employees';
+import { syncEmployeesData, selectEmployeesStatus, selectEmployees } from '@/features/employees';
 import styles from './Pages.module.scss';
 
 export const Sync = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const employeesStatus = useAppSelector(selectEmployeesStatus);
+  const employees = useAppSelector(selectEmployees);
   const [tokenInput, setTokenInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
+  const [alreadySynced, setAlreadySynced] = useState(false);
   const isSyncing = employeesStatus === 'loading';
+  const hasEmployees = employees.length > 0;
 
   const handleSync = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSyncSuccess(false);
+    setAlreadySynced(false);
 
     if (!tokenInput.trim()) {
       setError(t('sync.pleaseEnterToken'));
@@ -29,7 +33,11 @@ export const Sync = () => {
       const result = await dispatch(syncEmployeesData(accessToken));
       
       if (syncEmployeesData.fulfilled.match(result)) {
-        setSyncSuccess(true);
+        if (result.payload.alreadySynced) {
+          setAlreadySynced(true);
+        } else {
+          setSyncSuccess(true);
+        }
         setTokenInput('');
       } else if (syncEmployeesData.rejected.match(result)) {
         setError(result.payload as string || t('sync.failedToSync'));
@@ -57,49 +65,62 @@ export const Sync = () => {
           {t('sync.subtitle')}
         </p>
         
-        <form onSubmit={handleSync} className={styles.tokenForm}>
-          <label htmlFor="token-input" className={styles.tokenLabel}>
-            {t('sync.accessToken')}
-          </label>
-          <textarea
-            id="token-input"
-            className={styles.tokenInput}
-            value={tokenInput}
-            onChange={(e) => setTokenInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={t('sync.tokenPlaceholder')}
-            rows={4}
-            disabled={isSyncing}
-          />
-          {error && <p className={styles.error}>{error}</p>}
-          {syncSuccess && (
+        {hasEmployees ? (
+          <div className={styles.tokenForm}>
             <p className={styles.success}>
-              {t('sync.dataSynced')} {employeesStatus === 'succeeded' && t('sync.employeesLoaded')}
+              {t('sync.alreadySynced')}
             </p>
-          )}
-          <div className={styles.tokenActions}>
-            <button
-              className={styles.submitButton}
-              type="submit"
-              disabled={isSyncing || !tokenInput.trim()}
-            >
-              {isSyncing ? t('sync.syncing') : t('sync.syncData')}
-            </button>
           </div>
-          <p className={styles.instructions}>
-            <strong>{t('sync.howToGetToken')}</strong>
-            <br />
-            {t('sync.step1')}
-            <br />
-            {t('sync.step2')}
-            <br />
-            {t('sync.step3')}
-            <br />
-            {t('sync.step4')}
-            <br />
-            {t('sync.step5')}
-          </p>
-        </form>
+        ) : (
+          <form onSubmit={handleSync} className={styles.tokenForm}>
+            <label htmlFor="token-input" className={styles.tokenLabel}>
+              {t('sync.accessToken')}
+            </label>
+            <textarea
+              id="token-input"
+              className={styles.tokenInput}
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={t('sync.tokenPlaceholder')}
+              rows={4}
+              disabled={isSyncing}
+            />
+            {error && <p className={styles.error}>{error}</p>}
+            {alreadySynced && (
+              <p className={styles.success}>
+                {t('sync.alreadySynced')}
+              </p>
+            )}
+            {syncSuccess && (
+              <p className={styles.success}>
+                {t('sync.dataSynced')} {employeesStatus === 'succeeded' && t('sync.employeesLoaded')}
+              </p>
+            )}
+            <div className={styles.tokenActions}>
+              <button
+                className={styles.submitButton}
+                type="submit"
+                disabled={isSyncing || !tokenInput.trim()}
+              >
+                {isSyncing ? t('sync.syncing') : t('sync.syncData')}
+              </button>
+            </div>
+            <p className={styles.instructions}>
+              <strong>{t('sync.howToGetToken')}</strong>
+              <br />
+              {t('sync.step1')}
+              <br />
+              {t('sync.step2')}
+              <br />
+              {t('sync.step3')}
+              <br />
+              {t('sync.step4')}
+              <br />
+              {t('sync.step5')}
+            </p>
+          </form>
+        )}
       </div>
     </div>
   );

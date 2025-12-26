@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
 import type { RootState } from '@/app/store';
+import { getApiUrl } from '@/shared/utils/apiConfig';
 
 export interface LeaderboardEntry {
   rank: number;
@@ -33,7 +34,7 @@ const initialState: LeaderboardState = {
 export const fetchLeaderboard = createAppAsyncThunk(
   'leaderboard/fetchLeaderboard',
   async (date?: string) => {
-    const url = date ? `/api/leaderboard?date=${date}` : '/api/leaderboard';
+    const url = date ? getApiUrl('/api/leaderboard') + `?date=${date}` : getApiUrl('/api/leaderboard');
     const response = await fetch(url);
     
     if (!response.ok) {
@@ -48,7 +49,7 @@ export const submitScore = createAppAsyncThunk(
   'leaderboard/submitScore',
   async ({ name, score }: { name: string; score: number }, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/leaderboard', {
+      const response = await fetch(getApiUrl('/api/leaderboard'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

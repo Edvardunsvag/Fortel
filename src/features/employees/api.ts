@@ -1,9 +1,10 @@
 import type { Employee } from './types';
+import { getApiUrl } from '@/shared/utils/apiConfig';
 
 export const fetchEmployees = async (): Promise<Employee[]> => {
   // Fetch from backend API (PostgreSQL)
   try {
-    const response = await fetch('/api/employees', {
+    const response = await fetch(getApiUrl('/api/employees'), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +36,7 @@ export interface SyncResult {
 
 export const syncEmployees = async (accessToken: string): Promise<SyncResult> => {
   try {
-    const response = await fetch('/api/sync', {
+    const response = await fetch(getApiUrl('/api/sync'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -13,7 +13,6 @@ import {
   selectEmployeeOfTheDayId,
   selectGuesses,
   selectGameStatus,
-  selectCanGuess,
 } from '@/features/game';
 import { selectAccount } from '@/features/auth';
 import { submitScore, fetchLeaderboard, selectLeaderboard } from '@/features/leaderboard';

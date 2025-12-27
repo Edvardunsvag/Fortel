@@ -23,7 +23,7 @@
     "comeBackTomorrow": "Kom tilbake i morgen!"
   },
   "gameStatus": {
-    "congratulations": "🎉 Gratulerer!",
+    "congratulations": "Gratulerer!",
     "guessedCorrectly": "Du gjettet riktig på {{count}} forsøk!",
     "guessedCorrectly_plural": "Du gjettet riktig på {{count}} forsøk!",
     "gameOver": "Spill over",

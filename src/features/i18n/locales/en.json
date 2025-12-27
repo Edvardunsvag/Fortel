@@ -23,7 +23,7 @@
     "comeBackTomorrow": "Come back tomorrow!"
   },
   "gameStatus": {
-    "congratulations": "🎉 Congratulations!",
+    "congratulations": "Congratulations!",
     "guessedCorrectly": "You guessed correctly in {{count}} attempt!",
     "guessedCorrectly_plural": "You guessed correctly in {{count}} attempts!",
     "gameOver": "Game Over",

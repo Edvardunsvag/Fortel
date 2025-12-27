@@ -5,25 +5,39 @@ import styles from './GameStatus.module.scss';
 interface GameStatusProps {
   status: GameState['status'];
   guesses: GameState['guesses'];
+  visible?: boolean;
 }
 
-export const GameStatus = ({ status, guesses }: GameStatusProps) => {
+export const GameStatus = ({ status, guesses, visible = true }: GameStatusProps) => {
   const { t } = useTranslation();
 
   if (status === 'won') {
     return (
-      <div className={`${styles.status} ${styles.won}`} role="status">
-        <h2>{t('gameStatus.congratulations')}</h2>
-        <p>{t('gameStatus.guessedCorrectly', { count: guesses.length })}</p>
+      <div 
+        className={`${styles.status} ${styles.won} ${visible ? styles.visible : styles.hidden}`} 
+        role="status"
+        aria-live="polite"
+      >
+        <div className={styles.content}>
+          <div className={styles.emoji}>🎉</div>
+          <h2>{t('gameStatus.congratulations')}</h2>
+          <p>{t('gameStatus.guessedCorrectly', { count: guesses.length })}</p>
+        </div>
       </div>
     );
   }
 
   if (status === 'lost') {
     return (
-      <div className={`${styles.status} ${styles.lost}`} role="status">
-        <h2>{t('gameStatus.gameOver')}</h2>
-        <p>{t('gameStatus.usedAllGuesses')}</p>
+      <div 
+        className={`${styles.status} ${styles.lost} ${visible ? styles.visible : styles.hidden}`} 
+        role="status"
+        aria-live="polite"
+      >
+        <div className={styles.content}>
+          <h2>{t('gameStatus.gameOver')}</h2>
+          <p>{t('gameStatus.usedAllGuesses')}</p>
+        </div>
       </div>
     );
   }

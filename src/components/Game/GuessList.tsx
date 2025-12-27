@@ -17,13 +17,19 @@ export const GuessList = ({ guesses }: GuessListProps) => {
   const isInitializedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Initialize all existing guesses as animated when guesses first appear
-    if (guesses.length > 0 && !isInitializedRef.current) {
-      // Mark all existing guesses as animated (they should be flipped immediately)
-      setAnimatedGuesses(new Set(guesses.map((_, index) => index)));
+    // Initialize on mount - if there are existing guesses, mark them as pre-existing
+    if (!isInitializedRef.current) {
+      if (guesses.length > 0) {
+        // Mark all existing guesses as animated (they should be flipped immediately)
+        setAnimatedGuesses(new Set(guesses.map((_, index) => index)));
+        initialLengthRef.current = guesses.length;
+      } else {
+        // No existing guesses, so initialLengthRef stays 0
+        initialLengthRef.current = 0;
+      }
       previousLengthRef.current = guesses.length;
-      initialLengthRef.current = guesses.length;
       isInitializedRef.current = true;
+      return;
     }
     
     // Only trigger animation when a new guess is added (length increases)

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import confetti from 'canvas-confetti';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
   loadEmployees,
@@ -67,8 +68,10 @@ export const Game = () => {
   const canGuess = true;
   
   const hasSubmittedScore = useRef(false);
+  const hasTriggeredConfetti = useRef(false);
 
   const [inputValue, setInputValue] = useState('');
+  const [showStatusMessage, setShowStatusMessage] = useState(false);
 
   // Load employees on mount only if status is idle
   useEffect(() => {
@@ -146,8 +149,71 @@ export const Game = () => {
   useEffect(() => {
     if (gameStatus === 'playing' || gameStatus === 'idle') {
       hasSubmittedScore.current = false;
+      hasTriggeredConfetti.current = false;
+      setShowStatusMessage(false);
     }
   }, [gameStatus]);
+
+  // Show status message and trigger confetti when game is won, after the last box finishes flipping
+  useEffect(() => {
+    if (gameStatus === 'won' && !hasTriggeredConfetti.current && guesses.length > 0) {
+      // Calculate timing: last box (supervisor, index 4) finishes flipping
+      // Initial delay: 100ms + base delay: 400ms + box delay: 400ms * 4 = 2100ms
+      // Flip animation duration: 1000ms
+      // Total: 3100ms
+      const animationDelay = 3100;
+      
+      const animationTimer = setTimeout(() => {
+        // Show status message
+        setShowStatusMessage(true);
+        
+        // Trigger confetti from multiple points for a full-screen effect
+        const duration = 3000;
+        const end = Date.now() + duration;
+
+        const colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
+
+        const frame = () => {
+          if (Date.now() > end) return;
+
+          // Launch confetti from left, center, and right
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: colors,
+          });
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: colors,
+          });
+          confetti({
+            particleCount: 5,
+            angle: 90,
+            spread: 60,
+            origin: { x: 0.5, y: 0.5 },
+            colors: colors,
+          });
+
+          requestAnimationFrame(frame);
+        };
+        frame();
+
+        hasTriggeredConfetti.current = true;
+      }, animationDelay);
+
+      return () => clearTimeout(animationTimer);
+    }
+    
+    // For lost status, show immediately
+    if (gameStatus === 'lost') {
+      setShowStatusMessage(true);
+    }
+  }, [gameStatus, guesses.length]);
 
   const handleGuess = (employeeId: string) => {
     if (!canGuess || !employeeOfTheDayId) {
@@ -221,10 +287,11 @@ export const Game = () => {
       </div>
 
       <div className={pageStyles.content}>
-        {(gameStatus === 'won' || gameStatus === 'lost') && (
+        {((gameStatus === 'won' && showStatusMessage) || gameStatus === 'lost') && (
           <GameStatus
             status={gameStatus}
             guesses={guesses}
+            visible={true}
           />
         )}
 

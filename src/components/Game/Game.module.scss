@@ -55,6 +55,35 @@
   border: 1px solid $color-dark-accent;
 }
 
+.headerInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.guessCountBadge {
+  font-size: 1.125rem;
+  color: $color-dark-accent;
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-overlay-beige;
+  border-radius: $radius-md;
+  white-space: nowrap;
+
+  strong {
+    color: $color-dark-accent;
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .title {
     font-size: 2rem;

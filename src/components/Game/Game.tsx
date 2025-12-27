@@ -63,7 +63,9 @@ export const Game = () => {
     return similarity >= 0.8; // Higher threshold for leaderboard matching (80% similarity)
   }) || false;
   
-  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
+  // const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
+  const canGuess = true;
+  
   const hasSubmittedScore = useRef(false);
 
   const [inputValue, setInputValue] = useState('');
@@ -209,14 +211,22 @@ export const Game = () => {
   return (
     <div className={pageStyles.container}>
       <h1 className={pageStyles.title}>{t('game.title')}</h1>
-      <p className={pageStyles.subtitle}>{t('game.subtitle')}</p>
+      <div className={styles.headerInfo}>
+        <p className={pageStyles.subtitle}>{t('game.subtitle')}</p>
+        {gameStatus === 'playing' && (
+          <div className={styles.guessCountBadge}>
+            {t('game.guesses')}: <strong>{guesses.length}</strong>
+          </div>
+        )}
+      </div>
 
-      
       <div className={pageStyles.content}>
-        <GameStatus
-          status={gameStatus}
-          guesses={guesses}
-        />
+        {(gameStatus === 'won' || gameStatus === 'lost') && (
+          <GameStatus
+            status={gameStatus}
+            guesses={guesses}
+          />
+        )}
 
         {isInLeaderboard && gameStatus === 'playing' && (
           <div className={styles.attemptedMessage} role="alert">
@@ -224,13 +234,12 @@ export const Game = () => {
           </div>
         )}
 
-        {gameStatus === 'playing' && !isInLeaderboard && (
+        {canGuess && (
           <GuessInput
             value={inputValue}
             onChange={setInputValue}
             onGuess={handleGuess}
             employees={employees}
-            disabled={!canGuess || isInLeaderboard}
           />
         )}
 

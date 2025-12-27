@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useMsalAuth } from '@/features/auth/useMsalAuth';
 import { LanguageToggle } from '../LanguageToggle/LanguageToggle';
 import styles from './LoginScreen.module.scss';
+import pageStyles from '../Pages/Pages.module.scss';
 
 export const LoginScreen = () => {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export const LoginScreen = () => {
         <LanguageToggle />
       </div>
       <div className={styles.content}>
-        <h1 className={styles.title}>{t('loginScreen.title')}</h1>
+        <h1 className={pageStyles.title}>{t('loginScreen.title')}</h1>
         <p className={styles.subtitle}>{t('loginScreen.subtitle')}</p>
         <button
           className={styles.loginButton}

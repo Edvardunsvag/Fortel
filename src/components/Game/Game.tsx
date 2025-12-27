@@ -24,6 +24,7 @@ import { GuessInput } from './GuessInput';
 import { GuessList } from './GuessList';
 import { GameStatus } from './GameStatus';
 import styles from './Game.module.scss';
+import pageStyles from '../Pages/Pages.module.scss';
 
 export const Game = () => {
   const { t } = useTranslation();
@@ -173,7 +174,7 @@ export const Game = () => {
 
   if (employeesStatus === AsyncStatus.Loading) {
     return (
-      <div className={styles.container}>
+      <div className={pageStyles.container}>
         <div className={styles.loading}>{t('game.loadingEmployees')}</div>
       </div>
     );
@@ -181,7 +182,7 @@ export const Game = () => {
 
   if (employeesStatus === AsyncStatus.Failed) {
     return (
-      <div className={styles.container}>
+      <div className={pageStyles.container}>
         <div className={styles.error}>
           {t('game.failedToLoad')}
         </div>
@@ -191,7 +192,7 @@ export const Game = () => {
 
   if (employees.length === 0) {
     return (
-      <div className={styles.container}>
+      <div className={pageStyles.container}>
         <div className={styles.empty}>{t('game.noEmployees')}</div>
       </div>
     );
@@ -199,44 +200,42 @@ export const Game = () => {
 
   if (!employeeOfTheDayId) {
     return (
-      <div className={styles.container}>
+      <div className={pageStyles.container}>
         <div className={styles.loading}>{t('game.initializing')}</div>
       </div>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{t('game.title')}</h1>
-        <p className={styles.subtitle}>{t('game.subtitle')}</p>
-      </header>
+    <div className={pageStyles.container}>
+      <h1 className={pageStyles.title}>{t('game.title')}</h1>
+      <p className={pageStyles.subtitle}>{t('game.subtitle')}</p>
 
       
-      <GameStatus
-        status={gameStatus}
-        guesses={guesses}
-      />
-
-      {isInLeaderboard && gameStatus === 'playing' && (
-        <div className={styles.attemptedMessage} role="alert">
-          {t('game.alreadyAttempted')}
-        </div>
-      )}
-
-     
-
-      {gameStatus === 'playing' && !isInLeaderboard && (
-        <GuessInput
-          value={inputValue}
-          onChange={setInputValue}
-          onGuess={handleGuess}
-          employees={employees}
-          disabled={!canGuess || isInLeaderboard}
+      <div className={pageStyles.content}>
+        <GameStatus
+          status={gameStatus}
+          guesses={guesses}
         />
-      )}
 
-      <GuessList guesses={guesses} />
+        {isInLeaderboard && gameStatus === 'playing' && (
+          <div className={styles.attemptedMessage} role="alert">
+            {t('game.alreadyAttempted')}
+          </div>
+        )}
+
+        {gameStatus === 'playing' && !isInLeaderboard && (
+          <GuessInput
+            value={inputValue}
+            onChange={setInputValue}
+            onGuess={handleGuess}
+            employees={employees}
+            disabled={!canGuess || isInLeaderboard}
+          />
+        )}
+
+        <GuessList guesses={guesses} />
+      </div>
     </div>
   );
 };

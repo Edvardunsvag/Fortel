@@ -6,14 +6,30 @@
   padding: 0;
 }
 
+// Font face declarations for volksans
+@font-face {
+  font-family: 'volksans Regular';
+  src: url('/fonts/volksans-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'volksans Bold';
+  src: url('/fonts/volksans-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: $font-family-primary;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   color: $color-dark-accent;
+  font-feature-settings: normal;
 }
 
 code {

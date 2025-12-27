@@ -32,10 +32,17 @@
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: $color-dark-fill;
-  margin: 0 0 $spacing-md 0;
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0 0 $spacing-sm 0;
+  color: $color-dark-accent;
+  text-shadow: 2px 2px 4px $color-shadow-medium;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
 }
 
 .subtitle {

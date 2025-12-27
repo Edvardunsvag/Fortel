@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { setActiveTab, selectActiveTab, ActiveTab } from '@/features/navigation';
+import { selectAccount } from '@/features/auth';
 import { SidebarItem } from './SidebarItem';
 import { LanguageToggle } from '../LanguageToggle/LanguageToggle';
 import { LoginButton } from '../LoginButton/LoginButton';
@@ -10,6 +11,7 @@ export const Sidebar = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const activeTab = useAppSelector(selectActiveTab);
+  const account = useAppSelector(selectAccount);
 
   const handleTabClick = (tab: ActiveTab) => {
     dispatch(setActiveTab(tab));
@@ -24,6 +26,20 @@ export const Sidebar = () => {
 
   return (
     <nav className={styles.sidebar} aria-label="Main navigation">
+      <div className={styles.logoContainer}>
+        <img 
+          src="/forte-logo.svg" 
+          alt="Forte" 
+          className={styles.logo}
+        />
+      </div>
+      {account && (
+        <div className={styles.userNameContainer}>
+          <span className={styles.userName} title={account.name || account.username}>
+            {account.name || account.username}
+          </span>
+        </div>
+      )}
       <ul className={styles.navList}>
         <SidebarItem
           tab={ActiveTab.Play}
@@ -67,10 +83,10 @@ export const Sidebar = () => {
         />
       </ul>
       <div className={styles.authContainer}>
-        <LoginButton />
+        <LanguageToggle />
       </div>
       <div className={styles.languageToggleContainer}>
-        <LanguageToggle />
+        <LoginButton />
       </div>
     </nav>
   );

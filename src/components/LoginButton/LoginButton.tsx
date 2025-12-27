@@ -28,9 +28,6 @@ export const LoginButton = () => {
   if (isAuthenticated && account) {
     return (
       <div className={styles.loginContainer}>
-        <span className={styles.userName} title={account.name || account.username}>
-          {account.name || account.username}
-        </span>
         <button
           className={styles.loginButton}
           onClick={handleClick}

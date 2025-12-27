@@ -13,6 +13,34 @@
   padding: $spacing-xl 0;
 }
 
+.logoContainer {
+  padding: $spacing-lg $spacing-lg $spacing-md;
+  border-bottom: 1px solid $color-border-light;
+  margin-bottom: $spacing-md;
+}
+
+.logo {
+  height: 2rem;
+  width: auto;
+  display: block;
+}
+
+.userNameContainer {
+  padding: $spacing-lg $spacing-lg $spacing-md;
+  border-bottom: 1px solid $color-border-light;
+  margin-bottom: $spacing-md;
+}
+
+.userName {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .navList {
   list-style: none;
   padding: 0;
@@ -51,9 +79,9 @@
   }
 
   &.active {
-    background-color: rgba($color-link-blue, 0.1);
-    color: $color-link-blue;
-    border-right: 3px solid $color-link-blue;
+    background-color: rgba($color-dark-accent, 0.1);
+    color: $color-dark-accent;
+    border-right: 3px solid $color-dark-accent;
   }
 }
 
@@ -85,6 +113,21 @@
   .sidebar {
     width: 4rem;
     padding: $spacing-lg 0;
+  }
+
+  .logoContainer {
+    padding: $spacing-md;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo {
+    height: 1.5rem;
+  }
+
+  .userNameContainer {
+    display: none;
   }
 
   .navItem {

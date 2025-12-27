@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 35" width="120" height="35">
+  <text 
+    x="0" 
+    y="26" 
+    font-family="system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" 
+    font-size="28" 
+    font-weight="300" 
+    fill="#511e29" 
+    letter-spacing="0.5px"
+    style="font-variant-ligatures: normal;"
+  >
+    forte
+  </text>
+</svg>

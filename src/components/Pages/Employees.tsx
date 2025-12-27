@@ -29,6 +29,7 @@ export const Employees = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
+          <h1 className={styles.title}>{t('employees.title')}</h1>
           <p className={styles.loadingText}>{t('employees.loading')}</p>
         </div>
       </div>
@@ -39,6 +40,7 @@ export const Employees = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
+          <h1 className={styles.title}>{t('employees.title')}</h1>
           <p className={styles.errorText}>{t('employees.failedToLoad')}</p>
         </div>
       </div>
@@ -49,6 +51,7 @@ export const Employees = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
+          <h1 className={styles.title}>{t('employees.title')}</h1>
           <p className={styles.emptyText}>{t('employees.noEmployees')}</p>
         </div>
       </div>
@@ -57,9 +60,11 @@ export const Employees = () => {
 
   return (
     <div className={styles.pageContent}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>{t('employees.title')}</h1>
+      </div>
       <div className={styles.employeesLayout}>
         <div className={styles.employeeList}>
-          <h2 className={styles.listTitle}>{t('employees.title')}</h2>
           <ul className={styles.list} role="listbox" aria-label="Employee list">
             {employees.map((employee) => (
               <li key={employee.id}>

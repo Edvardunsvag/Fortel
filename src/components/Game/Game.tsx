@@ -66,8 +66,7 @@ export const Game = () => {
     return similarity >= 0.8; // Higher threshold for leaderboard matching (80% similarity)
   }) || false;
   
-  // const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
-  const canGuess = true;
+  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
   
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);

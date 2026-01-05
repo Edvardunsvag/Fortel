@@ -17,7 +17,7 @@ import {
   selectGuesses,
   selectTotalGuesses,
   selectGameStatus,
-  // selectCanGuess,
+  selectCanGuess,
 } from '@/features/game';
 import { selectAccount } from '@/features/auth';
 import { submitScore, fetchLeaderboard, selectLeaderboard } from '@/features/leaderboard';
@@ -70,8 +70,7 @@ export const Game = () => {
     return similarity >= 0.8;
   }) || false;
   
-  // const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
-  const canGuess = true;
+  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
   
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);

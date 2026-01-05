@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS employees (
   teams TEXT[] DEFAULT '{}',
   age VARCHAR(50),
   supervisor VARCHAR(255),
+  funfact TEXT,
+  interests TEXT[] DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

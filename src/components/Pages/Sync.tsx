@@ -4,10 +4,14 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { syncEmployeesData, selectEmployeesStatus, selectEmployees } from '@/features/employees';
 import { AsyncStatus } from '@/shared/redux/enums';
 import styles from './Pages.module.scss';
+import { selectAccount } from '@/features/auth';
+import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
 
 export const Sync = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  const account = useAppSelector(selectAccount);
   const employeesStatus = useAppSelector(selectEmployeesStatus);
   const employees = useAppSelector(selectEmployees);
   const [tokenInput, setTokenInput] = useState('');
@@ -31,7 +35,7 @@ export const Sync = () => {
     const accessToken = tokenInput.trim();
 
     try {
-      const result = await dispatch(syncEmployeesData(accessToken));
+      const result = await dispatch(syncEmployeesData({ accessToken }));
       
       if (syncEmployeesData.fulfilled.match(result)) {
         if (result.payload.alreadySynced) {
@@ -47,6 +51,7 @@ export const Sync = () => {
       setError(err instanceof Error ? err.message : t('sync.failedToSync'));
     }
   };
+    console.log(account);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -58,6 +63,8 @@ export const Sync = () => {
     }
   };
 
+  const isAdmin = account?.username === ADMIN_ACCOUNT;
+
   return (
     <div className={styles.pageContent}>
       <div className={styles.container}>
@@ -66,7 +73,7 @@ export const Sync = () => {
           {t('sync.subtitle')}
         </p>
         
-        {hasEmployees ? (
+        {hasEmployees && !isAdmin ? (
           <div className={styles.tokenForm}>
             <p className={styles.success}>
               {t('sync.alreadySynced')}

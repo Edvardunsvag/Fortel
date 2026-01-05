@@ -8,6 +8,7 @@ interface GuessInputProps {
   onChange: (value: string) => void;
   onGuess: (employeeId: string) => void;
   employees: Employee[];
+  guessedEmployeeIds?: string[];
   disabled?: boolean;
 }
 
@@ -16,6 +17,7 @@ export const GuessInput = ({
   onChange,
   onGuess,
   employees,
+  guessedEmployeeIds = [],
   disabled = false,
 }: GuessInputProps) => {
   const { t } = useTranslation();
@@ -34,6 +36,10 @@ export const GuessInput = ({
 
     const searchTerm = value.toLowerCase().trim();
     const filtered = employees.filter((emp) => {
+      // Filter out already guessed employees
+      if (guessedEmployeeIds.includes(emp.id)) {
+        return false;
+      }
       const nameMatch = emp.name.toLowerCase().includes(searchTerm);
       const firstNameMatch = emp.firstName.toLowerCase().includes(searchTerm);
       const surnameMatch = emp.surname.toLowerCase().includes(searchTerm);
@@ -43,7 +49,7 @@ export const GuessInput = ({
     setSuggestions(filtered.slice(0, 5));
     setShowSuggestions(filtered.length > 0);
     setSelectedIndex(-1);
-  }, [value, employees]);
+  }, [value, employees, guessedEmployeeIds]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
@@ -86,7 +92,9 @@ export const GuessInput = ({
 
   const handleSubmit = () => {
     const exactMatch = employees.find(
-      (emp) => emp.name.toLowerCase() === value.toLowerCase().trim()
+      (emp) => 
+        emp.name.toLowerCase() === value.toLowerCase().trim() &&
+        !guessedEmployeeIds.includes(emp.id)
     );
 
     if (exactMatch) {

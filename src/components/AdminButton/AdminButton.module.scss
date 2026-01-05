@@ -1,0 +1,35 @@
+@import '../../shared/styles/variables.scss';
+
+.adminButton {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal, transform $transition-fast;
+  margin-bottom: $spacing-sm;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+

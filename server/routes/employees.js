@@ -25,6 +25,8 @@ export const getEmployees = async (req, res) => {
         teams: row.teams || [],
         age: row.age === '-' ? '-' : parseInt(row.age, 10) || '-',
         supervisor: row.supervisor || '-',
+        funfact: row.funfact || null,
+        interests: row.interests || [],
       }));
 
       res.json(employees);

@@ -124,6 +124,15 @@ const mapHumaUserToEmployee = (user) => {
     supervisor = supervisorData.preferredName || `${supervisorData.givenName} ${supervisorData.familyName}`;
   }
 
+  // Funfact
+  const funfact = getValue(user.funfacts) || null;
+
+  // Interests
+  const interestsValue = getValue(user.interests) || [];
+  const interestsArray = Array.isArray(interestsValue) 
+    ? interestsValue.filter(Boolean) 
+    : [];
+
   return {
     id: user.id,
     name,
@@ -135,6 +144,8 @@ const mapHumaUserToEmployee = (user) => {
     teams: teamsArray,
     age,
     supervisor,
+    funfact,
+    interests: interestsArray,
   };
 };
 
@@ -210,8 +221,8 @@ export const syncEmployees = async (req, res) => {
         await client.query(
           `INSERT INTO employees (
             id, name, first_name, surname, avatar_image_url,
-            department, office, teams, age, supervisor, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP)
+            department, office, teams, age, supervisor, funfact, interests, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP)
           ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             first_name = EXCLUDED.first_name,
@@ -222,6 +233,8 @@ export const syncEmployees = async (req, res) => {
             teams = EXCLUDED.teams,
             age = EXCLUDED.age,
             supervisor = EXCLUDED.supervisor,
+            funfact = EXCLUDED.funfact,
+            interests = EXCLUDED.interests,
             updated_at = CURRENT_TIMESTAMP`,
           [
             employee.id,
@@ -234,6 +247,8 @@ export const syncEmployees = async (req, res) => {
             employee.teams || [],
             employee.age,
             employee.supervisor || null,
+            employee.funfact || null,
+            employee.interests || [],
           ]
         );
       }

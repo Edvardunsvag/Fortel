@@ -11,6 +11,8 @@ export interface Employee {
   teams: string[];
   age: number | string; // Age or '-' if unknown
   supervisor?: string; // Supervisor name or '-' if unknown
+  funfact?: string | null; // Fun fact about the employee
+  interests?: string[]; // Array of interests
 }
 
 export interface EmployeesState {

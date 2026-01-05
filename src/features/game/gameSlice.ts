@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/app/store';
 import type { Employee } from '@/features/employees';
@@ -18,6 +18,7 @@ const initialState: GameState = {
   currentDate: getTodayDateString(),
   attemptedByUserId: null,
   attemptDate: null,
+  funfactRevealed: false,
 };
 
 const calculateHints = (
@@ -131,13 +132,31 @@ const gameSlice = createSlice({
         state.status = 'playing';
         state.attemptedByUserId = null;
         state.attemptDate = null;
+        state.funfactRevealed = false;
       } else if (state.status === 'idle') {
         state.status = 'playing';
       }
       
-      // Store hashed employee ID (action.payload is the plain employee ID)
+      // Store hashed employee ID
       const hashedId = hashEmployeeId(action.payload, today);
       state.employeeOfTheDayId = hashedId;
+    },
+    revealFunfact: (state) => {
+      if (state.status !== 'playing' || state.funfactRevealed) {
+        return;
+      }
+      
+      // Cost 2 guesses - add two dummy guess entries
+      const dummyGuess: Guess = {
+        employeeId: '',
+        employeeName: '',
+        hints: [],
+        isCorrect: false,
+      };
+      
+      state.guesses.push(dummyGuess);
+      state.guesses.push(dummyGuess);
+      state.funfactRevealed = true;
     },
     makeGuess: (
       state,
@@ -175,12 +194,23 @@ const gameSlice = createSlice({
   },
 });
 
-export const { initializeGame, makeGuess } = gameSlice.actions;
+export const { initializeGame, revealFunfact, makeGuess } = gameSlice.actions;
 
 export const selectEmployeeOfTheDayId = (state: RootState): string | null =>
   state.game.employeeOfTheDayId;
 
-export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
+export const selectFunfactRevealed = (state: RootState): boolean =>
+  state.game.funfactRevealed;
+
+const selectAllGuesses = (state: RootState): Guess[] => state.game.guesses;
+
+export const selectGuesses = createSelector(
+  [selectAllGuesses],
+  (guesses): Guess[] => guesses.filter(guess => guess.employeeId !== '') // Filter out dummy guesses from revealFunfact
+);
+
+export const selectTotalGuesses = (state: RootState): number => 
+  state.game.guesses.length; // Total guesses including reveal cost
 
 export const selectGameStatus = (state: RootState): GameState['status'] =>
   state.game.status;

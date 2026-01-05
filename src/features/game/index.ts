@@ -1,7 +1,9 @@
-export { gameReducer, initializeGame, makeGuess } from './gameSlice';
+export { gameReducer, initializeGame, revealFunfact, makeGuess } from './gameSlice';
 export {
   selectEmployeeOfTheDayId,
+  selectFunfactRevealed,
   selectGuesses,
+  selectTotalGuesses,
   selectGameStatus,
   selectCanGuess,
   selectHasAttemptedToday,

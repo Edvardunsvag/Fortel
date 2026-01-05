@@ -69,6 +69,7 @@ export const GuessList = ({ guesses }: GuessListProps) => {
   };
 
 
+  // Show all hints (Classic mode)
   return (
     <div className={styles.container}>
       <div className={styles.tableWrapper}>

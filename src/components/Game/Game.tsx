@@ -77,6 +77,7 @@ export const Game = () => {
   
   const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
   
+  
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);
 

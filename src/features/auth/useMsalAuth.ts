@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useAppDispatch } from '@/app/hooks';
-import { setAccount, setAccessToken, clearAuth } from './authSlice';
+import { setAccount, setAccessToken, clearAuth, toSerializableAccount } from './authSlice';
 import { loginRequest } from '@/shared/config/msalConfig';
 
 /**
@@ -15,7 +15,9 @@ export const useMsalAuth = () => {
   useEffect(() => {
     if (accounts.length > 0) {
       const account = accounts[0];
-      dispatch(setAccount(account));
+      // Convert to serializable format before dispatching to avoid non-serializable Map in action payload
+      const serializableAccount = toSerializableAccount(account);
+      dispatch(setAccount(serializableAccount));
 
       // Get access token silently
       instance

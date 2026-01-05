@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { setActiveTab, selectActiveTab, ActiveTab } from '@/features/navigation';
 import { selectAccount } from '@/features/auth';
+import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
 import { SidebarItem } from './SidebarItem';
 import { LanguageToggle } from '../LanguageToggle/LanguageToggle';
 import { LoginButton } from '../LoginButton/LoginButton';
@@ -13,6 +14,7 @@ export const Sidebar = () => {
   const dispatch = useAppDispatch();
   const activeTab = useAppSelector(selectActiveTab);
   const account = useAppSelector(selectAccount);
+  const isAdmin = account?.username === ADMIN_ACCOUNT;
 
   const handleTabClick = (tab: ActiveTab) => {
     dispatch(setActiveTab(tab));
@@ -74,14 +76,16 @@ export const Sidebar = () => {
           onTabClick={handleTabClick}
           onKeyDown={handleKeyDown}
         />
-        <SidebarItem
-          tab={ActiveTab.Sync}
-          icon="🔄"
-          label={t('sidebar.sync')}
-          activeTab={activeTab}
-          onTabClick={handleTabClick}
-          onKeyDown={handleKeyDown}
-        />
+        {isAdmin && (
+          <SidebarItem
+            tab={ActiveTab.Sync}
+            icon="🔄"
+            label={t('sidebar.sync')}
+            activeTab={activeTab}
+            onTabClick={handleTabClick}
+            onKeyDown={handleKeyDown}
+          />
+        )}
       </ul>
       <div className={styles.adminContainer}>
         <AdminButton />

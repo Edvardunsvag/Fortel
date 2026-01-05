@@ -12,7 +12,8 @@ import { loadEmployees, selectEmployees, selectEmployeesStatus } from './feature
 import { ActiveTab, selectActiveTab } from './features/navigation';
 import { useI18nSync } from './features/i18n/useI18nSync';
 import { useMsalAuth } from './features/auth/useMsalAuth';
-import { selectIsAuthenticated } from './features/auth';
+import { selectIsAuthenticated, selectAccount } from './features/auth';
+import { ADMIN_ACCOUNT } from './shared/config/adminConfig';
 import { AsyncStatus } from './shared/redux/enums';
 
 export const App = () => {
@@ -21,6 +22,8 @@ export const App = () => {
   const employees = useAppSelector(selectEmployees);
   const employeesStatus = useAppSelector(selectEmployeesStatus);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const account = useAppSelector(selectAccount);
+  const isAdmin = account?.username === ADMIN_ACCOUNT;
   
   // Sync i18n with Redux language state
   useI18nSync();
@@ -52,6 +55,10 @@ export const App = () => {
       case ActiveTab.Rules:
         return <Rules />;
       case ActiveTab.Sync:
+        // Only allow admin to access sync page
+        if (!isAdmin) {
+          return <Play />;
+        }
         return <Sync />;
       case ActiveTab.Employees:
         return <Employees />;

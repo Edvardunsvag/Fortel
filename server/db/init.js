@@ -113,6 +113,13 @@ export const initDatabase = async () => {
     `);
 
     console.log('Database initialized successfully');
+    
+    // Run migrations after schema is ready
+    client.release(); // Release before running migrations (they'll get their own connection)
+    
+    // Import and run migrations
+    const { runMigrations } = await import('./migrations.js');
+    await runMigrations();
   } catch (error) {
     console.error('Error initializing database:', error);
     console.error('Error details:', {
@@ -124,8 +131,6 @@ export const initDatabase = async () => {
       user: process.env.DB_USER,
     });
     throw error;
-  } finally {
-    client.release();
   }
 };
 

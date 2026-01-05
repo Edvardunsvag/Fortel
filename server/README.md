@@ -65,6 +65,46 @@ npm start
 
 The server will run on `http://localhost:3001` by default.
 
+## Database Migrations
+
+Migrations are automatically run when the server starts. The system:
+- Tracks which migrations have been executed in a `migrations` table
+- Only runs new migration files (those starting with `migrate_` and ending with `.sql`)
+- Runs migrations in alphabetical order
+
+### Migration Files
+
+Place migration files in the `db/` directory with the naming pattern:
+- `migrate_YYYYMMDD_description.sql` (e.g., `migrate_20240115_add_new_column.sql`)
+
+This ensures migrations run in chronological order.
+
+### Manual Migration
+
+To run migrations manually (useful for debugging):
+```bash
+npm run migrate
+```
+
+### Mark Existing Migrations as Executed
+
+If you have migrations that were run before this system was implemented, you can mark them as already executed:
+
+```bash
+# Mark a specific migration as already executed
+node -e "import('./db/migrations.js').then(m => m.markMigrationAsExecuted('migrate_skills_to_teams.sql'))"
+```
+
+This prevents the system from trying to run them again.
+
+### How It Works
+
+1. When the server starts, `initDatabase()` is called
+2. After creating base tables, migrations are automatically executed
+3. Each migration file is checked against the `migrations` table
+4. Only new migrations are executed
+5. All executed migrations are logged in the `migrations` table
+
 ## API Endpoints
 
 ### POST /api/sync

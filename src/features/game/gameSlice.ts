@@ -3,7 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/app/store';
 import type { Employee } from '@/features/employees';
 import type { GameState, Guess } from './types';
-import { HintType, HintResult } from './types';
+import { HintType, HintResult, GameMode } from './types';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
 
 const getTodayDateString = (): string => {
@@ -11,7 +11,9 @@ const getTodayDateString = (): string => {
 };
 
 const initialState: GameState = {
-  employeeOfTheDayId: null,
+  mode: null,
+  classicEmployeeOfTheDayId: null,
+  funfactEmployeeOfTheDayId: null,
   guesses: [],
   status: 'idle',
   maxGuesses: 6,
@@ -121,33 +123,50 @@ const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    initializeGame: (state, action: PayloadAction<string>) => {
+    selectMode: (state, action: PayloadAction<GameMode>) => {
+      const today = getTodayDateString();
+      
+      // Reset game if it's a new day or if switching modes
+      if (state.currentDate !== today || state.mode !== action.payload) {
+        if (state.currentDate !== today) {
+          state.currentDate = today;
+          state.attemptedByUserId = null;
+          state.attemptDate = null;
+        }
+        state.guesses = [];
+        state.status = 'playing';
+      }
+      
+      state.mode = action.payload;
+    },
+    initializeEmployees: (
+      state,
+      action: PayloadAction<{ classicEmployeeId: string; funfactEmployeeId: string }>
+    ) => {
       const today = getTodayDateString();
       
       // Reset game if it's a new day
       if (state.currentDate !== today) {
         state.currentDate = today;
         state.guesses = [];
-        state.status = 'playing';
+        state.status = 'idle';
         state.attemptedByUserId = null;
         state.attemptDate = null;
-      } else if (state.status === 'idle') {
-        state.status = 'playing';
       }
       
-      // Store hashed employee ID (action.payload is the plain employee ID)
-      const hashedId = hashEmployeeId(action.payload, today);
-      state.employeeOfTheDayId = hashedId;
+      // Store hashed employee IDs
+      state.classicEmployeeOfTheDayId = hashEmployeeId(action.payload.classicEmployeeId, today);
+      state.funfactEmployeeOfTheDayId = hashEmployeeId(action.payload.funfactEmployeeId, today);
     },
     makeGuess: (
       state,
-      action: PayloadAction<{ guessed: Employee; target: Employee; userId?: string | null }>
+      action: PayloadAction<{ guessed: Employee; target: Employee; userId?: string | null; mode: GameMode }>
     ) => {
       if (state.status !== 'playing') {
         return;
       }
 
-      const { guessed, target, userId } = action.payload;
+      const { guessed, target, userId, mode } = action.payload;
       const isCorrect = guessed.id === target.id;
       const hints = calculateHints(guessed, target);
 
@@ -157,6 +176,7 @@ const gameSlice = createSlice({
         avatarImageUrl: guessed.avatarImageUrl,
         hints,
         isCorrect,
+        funfact: mode === GameMode.FunFact ? guessed.funfact || null : undefined,
       };
 
       state.guesses.push(guess);
@@ -175,10 +195,26 @@ const gameSlice = createSlice({
   },
 });
 
-export const { initializeGame, makeGuess } = gameSlice.actions;
+export const { selectMode, initializeEmployees, makeGuess } = gameSlice.actions;
 
-export const selectEmployeeOfTheDayId = (state: RootState): string | null =>
-  state.game.employeeOfTheDayId;
+export const selectGameMode = (state: RootState): GameMode | null => state.game.mode;
+
+export const selectClassicEmployeeOfTheDayId = (state: RootState): string | null =>
+  state.game.classicEmployeeOfTheDayId;
+
+export const selectFunfactEmployeeOfTheDayId = (state: RootState): string | null =>
+  state.game.funfactEmployeeOfTheDayId;
+
+export const selectEmployeeOfTheDayId = (state: RootState): string | null => {
+  const mode = state.game.mode;
+  if (mode === GameMode.Classic) {
+    return state.game.classicEmployeeOfTheDayId;
+  }
+  if (mode === GameMode.FunFact) {
+    return state.game.funfactEmployeeOfTheDayId;
+  }
+  return null;
+};
 
 export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
 

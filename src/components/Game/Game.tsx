@@ -9,12 +9,17 @@ import {
   type Employee,
 } from '@/features/employees';
 import {
-  initializeGame,
+  selectMode,
+  initializeEmployees,
   makeGuess,
+  selectGameMode,
   selectEmployeeOfTheDayId,
+  selectClassicEmployeeOfTheDayId,
+  selectFunfactEmployeeOfTheDayId,
   selectGuesses,
   selectGameStatus,
   selectCanGuess,
+  GameMode,
 } from '@/features/game';
 import { selectAccount } from '@/features/auth';
 import { submitScore, fetchLeaderboard, selectLeaderboard } from '@/features/leaderboard';
@@ -26,6 +31,7 @@ import { hashEmployeeId, findEmployeeByHash } from '@/shared/utils/hashUtils';
 import { GuessInput } from './GuessInput';
 import { GuessList } from './GuessList';
 import { GameStatus } from './GameStatus';
+import { GameModeSelection } from './GameModeSelection';
 import styles from './Game.module.scss';
 import pageStyles from '../Pages/Pages.module.scss';
 
@@ -34,6 +40,9 @@ export const Game = () => {
   const dispatch = useAppDispatch();
   const employees = useAppSelector(selectEmployees);
   const employeesStatus = useAppSelector(selectEmployeesStatus);
+  const gameMode = useAppSelector(selectGameMode);
+  const classicEmployeeOfTheDayId = useAppSelector(selectClassicEmployeeOfTheDayId);
+  const funfactEmployeeOfTheDayId = useAppSelector(selectFunfactEmployeeOfTheDayId);
   const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
   const guesses = useAppSelector(selectGuesses);
   const gameStatus = useAppSelector(selectGameStatus);
@@ -91,28 +100,46 @@ export const Game = () => {
     if (employeesStatus === AsyncStatus.Succeeded && employees.length > 0) {
       const today = getTodayDateString();
       
-      // Check if we need to initialize or re-initialize
-      const needsInitialization = !employeeOfTheDayId;
+      // Check if we need to initialize both employees
+      const needsInitialization = !classicEmployeeOfTheDayId || !funfactEmployeeOfTheDayId;
       
-      // Check if the current employee of the day still exists in the list
-      // Compare by hashing each employee ID with today's date
-      const currentEmployeeExists = employeeOfTheDayId 
-        ? employees.some(emp => hashEmployeeId(emp.id, today) === employeeOfTheDayId)
+      // Check if the current employees still exist in the list
+      const classicEmployeeExists = classicEmployeeOfTheDayId 
+        ? employees.some(emp => hashEmployeeId(emp.id, today) === classicEmployeeOfTheDayId)
+        : false;
+      const funfactEmployeeExists = funfactEmployeeOfTheDayId 
+        ? employees.some(emp => hashEmployeeId(emp.id, today) === funfactEmployeeOfTheDayId)
         : false;
       
-      if (needsInitialization || !currentEmployeeExists) {
-        // Select a deterministic employee for the day based on the date
-        // This ensures everyone gets the same employee on the same day
-        const seed = getDateSeed(today);
-        const index = selectIndexBySeed(seed, employees.length);
-        const selectedEmployee = employees[index];
+      if (needsInitialization || !classicEmployeeExists || !funfactEmployeeExists) {
+        // Select deterministic employees for the day based on the date
+        // Use different seeds to ensure different employees for classic and funfact modes
+        const todaySeed = getDateSeed(today);
+        const classicSeed = todaySeed;
+        // Use a different seed calculation for funfact to ensure different employee
+        // Multiply by a prime number and add offset to ensure different result
+        const funfactSeed = (todaySeed * 31 + 17) % (employees.length * 2);
         
-        if (selectedEmployee) {
-          dispatch(initializeGame(selectedEmployee.id));
+        const classicIndex = selectIndexBySeed(classicSeed, employees.length);
+        let funfactIndex = selectIndexBySeed(funfactSeed, employees.length);
+        
+        // Ensure funfact employee is different from classic employee
+        if (funfactIndex === classicIndex && employees.length > 1) {
+          funfactIndex = (funfactIndex + 1) % employees.length;
+        }
+        
+        const classicEmployee = employees[classicIndex];
+        const funfactEmployee = employees[funfactIndex];
+        
+        if (classicEmployee && funfactEmployee) {
+          dispatch(initializeEmployees({
+            classicEmployeeId: classicEmployee.id,
+            funfactEmployeeId: funfactEmployee.id,
+          }));
         }
       }
     }
-  }, [dispatch, employeesStatus, employees, employeeOfTheDayId]);
+  }, [dispatch, employeesStatus, employees, classicEmployeeOfTheDayId, funfactEmployeeOfTheDayId]);
 
   // Automatically submit score when game is won
   useEffect(() => {
@@ -217,8 +244,8 @@ export const Game = () => {
   }, [gameStatus, guesses.length]);
 
   const handleGuess = (employeeId: string) => {
-    if (!canGuess || !employeeOfTheDayId) {
-      console.warn('Cannot guess:', { canGuess, employeeOfTheDayId });
+    if (!canGuess || !employeeOfTheDayId || !gameMode) {
+      console.warn('Cannot guess:', { canGuess, employeeOfTheDayId, gameMode });
       return;
     }
 
@@ -238,8 +265,8 @@ export const Game = () => {
       return;
     }
 
-    console.log('Making guess:', { guessed: guessedEmployee.name, target: targetEmployee.name });
-    dispatch(makeGuess({ guessed: guessedEmployee, target: targetEmployee, userId }));
+    console.log('Making guess:', { guessed: guessedEmployee.name, target: targetEmployee.name, mode: gameMode });
+    dispatch(makeGuess({ guessed: guessedEmployee, target: targetEmployee, userId, mode: gameMode }));
     setInputValue('');
   };
 
@@ -269,6 +296,11 @@ export const Game = () => {
     );
   }
 
+  // Show mode selection if no mode is selected
+  if (!gameMode) {
+    return <GameModeSelection />;
+  }
+
   if (!employeeOfTheDayId) {
     return (
       <div className={pageStyles.container}>
@@ -277,17 +309,38 @@ export const Game = () => {
     );
   }
 
+  // Get target employee's funfact for FunFact mode
+  const targetFunfact = gameMode === GameMode.FunFact && employeeOfTheDayId
+    ? (() => {
+        const today = getTodayDateString();
+        const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today);
+        return targetEmployee?.funfact || null;
+      })()
+    : null;
+
   return (
     <div className={pageStyles.container}>
       <h1 className={pageStyles.title}>{t('game.title')}</h1>
       <div className={styles.headerInfo}>
-        <p className={pageStyles.subtitle}>{t('game.subtitle')}</p>
+        <p className={pageStyles.subtitle}>
+          {gameMode === GameMode.FunFact 
+            ? t('game.modeSelection.funfact.description')
+            : t('game.subtitle')
+          }
+        </p>
         {gameStatus === 'playing' && (
           <div className={styles.guessCountBadge}>
             {t('game.guesses')}: <strong>{guesses.length}</strong>
           </div>
         )}
       </div>
+
+      {gameMode === GameMode.FunFact && targetFunfact && (
+        <div className={styles.funfactClueContainer}>
+          <h3 className={styles.funfactClueTitle}>{t('guessList.funfactClue')}</h3>
+          <p className={styles.funfactClueText}>{targetFunfact}</p>
+        </div>
+      )}
 
       <div className={pageStyles.content}>
         {((gameStatus === 'won' && showStatusMessage) || gameStatus === 'lost') && (

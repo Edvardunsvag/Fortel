@@ -20,7 +20,20 @@
     "guess": "guess",
     "guesses_plural": "guesses",
     "alreadyAttempted": "You have already made your attempt today. Come back tomorrow for a new challenge!",
-    "comeBackTomorrow": "Come back tomorrow!"
+    "comeBackTomorrow": "Come back tomorrow!",
+    "modeSelection": {
+      "subtitle": "Guess Forte Digital employees.",
+      "classic": {
+        "title": "Classic",
+        "description": "Get clues on every try.",
+        "ariaLabel": "Select Classic mode"
+      },
+      "funfact": {
+        "title": "FunFact",
+        "description": "Guess with employee fun facts.",
+        "ariaLabel": "Select FunFact mode"
+      }
+    }
   },
   "gameStatus": {
     "congratulations": "Congratulations!",
@@ -71,7 +84,10 @@
     "office": "Office",
     "teams": "Teams",
     "age": "Age",
-    "supervisor": "Supervisor"
+    "supervisor": "Supervisor",
+    "funfact": "Fun Fact",
+    "funfactClue": "Today's Fun Fact",
+    "noFunfact": "No fun fact"
   },
   "hintDisplay": {
     "department": "Department",

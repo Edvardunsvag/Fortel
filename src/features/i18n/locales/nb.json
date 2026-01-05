@@ -20,7 +20,20 @@
     "guess": "gjetning",
     "guesses_plural": "gjetninger",
     "alreadyAttempted": "Du har allerede gjort ditt forsøk i dag. Kom tilbake i morgen for en ny utfordring!",
-    "comeBackTomorrow": "Kom tilbake i morgen!"
+    "comeBackTomorrow": "Kom tilbake i morgen!",
+    "modeSelection": {
+      "subtitle": "Gjett Forte Digital ansatte.",
+      "classic": {
+        "title": "Klassisk",
+        "description": "Få hint ved hvert forsøk.",
+        "ariaLabel": "Velg Klassisk modus"
+      },
+      "funfact": {
+        "title": "MorsomtFaktum",
+        "description": "Gjett med ansattes morsomme fakta.",
+        "ariaLabel": "Velg MorsomtFaktum modus"
+      }
+    }
   },
   "gameStatus": {
     "congratulations": "Gratulerer!",
@@ -71,7 +84,10 @@
     "office": "Kontor",
     "teams": "Team",
     "age": "Alder",
-    "supervisor": "Leder"
+    "supervisor": "Leder",
+    "funfact": "Morsomt Fakta",
+    "funfactClue": "Dagens Morsomme Fakta",
+    "noFunfact": "Ingen morsomt fakta"
   },
   "hintDisplay": {
     "department": "Avdeling",

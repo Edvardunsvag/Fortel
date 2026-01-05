@@ -16,6 +16,11 @@ export enum HintResult {
   Equal = 'equal',
 }
 
+export enum GameMode {
+  Classic = 'classic',
+  FunFact = 'funfact',
+}
+
 export interface GuessHint {
   type: HintType;
   result: HintResult;
@@ -28,10 +33,13 @@ export interface Guess {
   avatarImageUrl?: string;
   hints: GuessHint[];
   isCorrect: boolean;
+  funfact?: string | null; // Funfact of the guessed employee (for FunFact mode)
 }
 
 export interface GameState {
-  employeeOfTheDayId: string | null;
+  mode: GameMode | null; // Selected game mode
+  classicEmployeeOfTheDayId: string | null; // Hashed ID for classic mode
+  funfactEmployeeOfTheDayId: string | null; // Hashed ID for funfact mode
   guesses: Guess[];
   status: 'idle' | 'playing' | 'won' | 'lost';
   maxGuesses: number;

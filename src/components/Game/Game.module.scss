@@ -84,6 +84,30 @@
   }
 }
 
+.funfactClueContainer {
+  background-color: $color-overlay-beige;
+  border: 2px solid $color-dark-accent;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin: $spacing-lg 0;
+  text-align: center;
+}
+
+.funfactClueTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-md 0;
+}
+
+.funfactClueText {
+  font-size: 1rem;
+  color: $color-dark-fill;
+  margin: 0;
+  line-height: 1.6;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .title {
     font-size: 2rem;

@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/app/store';
 import type { Employee } from '@/features/employees';
 import type { GameState, Guess } from './types';
-import { HintType, HintResult, GameMode } from './types';
+import { HintType, HintResult } from './types';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
 
 const getTodayDateString = (): string => {
@@ -11,15 +11,14 @@ const getTodayDateString = (): string => {
 };
 
 const initialState: GameState = {
-  mode: null,
-  classicEmployeeOfTheDayId: null,
-  funfactEmployeeOfTheDayId: null,
+  employeeOfTheDayId: null,
   guesses: [],
   status: 'idle',
   maxGuesses: 6,
   currentDate: getTodayDateString(),
   attemptedByUserId: null,
   attemptDate: null,
+  funfactRevealed: false,
 };
 
 const calculateHints = (
@@ -123,50 +122,51 @@ const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    selectMode: (state, action: PayloadAction<GameMode>) => {
-      const today = getTodayDateString();
-      
-      // Reset game if it's a new day or if switching modes
-      if (state.currentDate !== today || state.mode !== action.payload) {
-        if (state.currentDate !== today) {
-          state.currentDate = today;
-          state.attemptedByUserId = null;
-          state.attemptDate = null;
-        }
-        state.guesses = [];
-        state.status = 'playing';
-      }
-      
-      state.mode = action.payload;
-    },
-    initializeEmployees: (
-      state,
-      action: PayloadAction<{ classicEmployeeId: string; funfactEmployeeId: string }>
-    ) => {
+    initializeGame: (state, action: PayloadAction<string>) => {
       const today = getTodayDateString();
       
       // Reset game if it's a new day
       if (state.currentDate !== today) {
         state.currentDate = today;
         state.guesses = [];
-        state.status = 'idle';
+        state.status = 'playing';
         state.attemptedByUserId = null;
         state.attemptDate = null;
+        state.funfactRevealed = false;
+      } else if (state.status === 'idle') {
+        state.status = 'playing';
       }
       
-      // Store hashed employee IDs
-      state.classicEmployeeOfTheDayId = hashEmployeeId(action.payload.classicEmployeeId, today);
-      state.funfactEmployeeOfTheDayId = hashEmployeeId(action.payload.funfactEmployeeId, today);
+      // Store hashed employee ID
+      const hashedId = hashEmployeeId(action.payload, today);
+      state.employeeOfTheDayId = hashedId;
+    },
+    revealFunfact: (state) => {
+      if (state.status !== 'playing' || state.funfactRevealed) {
+        return;
+      }
+      
+      // Cost 2 guesses - add two dummy guess entries
+      const dummyGuess: Guess = {
+        employeeId: '',
+        employeeName: '',
+        hints: [],
+        isCorrect: false,
+      };
+      
+      state.guesses.push(dummyGuess);
+      state.guesses.push(dummyGuess);
+      state.funfactRevealed = true;
     },
     makeGuess: (
       state,
-      action: PayloadAction<{ guessed: Employee; target: Employee; userId?: string | null; mode: GameMode }>
+      action: PayloadAction<{ guessed: Employee; target: Employee; userId?: string | null }>
     ) => {
       if (state.status !== 'playing') {
         return;
       }
 
-      const { guessed, target, userId, mode } = action.payload;
+      const { guessed, target, userId } = action.payload;
       const isCorrect = guessed.id === target.id;
       const hints = calculateHints(guessed, target);
 
@@ -176,7 +176,6 @@ const gameSlice = createSlice({
         avatarImageUrl: guessed.avatarImageUrl,
         hints,
         isCorrect,
-        funfact: mode === GameMode.FunFact ? guessed.funfact || null : undefined,
       };
 
       state.guesses.push(guess);
@@ -195,28 +194,23 @@ const gameSlice = createSlice({
   },
 });
 
-export const { selectMode, initializeEmployees, makeGuess } = gameSlice.actions;
+export const { initializeGame, revealFunfact, makeGuess } = gameSlice.actions;
 
-export const selectGameMode = (state: RootState): GameMode | null => state.game.mode;
+export const selectEmployeeOfTheDayId = (state: RootState): string | null =>
+  state.game.employeeOfTheDayId;
 
-export const selectClassicEmployeeOfTheDayId = (state: RootState): string | null =>
-  state.game.classicEmployeeOfTheDayId;
+export const selectFunfactRevealed = (state: RootState): boolean =>
+  state.game.funfactRevealed;
 
-export const selectFunfactEmployeeOfTheDayId = (state: RootState): string | null =>
-  state.game.funfactEmployeeOfTheDayId;
+const selectAllGuesses = (state: RootState): Guess[] => state.game.guesses;
 
-export const selectEmployeeOfTheDayId = (state: RootState): string | null => {
-  const mode = state.game.mode;
-  if (mode === GameMode.Classic) {
-    return state.game.classicEmployeeOfTheDayId;
-  }
-  if (mode === GameMode.FunFact) {
-    return state.game.funfactEmployeeOfTheDayId;
-  }
-  return null;
-};
+export const selectGuesses = createSelector(
+  [selectAllGuesses],
+  (guesses): Guess[] => guesses.filter(guess => guess.employeeId !== '') // Filter out dummy guesses from revealFunfact
+);
 
-export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
+export const selectTotalGuesses = (state: RootState): number => 
+  state.game.guesses.length; // Total guesses including reveal cost
 
 export const selectGameStatus = (state: RootState): GameState['status'] =>
   state.game.status;

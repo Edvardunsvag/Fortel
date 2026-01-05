@@ -6,6 +6,9 @@
     "employees": "Employees",
     "sync": "Sync"
   },
+  "admin": {
+    "changeEmployee": "Change today's employee"
+  },
   "game": {
     "title": "Fortedle",
     "subtitle": "Guess the employee of the day!",
@@ -21,6 +24,10 @@
     "guesses_plural": "guesses",
     "alreadyAttempted": "You have already made your attempt today. Come back tomorrow for a new challenge!",
     "comeBackTomorrow": "Come back tomorrow!",
+    "revealFunfact": "Show funfact and interests",
+    "costsTwoGuesses": "costs +2 guesses",
+    "buyInterests": "Buy interests (+2)",
+    "noFunfactOrInterests": "Oh no! Today's employee had nothing in Huma. What a shame!",
     "modeSelection": {
       "subtitle": "Guess Forte Digital employees.",
       "classic": {
@@ -67,6 +74,8 @@
     "ageDescription": "Whether the guessed employee is older, younger, or the same age",
     "supervisor": "Supervisor",
     "supervisorDescription": "Whether the guessed employee has the same supervisor",
+    "buyInterests": "Buy Interests",
+    "buyInterestsDescription": "During the game, you can buy interests and fun facts for today's employee. This costs +2 guesses, but gives you extra hints that can help you find the correct employee.",
     "colorLegend": "Color Legend",
     "winning": "Winning",
     "winningDescription": "Win by correctly guessing the employee. The employee of the day changes daily, so come back tomorrow for a new challenge!"
@@ -87,7 +96,8 @@
     "supervisor": "Supervisor",
     "funfact": "Fun Fact",
     "funfactClue": "Today's Fun Fact",
-    "noFunfact": "No fun fact"
+    "noFunfact": "No fun fact",
+    "interests": "Interests"
   },
   "hintDisplay": {
     "department": "Department",
@@ -120,6 +130,8 @@
     "alreadySynced": "Database is already synced. No action needed.",
     "syncing": "Syncing...",
     "syncData": "Sync Data",
+    "syncAnyway": "Sync Anyway",
+    "syncWithMsal": "Sync with MSAL",
     "howToGetToken": "How to get your token:",
     "step1": "1. Open Developer Tools (F12)",
     "step2": "2. Go to Application → Local Storage → https://fortedigital.humahr.com",

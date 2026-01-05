@@ -5,8 +5,7 @@ import { syncEmployeesData, selectEmployeesStatus, selectEmployees } from '@/fea
 import { AsyncStatus } from '@/shared/redux/enums';
 import styles from './Pages.module.scss';
 import { selectAccount } from '@/features/auth';
-
-const ADMIN_ACCOUNT = 'edvard.unsvag@fortedigital.com';
+import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
 
 export const Sync = () => {
   const { t } = useTranslation();
@@ -36,7 +35,7 @@ export const Sync = () => {
     const accessToken = tokenInput.trim();
 
     try {
-      const result = await dispatch(syncEmployeesData(accessToken));
+      const result = await dispatch(syncEmployeesData({ accessToken }));
       
       if (syncEmployeesData.fulfilled.match(result)) {
         if (result.payload.alreadySynced) {

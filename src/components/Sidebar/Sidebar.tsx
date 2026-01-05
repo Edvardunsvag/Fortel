@@ -5,6 +5,7 @@ import { selectAccount } from '@/features/auth';
 import { SidebarItem } from './SidebarItem';
 import { LanguageToggle } from '../LanguageToggle/LanguageToggle';
 import { LoginButton } from '../LoginButton/LoginButton';
+import { AdminButton } from '../AdminButton/AdminButton';
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = () => {
@@ -82,6 +83,9 @@ export const Sidebar = () => {
           onKeyDown={handleKeyDown}
         />
       </ul>
+      <div className={styles.adminContainer}>
+        <AdminButton />
+      </div>
       <div className={styles.authContainer}>
         <LanguageToggle />
       </div>

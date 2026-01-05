@@ -32,6 +32,13 @@ export const Rules = () => {
           </section>
 
           <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>{t('rules.buyInterests')}</h2>
+            <p className={styles.text}>
+              {t('rules.buyInterestsDescription')}
+            </p>
+          </section>
+
+          <section className={styles.section}>
             <h2 className={styles.sectionTitle}>{t('rules.colorLegend')}</h2>
             <ColorLegend />
           </section>

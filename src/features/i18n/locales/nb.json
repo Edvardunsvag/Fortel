@@ -6,6 +6,9 @@
     "employees": "Ansatte",
     "sync": "Synkroniser"
   },
+  "admin": {
+    "changeEmployee": "Bytt dagens ansatt"
+  },
   "game": {
     "title": "Fortedle",
     "subtitle": "Gjett dagens ansatt!",
@@ -21,6 +24,10 @@
     "guesses_plural": "gjetninger",
     "alreadyAttempted": "Du har allerede gjort ditt forsøk i dag. Kom tilbake i morgen for en ny utfordring!",
     "comeBackTomorrow": "Kom tilbake i morgen!",
+    "revealFunfact": "Vis personen sin funfact og interesser",
+    "costsTwoGuesses": "koster +2 gjettinger",
+    "buyInterests": "Kjøp interesser (+2)",
+    "noFunfactOrInterests": "Aiai! Dagens ansatt hadde visst ingenting i Huma. Uffameg, det var leit!",
     "modeSelection": {
       "subtitle": "Gjett Forte Digital ansatte.",
       "classic": {
@@ -67,6 +74,8 @@
     "ageDescription": "Om den gjettede ansatten er eldre, yngre eller samme alder",
     "supervisor": "Leder",
     "supervisorDescription": "Om den gjettede ansatten har samme leder",
+    "buyInterests": "Kjøp interesser",
+    "buyInterestsDescription": "Under spillet kan du kjøpe interesser og fun facts for dagens ansatt. Dette koster +2 gjetninger, men gir deg ekstra hint som kan hjelpe deg med å finne den riktige ansatten.",
     "colorLegend": "Fargeforklaring",
     "winning": "Vinner",
     "winningDescription": "Vinn ved å gjette riktig ansatt. Dagens ansatt endres daglig, så kom tilbake i morgen for en ny utfordring!"
@@ -86,8 +95,9 @@
     "age": "Alder",
     "supervisor": "Leder",
     "funfact": "Morsomt Fakta",
-    "funfactClue": "Dagens Morsomme Fakta",
-    "noFunfact": "Ingen morsomt fakta"
+    "funfactClue": "Fun fact",
+    "noFunfact": "Ingen morsomt fakta",
+    "interests": "Interesser"
   },
   "hintDisplay": {
     "department": "Avdeling",
@@ -120,6 +130,8 @@
     "alreadySynced": "Databasen er allerede synkronisert. Ingen handling nødvendig.",
     "syncing": "Synkroniserer...",
     "syncData": "Synkroniser data",
+    "syncAnyway": "Synkroniser likevel",
+    "syncWithMsal": "Synkroniser med MSAL",
     "howToGetToken": "Hvordan få din token:",
     "step1": "1. Åpne Utviklerverktøy (F12)",
     "step2": "2. Gå til Application → Local Storage → https://fortedigital.humahr.com",

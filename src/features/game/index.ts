@@ -1,14 +1,13 @@
-export { gameReducer, selectMode, initializeEmployees, makeGuess } from './gameSlice';
+export { gameReducer, initializeGame, revealFunfact, makeGuess } from './gameSlice';
 export {
-  selectGameMode,
-  selectClassicEmployeeOfTheDayId,
-  selectFunfactEmployeeOfTheDayId,
   selectEmployeeOfTheDayId,
+  selectFunfactRevealed,
   selectGuesses,
+  selectTotalGuesses,
   selectGameStatus,
   selectCanGuess,
   selectHasAttemptedToday,
 } from './gameSlice';
-export { HintType, HintResult, GameMode } from './types';
+export { HintType, HintResult } from './types';
 export type { GameState, Guess, GuessHint } from './types';
 

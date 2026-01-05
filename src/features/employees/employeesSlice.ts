@@ -27,13 +27,12 @@ export const loadEmployees = createAppAsyncThunk(
 
 export const syncEmployeesData = createAppAsyncThunk(
   'employees/syncEmployeesData',
-  async (accessToken: string, { rejectWithValue, dispatch }) => {
+  async (payload: { accessToken: string }, { rejectWithValue, dispatch }) => {
     try {
+      const { accessToken } = payload;
       const result = await syncEmployees(accessToken);
-      // After successful sync, reload employees (unless already synced)
-      if (!result.alreadySynced) {
-        await dispatch(loadEmployees());
-      }
+      // After successful sync, reload employees
+      await dispatch(loadEmployees());
       return result;
     } catch (error) {
       return rejectWithValue(

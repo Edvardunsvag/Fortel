@@ -95,6 +95,13 @@
   flex: 1;
 }
 
+.adminContainer {
+  position: absolute;
+  bottom: 9rem;
+  left: $spacing-lg;
+  right: $spacing-lg;
+}
+
 .authContainer {
   position: absolute;
   bottom: 6rem;
@@ -137,6 +144,12 @@
 
   .label {
     display: none;
+  }
+
+  .adminContainer {
+    left: $spacing-md;
+    right: $spacing-md;
+    bottom: 8rem;
   }
 
   .authContainer {

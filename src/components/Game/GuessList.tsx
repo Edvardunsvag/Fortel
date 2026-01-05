@@ -1,11 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/app/hooks';
 import type { Guess } from '@/features/game';
-import { HintType, HintResult, selectGameMode, GameMode, selectEmployeeOfTheDayId } from '@/features/game';
-import { selectEmployees } from '@/features/employees';
-import { getTodayDateString } from '@/shared/utils/dateUtils';
-import { findEmployeeByHash } from '@/shared/utils/hashUtils';
+import { HintType, HintResult } from '@/features/game';
 import { FlipBox } from './FlipBox';
 import styles from './GuessList.module.scss';
 
@@ -15,22 +11,10 @@ interface GuessListProps {
 
 export const GuessList = ({ guesses }: GuessListProps) => {
   const { t } = useTranslation();
-  const gameMode = useAppSelector(selectGameMode);
-  const employees = useAppSelector(selectEmployees);
-  const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
   const [animatedGuesses, setAnimatedGuesses] = useState<Set<number>>(new Set());
   const previousLengthRef = useRef<number>(0);
   const initialLengthRef = useRef<number>(0);
   const isInitializedRef = useRef<boolean>(false);
-
-  // Get target employee's funfact for FunFact mode
-  const targetFunfact = gameMode === GameMode.FunFact && employeeOfTheDayId
-    ? (() => {
-        const today = getTodayDateString();
-        const targetEmployee = findEmployeeByHash(employees, employeeOfTheDayId, today);
-        return targetEmployee?.funfact || null;
-      })()
-    : null;
 
   useEffect(() => {
     // Initialize on mount - if there are existing guesses, mark them as pre-existing
@@ -85,83 +69,7 @@ export const GuessList = ({ guesses }: GuessListProps) => {
   };
 
 
-  // In FunFact mode, show funfact clue and match result
-  if (gameMode === GameMode.FunFact) {
-    return (
-      <div className={styles.container}>
-        {targetFunfact && (
-          <div className={styles.funfactClue}>
-            <h3 className={styles.funfactClueTitle}>{t('guessList.funfactClue')}</h3>
-            <p className={styles.funfactClueText}>{targetFunfact}</p>
-          </div>
-        )}
-        <div className={styles.tableWrapper}>
-          <table className={styles.guessTable}>
-            <thead>
-              <tr>
-                <th className={styles.headerCell}>{t('guessList.employee')}</th>
-                <th className={styles.headerCell}>{t('guessList.funfact')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {guesses.map((guess, guessIndex) => {
-                const isAnimated = animatedGuesses.has(guessIndex);
-                const isPreExisting = guessIndex < initialLengthRef.current;
-                const baseDelay = 400;
-                
-                const getDelay = (boxIndex: number): number => {
-                  if (!isAnimated) return -1;
-                  if (isPreExisting) return 0;
-                  return baseDelay + 400 * boxIndex;
-                };
-
-                // Check if guessed employee's funfact matches target
-                const guessedFunfact = guess.funfact || null;
-                const funfactMatches = targetFunfact && guessedFunfact 
-                  ? guessedFunfact.toLowerCase().trim() === targetFunfact.toLowerCase().trim()
-                  : false;
-                const funfactResult = funfactMatches ? HintResult.Correct : HintResult.Incorrect;
-                const funfactValue = guessedFunfact || t('guessList.noFunfact');
-
-                return (
-                  <tr key={`${guess.employeeId}-${guessIndex}`} className={styles.guessRow}>
-                    <td className={styles.employeeCell}>
-                      <div className={styles.employeeName}>
-                        {guess.avatarImageUrl ? (
-                          <img
-                            src={guess.avatarImageUrl}
-                            alt={guess.employeeName}
-                            className={styles.avatarImage}
-                          />
-                        ) : (
-                          <div className={styles.avatarPlaceholder}>{guess.employeeName}</div>
-                        )}
-                      </div>
-                      {guess.isCorrect && (
-                        <div className={styles.correctBadge} aria-label="Correct guess">
-                          ✓
-                        </div>
-                      )}
-                    </td>
-                    <td className={styles.hintCell}>
-                      <FlipBox
-                        label={t('guessList.funfact')}
-                        value={funfactValue}
-                        result={funfactResult}
-                        delay={getDelay(0)}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-
-  // Classic mode - show all hints
+  // Show all hints (Classic mode)
   return (
     <div className={styles.container}>
       <div className={styles.tableWrapper}>

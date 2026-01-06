@@ -20,7 +20,7 @@ export const GuessList = ({ guesses }: GuessListProps) => {
     // Initialize on mount - if there are existing guesses, mark them as pre-existing
     if (!isInitializedRef.current) {
       if (guesses.length > 0) {
-        // Mark all existing guesses as animated (they should be flipped immediately)
+        // Mark all existing guesses as animated (they will flip with staggered delays)
         setAnimatedGuesses(new Set(guesses.map((_, index) => index)));
         initialLengthRef.current = guesses.length;
       } else {
@@ -29,6 +29,16 @@ export const GuessList = ({ guesses }: GuessListProps) => {
       }
       previousLengthRef.current = guesses.length;
       isInitializedRef.current = true;
+      return;
+    }
+    
+    // Handle case where guesses are loaded from server after initial mount (page refresh)
+    // If guesses go from 0 to multiple, treat them all as pre-existing and animate them
+    if (previousLengthRef.current === 0 && guesses.length > 0) {
+      // All guesses are newly loaded from server - mark them all as animated with staggered delays
+      setAnimatedGuesses(new Set(guesses.map((_, index) => index)));
+      initialLengthRef.current = guesses.length;
+      previousLengthRef.current = guesses.length;
       return;
     }
     
@@ -87,15 +97,19 @@ export const GuessList = ({ guesses }: GuessListProps) => {
           <tbody>
             {guesses.map((guess, guessIndex) => {
               const isAnimated = animatedGuesses.has(guessIndex);
-              // Pre-existing guesses (from before component mount) should flip immediately
+              // Pre-existing guesses (loaded from server on refresh) will flip with staggered delays
               const isPreExisting = guessIndex < initialLengthRef.current;
               const baseDelay = 400; // Base delay in ms
               const delayPerBox = 400; // Delay between each box
               
-              // Calculate delay: 0 for pre-existing guesses, calculated delay for new animated guesses
+              // Calculate delay: all boxes flip simultaneously for pre-existing guesses (loaded from server on refresh),
+              // calculated delay for new guesses added during gameplay
               const getDelay = (boxIndex: number): number => {
                 if (!isAnimated) return -1;
-                if (isPreExisting) return 0; // Flip immediately for existing guesses
+                if (isPreExisting) {
+                  // For pre-existing guesses (loaded from server), all boxes flip at the same time
+                  return 0;
+                }
                 return baseDelay + delayPerBox * boxIndex; // Animate new guesses
               };
 

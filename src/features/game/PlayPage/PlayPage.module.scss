@@ -13,3 +13,12 @@
   }
 }
 
+.container {
+  max-width: 56rem;
+  margin: 0 auto;
+  background-color: $color-primary-beige;
+  border-radius: $radius-lg;
+  padding: $spacing-xxl;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+

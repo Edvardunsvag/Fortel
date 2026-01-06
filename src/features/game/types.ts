@@ -34,7 +34,6 @@ export interface GameState {
   employeeOfTheDayId: string | null; // Hashed ID for the employee of the day
   guesses: Guess[];
   status: 'idle' | 'playing' | 'won' | 'lost';
-  maxGuesses: number;
   currentDate: string; // ISO date string for daily reset
   attemptedByUserId: string | null; // User ID of the user who attempted today
   attemptDate: string | null; // Date when the attempt was made (ISO date string)

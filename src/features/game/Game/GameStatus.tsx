@@ -27,20 +27,7 @@ export const GameStatus = ({ status, guesses, visible = true }: GameStatusProps)
     );
   }
 
-  if (status === 'lost') {
-    return (
-      <div 
-        className={`${styles.status} ${styles.lost} ${visible ? styles.visible : styles.hidden}`} 
-        role="status"
-        aria-live="polite"
-      >
-        <div className={styles.content}>
-          <h2>{t('gameStatus.gameOver')}</h2>
-          <p>{t('gameStatus.usedAllGuesses')}</p>
-        </div>
-      </div>
-    );
-  }
+ 
 
   return (
     <div className={styles.status} role="status">

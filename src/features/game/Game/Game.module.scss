@@ -1,9 +1,10 @@
 @import '../../../shared/styles/variables.scss';
 
 .container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: $spacing-xl $spacing-md;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  // Padding removed since PlayPage container now provides it
 }
 
 .content {
@@ -68,7 +69,6 @@
   font-weight: 500;
   margin: 0;
   color: $color-dark-accent;
-  text-shadow: 2px 2px 4px $color-shadow-medium;
   flex: 1;
 }
 

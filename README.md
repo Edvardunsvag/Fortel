@@ -55,7 +55,7 @@ src/
 ### Game Rules
 
 - One employee of the day (selected deterministically based on date)
-- Maximum 6 guesses per day
+- Unlimited guesses per day
 - Each guess provides hints:
   - **Department**: Correct/Incorrect
   - **Office**: Correct/Incorrect

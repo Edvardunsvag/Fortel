@@ -16,7 +16,7 @@
 .container {
   max-width: 56rem;
   margin: 0 auto;
-  background-color: $color-white;
+  background-color: $color-primary-beige;
   border-radius: $radius-lg;
   padding: $spacing-xxl;
   box-shadow: 0 2px 8px $color-shadow-light;
@@ -28,7 +28,6 @@
   font-weight: 500;
   margin: 0 0 $spacing-sm 0;
   color: $color-dark-accent;
-  text-shadow: 2px 2px 4px $color-shadow-medium;
 }
 
 @media (max-width: 768px) {
@@ -67,7 +66,7 @@
 
 .employeeList {
   flex: 0 0 350px;
-  background-color: $color-white;
+  background-color: $color-primary-beige;
   border-radius: $radius-lg;
   padding: $spacing-xl;
   box-shadow: 0 2px 8px $color-shadow-light;
@@ -156,7 +155,7 @@
 
 .employeeDetails {
   flex: 1;
-  background-color: $color-white;
+  background-color: $color-primary-beige;
   border-radius: $radius-lg;
   padding: $spacing-xxl;
   box-shadow: 0 2px 8px $color-shadow-light;

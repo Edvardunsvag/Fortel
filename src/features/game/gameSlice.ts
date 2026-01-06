@@ -5,6 +5,8 @@ import type { Employee } from '@/features/employees/types';
 import type { GameState, Guess } from './types';
 import { HintType, HintResult } from './types';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
+import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
+import * as roundApi from './api';
 
 const getTodayDateString = (): string => {
   return new Date().toISOString().split('T')[0];
@@ -14,7 +16,6 @@ const initialState: GameState = {
   employeeOfTheDayId: null,
   guesses: [],
   status: 'idle',
-  maxGuesses: 6,
   currentDate: getTodayDateString(),
   attemptedByUserId: null,
   attemptDate: null,
@@ -118,10 +119,28 @@ const calculateHints = (
   return hints;
 };
 
+// Export calculateHints for use in components
+export const calculateHintsForGuess = calculateHints;
+
 const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
+    loadRoundFromState: (state, action: PayloadAction<{ round: roundApi.RoundDto }>) => {
+      const round = action.payload.round;
+      const today = getTodayDateString();
+      
+      // Only load if it's for today
+      if (round.date === today) {
+        state.employeeOfTheDayId = round.employeeOfTheDayId;
+        state.guesses = round.guesses;
+        state.status = round.status === 'won' ? 'won' : 'playing';
+        state.funfactRevealed = round.funfactRevealed;
+        state.attemptedByUserId = round.userId;
+        state.attemptDate = round.date;
+        state.currentDate = today;
+      }
+    },
     initializeGame: (state, action: PayloadAction<string>) => {
       const today = getTodayDateString();
       
@@ -194,7 +213,7 @@ const gameSlice = createSlice({
   },
 });
 
-export const { initializeGame, revealFunfact, makeGuess } = gameSlice.actions;
+export const { initializeGame, revealFunfact, makeGuess, loadRoundFromState } = gameSlice.actions;
 
 export const selectEmployeeOfTheDayId = (state: RootState): string | null =>
   state.game.employeeOfTheDayId;
@@ -249,6 +268,61 @@ export const selectHasAttemptedToday = (state: RootState, userId?: string | null
   const today = getTodayDateString();
   return state.game.attemptedByUserId === userId && state.game.attemptDate === today;
 };
+
+// Async thunks for round management
+export const loadRoundFromServer = createAppAsyncThunk(
+  'game/loadRoundFromServer',
+  async (params: { userId: string; date?: string }, { rejectWithValue, dispatch }) => {
+    try {
+      const round = await roundApi.getCurrentRound(params.userId, params.date);
+      if (round) {
+        dispatch(loadRoundFromState({ round }));
+      }
+      return round;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to load round');
+    }
+  }
+);
+
+export const startRoundOnServer = createAppAsyncThunk(
+  'game/startRoundOnServer',
+  async (params: { userId: string; date?: string; employeeOfTheDayId?: string }, { rejectWithValue, dispatch }) => {
+    try {
+      const round = await roundApi.startRound(params);
+      dispatch(loadRoundFromState({ round }));
+      return round;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to start round');
+    }
+  }
+);
+
+export const saveGuessToServer = createAppAsyncThunk(
+  'game/saveGuessToServer',
+  async (params: { userId: string; date?: string; guess: Guess; funfactRevealed?: boolean }, { rejectWithValue, dispatch }) => {
+    try {
+      const round = await roundApi.saveGuess(params);
+      dispatch(loadRoundFromState({ round }));
+      return round;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to save guess');
+    }
+  }
+);
+
+export const finishRoundOnServer = createAppAsyncThunk(
+  'game/finishRoundOnServer',
+  async (params: { userId: string; date?: string; status: 'won' | 'lost' }, { rejectWithValue, dispatch }) => {
+    try {
+      const round = await roundApi.finishRound(params);
+      dispatch(loadRoundFromState({ round }));
+      return round;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to finish round');
+    }
+  }
+);
 
 export const gameReducer = gameSlice.reducer;
 

@@ -92,6 +92,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<ISyncService, SyncService>();
+builder.Services.AddScoped<IRoundService, RoundService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient();

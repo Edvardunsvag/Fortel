@@ -85,7 +85,7 @@ export const LeaderboardPage = () => {
     );
   }
 
-  const today = leaderboard?.date ? formatDate(leaderboard.date) : t('leaderboard.title');
+  const today = leaderboard?.date ? formatDate(leaderboard.date).charAt(0).toUpperCase() + formatDate(leaderboard.date).slice(1) : t('leaderboard.title');
 
   return (
     <div className={styles.page}>

@@ -2,6 +2,7 @@ using Fortedle.Server.Data;
 using Fortedle.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using System.Data;
 using System.Text.Json;
@@ -103,14 +104,43 @@ builder.Services.AddHealthChecks()
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Fortedle API",
+        Version = "v1",
+        Description = "API for Fortedle game"
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-// Enable Swagger in both Development and Production (for local testing against production DB)
-app.UseSwagger();
-app.UseSwaggerUI();
+// Enable Swagger in both Development and Production
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = "swagger/{documentName}/swagger.json";
+    // Configure Swagger to use the correct scheme (http/https) based on the request
+    c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+    {
+        swaggerDoc.Servers = new List<OpenApiServer>
+        {
+            new OpenApiServer
+            {
+                Url = $"{httpReq.Scheme}://{httpReq.Host.Value}",
+                Description = httpReq.Host.Value.Contains("azurewebsites.net") ? "Production" : "Development"
+            }
+        };
+    });
+});
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fortedle API v1");
+    c.RoutePrefix = "swagger";
+    c.DisplayRequestDuration();
+});
 
 // Log all requests
 app.Use(async (context, next) =>

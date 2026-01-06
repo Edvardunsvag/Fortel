@@ -112,11 +112,39 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API for Fortedle game"
     });
+    
+    // Include XML comments if available (optional)
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+    
+    // Ensure all controllers are included
+    c.CustomSchemaIds(type => type.FullName);
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
+// Log all requests (early in pipeline)
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("{Method} {Path} - Origin: {Origin}",
+        context.Request.Method,
+        context.Request.Path,
+        context.Request.Headers.Origin.ToString());
+    await next();
+});
+
+// CORS must be before routing
+app.UseCors();
+
+// Explicit routing
+app.UseRouting();
+
 // Enable Swagger in both Development and Production
 app.UseSwagger(c =>
 {
@@ -140,26 +168,14 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fortedle API v1");
     c.RoutePrefix = "swagger";
     c.DisplayRequestDuration();
+    // Enable deep linking
+    c.EnableDeepLinking();
+    // Enable filter
+    c.EnableFilter();
 });
 
-// Log all requests
-app.Use(async (context, next) =>
-{
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("{Method} {Path} - Origin: {Origin}",
-        context.Request.Method,
-        context.Request.Path,
-        context.Request.Headers.Origin.ToString());
-    await next();
-});
-
-// Use CORS
-app.UseCors();
-
-// Map health check endpoint
+// Map endpoints
 app.MapHealthChecks("/health");
-
-// Map controllers
 app.MapControllers();
 
 // Initialize database (non-blocking)

@@ -21,7 +21,7 @@ import {
   startRoundOnServer,
   saveGuessToServer,
   calculateHintsForGuess,
-  // selectCanGuess,
+  selectCanGuess,
 } from '@/features/game/gameSlice';
 import type { Guess } from '@/features/game/types';
 import { selectAccount } from '@/features/auth/authSlice';
@@ -74,8 +74,7 @@ export const Game = () => {
     return similarity >= 0.8;
   }) || false;
   
-  // const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
-  const canGuess = true;
+  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
   
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);
@@ -166,7 +165,6 @@ export const Game = () => {
       const seed = getDateSeed(today);
       const index = selectIndexBySeed(seed, employees.length);
       const selectedEmployee = employees[index];
-      console.log('selectedEmployee', selectedEmployee);
 
       if (selectedEmployee) {
         const hashedId = hashEmployeeId(selectedEmployee.id, today);
@@ -243,11 +241,7 @@ export const Game = () => {
       const matchingEmployee = findMatchingEmployee(submitUserName, employees);
       const avatarImageUrl = matchingEmployee?.avatarImageUrl;
 
-      if (matchingEmployee) {
-        console.log(`Found matching employee for ${submitUserName}: ${matchingEmployee.name}`);
-      } else {
-        console.log(`No matching employee found for ${submitUserName}`);
-      }
+     
 
       hasSubmittedScore.current = true;
       dispatch(submitScore({

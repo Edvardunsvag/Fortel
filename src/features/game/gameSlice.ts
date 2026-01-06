@@ -5,12 +5,9 @@ import type { Employee } from '@/features/employees/types';
 import type { GameState, Guess } from './types';
 import { HintType, HintResult } from './types';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
+import { getTodayDateString } from '@/shared/utils/dateUtils';
 import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
 import * as roundApi from './api';
-
-const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
-};
 
 const initialState: GameState = {
   employeeOfTheDayId: null,
@@ -84,8 +81,6 @@ const calculateHints = (
   const guessedAge = typeof guessed.age === 'number' ? guessed.age : null;
   const targetAge = typeof target.age === 'number' ? target.age : null;
 
-  console.log('guessedAge', guessedAge);
-  console.log('targetAge', targetAge);
 
   if (guessedAge === null || targetAge === null) {
     ageResult = HintResult.None;

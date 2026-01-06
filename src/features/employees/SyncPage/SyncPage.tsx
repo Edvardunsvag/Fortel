@@ -51,7 +51,6 @@ export const SyncPage = () => {
       setError(err instanceof Error ? err.message : t('sync.failedToSync'));
     }
   };
-    console.log(account);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {

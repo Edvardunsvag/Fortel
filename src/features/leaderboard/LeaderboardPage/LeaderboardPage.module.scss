@@ -1,0 +1,55 @@
+@import '../../../shared/styles/variables.scss';
+
+.page {
+  min-height: 100vh;
+  padding-left: 16rem; // Account for sidebar width
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  padding-right: $spacing-xl;
+
+  @media (max-width: 768px) {
+    padding-left: 4rem;
+    padding-right: $spacing-md;
+  }
+}
+
+.container {
+  max-width: 56rem;
+  margin: 0 auto;
+  background-color: $color-white;
+  border-radius: $radius-lg;
+  padding: $spacing-xxl;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0 0 $spacing-sm 0;
+  color: $color-dark-accent;
+  text-shadow: 2px 2px 4px $color-shadow-medium;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: $color-light-grey-text;
+  margin: 0;
+}
+
+.content {
+  margin-top: $spacing-xl;
+}
+
+.text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $color-dark-fill;
+  margin: 0;
+}
+

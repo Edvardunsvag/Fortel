@@ -1,18 +1,18 @@
 import { useEffect } from 'react';
 import styles from './App.module.scss';
 import { useAppDispatch, useAppSelector } from './app/hooks';
-import { Leaderboard } from './components/Pages/Leaderboard';
-import { Play } from './components/Pages/Play';
-import { Rules } from './components/Pages/Rules';
-import { Sync } from './components/Pages/Sync';
-import { Employees } from './components/Pages/Employees';
+import { LeaderboardPage } from './features/leaderboard/LeaderboardPage/LeaderboardPage';
+import { PlayPage } from './features/game/PlayPage/PlayPage';
+import { RulesPage } from './features/game/RulesPage/RulesPage';
+import { SyncPage } from './features/employees/SyncPage/SyncPage';
+import { EmployeesPage } from './features/employees/EmployeesPage/EmployeesPage';
 import { Sidebar } from './components/Sidebar/Sidebar';
-import { LoginScreen } from './components/LoginScreen/LoginScreen';
-import { loadEmployees, selectEmployees, selectEmployeesStatus } from './features/employees';
-import { ActiveTab, selectActiveTab } from './features/navigation';
+import { LoginScreen } from './features/auth/LoginScreen/LoginScreen';
+import { loadEmployees, selectEmployees, selectEmployeesStatus } from './features/employees/employeesSlice';
+import { ActiveTab, selectActiveTab } from './features/navigation/navigationSlice';
 import { useI18nSync } from './features/i18n/useI18nSync';
 import { useMsalAuth } from './features/auth/useMsalAuth';
-import { selectIsAuthenticated, selectAccount } from './features/auth';
+import { selectIsAuthenticated, selectAccount } from './features/auth/authSlice';
 import { ADMIN_ACCOUNT } from './shared/config/adminConfig';
 import { AsyncStatus } from './shared/redux/enums';
 
@@ -49,21 +49,21 @@ export const App = () => {
   const renderPage = () => {
     switch (activeTab) {
       case ActiveTab.Play:
-        return <Play />;
+        return <PlayPage />;
       case ActiveTab.Leaderboard:
-        return <Leaderboard />;
+        return <LeaderboardPage />;
       case ActiveTab.Rules:
-        return <Rules />;
+        return <RulesPage />;
       case ActiveTab.Sync:
         // Only allow admin to access sync page
         if (!isAdmin) {
-          return <Play />;
+          return <PlayPage />;
         }
-        return <Sync />;
+        return <SyncPage />;
       case ActiveTab.Employees:
-        return <Employees />;
+        return <EmployeesPage />;
       default:
-        return <Play />;
+        return <PlayPage />;
     }
   };
 

@@ -1,0 +1,15 @@
+@import '../../../shared/styles/variables.scss';
+
+.page {
+  min-height: 100vh;
+  padding-left: 16rem; // Account for sidebar width
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  padding-right: $spacing-xl;
+
+  @media (max-width: 768px) {
+    padding-left: 4rem;
+    padding-right: $spacing-md;
+  }
+}
+

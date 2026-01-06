@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { setActiveTab, selectActiveTab, ActiveTab } from '@/features/navigation';
-import { selectAccount } from '@/features/auth';
+import { setActiveTab, selectActiveTab, ActiveTab } from '@/features/navigation/navigationSlice';
+import { selectAccount } from '@/features/auth/authSlice';
 import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
 import { SidebarItem } from './SidebarItem';
 import { LanguageToggle } from '../LanguageToggle/LanguageToggle';

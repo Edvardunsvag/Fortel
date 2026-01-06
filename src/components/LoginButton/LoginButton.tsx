@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useMsalAuth } from '@/features/auth/useMsalAuth';
 import { useAppSelector } from '@/app/hooks';
-import { selectIsAuthenticated, selectAccount } from '@/features/auth';
+import { selectIsAuthenticated, selectAccount } from '@/features/auth/authSlice';
 import styles from './LoginButton.module.scss';
 
 export const LoginButton = () => {

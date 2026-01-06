@@ -1,7 +1,7 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/app/store';
-import type { Employee } from '@/features/employees';
+import type { Employee } from '@/features/employees/types';
 import type { GameState, Guess } from './types';
 import { HintType, HintResult } from './types';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';

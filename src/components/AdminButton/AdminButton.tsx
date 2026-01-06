@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { selectAccount } from '@/features/auth';
-import { selectEmployees } from '@/features/employees';
-import { initializeGame } from '@/features/game';
+import { selectAccount } from '@/features/auth/authSlice';
+import { selectEmployees } from '@/features/employees/employeesSlice';
+import { initializeGame } from '@/features/game/gameSlice';
 import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
 import styles from './AdminButton.module.scss';
 

@@ -127,11 +127,7 @@ export const GuessList = ({ guesses }: GuessListProps) => {
                         <div className={styles.avatarPlaceholder}>{guess.employeeName}</div>
                       )}
                     </div>
-                    {guess.isCorrect && (
-                      <div className={styles.correctBadge} aria-label="Correct guess">
-                        ✓
-                      </div>
-                    )}
+                 
                   </td>
                   <td className={styles.hintCell}>
                     <FlipBox

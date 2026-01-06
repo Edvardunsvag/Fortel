@@ -43,8 +43,7 @@ public class Employee
     public List<string> Teams { get; set; } = new();
 
     [Column("age")]
-    [MaxLength(50)]
-    public string? Age { get; set; }
+    public int? Age { get; set; }
 
     [Column("supervisor")]
     [MaxLength(255)]

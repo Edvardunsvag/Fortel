@@ -21,6 +21,7 @@ import {
   startRoundOnServer,
   saveGuessToServer,
   calculateHintsForGuess,
+  selectCanGuess,
 } from '@/features/game/gameSlice';
 import type { Guess } from '@/features/game/types';
 import { selectAccount } from '@/features/auth/authSlice';
@@ -73,15 +74,20 @@ export const Game = () => {
     return similarity >= 0.8;
   }) || false;
   
-  // const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
-  const canGuess = true;
+  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
+  // const canGuess = true;
   
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);
   const hasSavedFunfactReveal = useRef(false);
+  const hasLoadedRoundFromServer = useRef(false);
+  const roundLoadCompleted = useRef(false);
 
   const [inputValue, setInputValue] = useState('');
   const [showStatusMessage, setShowStatusMessage] = useState(false);
+
+  // Track if we're currently loading from server to prevent saving during load
+  const isLoadingFromServerRef = useRef(false);
 
   // Load employees on mount only if status is idle
   useEffect(() => {
@@ -101,22 +107,48 @@ export const Game = () => {
     if (!userId || employeesStatus !== AsyncStatus.Succeeded) return;
 
     const today = getTodayDateString();
+    // Reset flags for this load attempt
+    hasLoadedRoundFromServer.current = false;
+    roundLoadCompleted.current = false;
+    // Set flag to prevent funfact reveal effect from running during load
+    isLoadingFromServerRef.current = true;
+    
     dispatch(loadRoundFromServer({ userId, date: today }))
       .then((result) => {
         if (loadRoundFromServer.fulfilled.match(result) && result.payload) {
           console.log('Loaded existing round from server');
+          hasLoadedRoundFromServer.current = true;
+          // If funfact was already revealed on the server, mark it as saved to prevent re-saving dummy guesses
+          if (result.payload.funfactRevealed) {
+            hasSavedFunfactReveal.current = true;
+          }
         } else {
           console.log('No existing round found');
+          hasLoadedRoundFromServer.current = false;
         }
       })
       .catch((error) => {
         console.error('Failed to load round:', error);
+        hasLoadedRoundFromServer.current = false;
+      })
+      .finally(() => {
+        roundLoadCompleted.current = true;
+        // Clear the flag after a short delay to allow state updates to complete
+        setTimeout(() => {
+          isLoadingFromServerRef.current = false;
+        }, 100);
       });
   }, [dispatch, userId, employeesStatus]);
 
   // Initialize game with employee of the day
+  // Only runs if no round was loaded from server
   useEffect(() => {
     if (employeesStatus !== AsyncStatus.Succeeded || employees.length === 0) return;
+    
+    // If user is logged in, wait for round load to complete
+    if (userId && !roundLoadCompleted.current) {
+      return;
+    }
 
     const today = getTodayDateString();
     const needsInitialization = !employeeOfTheDayId;
@@ -124,10 +156,17 @@ export const Game = () => {
       ? employees.some(emp => hashEmployeeId(emp.id, today) === employeeOfTheDayId)
       : false;
 
-    if (needsInitialization || !currentEmployeeExists) {
+    // Only initialize if:
+    // 1. No round was loaded from server (for logged-in users), OR
+    // 2. User is not logged in and needs initialization
+    const shouldInitialize = (userId ? !hasLoadedRoundFromServer.current : true) && 
+                             (needsInitialization || !currentEmployeeExists);
+
+    if (shouldInitialize) {
       const seed = getDateSeed(today);
       const index = selectIndexBySeed(seed, employees.length);
       const selectedEmployee = employees[index];
+      console.log('selectedEmployee', selectedEmployee);
 
       if (selectedEmployee) {
         const hashedId = hashEmployeeId(selectedEmployee.id, today);
@@ -146,11 +185,22 @@ export const Game = () => {
       }
     }
   }, [dispatch, employeesStatus, employees, employeeOfTheDayId, userId]);
-
+  
   // Save funfact reveal to server when it changes
   // The revealFunfact action adds 2 dummy guesses, so we need to save both
+  // Only save if funfact was just revealed by user (not when loaded from server)
   useEffect(() => {
-    if (funfactRevealed && userId && employeeOfTheDayId && !hasSavedFunfactReveal.current) {
+    // Skip if we're currently loading from server
+    if (isLoadingFromServerRef.current) {
+      return;
+    }
+    
+    // Check if funfact was just revealed by checking if dummy guesses were just added
+    // When loaded from server, funfactRevealed is true but no new dummy guesses were added
+    const hasDummyGuesses = totalGuesses > guesses.length;
+    const wasJustRevealed = funfactRevealed && hasDummyGuesses && !hasSavedFunfactReveal.current;
+    
+    if (wasJustRevealed && userId && employeeOfTheDayId) {
       hasSavedFunfactReveal.current = true;
       const today = getTodayDateString();
       // Save two dummy guesses to match the client state (revealFunfact adds 2)
@@ -182,7 +232,7 @@ export const Game = () => {
           hasSavedFunfactReveal.current = false; // Reset on error so we can retry
         });
     }
-  }, [funfactRevealed, userId, employeeOfTheDayId, dispatch]);
+  }, [funfactRevealed, userId, employeeOfTheDayId, dispatch, totalGuesses, guesses.length]);
 
   // Automatically submit score when game is won
   useEffect(() => {
@@ -223,6 +273,7 @@ export const Game = () => {
       setShowStatusMessage(false);
     }
   }, [gameStatus]);
+
 
   // Helper: Trigger confetti animation
   const triggerConfetti = () => {

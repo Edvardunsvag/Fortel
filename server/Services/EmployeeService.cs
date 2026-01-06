@@ -35,7 +35,7 @@ public class EmployeeService : IEmployeeService
             Department = e.Department,
             Office = e.Office,
             Teams = e.Teams ?? new List<string>(),
-            Age = e.Age == "-" ? "-" : (int.TryParse(e.Age, out var age) ? age.ToString() : "-"),
+            Age = e.Age,
             Supervisor = e.Supervisor ?? "-",
             Funfact = e.Funfact,
             Interests = e.Interests ?? new List<string>(),

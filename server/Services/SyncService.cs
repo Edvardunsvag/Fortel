@@ -303,8 +303,8 @@ public class SyncService : ISyncService
         }
 
         // Calculate age
+        int? age = null;
         var birthDate = GetStringValue(user.TryGetProperty("birthDate", out var bd) ? bd : default);
-        var age = "-";
         if (birthDate != null && DateTime.TryParse(birthDate, out var birth))
         {
             var today = DateTime.UtcNow;
@@ -313,7 +313,7 @@ public class SyncService : ISyncService
             {
                 calculatedAge--;
             }
-            age = calculatedAge.ToString();
+            age = calculatedAge;
         }
 
         // Supervisor

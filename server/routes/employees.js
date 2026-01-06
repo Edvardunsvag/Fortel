@@ -23,7 +23,7 @@ export const getEmployees = async (req, res) => {
         department: row.department,
         office: row.office,
         teams: row.teams || [],
-        age: row.age === '-' ? '-' : parseInt(row.age, 10) || '-',
+        age: row.age !== null && row.age !== undefined ? parseInt(row.age, 10) : null,
         supervisor: row.supervisor || '-',
         funfact: row.funfact || null,
         interests: row.interests || [],

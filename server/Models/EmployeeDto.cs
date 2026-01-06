@@ -10,7 +10,7 @@ public class EmployeeDto
     public string Department { get; set; } = string.Empty;
     public string Office { get; set; } = string.Empty;
     public List<string> Teams { get; set; } = new();
-    public string Age { get; set; } = "-";
+    public int? Age { get; set; }
     public string Supervisor { get; set; } = "-";
     public string? Funfact { get; set; }
     public List<string> Interests { get; set; } = new();

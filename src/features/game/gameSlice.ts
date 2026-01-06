@@ -84,6 +84,9 @@ const calculateHints = (
   const guessedAge = typeof guessed.age === 'number' ? guessed.age : null;
   const targetAge = typeof target.age === 'number' ? target.age : null;
 
+  console.log('guessedAge', guessedAge);
+  console.log('targetAge', targetAge);
+
   if (guessedAge === null || targetAge === null) {
     ageResult = HintResult.None;
     ageMessage = typeof guessed.age === 'string' ? guessed.age : '-';
@@ -186,7 +189,12 @@ const gameSlice = createSlice({
       }
 
       const { guessed, target, userId } = action.payload;
-      const isCorrect = guessed.id === target.id;
+      
+      // Verify guess against employeeOfTheDayId (hashed ID) - this is the source of truth
+      const today = getTodayDateString();
+      const guessedHashedId = hashEmployeeId(guessed.id, today);
+      const isCorrect = guessedHashedId === state.employeeOfTheDayId;
+      
       const hints = calculateHints(guessed, target);
 
       const guess: Guess = {
@@ -201,7 +209,6 @@ const gameSlice = createSlice({
 
       // Track attempt for logged-in users
       if (userId) {
-        const today = getTodayDateString();
         state.attemptedByUserId = userId;
         state.attemptDate = today;
       }

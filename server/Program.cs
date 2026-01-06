@@ -58,11 +58,22 @@ else
 if (string.IsNullOrEmpty(connectionString))
 {
     // Build connection string from individual settings
-    var dbHost = builder.Configuration["Database:Host"] ?? "localhost";
-    var dbPort = builder.Configuration["Database:Port"] ?? "5432";
-    var dbName = builder.Configuration["Database:Database"] ?? "fortel";
-    var dbUser = builder.Configuration["Database:User"] ?? "postgres";
-    var dbPassword = builder.Configuration["Database:Password"] ?? "postgres";
+    // Try environment variables first (DB_HOST, DB_PORT, etc.), then fall back to Database: keys
+    var dbHost = builder.Configuration["DB_HOST"] 
+                 ?? builder.Configuration["Database:Host"] 
+                 ?? "localhost";
+    var dbPort = builder.Configuration["DB_PORT"] 
+                 ?? builder.Configuration["Database:Port"] 
+                 ?? "5432";
+    var dbName = builder.Configuration["DB_NAME"] 
+                 ?? builder.Configuration["Database:Database"] 
+                 ?? "fortedle";
+    var dbUser = builder.Configuration["DB_USER"] 
+                 ?? builder.Configuration["Database:User"] 
+                 ?? "postgres";
+    var dbPassword = builder.Configuration["DB_PASSWORD"] 
+                     ?? builder.Configuration["Database:Password"] 
+                     ?? "postgres";
 
     // Determine SSL mode (Azure PostgreSQL requires SSL)
     var isAzurePostgres = !dbHost.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
@@ -75,6 +86,9 @@ if (string.IsNullOrEmpty(connectionString))
     {
         connectionString += $";{trustServerCertificate}";
     }
+    
+    earlyLogger.LogInformation("Built connection string from environment variables: Host={Host}, Database={Database}, User={User}", 
+        dbHost, dbName, dbUser);
 }
 
 // Configure Entity Framework

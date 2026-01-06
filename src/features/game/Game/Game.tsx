@@ -21,7 +21,7 @@ import {
   startRoundOnServer,
   saveGuessToServer,
   calculateHintsForGuess,
-  selectCanGuess,
+  // selectCanGuess,
 } from '@/features/game/gameSlice';
 import type { Guess } from '@/features/game/types';
 import { selectAccount } from '@/features/auth/authSlice';
@@ -74,8 +74,8 @@ export const Game = () => {
     return similarity >= 0.8;
   }) || false;
   
-  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
-  // const canGuess = true;
+  // const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
+  const canGuess = true;
   
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);

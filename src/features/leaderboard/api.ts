@@ -1,6 +1,10 @@
 import type { LeaderboardData } from './types';
 import { leaderboardApi } from '@/shared/api/client';
-import type { FortedleServerModelsLeaderboardDto, FortedleServerModelsSubmitScoreRequest } from '@/shared/api/generated/api';
+import type {
+  FortedleServerModelsLeaderboardDto,
+  FortedleServerModelsSubmitScoreRequest,
+  FortedleServerModelsLeaderboardEntryDto,
+} from '@/shared/api/generated';
 
 export interface SubmitScoreRequest {
   name: string;
@@ -14,7 +18,7 @@ export interface SubmitScoreRequest {
 const mapLeaderboardDto = (dto: FortedleServerModelsLeaderboardDto): LeaderboardData => {
   return {
     date: dto.date ?? '',
-    leaderboard: (dto.leaderboard ?? []).map((entry) => ({
+    leaderboard: (dto.leaderboard ?? []).map((entry: FortedleServerModelsLeaderboardEntryDto) => ({
       rank: entry.rank ?? 0,
       name: entry.name ?? '',
       score: entry.score ?? 0,

@@ -6,7 +6,8 @@ import type {
   FortedleServerModelsSaveGuessRequest,
   FortedleServerModelsFinishRoundRequest,
   FortedleServerModelsGuessDto,
-} from '@/shared/api/generated/api';
+  FortedleServerModelsGuessHintDto,
+} from '@/shared/api/generated';
 
 export interface RoundDto {
   id: number;
@@ -47,7 +48,7 @@ const mapGuessDto = (dto: FortedleServerModelsGuessDto): Guess => {
     employeeId: dto.employeeId ?? '',
     employeeName: dto.employeeName ?? '',
     avatarImageUrl: dto.avatarImageUrl ?? undefined,
-    hints: (dto.hints ?? []).map((hint) => ({
+    hints: (dto.hints ?? []).map((hint: FortedleServerModelsGuessHintDto) => ({
       type: hint.type as HintType,
       result: hint.result as HintResult,
       message: hint.message ?? '',

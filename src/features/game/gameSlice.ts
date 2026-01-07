@@ -131,7 +131,7 @@ const gameSlice = createSlice({
       // Only load if it's for today
       if (round.date === today) {
         state.employeeOfTheDayId = round.employeeOfTheDayId;
-        state.guesses = round.guesses;
+        state.guesses = round.guesses
         state.status = round.status === 'won' ? 'won' : 'playing';
         state.funfactRevealed = round.funfactRevealed;
         state.attemptedByUserId = round.userId;
@@ -244,19 +244,6 @@ export const selectCanGuess = (state: RootState, userId?: string | null, isInLea
   // If user is in leaderboard, they can't guess
   if (isInLeaderboard) {
     return false;
-  }
-
-  // If user is logged in, check if they've already attempted today
-  // But allow them to continue if they're already in the middle of their attempt (have guesses)
-  if (userId && state.game.guesses.length === 0) {
-    const today = getTodayDateString();
-    const hasAttemptedToday = 
-      state.game.attemptedByUserId === userId && 
-      state.game.attemptDate === today;
-    
-    if (hasAttemptedToday) {
-      return false;
-    }
   }
 
   return true;

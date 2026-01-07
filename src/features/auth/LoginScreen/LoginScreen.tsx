@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useMsalAuth } from '@/features/auth/useMsalAuth';
-import { LanguageToggle } from '@/components/LanguageToggle/LanguageToggle';
 import styles from './LoginScreen.module.scss';
+import { LanguageToggle } from '@/features/sidebar/LanguageToggle/LanguageToggle';
 
 export const LoginScreen = () => {
   const { t } = useTranslation();

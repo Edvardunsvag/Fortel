@@ -5,7 +5,7 @@ import { FeatureKey } from '@/shared/redux/enums';
 import type { RootState } from '@/app/store';
 import type { Employee } from '@/features/employees/types';
 import { AsyncStatus } from '@/shared/redux/enums';
-import { ActiveTab } from '@/features/navigation/navigationSlice';
+import { ActiveTab } from '@/features/sidebar/navigationSlice';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
 
 // Mock i18n

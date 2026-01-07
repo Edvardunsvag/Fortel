@@ -6,15 +6,15 @@ import { PlayPage } from './features/game/PlayPage/PlayPage';
 import { RulesPage } from './features/game/RulesPage/RulesPage';
 import { SyncPage } from './features/employees/SyncPage/SyncPage';
 import { EmployeesPage } from './features/employees/EmployeesPage/EmployeesPage';
-import { Sidebar } from './components/Sidebar/Sidebar';
 import { LoginScreen } from './features/auth/LoginScreen/LoginScreen';
 import { loadEmployees, selectEmployees, selectEmployeesStatus } from './features/employees/employeesSlice';
-import { ActiveTab, selectActiveTab } from './features/navigation/navigationSlice';
+import { ActiveTab, selectActiveTab } from './features/sidebar/navigationSlice';
 import { useI18nSync } from './features/i18n/useI18nSync';
 import { useMsalAuth } from './features/auth/useMsalAuth';
 import { selectIsAuthenticated, selectAccount } from './features/auth/authSlice';
 import { ADMIN_ACCOUNT } from './shared/config/adminConfig';
 import { AsyncStatus } from './shared/redux/enums';
+import { Sidebar } from './features/sidebar/Sidebar/Sidebar';
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -25,10 +25,7 @@ export const App = () => {
   const account = useAppSelector(selectAccount);
   const isAdmin = account?.username === ADMIN_ACCOUNT;
   
-  // Sync i18n with Redux language state
-  useI18nSync();
-  
-  // Initialize MSAL auth state
+  useI18nSync();  
   useMsalAuth();
 
   useEffect(() => {

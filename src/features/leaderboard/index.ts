@@ -1,4 +1,4 @@
-export { leaderboardReducer, fetchLeaderboard, submitScore, clearSubmitStatus } from './leaderboardSlice';
+export { leaderboardReducer, fetchLeaderboard, submitScore } from './leaderboardSlice';
 export {
   selectLeaderboard,
   selectLeaderboardStatus,

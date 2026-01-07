@@ -249,14 +249,7 @@ export const selectCanGuess = (state: RootState, isInLeaderboard?: boolean): boo
   return true;
 };
 
-export const selectHasAttemptedToday = (state: RootState, userId?: string | null): boolean => {
-  if (!userId) {
-    return false;
-  }
-  
-  const today = getTodayDateString();
-  return state.game.attemptedByUserId === userId && state.game.attemptDate === today;
-};
+
 
 // Async thunks for round management
 export const loadRoundFromServer = createAppAsyncThunk(
@@ -300,18 +293,7 @@ export const saveGuessToServer = createAppAsyncThunk(
   }
 );
 
-export const finishRoundOnServer = createAppAsyncThunk(
-  'game/finishRoundOnServer',
-  async (params: { userId: string; date?: string; status: 'won' | 'lost' }, { rejectWithValue, dispatch }) => {
-    try {
-      const round = await roundApi.finishRound(params);
-      dispatch(loadRoundFromState({ round }));
-      return round;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to finish round');
-    }
-  }
-);
+
 
 export const gameReducer = gameSlice.reducer;
 

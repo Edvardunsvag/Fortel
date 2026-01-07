@@ -1,4 +1,4 @@
-import { ActiveTab } from '@/features/navigation';
+import { ActiveTab } from '@/features/sidebar';
 import styles from './Sidebar.module.scss';
 
 interface SidebarItemProps {

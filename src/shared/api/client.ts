@@ -5,7 +5,17 @@
  * using the existing apiConfig for base URL management.
  */
 import { Configuration, EmployeesApi, LeaderboardApi, RoundsApi, SyncApi } from './generated/index';
-import { getApiBaseUrl } from '@/shared/utils/apiConfig';
+
+ const getApiBaseUrl = (): string => {
+  // In development, Vite proxy handles /api routes
+  // In production, use environment variable or default to deployed backend
+  if (import.meta.env.DEV) {
+    return ''; // Use relative URLs, Vite proxy will handle it
+  }
+  
+  // In production, use VITE_API_URL if set, otherwise default to deployed backend
+  return import.meta.env.VITE_API_URL || 'https://fortedle-backend.azurewebsites.net';
+};
 
 /**
  * Creates a Configuration instance for the generated API clients

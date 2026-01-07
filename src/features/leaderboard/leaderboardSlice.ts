@@ -46,10 +46,7 @@ const leaderboardSlice = createSlice({
   name: 'leaderboard',
   initialState,
   reducers: {
-    clearSubmitStatus: (state) => {
-      state.submitStatus = AsyncStatus.Idle;
-      state.submitError = null;
-    },
+  
   },
   extraReducers: (builder) => {
     builder
@@ -83,7 +80,6 @@ const leaderboardSlice = createSlice({
   },
 });
 
-export const { clearSubmitStatus } = leaderboardSlice.actions;
 
 export const selectLeaderboard = (state: RootState): LeaderboardState['data'] =>
   state.leaderboard.data;

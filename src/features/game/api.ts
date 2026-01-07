@@ -1,13 +1,12 @@
 import { roundsApi } from '@/shared/api/client';
-import type { Guess, HintType, HintResult } from './types';
 import type {
-  FortedleServerModelsRoundDto,
-  FortedleServerModelsStartRoundRequest,
-  FortedleServerModelsSaveGuessRequest,
-  FortedleServerModelsFinishRoundRequest,
   FortedleServerModelsGuessDto,
   FortedleServerModelsGuessHintDto,
+  FortedleServerModelsRoundDto,
+  FortedleServerModelsSaveGuessRequest,
+  FortedleServerModelsStartRoundRequest
 } from '@/shared/api/generated/index';
+import type { Guess, HintResult, HintType } from './types';
 
 export interface RoundDto {
   id: number;
@@ -152,24 +151,5 @@ export const saveGuess = async (request: SaveGuessRequest): Promise<RoundDto> =>
   }
 };
 
-export const finishRound = async (request: FinishRoundRequest): Promise<RoundDto> => {
-  try {
-    const apiRequest: FortedleServerModelsFinishRoundRequest = {
-      userId: request.userId,
-      date: request.date ?? undefined,
-      status: request.status,
-    };
-    
-    const response = await roundsApi.apiRoundsFinishPost(apiRequest);
-    return mapRoundDto(response.data);
-  } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { statusText?: string } };
-      throw new Error(`Failed to finish round: ${axiosError.response?.statusText}`);
-    }
-    throw new Error(
-      error instanceof Error ? error.message : 'Failed to finish round'
-    );
-  }
-};
+
 

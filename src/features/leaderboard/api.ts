@@ -4,7 +4,7 @@ import type {
   FortedleServerModelsLeaderboardDto,
   FortedleServerModelsSubmitScoreRequest,
   FortedleServerModelsLeaderboardEntryDto,
-} from '@/shared/api/generated';
+} from '@/shared/api/generated/index';
 
 export interface SubmitScoreRequest {
   name: string;

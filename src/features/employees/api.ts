@@ -1,6 +1,6 @@
 import type { Employee } from './types';
 import { employeesApi, syncApi } from '@/shared/api/client';
-import type { FortedleServerModelsEmployeeDto, FortedleServerModelsSyncRequest } from '@/shared/api/generated';
+import type { FortedleServerModelsEmployeeDto, FortedleServerModelsSyncRequest } from '@/shared/api/generated/index';
 
 /**
  * Maps the generated API DTO to the application Employee type

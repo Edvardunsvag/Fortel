@@ -7,7 +7,7 @@ import type {
   FortedleServerModelsFinishRoundRequest,
   FortedleServerModelsGuessDto,
   FortedleServerModelsGuessHintDto,
-} from '@/shared/api/generated';
+} from '@/shared/api/generated/index';
 
 export interface RoundDto {
   id: number;

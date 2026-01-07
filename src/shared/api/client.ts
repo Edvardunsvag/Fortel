@@ -4,7 +4,7 @@
  * Creates configured instances of the generated API clients
  * using the existing apiConfig for base URL management.
  */
-import { Configuration, EmployeesApi, LeaderboardApi, RoundsApi, SyncApi } from './generated';
+import { Configuration, EmployeesApi, LeaderboardApi, RoundsApi, SyncApi } from './generated/index';
 import { getApiBaseUrl } from '@/shared/utils/apiConfig';
 
 /**

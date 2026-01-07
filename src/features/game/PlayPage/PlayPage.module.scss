@@ -1,4 +1,4 @@
-@import '../../../shared/styles/variables.scss';
+@use '../../../shared/styles/variables.scss' as *;
 
 .page {
   min-height: 100vh;

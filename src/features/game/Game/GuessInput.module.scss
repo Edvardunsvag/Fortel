@@ -1,4 +1,5 @@
-@import '../../../shared/styles/variables.scss';
+@use '../../../shared/styles/variables.scss' as *;
+@use 'sass:color';
 
 .container {
   margin-bottom: $spacing-xl;
@@ -85,7 +86,7 @@
   margin-top: $spacing-xs;
   padding: 0.75rem $spacing-md;
   background-color: $color-warning;
-  border: 1px solid darken($color-warning, 10%);
+  border: 1px solid color.adjust($color-warning, $lightness: -10%);
   border-radius: $radius-md;
   color: $color-black;
   font-size: 0.875rem;

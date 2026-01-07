@@ -236,7 +236,7 @@ export const selectTotalGuesses = (state: RootState): number =>
 export const selectGameStatus = (state: RootState): GameState['status'] =>
   state.game.status;
 
-export const selectCanGuess = (state: RootState, userId?: string | null, isInLeaderboard?: boolean): boolean => {
+export const selectCanGuess = (state: RootState, isInLeaderboard?: boolean): boolean => {
   if (state.game.status !== 'playing') {
     return false;
   }

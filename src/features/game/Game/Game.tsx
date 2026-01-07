@@ -74,7 +74,7 @@ export const Game = () => {
     return similarity >= 0.8;
   }) || false;
   
-  const canGuess = useAppSelector((state) => selectCanGuess(state, userId, isInLeaderboard));
+  const canGuess = useAppSelector((state) => selectCanGuess(state, isInLeaderboard));
   
   const hasSubmittedScore = useRef(false);
   const hasTriggeredConfetti = useRef(false);

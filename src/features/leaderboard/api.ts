@@ -1,5 +1,6 @@
 import type { LeaderboardData } from './types';
-import { getApiUrl } from '@/shared/utils/apiConfig';
+import { leaderboardApi } from '@/shared/api/client';
+import type { FortedleServerModelsLeaderboardDto, FortedleServerModelsSubmitScoreRequest } from '@/shared/api/generated/api';
 
 export interface SubmitScoreRequest {
   name: string;
@@ -7,41 +8,63 @@ export interface SubmitScoreRequest {
   avatarImageUrl?: string;
 }
 
-export interface SubmitScoreResponse {
-  result: LeaderboardData;
-}
+/**
+ * Maps the generated API DTO to the application LeaderboardData type
+ */
+const mapLeaderboardDto = (dto: FortedleServerModelsLeaderboardDto): LeaderboardData => {
+  return {
+    date: dto.date ?? '',
+    leaderboard: (dto.leaderboard ?? []).map((entry) => ({
+      rank: entry.rank ?? 0,
+      name: entry.name ?? '',
+      score: entry.score ?? 0,
+      avatarImageUrl: entry.avatarImageUrl ?? null,
+      submittedAt: entry.submittedAt?.toString() ?? '',
+    })),
+  };
+};
 
 export const fetchLeaderboard = async (date?: string): Promise<LeaderboardData> => {
-  const url = date 
-    ? `${getApiUrl('/api/leaderboard')}?date=${date}` 
-    : getApiUrl('/api/leaderboard');
-  
-  const response = await fetch(url);
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch leaderboard: ${response.status} ${response.statusText}`);
+  try {
+    const response = await leaderboardApi.apiLeaderboardGet(date);
+    return mapLeaderboardDto(response.data);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { status?: number; statusText?: string } };
+      throw new Error(
+        `Failed to fetch leaderboard: ${axiosError.response?.status} ${axiosError.response?.statusText}`
+      );
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to fetch leaderboard'
+    );
   }
-  
-  return await response.json() as LeaderboardData;
 };
 
 export const submitScore = async (
   request: SubmitScoreRequest
 ): Promise<LeaderboardData> => {
-  const response = await fetch(getApiUrl('/api/leaderboard'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || 'Failed to submit score');
+  try {
+    const apiRequest: FortedleServerModelsSubmitScoreRequest = {
+      name: request.name,
+      score: request.score,
+      avatarImageUrl: request.avatarImageUrl ?? undefined,
+    };
+    
+    await leaderboardApi.apiLeaderboardPost(apiRequest);
+    
+    // Fetch the updated leaderboard after submission
+    const leaderboardResponse = await leaderboardApi.apiLeaderboardGet();
+    return mapLeaderboardDto(leaderboardResponse.data);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      const errorMessage = axiosError.response?.data?.error || 'Failed to submit score';
+      throw new Error(errorMessage);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to submit score'
+    );
   }
-
-  const result: SubmitScoreResponse = await response.json();
-  return result.result;
 };
 

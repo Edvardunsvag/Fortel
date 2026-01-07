@@ -1,5 +1,12 @@
-import { getApiUrl } from '@/shared/utils/apiConfig';
-import type { Guess } from './types';
+import { roundsApi } from '@/shared/api/client';
+import type { Guess, HintType, HintResult } from './types';
+import type {
+  FortedleServerModelsRoundDto,
+  FortedleServerModelsStartRoundRequest,
+  FortedleServerModelsSaveGuessRequest,
+  FortedleServerModelsFinishRoundRequest,
+  FortedleServerModelsGuessDto,
+} from '@/shared/api/generated/api';
 
 export interface RoundDto {
   id: number;
@@ -32,70 +39,136 @@ export interface FinishRoundRequest {
   status: 'won' | 'lost';
 }
 
+/**
+ * Maps the generated GuessDto to the application Guess type
+ */
+const mapGuessDto = (dto: FortedleServerModelsGuessDto): Guess => {
+  return {
+    employeeId: dto.employeeId ?? '',
+    employeeName: dto.employeeName ?? '',
+    avatarImageUrl: dto.avatarImageUrl ?? undefined,
+    hints: (dto.hints ?? []).map((hint) => ({
+      type: hint.type as HintType,
+      result: hint.result as HintResult,
+      message: hint.message ?? '',
+    })),
+    isCorrect: dto.isCorrect ?? false,
+  };
+};
+
+/**
+ * Maps the generated RoundDto to the application RoundDto type
+ */
+const mapRoundDto = (dto: FortedleServerModelsRoundDto): RoundDto => {
+  return {
+    id: dto.id ?? 0,
+    userId: dto.userId ?? '',
+    date: dto.date ?? '',
+    status: dto.status ?? '',
+    employeeOfTheDayId: dto.employeeOfTheDayId ?? null,
+    guesses: (dto.guesses ?? []).map(mapGuessDto),
+    funfactRevealed: dto.funfactRevealed ?? false,
+    startedAt: dto.startedAt ?? '',
+    finishedAt: dto.finishedAt ?? null,
+  };
+};
+
+/**
+ * Maps the application Guess type to the generated GuessDto
+ */
+const mapGuessToDto = (guess: Guess): FortedleServerModelsGuessDto => {
+  return {
+    employeeId: guess.employeeId,
+    employeeName: guess.employeeName,
+    avatarImageUrl: guess.avatarImageUrl ?? undefined,
+    hints: guess.hints.map((hint) => ({
+      type: hint.type,
+      result: hint.result,
+      message: hint.message,
+    })),
+    isCorrect: guess.isCorrect,
+  };
+};
+
 export const getCurrentRound = async (userId: string, date?: string): Promise<RoundDto | null> => {
-  const params = new URLSearchParams({ userId });
-  if (date) {
-    params.append('date', date);
+  try {
+    const response = await roundsApi.apiRoundsCurrentGet(userId, date);
+    return mapRoundDto(response.data);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { status?: number } };
+      if (axiosError.response?.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to get current round: ${axiosError.response?.status}`);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to get current round'
+    );
   }
-
-  const response = await fetch(getApiUrl(`api/rounds/current?${params.toString()}`));
-  
-  if (response.status === 404) {
-    return null;
-  }
-  
-  if (!response.ok) {
-    throw new Error(`Failed to get current round: ${response.statusText}`);
-  }
-
-  return response.json();
 };
 
 export const startRound = async (request: StartRoundRequest): Promise<RoundDto> => {
-  const response = await fetch(getApiUrl('api/rounds/start'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to start round: ${response.statusText}`);
+  try {
+    const apiRequest: FortedleServerModelsStartRoundRequest = {
+      userId: request.userId,
+      date: request.date ?? undefined,
+      employeeOfTheDayId: request.employeeOfTheDayId ?? undefined,
+    };
+    
+    const response = await roundsApi.apiRoundsStartPost(apiRequest);
+    return mapRoundDto(response.data);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { statusText?: string } };
+      throw new Error(`Failed to start round: ${axiosError.response?.statusText}`);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to start round'
+    );
   }
-
-  return response.json();
 };
 
 export const saveGuess = async (request: SaveGuessRequest): Promise<RoundDto> => {
-  const response = await fetch(getApiUrl('api/rounds/guess'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to save guess: ${response.statusText}`);
+  try {
+    const apiRequest: FortedleServerModelsSaveGuessRequest = {
+      userId: request.userId,
+      date: request.date ?? undefined,
+      guess: mapGuessToDto(request.guess),
+      funfactRevealed: request.funfactRevealed ?? undefined,
+    };
+    
+    const response = await roundsApi.apiRoundsGuessPost(apiRequest);
+    return mapRoundDto(response.data);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { statusText?: string } };
+      throw new Error(`Failed to save guess: ${axiosError.response?.statusText}`);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to save guess'
+    );
   }
-
-  return response.json();
 };
 
 export const finishRound = async (request: FinishRoundRequest): Promise<RoundDto> => {
-  const response = await fetch(getApiUrl('api/rounds/finish'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to finish round: ${response.statusText}`);
+  try {
+    const apiRequest: FortedleServerModelsFinishRoundRequest = {
+      userId: request.userId,
+      date: request.date ?? undefined,
+      status: request.status,
+    };
+    
+    const response = await roundsApi.apiRoundsFinishPost(apiRequest);
+    return mapRoundDto(response.data);
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { statusText?: string } };
+      throw new Error(`Failed to finish round: ${axiosError.response?.statusText}`);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to finish round'
+    );
   }
-
-  return response.json();
 };
 

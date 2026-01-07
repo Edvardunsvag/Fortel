@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { ColorLegend } from '../Game/ColorLegend';
 import styles from './RulesPage.module.scss';
+import { ColorLegend } from './ColorLegend';
 
 export const RulesPage = () => {
   const { t } = useTranslation();

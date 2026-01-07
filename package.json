@@ -12,12 +12,14 @@
     "test:ci": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate:api": "openapi-generator-cli generate -i http://localhost:8080/swagger/v1/swagger.json -g typescript-axios -o src/shared/api/generated --additional-properties=typescriptThreePlus=true,withInterfaces=true,supportsES6=true,enumPropertyNaming=original,modelPropertyNaming=original"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.27.0",
     "@azure/msal-react": "^3.0.23",
     "@reduxjs/toolkit": "^2.0.1",
+    "axios": "^1.6.0",
     "canvas-confetti": "^1.9.4",
     "i18next": "^25.7.3",
     "react": "^18.2.0",
@@ -27,6 +29,7 @@
     "string-similarity": "^4.0.4"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.15.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
@@ -40,6 +43,7 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "husky": "^9.0.0",
     "jsdom": "^27.4.0",
     "sass": "^1.69.5",
     "typescript": "^5.2.2",

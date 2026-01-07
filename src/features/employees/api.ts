@@ -1,27 +1,45 @@
 import type { Employee } from './types';
-import { getApiUrl } from '@/shared/utils/apiConfig';
+import { employeesApi, syncApi } from '@/shared/api/client';
+import type { FortedleServerModelsEmployeeDto, FortedleServerModelsSyncRequest } from '@/shared/api/generated/api';
+
+/**
+ * Maps the generated API DTO to the application Employee type
+ */
+const mapEmployeeDto = (dto: FortedleServerModelsEmployeeDto): Employee => {
+  return {
+    id: dto.id ?? '',
+    name: dto.name ?? '',
+    firstName: dto.firstName ?? '',
+    surname: dto.surname ?? '',
+    avatarImageUrl: dto.avatarImageUrl ?? undefined,
+    department: dto.department ?? '',
+    office: dto.office ?? '',
+    teams: dto.teams ?? [],
+    age: dto.age ?? '-',
+    supervisor: dto.supervisor ?? undefined,
+    funfact: dto.funfact ?? null,
+    interests: dto.interests ?? [],
+  };
+};
 
 export const fetchEmployees = async (): Promise<Employee[]> => {
-  // Fetch from backend API (PostgreSQL)
   try {
-    const response = await fetch(getApiUrl('/api/employees'), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 404 || response.status === 500) {
-        throw new Error('No employee data available. Please sync data first.');
-      }
-      throw new Error(`Failed to fetch employees: ${response.status} ${response.statusText}`);
-    }
-
-    const employees: Employee[] = await response.json();
+    const response = await employeesApi.apiEmployeesGet();
+    const employeeDtos = response.data;
+    
+    const employees = employeeDtos.map(mapEmployeeDto);
     console.log(`Successfully loaded ${employees.length} employees from database`);
     return employees;
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { status?: number; statusText?: string } };
+      if (axiosError.response?.status === 404 || axiosError.response?.status === 500) {
+        throw new Error('No employee data available. Please sync data first.');
+      }
+      throw new Error(
+        `Failed to fetch employees: ${axiosError.response?.status} ${axiosError.response?.statusText}`
+      );
+    }
     throw new Error(
       error instanceof Error ? error.message : 'Failed to fetch employees from API'
     );
@@ -37,24 +55,24 @@ export interface SyncResult {
 
 export const syncEmployees = async (accessToken: string): Promise<SyncResult> => {
   try {
-    const response = await fetch(getApiUrl('/api/sync'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        accessToken: accessToken.trim(),
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to sync data');
+    const request: FortedleServerModelsSyncRequest = {
+      accessToken: accessToken.trim(),
+    };
+    
+    const response = await syncApi.apiSyncPost(request);
+    const result = response.data;
+    
+    return {
+      success: result.success ?? false,
+      message: result.message ?? '',
+      count: result.count ?? 0,
+    };
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      const errorMessage = axiosError.response?.data?.error || 'Failed to sync data';
+      throw new Error(errorMessage);
     }
-
-    const result: SyncResult = await response.json();
-    return result;
-  } catch (error) {
     throw new Error(
       error instanceof Error ? error.message : 'Failed to sync employees'
     );

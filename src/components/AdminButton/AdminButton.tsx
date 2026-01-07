@@ -26,6 +26,7 @@ export const AdminButton = () => {
     // Randomly select a new employee
     const randomIndex = Math.floor(Math.random() * employees.length);
     const selectedEmployee = employees[randomIndex];
+    console.log('selectedEmployee', selectedEmployee);
 
     if (selectedEmployee) {
       dispatch(initializeGame(selectedEmployee.id));

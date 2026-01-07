@@ -30,3 +30,6 @@ dist-ssr
 *.sln
 *.sw?
 
+# Generated API client
+src/shared/api/generated
+

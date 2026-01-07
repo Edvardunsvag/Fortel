@@ -1,7 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import confetti from 'canvas-confetti';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { selectAccount } from '@/features/auth/authSlice';
 import {
   loadEmployees,
   selectEmployees,
@@ -9,32 +7,34 @@ import {
 } from '@/features/employees/employeesSlice';
 import type { Employee } from '@/features/employees/types';
 import {
+  calculateHintsForGuess,
   initializeGame,
-  revealFunfact,
+  loadRoundFromServer,
   makeGuess,
+  revealFunfact,
+  saveGuessToServer,
+  selectCanGuess,
   selectEmployeeOfTheDayId,
   selectFunfactRevealed,
+  selectGameStatus,
   selectGuesses,
   selectTotalGuesses,
-  selectGameStatus,
-  loadRoundFromServer,
   startRoundOnServer,
-  saveGuessToServer,
-  calculateHintsForGuess,
-  selectCanGuess,
 } from '@/features/game/gameSlice';
 import type { Guess } from '@/features/game/types';
-import { selectAccount } from '@/features/auth/authSlice';
-import { submitScore, fetchLeaderboard, selectLeaderboard } from '@/features/leaderboard/leaderboardSlice';
+import { fetchLeaderboard, selectLeaderboard, submitScore } from '@/features/leaderboard/leaderboardSlice';
 import { AsyncStatus } from '@/shared/redux/enums';
-import { getTodayDateString, getDateSeed, selectIndexBySeed } from '@/shared/utils/dateUtils';
+import { getDateSeed, getTodayDateString, selectIndexBySeed } from '@/shared/utils/dateUtils';
+import { findEmployeeByHash, hashEmployeeId } from '@/shared/utils/hashUtils';
 import { findMatchingEmployee } from '@/shared/utils/nameMatcher';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { compareTwoStrings } from 'string-similarity';
-import { hashEmployeeId, findEmployeeByHash } from '@/shared/utils/hashUtils';
+import { triggerConfetti } from '../utils';
+import styles from './Game.module.scss';
+import { GameStatus } from './GameStatus';
 import { GuessInput } from './GuessInput';
 import { GuessList } from './GuessList';
-import { GameStatus } from './GameStatus';
-import styles from './Game.module.scss';
 
 export const Game = () => {
   const { t } = useTranslation();
@@ -241,8 +241,6 @@ export const Game = () => {
       const matchingEmployee = findMatchingEmployee(submitUserName, employees);
       const avatarImageUrl = matchingEmployee?.avatarImageUrl;
 
-     
-
       hasSubmittedScore.current = true;
       dispatch(submitScore({
         name: submitUserName,
@@ -269,41 +267,7 @@ export const Game = () => {
   }, [gameStatus]);
 
 
-  // Helper: Trigger confetti animation
-  const triggerConfetti = () => {
-    const duration = 3000;
-    const end = Date.now() + duration;
-    const colors = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
-
-    const frame = () => {
-      if (Date.now() > end) return;
-
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: colors,
-      });
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: colors,
-      });
-      confetti({
-        particleCount: 5,
-        angle: 90,
-        spread: 60,
-        origin: { x: 0.5, y: 0.5 },
-        colors: colors,
-      });
-
-      requestAnimationFrame(frame);
-    };
-    frame();
-  };
+ 
 
   // Show status message and trigger confetti when game is won
   useEffect(() => {
@@ -372,10 +336,6 @@ export const Game = () => {
 
   const handleRevealFunfact = () => {
     dispatch(revealFunfact());
-    
-    // Save funfact reveal to server if user is logged in
-    // Note: The revealFunfact action adds 2 dummy guesses to the state
-    // We'll save the funfactRevealed flag via a useEffect that watches for changes
   };
 
   if (employeesStatus === AsyncStatus.Loading) {

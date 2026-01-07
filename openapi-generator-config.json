@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/openapi-generator-config",
+  "generatorName": "typescript-axios",
+  "inputSpec": "http://localhost:8080/swagger/v1/swagger.json",
+  "outputDir": "src/shared/api/generated",
+  "additionalProperties": {
+    "typescriptThreePlus": true,
+    "withInterfaces": true,
+    "supportsES6": true,
+    "enumPropertyNaming": "original",
+    "modelPropertyNaming": "original"
+  }
+}
+

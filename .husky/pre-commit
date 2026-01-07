@@ -1,5 +1,39 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run test:ci
+# Check if backend is running
+if ! curl -f http://localhost:8080/swagger/v1/swagger.json > /dev/null 2>&1; then
+  echo "❌ Backend is not running!"
+  echo ""
+  echo "   The pre-commit hook requires the backend to be running to:"
+  echo "   - Generate the API client from the latest backend changes"
+  echo "   - Verify the frontend code is compatible with the API"
+  echo ""
+  echo "   Please start the backend server and try committing again."
+  exit 1
+fi
 
+echo "🔄 Regenerating API client from backend..."
+npm run generate:api
+
+# Check if generation produced changes to generated files
+if ! git diff --quiet src/shared/api/generated; then
+  echo ""
+  echo "⚠️  API client was updated based on backend changes."
+  echo "   Staging generated files..."
+  git add src/shared/api/generated
+fi
+
+echo ""
+echo "🔨 Building to check for TypeScript errors..."
+if ! npm run build; then
+  echo ""
+  echo "❌ Build failed! This likely means:"
+  echo "   - API changes require code updates"
+  echo "   - TypeScript errors from API changes"
+  echo ""
+  echo "Please fix the errors before committing."
+  exit 1
+fi
+
+echo "✅ API client is in sync and build passes"

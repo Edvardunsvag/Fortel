@@ -6,6 +6,7 @@ import { AsyncStatus } from '@/shared/redux/enums';
 import styles from './SyncPage.module.scss';
 import { selectAccount } from '@/features/auth/authSlice';
 import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
+import { toSyncRequest } from '@/features/employees/toDto';
 
 export const SyncPage = () => {
   const { t } = useTranslation();
@@ -35,7 +36,8 @@ export const SyncPage = () => {
     const accessToken = tokenInput.trim();
 
     try {
-      const result = await dispatch(syncEmployeesData({ accessToken }));
+      const request = toSyncRequest(accessToken);
+      const result = await dispatch(syncEmployeesData(request));
       
       if (syncEmployeesData.fulfilled.match(result)) {
         if (result.payload.alreadySynced) {

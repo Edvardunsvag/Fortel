@@ -4,6 +4,8 @@ import { fetchEmployees, syncEmployees } from './api';
 import type { Employee, EmployeesState } from './types';
 import type { RootState } from '@/app/store';
 import { AsyncStatus } from '@/shared/redux/enums';
+import type { FortedleServerModelsSyncRequest } from '@/shared/api/generated/index';
+import { employeeFromDto, syncResultFromDto } from './fromDto';
 
 const initialState: EmployeesState = {
   employees: [],
@@ -15,7 +17,8 @@ export const loadEmployees = createAppAsyncThunk(
   'employees/loadEmployees',
   async (_, { rejectWithValue }) => {
     try {
-      const employees = await fetchEmployees();
+      const apiEmployees = await fetchEmployees();
+      const employees = apiEmployees.map(employeeFromDto);
       return { employees };
     } catch (error) {
       return rejectWithValue(
@@ -27,10 +30,10 @@ export const loadEmployees = createAppAsyncThunk(
 
 export const syncEmployeesData = createAppAsyncThunk(
   'employees/syncEmployeesData',
-  async (payload: { accessToken: string }, { rejectWithValue, dispatch }) => {
+  async (payload: FortedleServerModelsSyncRequest, { rejectWithValue, dispatch }) => {
     try {
-      const { accessToken } = payload;
-      const result = await syncEmployees(accessToken);
+      const apiResult = await syncEmployees(payload);
+      const result = syncResultFromDto(apiResult);
       // After successful sync, reload employees
       await dispatch(loadEmployees());
       return result;

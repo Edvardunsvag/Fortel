@@ -4,6 +4,8 @@ import type { RootState } from '@/app/store';
 import { AsyncStatus } from '@/shared/redux/enums';
 import { fetchLeaderboard as fetchLeaderboardApi, submitScore as submitScoreApi } from './api';
 import type { LeaderboardState } from './types';
+import type { FortedleServerModelsSubmitScoreRequest } from '@/shared/api/generated/index';
+import { leaderboardFromDto } from './fromDto';
 
 const initialState: LeaderboardState = {
   data: null,
@@ -17,7 +19,8 @@ export const fetchLeaderboard = createAppAsyncThunk(
   'leaderboard/fetchLeaderboard',
   async (date: string | undefined, { rejectWithValue }) => {
     try {
-      return await fetchLeaderboardApi(date);
+      const apiLeaderboard = await fetchLeaderboardApi(date);
+      return leaderboardFromDto(apiLeaderboard);
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to fetch leaderboard'
@@ -28,12 +31,10 @@ export const fetchLeaderboard = createAppAsyncThunk(
 
 export const submitScore = createAppAsyncThunk(
   'leaderboard/submitScore',
-  async (
-    { name, score, avatarImageUrl }: { name: string; score: number; avatarImageUrl?: string },
-    { rejectWithValue }
-  ) => {
+  async (request: FortedleServerModelsSubmitScoreRequest, { rejectWithValue }) => {
     try {
-      return await submitScoreApi({ name, score, avatarImageUrl });
+      const apiLeaderboard = await submitScoreApi(request);
+      return leaderboardFromDto(apiLeaderboard);
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to submit score'

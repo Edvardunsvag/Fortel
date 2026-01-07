@@ -6,7 +6,6 @@ common.ts
 configuration.ts
 docs/EmployeesApi.md
 docs/FortedleServerModelsEmployeeDto.md
-docs/FortedleServerModelsFinishRoundRequest.md
 docs/FortedleServerModelsGuessDto.md
 docs/FortedleServerModelsGuessHintDto.md
 docs/FortedleServerModelsLeaderboardDto.md

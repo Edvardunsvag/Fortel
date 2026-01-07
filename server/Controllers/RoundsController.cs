@@ -94,35 +94,5 @@ public class RoundsController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
-
-    [HttpPost("finish")]
-    public async Task<ActionResult<RoundDto>> FinishRound([FromBody] FinishRoundRequest request)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(request.UserId))
-            {
-                return BadRequest(new { error = "userId is required" });
-            }
-
-            if (string.IsNullOrWhiteSpace(request.Status))
-            {
-                return BadRequest(new { error = "status is required" });
-            }
-
-            var round = await _roundService.FinishRoundAsync(request);
-            return Ok(round);
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning(ex, "Round not found for finish");
-            return NotFound(new { error = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error finishing round");
-            return StatusCode(500, new { error = ex.Message });
-        }
-    }
 }
 

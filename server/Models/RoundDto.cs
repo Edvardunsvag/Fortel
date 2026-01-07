@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Fortedle.Server.Models;
 
 public class RoundDto
@@ -38,16 +40,9 @@ public class StartRoundRequest
 
 public class SaveGuessRequest
 {
-    public string UserId { get; set; } = string.Empty;
-    public string? Date { get; set; }
-    public GuessDto Guess { get; set; } = new();
-    public bool? FunfactRevealed { get; set; }
+    public required string UserId { get; set; }
+    public required string Date { get; set; }
+    [Required]
+    public required GuessDto Guess { get; set; }
+    public bool FunfactRevealed { get; set; }
 }
-
-public class FinishRoundRequest
-{
-    public string UserId { get; set; } = string.Empty;
-    public string? Date { get; set; }
-    public string Status { get; set; } = string.Empty; // "won" or "lost"
-}
-

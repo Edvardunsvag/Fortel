@@ -37,11 +37,6 @@ export interface FortedleServerModelsEmployeeDto {
     'funfact'?: string | null;
     'interests'?: Array<string> | null;
 }
-export interface FortedleServerModelsFinishRoundRequest {
-    'userId'?: string | null;
-    'date'?: string | null;
-    'status'?: string | null;
-}
 export interface FortedleServerModelsGuessDto {
     'employeeId'?: string | null;
     'employeeName'?: string | null;
@@ -79,8 +74,8 @@ export interface FortedleServerModelsRoundDto {
 export interface FortedleServerModelsSaveGuessRequest {
     'userId'?: string | null;
     'date'?: string | null;
-    'guess'?: FortedleServerModelsGuessDto;
-    'funfactRevealed'?: boolean | null;
+    'guess': FortedleServerModelsGuessDto;
+    'funfactRevealed'?: boolean;
 }
 export interface FortedleServerModelsStartRoundRequest {
     'userId'?: string | null;
@@ -539,38 +534,6 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @param {FortedleServerModelsFinishRoundRequest} [fortedleServerModelsFinishRoundRequest] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiRoundsFinishPost: async (fortedleServerModelsFinishRoundRequest?: FortedleServerModelsFinishRoundRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/Rounds/finish`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsFinishRoundRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -657,18 +620,6 @@ export const RoundsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {FortedleServerModelsFinishRoundRequest} [fortedleServerModelsFinishRoundRequest] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest?: FortedleServerModelsFinishRoundRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsRoundDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsFinishPost']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -712,15 +663,6 @@ export const RoundsApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
-         * @param {FortedleServerModelsFinishRoundRequest} [fortedleServerModelsFinishRoundRequest] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest?: FortedleServerModelsFinishRoundRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto> {
-            return localVarFp.apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -755,14 +697,6 @@ export interface RoundsApiInterface {
 
     /**
      * 
-     * @param {FortedleServerModelsFinishRoundRequest} [fortedleServerModelsFinishRoundRequest] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest?: FortedleServerModelsFinishRoundRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
-
-    /**
-     * 
      * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -792,16 +726,6 @@ export class RoundsApi extends BaseAPI implements RoundsApiInterface {
      */
     public apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig) {
         return RoundsApiFp(this.configuration).apiRoundsCurrentGet(userId, date, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {FortedleServerModelsFinishRoundRequest} [fortedleServerModelsFinishRoundRequest] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest?: FortedleServerModelsFinishRoundRequest, options?: RawAxiosRequestConfig) {
-        return RoundsApiFp(this.configuration).apiRoundsFinishPost(fortedleServerModelsFinishRoundRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -1,35 +1,15 @@
-import type { Employee } from './types';
 import { employeesApi, syncApi } from '@/shared/api/client';
-import type { FortedleServerModelsEmployeeDto, FortedleServerModelsSyncRequest } from '@/shared/api/generated/index';
+import type {
+  FortedleServerModelsEmployeeDto,
+  FortedleServerModelsSyncRequest,
+  FortedleServerModelsSyncResponse,
+} from '@/shared/api/generated/index';
 
-/**
- * Maps the generated API DTO to the application Employee type
- */
-const mapEmployeeDto = (dto: FortedleServerModelsEmployeeDto): Employee => {
-  return {
-    id: dto.id ?? '',
-    name: dto.name ?? '',
-    firstName: dto.firstName ?? '',
-    surname: dto.surname ?? '',
-    avatarImageUrl: dto.avatarImageUrl ?? undefined,
-    department: dto.department ?? '',
-    office: dto.office ?? '',
-    teams: dto.teams ?? [],
-    age: dto.age ?? '-',
-    supervisor: dto.supervisor ?? undefined,
-    funfact: dto.funfact ?? null,
-    interests: dto.interests ?? [],
-  };
-};
-
-export const fetchEmployees = async (): Promise<Employee[]> => {
+export const fetchEmployees = async (): Promise<FortedleServerModelsEmployeeDto[]> => {
   try {
     const response = await employeesApi.apiEmployeesGet();
-    const employeeDtos = response.data;
-    
-    const employees = employeeDtos.map(mapEmployeeDto);
-    console.log(`Successfully loaded ${employees.length} employees from database`);
-    return employees;
+    console.log(`Successfully loaded ${response.data.length} employees from database`);
+    return response.data;
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error) {
       const axiosError = error as { response?: { status?: number; statusText?: string } };
@@ -46,27 +26,12 @@ export const fetchEmployees = async (): Promise<Employee[]> => {
   }
 };
 
-export interface SyncResult {
-  success: boolean;
-  message: string;
-  count: number;
-  alreadySynced?: boolean;
-}
-
-export const syncEmployees = async (accessToken: string): Promise<SyncResult> => {
+export const syncEmployees = async (
+  request: FortedleServerModelsSyncRequest
+): Promise<FortedleServerModelsSyncResponse> => {
   try {
-    const request: FortedleServerModelsSyncRequest = {
-      accessToken: accessToken.trim(),
-    };
-    
     const response = await syncApi.apiSyncPost(request);
-    const result = response.data;
-    
-    return {
-      success: result.success ?? false,
-      message: result.message ?? '',
-      count: result.count ?? 0,
-    };
+    return response.data;
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error) {
       const axiosError = error as { response?: { data?: { error?: string } } };

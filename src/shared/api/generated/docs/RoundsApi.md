@@ -5,7 +5,6 @@ All URIs are relative to *http://localhost:8080*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**apiRoundsCurrentGet**](#apiroundscurrentget) | **GET** /api/Rounds/current | |
-|[**apiRoundsFinishPost**](#apiroundsfinishpost) | **POST** /api/Rounds/finish | |
 |[**apiRoundsGuessPost**](#apiroundsguesspost) | **POST** /api/Rounds/guess | |
 |[**apiRoundsStartPost**](#apiroundsstartpost) | **POST** /api/Rounds/start | |
 
@@ -52,57 +51,6 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: text/plain, application/json, text/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **apiRoundsFinishPost**
-> FortedleServerModelsRoundDto apiRoundsFinishPost()
-
-
-### Example
-
-```typescript
-import {
-    RoundsApi,
-    Configuration,
-    FortedleServerModelsFinishRoundRequest
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new RoundsApi(configuration);
-
-let fortedleServerModelsFinishRoundRequest: FortedleServerModelsFinishRoundRequest; // (optional)
-
-const { status, data } = await apiInstance.apiRoundsFinishPost(
-    fortedleServerModelsFinishRoundRequest
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsFinishRoundRequest** | **FortedleServerModelsFinishRoundRequest**|  | |
-
-
-### Return type
-
-**FortedleServerModelsRoundDto**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 

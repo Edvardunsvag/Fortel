@@ -8,6 +8,11 @@ import { hashEmployeeId } from '@/shared/utils/hashUtils';
 import { getTodayDateString } from '@/shared/utils/dateUtils';
 import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
 import * as roundApi from './api';
+import type {
+  FortedleServerModelsSaveGuessRequest,
+  FortedleServerModelsStartRoundRequest,
+} from '@/shared/api/generated/index';
+import { roundFromDto, type RoundDto } from './fromDto';
 
 const initialState: GameState = {
   employeeOfTheDayId: null,
@@ -124,7 +129,7 @@ const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    loadRoundFromState: (state, action: PayloadAction<{ round: roundApi.RoundDto }>) => {
+    loadRoundFromState: (state, action: PayloadAction<{ round: RoundDto }>) => {
       const round = action.payload.round;
       const today = getTodayDateString();
       
@@ -256,11 +261,13 @@ export const loadRoundFromServer = createAppAsyncThunk(
   'game/loadRoundFromServer',
   async (params: { userId: string; date?: string }, { rejectWithValue, dispatch }) => {
     try {
-      const round = await roundApi.getCurrentRound(params.userId, params.date);
-      if (round) {
+      const apiRound = await roundApi.getCurrentRound(params.userId, params.date);
+      if (apiRound) {
+        const round = roundFromDto(apiRound);
         dispatch(loadRoundFromState({ round }));
+        return round;
       }
-      return round;
+      return null;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to load round');
     }
@@ -269,9 +276,10 @@ export const loadRoundFromServer = createAppAsyncThunk(
 
 export const startRoundOnServer = createAppAsyncThunk(
   'game/startRoundOnServer',
-  async (params: { userId: string; date?: string; employeeOfTheDayId?: string }, { rejectWithValue, dispatch }) => {
+  async (params: FortedleServerModelsStartRoundRequest, { rejectWithValue, dispatch }) => {
     try {
-      const round = await roundApi.startRound(params);
+      const apiRound = await roundApi.startRound(params);
+      const round = roundFromDto(apiRound);
       dispatch(loadRoundFromState({ round }));
       return round;
     } catch (error) {
@@ -282,9 +290,10 @@ export const startRoundOnServer = createAppAsyncThunk(
 
 export const saveGuessToServer = createAppAsyncThunk(
   'game/saveGuessToServer',
-  async (params: { userId: string; date?: string; guess: Guess; funfactRevealed?: boolean }, { rejectWithValue, dispatch }) => {
+  async (params: FortedleServerModelsSaveGuessRequest, { rejectWithValue, dispatch }) => {
     try {
-      const round = await roundApi.saveGuess(params);
+      const apiRound = await roundApi.saveGuess(params);
+      const round = roundFromDto(apiRound);
       dispatch(loadRoundFromState({ round }));
       return round;
     } catch (error) {

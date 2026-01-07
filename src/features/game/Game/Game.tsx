@@ -22,6 +22,8 @@ import {
   startRoundOnServer,
 } from '@/features/game/gameSlice';
 import type { Guess } from '@/features/game/types';
+import { toSaveGuessRequest, toStartRoundRequest } from '@/features/game/toDto';
+import { toSubmitScoreRequest } from '@/features/leaderboard/toDto';
 import { fetchLeaderboard, selectLeaderboard, submitScore } from '@/features/leaderboard/leaderboardSlice';
 import { AsyncStatus } from '@/shared/redux/enums';
 import { getDateSeed, getTodayDateString, selectIndexBySeed } from '@/shared/utils/dateUtils';
@@ -172,11 +174,8 @@ export const Game = () => {
         
         // Start round on server if user is logged in
         if (userId) {
-          dispatch(startRoundOnServer({
-            userId,
-            date: today,
-            employeeOfTheDayId: hashedId,
-          })).catch((error) => {
+          const request = toStartRoundRequest(userId, today, hashedId);
+          dispatch(startRoundOnServer(request)).catch((error) => {
             console.error('Failed to start round on server:', error);
           });
         }
@@ -210,20 +209,12 @@ export const Game = () => {
       };
       
       // Save first dummy guess
-      dispatch(saveGuessToServer({
-        userId,
-        date: today,
-        guess: dummyGuess,
-        funfactRevealed: true,
-      }))
+      const firstRequest = toSaveGuessRequest(userId, today, dummyGuess, true);
+      dispatch(saveGuessToServer(firstRequest))
         .then(() => {
           // Save second dummy guess
-          return dispatch(saveGuessToServer({
-            userId,
-            date: today,
-            guess: dummyGuess,
-            funfactRevealed: true,
-          }));
+          const secondRequest = toSaveGuessRequest(userId, today, dummyGuess, true);
+          return dispatch(saveGuessToServer(secondRequest));
         })
         .catch((error) => {
           console.error('Failed to save funfact reveal to server:', error);
@@ -242,11 +233,8 @@ export const Game = () => {
       const avatarImageUrl = matchingEmployee?.avatarImageUrl;
 
       hasSubmittedScore.current = true;
-      dispatch(submitScore({
-        name: submitUserName,
-        score: totalGuesses,
-        avatarImageUrl,
-      }))
+      const submitRequest = toSubmitScoreRequest(submitUserName, totalGuesses, avatarImageUrl);
+      dispatch(submitScore(submitRequest))
         .then(() => {
           dispatch(fetchLeaderboard());
         })
@@ -321,12 +309,8 @@ export const Game = () => {
         isCorrect: guessedEmployee.id === targetEmployee.id,
       };
 
-      dispatch(saveGuessToServer({
-        userId,
-        date: today,
-        guess,
-        funfactRevealed,
-      })).catch((error) => {
+      const request = toSaveGuessRequest(userId, today, guess, funfactRevealed);
+      dispatch(saveGuessToServer(request)).catch((error) => {
         console.error('Failed to save guess to server:', error);
       });
     }

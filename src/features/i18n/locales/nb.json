@@ -11,7 +11,7 @@
   },
   "game": {
     "title": "Fortedle",
-    "subtitle": "Gjett dagens ansatt!",
+    "subtitle": "Du må velge et ansattnavn i søkefeltet for å spille, ",
     "loadingEmployees": "Laster ansatte...",
     "failedToLoad": "Kunne ikke laste ansatte. Vennligst oppdater siden.",
     "noEmployees": "Ingen ansatte funnet.",
@@ -31,7 +31,7 @@
     "startGame": "Spill",
     "startingGame": "Starter spill...",
     "modeSelection": {
-      "subtitle": "Gjett Forte Digital ansatte.",
+      "subtitle": "Gjett Forte ansatte.",
       "classic": {
         "title": "Klassisk",
         "description": "Få hint ved hvert forsøk.",

@@ -266,14 +266,13 @@ export const Game = () => {
       <div className={styles.container}>
         <h1 className={styles.title}>{t('game.title')}</h1>
         <div className={styles.headerInfo}>
-          <p className={styles.subtitle}>{t('game.subtitle')}</p>
+          <p className={styles.subtitle}>{t('game.subtitle')}  {account?.name}!</p>
           {gameStatus === 'playing' && (
             <div className={styles.guessCountBadge}>
               {t('game.guesses')}: <strong>{totalGuesses}</strong>
             </div>
           )}
         </div>
-
         {funfactRevealed && targetEmployee && (
           <div className={styles.funfactClueContainer}>
             {hasNoFunfactOrInterests ? (

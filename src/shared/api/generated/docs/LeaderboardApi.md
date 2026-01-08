@@ -5,7 +5,7 @@ All URIs are relative to *http://localhost:8080*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**apiLeaderboardGet**](#apileaderboardget) | **GET** /api/Leaderboard | |
-|[**apiLeaderboardPost**](#apileaderboardpost) | **POST** /api/Leaderboard | |
+|[**apiLeaderboardSubmitScorePost**](#apileaderboardsubmitscorepost) | **POST** /api/Leaderboard/submit-score | |
 
 # **apiLeaderboardGet**
 > FortedleServerModelsLeaderboardDto apiLeaderboardGet()
@@ -57,8 +57,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **apiLeaderboardPost**
-> FortedleServerModelsSubmitScoreResponse apiLeaderboardPost()
+# **apiLeaderboardSubmitScorePost**
+> FortedleServerModelsSubmitScoreResponse apiLeaderboardSubmitScorePost()
 
 
 ### Example
@@ -75,7 +75,7 @@ const apiInstance = new LeaderboardApi(configuration);
 
 let fortedleServerModelsSubmitScoreRequest: FortedleServerModelsSubmitScoreRequest; // (optional)
 
-const { status, data } = await apiInstance.apiLeaderboardPost(
+const { status, data } = await apiInstance.apiLeaderboardSubmitScorePost(
     fortedleServerModelsSubmitScoreRequest
 );
 ```

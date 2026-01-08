@@ -60,6 +60,9 @@ export interface FortedleServerModelsLeaderboardEntryDto {
     'avatarImageUrl'?: string | null;
     'submittedAt'?: string;
 }
+export interface FortedleServerModelsRevealFunfactRequest {
+    'roundId'?: number;
+}
 export interface FortedleServerModelsRoundDto {
     'id'?: number;
     'userId'?: string | null;
@@ -75,7 +78,6 @@ export interface FortedleServerModelsSaveGuessRequest {
     'userId'?: string | null;
     'date'?: string | null;
     'guess': FortedleServerModelsGuessDto;
-    'funfactRevealed'?: boolean;
 }
 export interface FortedleServerModelsStartRoundRequest {
     'userId'?: string | null;
@@ -350,8 +352,8 @@ export const LeaderboardApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLeaderboardPost: async (fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/Leaderboard`;
+        apiLeaderboardSubmitScorePost: async (fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Leaderboard/submit-score`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -403,10 +405,10 @@ export const LeaderboardApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsSubmitScoreResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest, options);
+        async apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsSubmitScoreResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['LeaderboardApi.apiLeaderboardPost']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['LeaderboardApi.apiLeaderboardSubmitScorePost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -433,8 +435,8 @@ export const LeaderboardApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSubmitScoreResponse> {
-            return localVarFp.apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(axios, basePath));
+        apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSubmitScoreResponse> {
+            return localVarFp.apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -457,7 +459,7 @@ export interface LeaderboardApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSubmitScoreResponse>;
+    apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSubmitScoreResponse>;
 
 }
 
@@ -481,8 +483,8 @@ export class LeaderboardApi extends BaseAPI implements LeaderboardApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig) {
-        return LeaderboardApiFp(this.configuration).apiLeaderboardPost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig) {
+        return LeaderboardApiFp(this.configuration).apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -566,6 +568,38 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiRoundsRevealFunfactPost: async (fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Rounds/reveal-funfact`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsRevealFunfactRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -632,6 +666,18 @@ export const RoundsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsRoundDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsRevealFunfactPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -672,6 +718,15 @@ export const RoundsApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto> {
+            return localVarFp.apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -702,6 +757,14 @@ export interface RoundsApiInterface {
      * @throws {RequiredError}
      */
     apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
+
+    /**
+     * 
+     * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
 
     /**
      * 
@@ -736,6 +799,16 @@ export class RoundsApi extends BaseAPI implements RoundsApiInterface {
      */
     public apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options?: RawAxiosRequestConfig) {
         return RoundsApiFp(this.configuration).apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig) {
+        return RoundsApiFp(this.configuration).apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

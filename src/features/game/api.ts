@@ -1,6 +1,7 @@
 import { roundsApi } from '@/shared/api/client';
 import type {
   FortedleServerModelsRoundDto,
+  FortedleServerModelsRevealFunfactRequest,
   FortedleServerModelsSaveGuessRequest,
   FortedleServerModelsStartRoundRequest,
 } from '@/shared/api/generated/index';
@@ -56,6 +57,23 @@ export const saveGuess = async (
     }
     throw new Error(
       error instanceof Error ? error.message : 'Failed to save guess'
+    );
+  }
+};
+
+export const revealFunfact = async (
+  request: FortedleServerModelsRevealFunfactRequest
+): Promise<FortedleServerModelsRoundDto> => {
+  try {
+    const response = await roundsApi.apiRoundsRevealFunfactPost(request);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { statusText?: string } };
+      throw new Error(`Failed to reveal funfact: ${axiosError.response?.statusText}`);
+    }
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to reveal funfact'
     );
   }
 };

@@ -1,6 +1,7 @@
 import type {
   FortedleServerModelsGuessDto,
   FortedleServerModelsGuessHintDto,
+  FortedleServerModelsRevealFunfactRequest,
   FortedleServerModelsSaveGuessRequest,
   FortedleServerModelsStartRoundRequest,
 } from '@/shared/api/generated/index';
@@ -29,14 +30,23 @@ export const guessToDto = (guess: Guess): FortedleServerModelsGuessDto => {
 export const toSaveGuessRequest = (
   userId: string,
   date: string | undefined,
-  guess: Guess,
-  funfactRevealed: boolean | undefined
+  guess: Guess
 ): FortedleServerModelsSaveGuessRequest => {
   return {
     userId,
     date: date ?? undefined,
     guess: guessToDto(guess),
-    funfactRevealed: funfactRevealed ?? undefined,
+  };
+};
+
+/**
+ * Maps application types to RevealFunfactRequest
+ */
+export const toRevealFunfactRequest = (
+  roundId: number
+): FortedleServerModelsRevealFunfactRequest => {
+  return {
+    roundId,
   };
 };
 

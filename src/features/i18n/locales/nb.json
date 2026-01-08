@@ -26,8 +26,10 @@
     "comeBackTomorrow": "Kom tilbake i morgen!",
     "revealFunfact": "Vis personen sin funfact og interesser",
     "costsTwoGuesses": "koster +2 gjettinger",
-    "buyInterests": "Kjøp interesser (+2)",
+    "buyInterests": "Kjøp interesser (+1)",
     "noFunfactOrInterests": "Aiai! Dagens ansatt hadde visst ingenting i Huma. Uffameg, det var leit!",
+    "startGame": "Spill",
+    "startingGame": "Starter spill...",
     "modeSelection": {
       "subtitle": "Gjett Forte Digital ansatte.",
       "classic": {

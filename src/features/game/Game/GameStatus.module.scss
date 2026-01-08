@@ -51,32 +51,6 @@
   }
 }
 
-.lost {
-  .content {
-    background-color: $color-overlay-red;
-    border: 2px solid $color-dark-accent;
-    border-radius: $radius-lg;
-    padding: $spacing-xl;
-    box-shadow: 0 4px 12px rgba(81, 30, 41, 0.2);
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  h2 {
-    margin: 0 0 $spacing-sm 0;
-    font-size: 2rem;
-    font-weight: 700;
-    color: $color-dark-accent;
-  }
-
-  p {
-    margin: 0;
-    font-size: 1.25rem;
-    color: $color-dark-accent;
-    font-weight: 500;
-  }
-}
-
 .guessCount {
   margin: 0;
   font-size: 1.125rem;
@@ -105,20 +79,6 @@
 
     .emoji {
       font-size: 3rem;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-    }
-
-    p {
-      font-size: 1.125rem;
-    }
-  }
-
-  .lost {
-    .content {
-      padding: $spacing-lg;
     }
 
     h2 {

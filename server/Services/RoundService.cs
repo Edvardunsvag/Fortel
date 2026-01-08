@@ -11,6 +11,7 @@ public interface IRoundService
     Task<RoundDto?> GetCurrentRoundAsync(string userId, string? date = null);
     Task<RoundDto> StartRoundAsync(StartRoundRequest request);
     Task<RoundDto> SaveGuessAsync(SaveGuessRequest request);
+    Task<RoundDto> RevealFunfactAsync(RevealFunfactRequest request);
 }
 
 public class RoundService : IRoundService
@@ -98,7 +99,6 @@ public class RoundService : IRoundService
 
         // Update round
         round.GuessesJson = JsonSerializer.Serialize(guesses);
-        round.FunfactRevealed = request.FunfactRevealed;
         
         // Update status if game is won
         if (request.Guess.IsCorrect)
@@ -107,6 +107,24 @@ public class RoundService : IRoundService
             round.FinishedAt = DateTime.UtcNow;
         }
 
+        round.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return MapToDto(round);
+    }
+
+    public async Task<RoundDto> RevealFunfactAsync(RevealFunfactRequest request)
+    {
+        var round = await _context.Rounds
+            .FirstOrDefaultAsync(r => r.Id == request.RoundId);
+
+        if (round == null)
+        {
+            throw new InvalidOperationException($"No round found with ID {request.RoundId}");
+        }
+
+        // Update only the FunfactRevealed flag
+        round.FunfactRevealed = true;
         round.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 

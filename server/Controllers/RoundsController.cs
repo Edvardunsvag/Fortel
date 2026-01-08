@@ -94,5 +94,30 @@ public class RoundsController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
+
+    [HttpPost("reveal-funfact")]
+    public async Task<ActionResult<RoundDto>> RevealFunfact([FromBody] RevealFunfactRequest request)
+    {
+        try
+        {
+            if (request.RoundId <= 0)
+            {
+                return BadRequest(new { error = "roundId is required and must be greater than 0" });
+            }
+
+            var round = await _roundService.RevealFunfactAsync(request);
+            return Ok(round);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Round not found for funfact reveal");
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error revealing funfact");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
 }
 

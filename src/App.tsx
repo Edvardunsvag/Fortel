@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import styles from './App.module.scss';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { LeaderboardPage } from './features/leaderboard/LeaderboardPage/LeaderboardPage';
-import { PlayPage } from './features/game/PlayPage/PlayPage';
+import { Game } from './features/game/Game/Game';
 import { RulesPage } from './features/game/RulesPage/RulesPage';
 import { SyncPage } from './features/employees/SyncPage/SyncPage';
 import { EmployeesPage } from './features/employees/EmployeesPage/EmployeesPage';
@@ -46,7 +46,7 @@ export const App = () => {
   const renderPage = () => {
     switch (activeTab) {
       case ActiveTab.Play:
-        return <PlayPage />;
+        return <Game />;
       case ActiveTab.Leaderboard:
         return <LeaderboardPage />;
       case ActiveTab.Rules:
@@ -54,13 +54,13 @@ export const App = () => {
       case ActiveTab.Sync:
         // Only allow admin to access sync page
         if (!isAdmin) {
-          return <PlayPage />;
+          return <Game />;
         }
         return <SyncPage />;
       case ActiveTab.Employees:
         return <EmployeesPage />;
       default:
-        return <PlayPage />;
+        return <Game />;
     }
   };
 

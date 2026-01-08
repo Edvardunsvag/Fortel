@@ -44,5 +44,9 @@ public class SaveGuessRequest
     public required string Date { get; set; }
     [Required]
     public required GuessDto Guess { get; set; }
-    public bool FunfactRevealed { get; set; }
+}
+
+public class RevealFunfactRequest
+{
+    public required int RoundId { get; set; }
 }

@@ -6,6 +6,7 @@ All URIs are relative to *http://localhost:8080*
 |------------- | ------------- | -------------|
 |[**apiRoundsCurrentGet**](#apiroundscurrentget) | **GET** /api/Rounds/current | |
 |[**apiRoundsGuessPost**](#apiroundsguesspost) | **POST** /api/Rounds/guess | |
+|[**apiRoundsRevealFunfactPost**](#apiroundsrevealfunfactpost) | **POST** /api/Rounds/reveal-funfact | |
 |[**apiRoundsStartPost**](#apiroundsstartpost) | **POST** /api/Rounds/start | |
 
 # **apiRoundsCurrentGet**
@@ -89,6 +90,57 @@ const { status, data } = await apiInstance.apiRoundsGuessPost(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **fortedleServerModelsSaveGuessRequest** | **FortedleServerModelsSaveGuessRequest**|  | |
+
+
+### Return type
+
+**FortedleServerModelsRoundDto**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json, text/json, application/*+json
+ - **Accept**: text/plain, application/json, text/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiRoundsRevealFunfactPost**
+> FortedleServerModelsRoundDto apiRoundsRevealFunfactPost()
+
+
+### Example
+
+```typescript
+import {
+    RoundsApi,
+    Configuration,
+    FortedleServerModelsRevealFunfactRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new RoundsApi(configuration);
+
+let fortedleServerModelsRevealFunfactRequest: FortedleServerModelsRevealFunfactRequest; // (optional)
+
+const { status, data } = await apiInstance.apiRoundsRevealFunfactPost(
+    fortedleServerModelsRevealFunfactRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **fortedleServerModelsRevealFunfactRequest** | **FortedleServerModelsRevealFunfactRequest**|  | |
 
 
 ### Return type

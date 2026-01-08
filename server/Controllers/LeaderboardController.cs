@@ -34,7 +34,7 @@ public class LeaderboardController : ControllerBase
         }
     }
 
-    [HttpPost]
+    [HttpPost("submit-score")]
     public async Task<ActionResult<SubmitScoreResponse>> SubmitScore([FromBody] SubmitScoreRequest request)
     {
         try

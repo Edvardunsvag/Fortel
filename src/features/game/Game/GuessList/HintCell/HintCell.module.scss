@@ -1,0 +1,14 @@
+@use '../../../../../shared/styles/variables.scss' as *;
+
+.hintCell {
+  padding: $spacing-sm;
+  min-width: 100px;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .hintCell {
+    min-width: 80px;
+  }
+}
+

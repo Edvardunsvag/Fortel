@@ -10,9 +10,13 @@ import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
 import * as roundApi from './api';
 import type {
   FortedleServerModelsSaveGuessRequest,
+  FortedleServerModelsRevealFunfactRequest,
   FortedleServerModelsStartRoundRequest,
 } from '@/shared/api/generated/index';
 import { roundFromDto, type RoundDto } from './fromDto';
+
+// Cost of revealing the funfact (in guesses)
+export const FUNFACT_REVEAL_COST = 1;
 
 const initialState: GameState = {
   employeeOfTheDayId: null,
@@ -22,6 +26,7 @@ const initialState: GameState = {
   attemptedByUserId: null,
   attemptDate: null,
   funfactRevealed: false,
+  roundId: null,
 };
 
 const calculateHints = (
@@ -142,6 +147,7 @@ const gameSlice = createSlice({
         state.attemptedByUserId = round.userId;
         state.attemptDate = round.date;
         state.currentDate = today;
+        state.roundId = round.id;
       }
     },
     initializeGame: (state, action: PayloadAction<string>) => {
@@ -155,6 +161,7 @@ const gameSlice = createSlice({
         state.attemptedByUserId = null;
         state.attemptDate = null;
         state.funfactRevealed = false;
+        state.roundId = null;
       } else if (state.status === 'idle') {
         state.status = 'playing';
       }
@@ -168,16 +175,6 @@ const gameSlice = createSlice({
         return;
       }
       
-      // Cost 2 guesses - add two dummy guess entries
-      const dummyGuess: Guess = {
-        employeeId: '',
-        employeeName: '',
-        hints: [],
-        isCorrect: false,
-      };
-      
-      state.guesses.push(dummyGuess);
-      state.guesses.push(dummyGuess);
       state.funfactRevealed = true;
     },
     makeGuess: (
@@ -228,31 +225,26 @@ export const selectEmployeeOfTheDayId = (state: RootState): string | null =>
 export const selectFunfactRevealed = (state: RootState): boolean =>
   state.game.funfactRevealed;
 
-const selectAllGuesses = (state: RootState): Guess[] => state.game.guesses;
+export const selectAttemptedByUserId = (state: RootState): string | null =>
+  state.game.attemptedByUserId;
 
-export const selectGuesses = createSelector(
-  [selectAllGuesses],
-  (guesses): Guess[] => guesses.filter(guess => guess.employeeId !== '') // Filter out dummy guesses from revealFunfact
+export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
+
+export const selectTotalGuesses = createSelector(
+  [selectGuesses, selectFunfactRevealed],
+  (guesses, funfactRevealed): number => 
+    guesses.length + (funfactRevealed ? FUNFACT_REVEAL_COST : 0)
 );
-
-export const selectTotalGuesses = (state: RootState): number => 
-  state.game.guesses.length; // Total guesses including reveal cost
 
 export const selectGameStatus = (state: RootState): GameState['status'] =>
   state.game.status;
 
-export const selectCanGuess = (state: RootState, isInLeaderboard?: boolean): boolean => {
-  if (state.game.status !== 'playing') {
-    return false;
-  }
-
-  // If user is in leaderboard, they can't guess
-  if (isInLeaderboard) {
-    return false;
-  }
-
-  return true;
+export const selectCanGuess = (state: RootState): boolean => {
+  return state.game.status === 'playing';
 };
+
+export const selectRoundId = (state: RootState): number | null =>
+  state.game.roundId;
 
 
 
@@ -298,6 +290,20 @@ export const saveGuessToServer = createAppAsyncThunk(
       return round;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to save guess');
+    }
+  }
+);
+
+export const revealFunfactOnServer = createAppAsyncThunk(
+  'game/revealFunfactOnServer',
+  async (params: FortedleServerModelsRevealFunfactRequest, { rejectWithValue, dispatch }) => {
+    try {
+      const apiRound = await roundApi.revealFunfact(params);
+      const round = roundFromDto(apiRound);
+      dispatch(loadRoundFromState({ round }));
+      return round;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to reveal funfact');
     }
   }
 );

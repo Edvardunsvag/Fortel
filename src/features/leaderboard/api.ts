@@ -26,8 +26,8 @@ export const fetchLeaderboard = async (
 export const submitScore = async (
   request: FortedleServerModelsSubmitScoreRequest
 ): Promise<FortedleServerModelsLeaderboardDto> => {
-  try {
-    await leaderboardApi.apiLeaderboardPost(request);
+    try {
+      await leaderboardApi.apiLeaderboardSubmitScorePost(request);
     
     // Fetch the updated leaderboard after submission
     const leaderboardResponse = await leaderboardApi.apiLeaderboardGet();

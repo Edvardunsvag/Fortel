@@ -28,6 +28,8 @@
     "costsTwoGuesses": "costs +2 guesses",
     "buyInterests": "Buy interests (+2)",
     "noFunfactOrInterests": "Oh no! Today's employee had nothing in Huma. What a shame!",
+    "startGame": "Play",
+    "startingGame": "Starting game...",
     "modeSelection": {
       "subtitle": "Guess Forte Digital employees.",
       "classic": {

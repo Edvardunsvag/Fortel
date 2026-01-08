@@ -120,6 +120,7 @@ describe('Game - Input Field Visibility', () => {
         attemptedByUserId: null,
         attemptDate: null,
         funfactRevealed: false,
+        roundId: null,
       },
     });
 

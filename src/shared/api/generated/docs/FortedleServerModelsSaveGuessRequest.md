@@ -8,7 +8,6 @@ Name | Type | Description | Notes
 **userId** | **string** |  | [optional] [default to undefined]
 **date** | **string** |  | [optional] [default to undefined]
 **guess** | [**FortedleServerModelsGuessDto**](FortedleServerModelsGuessDto.md) |  | [default to undefined]
-**funfactRevealed** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -19,7 +18,6 @@ const instance: FortedleServerModelsSaveGuessRequest = {
     userId,
     date,
     guess,
-    funfactRevealed,
 };
 ```
 

@@ -10,6 +10,7 @@ docs/FortedleServerModelsGuessDto.md
 docs/FortedleServerModelsGuessHintDto.md
 docs/FortedleServerModelsLeaderboardDto.md
 docs/FortedleServerModelsLeaderboardEntryDto.md
+docs/FortedleServerModelsRevealFunfactRequest.md
 docs/FortedleServerModelsRoundDto.md
 docs/FortedleServerModelsSaveGuessRequest.md
 docs/FortedleServerModelsStartRoundRequest.md

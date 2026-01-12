@@ -4,8 +4,8 @@
  * OAuth credentials from Harvest application settings
  *
  * IMPORTANT: The redirect_uri must match exactly what's configured in your Harvest application.
- * - Development: http://localhost:5173/ (with trailing slash)
- * - Production: https://fortedle.hackathon.forteapps.net
+ * - Development: http://localhost:5173/time-lottery
+ * - Production: https://fortedle.hackathon.forteapps.net/time-lottery
  *
  * Required environment variables:
  * - VITE_HARVEST_CLIENT_ID (required)
@@ -14,17 +14,18 @@
  */
 const getRedirectUri = (): string => {
   // Allow override via environment variable
+  console.log("VITE_HARVEST_REDIRECT_URI", import.meta.env.VITE_HARVEST_REDIRECT_URI);
   if (import.meta.env.VITE_HARVEST_REDIRECT_URI) {
     return import.meta.env.VITE_HARVEST_REDIRECT_URI;
   }
 
-  // In development, use localhost with /harvest path (matches Harvest app settings)
+  // In development, use localhost with /time-lottery path (matches Harvest app settings)
   if (import.meta.env.DEV) {
-    return "http://localhost:5173/harvest";
+    return "http://localhost:5173/time-lottery";
   }
 
-  // In production, use the production URL with /harvest path
-  return "https://fortedle.hackathon.forteapps.net/harvest";
+  // In production, use the production URL with /time-lottery path
+  return "https://fortedle.hackathon.forteapps.net/time-lottery";
 };
 
 const clientId = import.meta.env.VITE_HARVEST_CLIENT_ID;

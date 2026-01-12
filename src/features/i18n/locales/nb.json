@@ -4,6 +4,7 @@
     "leaderboard": "Toppliste",
     "rules": "Regler",
     "employees": "Ansatte",
+    "harvest": "Harvest",
     "sync": "Synkroniser"
   },
   "admin": {
@@ -166,6 +167,28 @@
   "loginScreen": {
     "title": "Velkommen til Fortedle",
     "subtitle": "Vennligst logg inn med din Microsoft-konto for å få tilgang til spillet og topplisten."
+  },
+  "harvest": {
+    "title": "Harvest Tidsregistrering",
+    "description": "Koble til din Harvest-konto for å se tidsregistreringene dine. Du vil bli omdirigert til Harvest for å autorisere denne applikasjonen.",
+    "connect": "Koble til Harvest",
+    "connecting": "Kobler til...",
+    "welcome": "Velkommen",
+    "email": "E-post",
+    "userId": "Bruker-ID",
+    "disconnect": "Koble fra",
+    "fetchEntries": "Hent tidsregistreringer",
+    "selectMonth": "Velg måned",
+    "fromDate": "Fra dato",
+    "toDate": "Til dato",
+    "getEntries": "Hent tidsregistreringer",
+    "loading": "Laster...",
+    "results": "Resultater",
+    "foundEntries": "Fant {{count}} registreringer",
+    "from": "fra",
+    "to": "til",
+    "totalHours": "Totalt antall timer",
+    "week": "Uke"
   }
 }
 

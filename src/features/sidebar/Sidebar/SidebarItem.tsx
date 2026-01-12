@@ -1,4 +1,6 @@
+import { Link, useLocation } from 'react-router-dom';
 import { ActiveTab } from '@/features/sidebar';
+import { tabToRoute } from '@/shared/routes';
 import styles from './Sidebar.module.scss';
 
 interface SidebarItemProps {
@@ -18,11 +20,14 @@ export const SidebarItem = ({
   onTabClick,
   onKeyDown,
 }: SidebarItemProps) => {
-  const isActive = activeTab === tab;
+  const location = useLocation();
+  const route = tabToRoute[tab];
+  const isActive = activeTab === tab || location.pathname === route;
 
   return (
     <li>
-      <button
+      <Link
+        to={route}
         className={`${styles.navItem} ${isActive ? styles.active : ''}`}
         onClick={() => onTabClick(tab)}
         onKeyDown={(e) => onKeyDown(e, tab)}
@@ -31,7 +36,7 @@ export const SidebarItem = ({
       >
         <span className={styles.icon}>{icon}</span>
         <span className={styles.label}>{label}</span>
-      </button>
+      </Link>
     </li>
   );
 };

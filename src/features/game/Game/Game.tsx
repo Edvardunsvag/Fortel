@@ -1,7 +1,7 @@
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { selectAccount } from '@/features/auth/authSlice';
-import { useEmployees } from '@/features/employees/queries';
-import type { Employee } from '@/features/employees/types';
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { selectAccount } from "@/features/auth/authSlice";
+import { useEmployees } from "@/features/employees/queries";
+import type { Employee } from "@/features/employees/types";
 import {
   calculateHintsForGuess,
   FUNFACT_REVEAL_COST,
@@ -11,25 +11,25 @@ import {
   selectEmployeeOfTheDayId,
   selectGameStatus,
   selectGuesses,
-} from '@/features/game/gameSlice';
-import { useCurrentRound, useStartRound, useSaveGuess } from '@/features/game/queries';
-import { toSaveGuessRequest, toStartRoundRequest } from '@/features/game/toDto';
-import type { Guess } from '@/features/game/types';
-import { getDateSeed, getTodayDateString, selectIndexBySeed } from '@/shared/utils/dateUtils';
-import { findEmployeeByHash, hashEmployeeId } from '@/shared/utils/hashUtils';
-import { findMatchingEmployee } from '@/shared/utils/nameMatcher';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { triggerConfetti } from '../utils';
-import styles from './Game.module.scss';
-import { GameStatus } from './GameStatus';
-import { GameHeader } from './GameHeader';
-import { FunfactReveal } from './FunfactReveal';
-import { GameInputRow } from './GameInputRow';
-import { StartGameButton } from './StartGameButton';
-import { useLeaderboard, useSubmitScore } from '@/features/leaderboard/queries';
-import { toSubmitScoreRequest } from '@/features/leaderboard/toDto';
-import { GuessList } from './GuessList/GuessList';
+} from "@/features/game/gameSlice";
+import { useCurrentRound, useStartRound, useSaveGuess } from "@/features/game/queries";
+import { toSaveGuessRequest, toStartRoundRequest } from "@/features/game/toDto";
+import type { Guess } from "@/features/game/types";
+import { getDateSeed, getTodayDateString, selectIndexBySeed } from "@/shared/utils/dateUtils";
+import { findEmployeeByHash, hashEmployeeId } from "@/shared/utils/hashUtils";
+import { findMatchingEmployee } from "@/shared/utils/nameMatcher";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { triggerConfetti } from "../utils";
+import styles from "./Game.module.scss";
+import { GameStatus } from "./GameStatus";
+import { GameHeader } from "./GameHeader";
+import { FunfactReveal } from "./FunfactReveal";
+import { GameInputRow } from "./GameInputRow";
+import { StartGameButton } from "./StartGameButton";
+import { useLeaderboard, useSubmitScore } from "@/features/leaderboard/queries";
+import { toSubmitScoreRequest } from "@/features/leaderboard/toDto";
+import { GuessList } from "./GuessList/GuessList";
 
 export const Game = () => {
   const { t } = useTranslation();
@@ -48,9 +48,9 @@ export const Game = () => {
   const startRoundMutation = useStartRound();
   const saveGuessMutation = useSaveGuess();
   const submitScoreMutation = useSubmitScore();
-  const { data: currentRound } = useCurrentRound(userId || '', today, !!userId && !attemptedByUserId);
+  const { data: currentRound } = useCurrentRound(userId || "", today, !!userId && !attemptedByUserId);
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [showStatusMessage, setShowStatusMessage] = useState(false);
   const [isStartingGame, setIsStartingGame] = useState(false);
 
@@ -60,11 +60,10 @@ export const Game = () => {
       dispatch(loadRoundFromState({ round: currentRound }));
     }
   }, [currentRound, dispatch]);
- 
 
   // Show status message and trigger confetti when game is won
   useEffect(() => {
-    if (gameStatus === 'won' && guesses.length > 0) {
+    if (gameStatus === "won" && guesses.length > 0) {
       // Wait for last box animation to finish (3100ms total)
       const animationDelay = 3100;
 
@@ -79,14 +78,14 @@ export const Game = () => {
 
   const handleGuess = async (employeeId: string) => {
     if (!canGuess || !employeeOfTheDayId) {
-      console.warn('Cannot guess:', { canGuess, employeeOfTheDayId });
+      console.warn("Cannot guess:", { canGuess, employeeOfTheDayId });
       return;
     }
 
     const guessedEmployee = employees.find((emp) => emp.id === employeeId);
 
     if (!guessedEmployee) {
-      console.warn('Employee not found:', employeeId);
+      console.warn("Employee not found:", employeeId);
       return;
     }
 
@@ -94,7 +93,7 @@ export const Game = () => {
     const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today);
 
     if (!targetEmployee) {
-      console.error('Target employee not found for hash:', employeeOfTheDayId);
+      console.error("Target employee not found for hash:", employeeOfTheDayId);
       return;
     }
 
@@ -118,44 +117,38 @@ export const Game = () => {
         // Submit score to leaderboard if guess is correct and user is not already on leaderboard
         if (isCorrect && account?.name) {
           // Check if user is already on the leaderboard for today
-          const userHasAttempted = leaderboard?.leaderboard.find(
-            entry => entry.name === account.name
-          );
-          
+          const userHasAttempted = leaderboard?.leaderboard.find((entry) => entry.name === account.name);
+
           if (!userHasAttempted) {
             // Calculate score: current guesses + 1 (for this correct guess) + funfact cost if revealed
             const funfactRevealed = round.funfactRevealed;
             const score = guesses.length + 1 + (funfactRevealed ? FUNFACT_REVEAL_COST : 0);
-            
+
             // Find the user's employee record to get their avatar
             const userEmployee = findMatchingEmployee(account.name, employees);
             const avatarImageUrl = userEmployee?.avatarImageUrl;
-            
-            const scoreRequest = toSubmitScoreRequest(
-              account.name,
-              score,
-              avatarImageUrl
-            );
+
+            const scoreRequest = toSubmitScoreRequest(account.name, score, avatarImageUrl);
             submitScoreMutation.mutate(scoreRequest, {
               onError: (error) => {
-                console.error('Failed to submit score to leaderboard:', error);
+                console.error("Failed to submit score to leaderboard:", error);
               },
             });
           }
         }
       } catch (error) {
-        console.error('Failed to save guess to server:', error);
+        console.error("Failed to save guess to server:", error);
       }
     }
 
-    setInputValue('');
+    setInputValue("");
   };
 
   const handleStartGame = async () => {
     if (!userId || isStartingGame || employeeOfTheDayId) return;
 
     setIsStartingGame(true);
-    
+
     // Calculate employee of the day
     const seed = getDateSeed(today);
     const index = selectIndexBySeed(seed, employees.length);
@@ -168,22 +161,21 @@ export const Game = () => {
 
     const hashedId = hashEmployeeId(selectedEmployee.id, today);
     const request = toStartRoundRequest(userId, today, hashedId);
-    
+
     try {
       const round = await startRoundMutation.mutateAsync(request);
       dispatch(loadRoundFromState({ round }));
     } catch (error) {
-      console.error('Failed to start round on server:', error);
+      console.error("Failed to start round on server:", error);
       setIsStartingGame(false);
     }
   };
-
 
   if (employees.length === 0) {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
-          <div className={styles.empty}>{t('game.noEmployees')}</div>
+          <div className={styles.empty}>{t("game.noEmployees")}</div>
         </div>
       </div>
     );
@@ -191,13 +183,9 @@ export const Game = () => {
 
   // Show start button if game hasn't started yet
   const startGameButtonElement = (
-    <StartGameButton
-      onStartGame={handleStartGame}
-      isStartingGame={isStartingGame}
-      employees={employees}
-    />
+    <StartGameButton onStartGame={handleStartGame} isStartingGame={isStartingGame} employees={employees} />
   );
-  
+
   // Check if StartGameButton rendered content (it returns null if conditions aren't met)
   if (!employeeOfTheDayId && userId && !attemptedByUserId) {
     return startGameButtonElement;
@@ -207,7 +195,7 @@ export const Game = () => {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
-          <div className={styles.loading}>{t('game.initializing')}</div>
+          <div className={styles.loading}>{t("game.initializing")}</div>
         </div>
       </div>
     );
@@ -217,18 +205,11 @@ export const Game = () => {
     <div className={styles.page}>
       <div className={styles.container}>
         <GameHeader />
-        <FunfactReveal
-          employeeOfTheDayId={employeeOfTheDayId}
-          employees={employees}
-        />
+        <FunfactReveal employeeOfTheDayId={employeeOfTheDayId} employees={employees} />
 
         <div className={styles.content}>
-          {(gameStatus === 'won' && showStatusMessage) && (
-            <GameStatus
-              status={gameStatus}
-              guesses={guesses}
-              visible={true}
-            />
+          {gameStatus === "won" && showStatusMessage && (
+            <GameStatus status={gameStatus} guesses={guesses} visible={true} />
           )}
 
           <GameInputRow
@@ -244,4 +225,3 @@ export const Game = () => {
     </div>
   );
 };
-

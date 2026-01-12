@@ -1,23 +1,24 @@
-import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { configureStore } from '@reduxjs/toolkit';
-import { FeatureKey } from '@/shared/redux/enums';
-import { gameReducer } from '@/features/game/gameSlice';
-import { navigationReducer } from '@/features/sidebar/navigationSlice';
-import { authReducer } from '@/features/auth/authSlice';
-import { i18nReducer } from '@/features/i18n/i18nSlice';
-import type { RootState } from '@/app/store';
-import { queryClient } from '@/app/queryClient';
-import { MsalProvider } from '@azure/msal-react';
-import { PublicClientApplication } from '@azure/msal-browser';
-import { msalConfig } from '@/shared/config/msalConfig';
+import React, { ReactElement } from "react";
+import { render, RenderOptions } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { configureStore } from "@reduxjs/toolkit";
+import { FeatureKey } from "@/shared/redux/enums";
+import { gameReducer } from "@/features/game/gameSlice";
+import { navigationReducer } from "@/features/sidebar/navigationSlice";
+import { authReducer } from "@/features/auth/authSlice";
+import { i18nReducer } from "@/features/i18n/i18nSlice";
+import { harvestReducer } from "@/features/harvest/harvestSlice";
+import type { RootState } from "@/app/store";
+import { queryClient } from "@/app/queryClient";
+import { MsalProvider } from "@azure/msal-react";
+import { PublicClientApplication } from "@azure/msal-browser";
+import { msalConfig } from "@/shared/config/msalConfig";
 
 // Create MSAL instance for tests
 const msalInstance = new PublicClientApplication(msalConfig);
 
-interface ExtendedRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+interface ExtendedRenderOptions extends Omit<RenderOptions, "wrapper"> {
   preloadedState?: Partial<RootState>;
   store?: ReturnType<typeof createTestStore>;
 }
@@ -29,6 +30,7 @@ function createTestStore(preloadedState?: Partial<RootState>) {
       [FeatureKey.Navigation]: navigationReducer,
       [FeatureKey.Auth]: authReducer,
       [FeatureKey.I18n]: i18nReducer,
+      [FeatureKey.Harvest]: harvestReducer,
     },
     preloadedState: preloadedState as RootState | undefined,
   });
@@ -36,19 +38,13 @@ function createTestStore(preloadedState?: Partial<RootState>) {
 
 export function renderWithProviders(
   ui: ReactElement,
-  {
-    preloadedState = {},
-    store = createTestStore(preloadedState),
-    ...renderOptions
-  }: ExtendedRenderOptions = {}
+  { preloadedState = {}, store = createTestStore(preloadedState), ...renderOptions }: ExtendedRenderOptions = {}
 ) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <MsalProvider instance={msalInstance}>
         <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
-            {children}
-          </Provider>
+          <Provider store={store}>{children}</Provider>
         </QueryClientProvider>
       </MsalProvider>
     );
@@ -57,5 +53,4 @@ export function renderWithProviders(
   return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 }
 
-export * from '@testing-library/react';
-
+export * from "@testing-library/react";

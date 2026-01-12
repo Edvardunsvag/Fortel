@@ -1,20 +1,25 @@
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import styles from './App.module.scss';
-import { useAppSelector } from './app/hooks';
+import { useAppDispatch, useAppSelector } from './app/hooks';
 import { LeaderboardPage } from './features/leaderboard/LeaderboardPage/LeaderboardPage';
 import { Game } from './features/game/Game/Game';
 import { RulesPage } from './features/game/RulesPage/RulesPage';
 import { SyncPage } from './features/employees/SyncPage/SyncPage';
 import { EmployeesPage } from './features/employees/EmployeesPage/EmployeesPage';
+import { HarvestPage } from './features/harvest/HarvestPage/HarvestPage';
 import { LoginScreen } from './features/auth/LoginScreen/LoginScreen';
-import { ActiveTab, selectActiveTab } from './features/sidebar/navigationSlice';
+import { ActiveTab, setActiveTab } from './features/sidebar/navigationSlice';
 import { useI18nSync } from './features/i18n/useI18nSync';
 import { useMsalAuth } from './features/auth/useMsalAuth';
 import { selectIsAuthenticated, selectAccount } from './features/auth/authSlice';
 import { ADMIN_ACCOUNT } from './shared/config/adminConfig';
 import { Sidebar } from './features/sidebar/Sidebar/Sidebar';
+import { routes, routeToTab } from './shared/routes';
+import { useEffect } from 'react';
 
 export const App = () => {
-  const activeTab = useAppSelector(selectActiveTab);
+  const dispatch = useAppDispatch();
+  const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const account = useAppSelector(selectAccount);
   const isAdmin = account?.username === ADMIN_ACCOUNT;
@@ -22,38 +27,36 @@ export const App = () => {
   useI18nSync();  
   useMsalAuth();
 
+  // Sync URL with Redux state
+  useEffect(() => {
+    const path = location.pathname;
+    const tab = routeToTab[path];
+    if (tab) {
+      dispatch(setActiveTab(tab as ActiveTab));
+    }
+  }, [location.pathname, dispatch]);
+
   // Show login screen if not authenticated
   if (!isAuthenticated) {
     return <LoginScreen />;
   }
 
-  const renderPage = () => {
-    switch (activeTab) {
-      case ActiveTab.Play:
-        return <Game />;
-      case ActiveTab.Leaderboard:
-        return <LeaderboardPage />;
-      case ActiveTab.Rules:
-        return <RulesPage />;
-      case ActiveTab.Sync:
-        // Only allow admin to access sync page
-        if (!isAdmin) {
-          return <Game />;
-        }
-        return <SyncPage />;
-      case ActiveTab.Employees:
-        return <EmployeesPage />;
-      default:
-        return <Game />;
-    }
-  };
-
   return (
     <div className={styles.app}>
       <Sidebar />
-      {renderPage()}
+      <Routes>
+        <Route path={routes.play} element={<Game />} />
+        <Route path={routes.leaderboard} element={<LeaderboardPage />} />
+        <Route path={routes.rules} element={<RulesPage />} />
+        <Route path={routes.employees} element={<EmployeesPage />} />
+        <Route path={routes.harvest} element={<HarvestPage />} />
+        <Route
+          path={routes.sync}
+          element={isAdmin ? <SyncPage /> : <Navigate to={routes.play} replace />}
+        />
+        <Route path="*" element={<Navigate to={routes.play} replace />} />
+      </Routes>
     </div>
-
   );
 };
 

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Build outputs
+dist
+dist-ssr
+*.local
+
+# Generated files
+src/shared/api/generated
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Editor directories
+.vscode
+.idea
+.DS_Store
+
+# Other
+.cursor
+coverage

@@ -5,6 +5,7 @@ export enum FeatureKey {
   Auth = 'auth',
   Leaderboard = 'leaderboard',
   I18n = 'i18n',
+  Harvest = 'harvest',
 }
 
 export enum AsyncStatus {

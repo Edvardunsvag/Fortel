@@ -8,6 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,scss,css,json}\" \"*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,scss,css,json}\" \"*.{ts,tsx,json,md}\"",
     "test": "vitest",
     "test:ci": "vitest run",
     "test:ui": "vitest --ui",
@@ -27,6 +29,7 @@
     "react-dom": "^18.2.0",
     "react-i18next": "^16.5.0",
     "react-redux": "^9.0.4",
+    "react-router-dom": "^7.12.0",
     "string-similarity": "^4.0.4"
   },
   "devDependencies": {
@@ -46,6 +49,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "husky": "^9.0.0",
     "jsdom": "^27.4.0",
+    "prettier": "^3.7.4",
     "sass": "^1.69.5",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",

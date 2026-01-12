@@ -4,6 +4,7 @@
     "leaderboard": "Leaderboard",
     "rules": "Rules",
     "employees": "Employees",
+    "harvest": "Harvest",
     "sync": "Sync"
   },
   "admin": {
@@ -166,6 +167,28 @@
   "loginScreen": {
     "title": "Welcome to Fortedle",
     "subtitle": "Please log in with your Microsoft account to access the game and leaderboard."
+  },
+  "harvest": {
+    "title": "Harvest Time Tracking",
+    "description": "Connect your Harvest account to view your time entries. You'll be redirected to Harvest to authorize this application.",
+    "connect": "Connect with Harvest",
+    "connecting": "Connecting...",
+    "welcome": "Welcome",
+    "email": "Email",
+    "userId": "User ID",
+    "disconnect": "Disconnect",
+    "fetchEntries": "Fetch Time Entries",
+    "selectMonth": "Select Month",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "getEntries": "Get Time Entries",
+    "loading": "Loading...",
+    "results": "Results",
+    "foundEntries": "Found {{count}} entries",
+    "from": "from",
+    "to": "to",
+    "totalHours": "Total Hours",
+    "week": "Week"
   }
 }
 

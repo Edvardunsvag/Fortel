@@ -6,7 +6,7 @@ export const routes = {
   leaderboard: "/leaderboard",
   rules: "/rules",
   employees: "/employees",
-  harvest: "/harvest",
+  harvest: "/time-lottery",
   sync: "/sync",
 } as const;
 
@@ -30,6 +30,6 @@ export const routeToTab: Record<string, string> = {
   [routes.leaderboard]: "leaderboard",
   [routes.rules]: "rules",
   [routes.employees]: "employees",
-  [routes.harvest]: "harvest",
+  [routes.harvest]: "time-lottery",
   [routes.sync]: "sync",
 };

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { selectAccount } from '@/features/auth/authSlice';
-import { selectEmployees } from '@/features/employees/employeesSlice';
+import { useEmployees } from '@/features/employees/queries';
 import { initializeGame } from '@/features/game/gameSlice';
 import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
 import styles from './AdminButton.module.scss';
@@ -10,7 +10,7 @@ export const AdminButton = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectAccount);
-  const employees = useAppSelector(selectEmployees);
+  const { data: employees = [] } = useEmployees();
 
   const isAdmin = account?.username === ADMIN_ACCOUNT;
 

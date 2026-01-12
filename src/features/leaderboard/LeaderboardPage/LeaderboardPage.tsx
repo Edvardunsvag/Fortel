@@ -1,38 +1,13 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  fetchLeaderboard,
-  selectLeaderboard,
-  selectLeaderboardStatus,
-  selectLeaderboardError,
-  selectSubmitStatus,
-} from '@/features/leaderboard/leaderboardSlice';
-import { AsyncStatus } from '@/shared/redux/enums';
+import { useLeaderboard } from '@/features/leaderboard/queries';
 import styles from './LeaderboardPage.module.scss';
 
 export const LeaderboardPage = () => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const leaderboard = useAppSelector(selectLeaderboard);
-  const status = useAppSelector(selectLeaderboardStatus);
-  const error = useAppSelector(selectLeaderboardError);
-  const submitStatus = useAppSelector(selectSubmitStatus);
-
-  useEffect(() => {
-    // Load leaderboard on mount
-    dispatch(fetchLeaderboard());
-  }, [dispatch]);
-
-  // Refresh leaderboard when a score is successfully submitted
-  useEffect(() => {
-    if (submitStatus === AsyncStatus.Succeeded) {
-      dispatch(fetchLeaderboard());
-    }
-  }, [dispatch, submitStatus]);
+  const { data: leaderboard, isLoading, isError, error, refetch } = useLeaderboard();
 
   const handleRefresh = () => {
-    dispatch(fetchLeaderboard());
+    refetch();
   };
 
   const formatDate = (dateString: string) => {
@@ -47,7 +22,7 @@ export const LeaderboardPage = () => {
     });
   };
 
-  if (status === AsyncStatus.Loading) {
+  if (isLoading) {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
@@ -58,13 +33,13 @@ export const LeaderboardPage = () => {
     );
   }
 
-  if (status === AsyncStatus.Failed) {
+  if (isError) {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
           <h1 className={styles.title}>{t('leaderboard.title')}</h1>
           <p className={styles.subtitle} style={{ color: 'var(--color-error)' }}>
-            {error || t('leaderboard.failedToLoad')}
+            {error instanceof Error ? error.message : t('leaderboard.failedToLoad')}
           </p>
           <button
             onClick={handleRefresh}

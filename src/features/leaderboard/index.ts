@@ -1,10 +1,5 @@
-export { leaderboardReducer, fetchLeaderboard, submitScore } from './leaderboardSlice';
-export {
-  selectLeaderboard,
-  selectLeaderboardStatus,
-  selectLeaderboardError,
-  selectSubmitStatus,
-  selectSubmitError,
-} from './leaderboardSlice';
-export type { LeaderboardEntry, LeaderboardData, LeaderboardState } from './types';
+// Leaderboard is now managed via TanStack Query
+// See src/features/leaderboard/queries.ts for the new implementation
+export type { LeaderboardEntry, LeaderboardData } from './types';
+export { useLeaderboard, useSubmitScore } from './queries';
 

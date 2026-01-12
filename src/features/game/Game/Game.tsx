@@ -1,27 +1,19 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { selectAccount } from '@/features/auth/authSlice';
-import {
-  selectEmployees
-} from '@/features/employees/employeesSlice';
+import { useEmployees } from '@/features/employees/queries';
 import type { Employee } from '@/features/employees/types';
 import {
   calculateHintsForGuess,
   FUNFACT_REVEAL_COST,
-  loadRoundFromServer,
-  revealFunfact,
-  revealFunfactOnServer,
-  saveGuessToServer,
+  loadRoundFromState,
   selectAttemptedByUserId,
   selectCanGuess,
   selectEmployeeOfTheDayId,
-  selectFunfactRevealed,
   selectGameStatus,
   selectGuesses,
-  selectRoundId,
-  selectTotalGuesses,
-  startRoundOnServer,
 } from '@/features/game/gameSlice';
-import { toRevealFunfactRequest, toSaveGuessRequest, toStartRoundRequest } from '@/features/game/toDto';
+import { useCurrentRound, useStartRound, useSaveGuess } from '@/features/game/queries';
+import { toSaveGuessRequest, toStartRoundRequest } from '@/features/game/toDto';
 import type { Guess } from '@/features/game/types';
 import { getDateSeed, getTodayDateString, selectIndexBySeed } from '@/shared/utils/dateUtils';
 import { findEmployeeByHash, hashEmployeeId } from '@/shared/utils/hashUtils';
@@ -31,45 +23,48 @@ import { useTranslation } from 'react-i18next';
 import { triggerConfetti } from '../utils';
 import styles from './Game.module.scss';
 import { GameStatus } from './GameStatus';
-import { GuessInput } from './GuessInput';
-import { selectLeaderboard, submitScore } from '@/features/leaderboard/leaderboardSlice';
+import { GameHeader } from './GameHeader';
+import { FunfactReveal } from './FunfactReveal';
+import { GameInputRow } from './GameInputRow';
+import { StartGameButton } from './StartGameButton';
+import { useLeaderboard, useSubmitScore } from '@/features/leaderboard/queries';
 import { toSubmitScoreRequest } from '@/features/leaderboard/toDto';
 import { GuessList } from './GuessList/GuessList';
 
 export const Game = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const employees = useAppSelector(selectEmployees);
+  const { data: employees = [] } = useEmployees();
   const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
-  const funfactRevealed = useAppSelector(selectFunfactRevealed);
   const guesses = useAppSelector(selectGuesses);
-  const totalGuesses = useAppSelector(selectTotalGuesses);
   const gameStatus = useAppSelector(selectGameStatus);
+  const canGuess = useAppSelector(selectCanGuess);
   const account = useAppSelector(selectAccount);
   const userId = account?.localAccountId || account?.username || null;
   const attemptedByUserId = useAppSelector(selectAttemptedByUserId);
-  const canGuess = useAppSelector(selectCanGuess);
-  const leaderboard = useAppSelector(selectLeaderboard);
-  const roundId = useAppSelector(selectRoundId);
+  const { data: leaderboard } = useLeaderboard();
+
+  const today = getTodayDateString();
+  const startRoundMutation = useStartRound();
+  const saveGuessMutation = useSaveGuess();
+  const submitScoreMutation = useSubmitScore();
+  const { data: currentRound } = useCurrentRound(userId || '', today, !!userId && !attemptedByUserId);
 
   const [inputValue, setInputValue] = useState('');
   const [showStatusMessage, setShowStatusMessage] = useState(false);
   const [isStartingGame, setIsStartingGame] = useState(false);
 
-  
-  // Load existing round from server on mount (if user is logged in and has attempted)
+  // Load round from server into Redux state when it's fetched
   useEffect(() => {
-    if (!userId || attemptedByUserId) return;
-
-    const today = getTodayDateString();
-    
-    dispatch(loadRoundFromServer({ userId, date: today }));
-  }, [dispatch, userId, attemptedByUserId]);
+    if (currentRound) {
+      dispatch(loadRoundFromState({ round: currentRound }));
+    }
+  }, [currentRound, dispatch]);
  
 
   // Show status message and trigger confetti when game is won
   useEffect(() => {
-    if (gameStatus === 'won' && totalGuesses > 0) {
+    if (gameStatus === 'won' && guesses.length > 0) {
       // Wait for last box animation to finish (3100ms total)
       const animationDelay = 3100;
 
@@ -80,7 +75,7 @@ export const Game = () => {
 
       return () => clearTimeout(animationTimer);
     }
-  }, [gameStatus, totalGuesses]);
+  }, [gameStatus, guesses.length]);
 
   const handleGuess = async (employeeId: string) => {
     if (!canGuess || !employeeOfTheDayId) {
@@ -96,7 +91,6 @@ export const Game = () => {
     }
 
     // Find target employee by comparing hashed IDs
-    const today = getTodayDateString();
     const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today);
 
     if (!targetEmployee) {
@@ -117,63 +111,50 @@ export const Game = () => {
       };
 
       const request = toSaveGuessRequest(userId, today, guess);
-      dispatch(saveGuessToServer(request))
-        .then(() => {
-          // Submit score to leaderboard if guess is correct and user is not already on leaderboard
-          if (isCorrect && account?.name) {
-            // Check if user is already on the leaderboard for today
-            const userHasAttempted = leaderboard?.leaderboard.find(
-              entry => entry.name === account.name
-            );
+      try {
+        const round = await saveGuessMutation.mutateAsync(request);
+        dispatch(loadRoundFromState({ round }));
+
+        // Submit score to leaderboard if guess is correct and user is not already on leaderboard
+        if (isCorrect && account?.name) {
+          // Check if user is already on the leaderboard for today
+          const userHasAttempted = leaderboard?.leaderboard.find(
+            entry => entry.name === account.name
+          );
+          
+          if (!userHasAttempted) {
+            // Calculate score: current guesses + 1 (for this correct guess) + funfact cost if revealed
+            const funfactRevealed = round.funfactRevealed;
+            const score = guesses.length + 1 + (funfactRevealed ? FUNFACT_REVEAL_COST : 0);
             
-            if (!userHasAttempted) {
-              // Calculate score: current guesses + 1 (for this correct guess) + funfact cost if revealed
-              const score = guesses.length + 1 + (funfactRevealed ? FUNFACT_REVEAL_COST : 0);
-              
-              // Find the user's employee record to get their avatar
-              const userEmployee = findMatchingEmployee(account.name, employees);
-              const avatarImageUrl = userEmployee?.avatarImageUrl;
-              
-              const scoreRequest = toSubmitScoreRequest(
-                account.name,
-                score,
-                avatarImageUrl
-              );
-              dispatch(submitScore(scoreRequest)).catch((error) => {
+            // Find the user's employee record to get their avatar
+            const userEmployee = findMatchingEmployee(account.name, employees);
+            const avatarImageUrl = userEmployee?.avatarImageUrl;
+            
+            const scoreRequest = toSubmitScoreRequest(
+              account.name,
+              score,
+              avatarImageUrl
+            );
+            submitScoreMutation.mutate(scoreRequest, {
+              onError: (error) => {
                 console.error('Failed to submit score to leaderboard:', error);
-              });
-            }
+              },
+            });
           }
-        })
-        .catch((error) => {
-          console.error('Failed to save guess to server:', error);
-        });
+        }
+      } catch (error) {
+        console.error('Failed to save guess to server:', error);
+      }
     }
 
     setInputValue('');
-  };
-
-  const handleRevealFunfact = () => {
-    if (!roundId) {
-      console.warn('Cannot reveal funfact: roundId is not available');
-      return;
-    }
-    
-    // Update local state
-    dispatch(revealFunfact());
-    
-    // Save to server
-    const request = toRevealFunfactRequest(roundId);
-    dispatch(revealFunfactOnServer(request)).catch((error) => {
-      console.error('Failed to reveal funfact on server:', error);
-    });
   };
 
   const handleStartGame = async () => {
     if (!userId || isStartingGame || employeeOfTheDayId) return;
 
     setIsStartingGame(true);
-    const today = getTodayDateString();
     
     // Calculate employee of the day
     const seed = getDateSeed(today);
@@ -189,8 +170,8 @@ export const Game = () => {
     const request = toStartRoundRequest(userId, today, hashedId);
     
     try {
-      await dispatch(startRoundOnServer(request)).unwrap();
-      // The startRoundOnServer thunk already loads the round into state via loadRoundFromState
+      const round = await startRoundMutation.mutateAsync(request);
+      dispatch(loadRoundFromState({ round }));
     } catch (error) {
       console.error('Failed to start round on server:', error);
       setIsStartingGame(false);
@@ -198,19 +179,6 @@ export const Game = () => {
   };
 
 
-  const userHasAttempted = leaderboard?.leaderboard.find(entry => entry.name === account?.name);
-
-  if(userHasAttempted) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.error}>
-            {t('game.alreadyAttempted')}
-          </div>
-        </div>
-      </div>
-    );
-  }
   if (employees.length === 0) {
     return (
       <div className={styles.page}>
@@ -222,23 +190,17 @@ export const Game = () => {
   }
 
   // Show start button if game hasn't started yet
+  const startGameButtonElement = (
+    <StartGameButton
+      onStartGame={handleStartGame}
+      isStartingGame={isStartingGame}
+      employees={employees}
+    />
+  );
+  
+  // Check if StartGameButton rendered content (it returns null if conditions aren't met)
   if (!employeeOfTheDayId && userId && !attemptedByUserId) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>{t('game.title')}</h1>
-          <p className={styles.subtitle}>{t('game.subtitle')}</p>
-          <button
-            className={styles.startButton}
-            onClick={handleStartGame}
-            type="button"
-            disabled={isStartingGame || employees.length === 0}
-          >
-            {isStartingGame ? t('game.startingGame') : t('game.startGame')}
-          </button>
-        </div>
-      </div>
-    );
+    return startGameButtonElement;
   }
 
   if (!employeeOfTheDayId) {
@@ -251,56 +213,14 @@ export const Game = () => {
     );
   }
 
-  // Get target employee for funfact display
-  const today = getTodayDateString();
-  const targetEmployee = employeeOfTheDayId
-    ? findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today)
-    : null;
-
-  const targetFunfact = targetEmployee?.funfact || null;
-  const targetInterests = targetEmployee?.interests || [];
-  const hasNoFunfactOrInterests = !targetFunfact && (!targetInterests || targetInterests.length === 0);
-
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <h1 className={styles.title}>{t('game.title')}</h1>
-        <div className={styles.headerInfo}>
-          <p className={styles.subtitle}>{t('game.subtitle')}  {account?.name}!</p>
-          {gameStatus === 'playing' && (
-            <div className={styles.guessCountBadge}>
-              {t('game.guesses')}: <strong>{totalGuesses}</strong>
-            </div>
-          )}
-        </div>
-        {funfactRevealed && targetEmployee && (
-          <div className={styles.funfactClueContainer}>
-            {hasNoFunfactOrInterests ? (
-              <p className={`${styles.funfactClueText} ${styles.funfactClueTextNoContent}`}>
-                {t('game.noFunfactOrInterests')}
-              </p>
-            ) : (
-              <>
-                <h3 className={styles.funfactClueTitle}>{t('guessList.funfactClue')}</h3>
-                {targetFunfact && (
-                  <p className={styles.funfactClueText}>{targetFunfact}</p>
-                )}
-                {targetInterests.length > 0 && (
-                  <div className={styles.interestsContainer}>
-                    <h4 className={styles.interestsTitle}>{t('guessList.interests')}</h4>
-                    <div className={styles.interestsList}>
-                      {targetInterests.map((interest: string, index: number) => (
-                        <span key={index} className={styles.interestTag}>
-                          {interest}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )}
+        <GameHeader />
+        <FunfactReveal
+          employeeOfTheDayId={employeeOfTheDayId}
+          employees={employees}
+        />
 
         <div className={styles.content}>
           {(gameStatus === 'won' && showStatusMessage) && (
@@ -311,29 +231,12 @@ export const Game = () => {
             />
           )}
 
-          {canGuess && (
-            <div className={styles.inputRow}>
-              <div className={styles.inputContainer}>
-                <GuessInput
-                  value={inputValue}
-                  onChange={setInputValue}
-                  onGuess={handleGuess}
-                  employees={employees}
-                  guessedEmployeeIds={guesses.map(guess => guess.employeeId)}
-                />
-              </div>
-              {gameStatus === 'playing' && (
-                <button
-                  className={styles.revealButton}
-                  onClick={handleRevealFunfact}
-                  type="button"
-                  disabled={funfactRevealed}
-                >
-                  {t('game.buyInterests')}
-                </button>
-              )}
-            </div>
-          )}
+          <GameInputRow
+            inputValue={inputValue}
+            onInputChange={setInputValue}
+            onGuess={handleGuess}
+            employees={employees}
+          />
 
           <GuessList guesses={guesses} />
         </div>

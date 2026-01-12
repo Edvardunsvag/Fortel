@@ -58,55 +58,60 @@ public class SyncService : ISyncService
         // Map to employee format
         var employees = userDetails.Select(MapHumaUserToEmployee).ToList();
 
-        // Store in PostgreSQL using transaction
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-        try
+        // Store in PostgreSQL using transaction with execution strategy
+        var strategy = _context.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
         {
-            // Clear existing employees
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM employees");
-
-            // Insert new employees
-            foreach (var employee in employees)
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                var existingEmployee = await _context.Employees.FindAsync(employee.Id);
-                if (existingEmployee != null)
+                // Clear existing employees
+                await _context.Database.ExecuteSqlRawAsync("DELETE FROM employees");
+
+                // Insert new employees
+                foreach (var employee in employees)
                 {
-                    // Update existing
-                    existingEmployee.Name = employee.Name;
-                    existingEmployee.FirstName = employee.FirstName;
-                    existingEmployee.Surname = employee.Surname;
-                    existingEmployee.AvatarImageUrl = employee.AvatarImageUrl;
-                    existingEmployee.Department = employee.Department;
-                    existingEmployee.Office = employee.Office;
-                    existingEmployee.Teams = employee.Teams;
-                    existingEmployee.Age = employee.Age;
-                    existingEmployee.Supervisor = employee.Supervisor;
-                    existingEmployee.Funfact = employee.Funfact;
-                    existingEmployee.Interests = employee.Interests;
-                    existingEmployee.UpdatedAt = DateTime.UtcNow;
+                    var existingEmployee = await _context.Employees.FindAsync(employee.Id);
+                    if (existingEmployee != null)
+                    {
+                        // Update existing
+                        existingEmployee.Name = employee.Name;
+                        existingEmployee.FirstName = employee.FirstName;
+                        existingEmployee.Surname = employee.Surname;
+                        existingEmployee.Email = employee.Email;
+                        existingEmployee.AvatarImageUrl = employee.AvatarImageUrl;
+                        existingEmployee.Department = employee.Department;
+                        existingEmployee.Office = employee.Office;
+                        existingEmployee.Teams = employee.Teams;
+                        existingEmployee.Age = employee.Age;
+                        existingEmployee.Supervisor = employee.Supervisor;
+                        existingEmployee.Funfact = employee.Funfact;
+                        existingEmployee.Interests = employee.Interests;
+                        existingEmployee.UpdatedAt = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        // Insert new
+                        _context.Employees.Add(employee);
+                    }
                 }
-                else
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new SyncResponse
                 {
-                    // Insert new
-                    _context.Employees.Add(employee);
-                }
+                    Success = true,
+                    Message = $"Successfully synced {employees.Count} employees",
+                    Count = employees.Count,
+                };
             }
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return new SyncResponse
+            catch
             {
-                Success = true,
-                Message = $"Successfully synced {employees.Count} employees",
-                Count = employees.Count,
-            };
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+                await transaction.RollbackAsync();
+                throw;
+            }
+        });
     }
 
     private async Task<List<JsonElement>> FetchEmployeesFromHumaAsync(string accessToken)
@@ -249,6 +254,8 @@ public class SyncService : ISyncService
         var familyName = GetStringValue(user.TryGetProperty("familyName", out var fn) ? fn : default) ?? string.Empty;
         var preferredName = GetStringValue(user.TryGetProperty("preferredName", out var pn) ? pn : default);
         var name = preferredName ?? $"{givenName} {familyName}";
+        var email = GetStringValue(user.TryGetProperty("email", out var e) ? e : default) ?? string.Empty;
+
 
         // Avatar image URL
         string? avatarImageUrl = null;
@@ -354,6 +361,7 @@ public class SyncService : ISyncService
         {
             Id = user.GetProperty("id").GetString() ?? string.Empty,
             Name = name,
+            Email = email,
             FirstName = givenName,
             Surname = familyName,
             AvatarImageUrl = avatarImageUrl,

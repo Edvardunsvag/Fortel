@@ -6,6 +6,7 @@ public class EmployeeDto
     public string Name { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     public string? AvatarImageUrl { get; set; }
     public string Department { get; set; } = string.Empty;
     public string Office { get; set; } = string.Empty;

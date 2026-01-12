@@ -26,6 +26,11 @@ public class Employee
     [MaxLength(255)]
     public string Surname { get; set; } = string.Empty;
 
+    [Required]
+    [Column("email")]
+    [EmailAddress]
+    public string? Email { get; set; }
+
     [Column("avatar_image_url")]
     public string? AvatarImageUrl { get; set; }
 

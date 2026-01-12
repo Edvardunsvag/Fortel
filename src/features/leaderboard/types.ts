@@ -1,5 +1,3 @@
-import { AsyncStatus } from '@/shared/redux/enums';
-
 export interface LeaderboardEntry {
   rank: number;
   name: string;
@@ -11,13 +9,5 @@ export interface LeaderboardEntry {
 export interface LeaderboardData {
   date: string;
   leaderboard: LeaderboardEntry[];
-}
-
-export interface LeaderboardState {
-  data: LeaderboardData | null;
-  status: AsyncStatus;
-  error: string | null;
-  submitStatus: AsyncStatus;
-  submitError: string | null;
 }
 

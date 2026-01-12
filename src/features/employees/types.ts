@@ -1,5 +1,3 @@
-import { AsyncStatus } from '@/shared/redux/enums';
-
 export interface Employee {
   id: string;
   name: string;
@@ -13,11 +11,5 @@ export interface Employee {
   supervisor?: string; // Supervisor name or '-' if unknown
   funfact?: string | null; // Fun fact about the employee
   interests?: string[]; // Array of interests
-}
-
-export interface EmployeesState {
-  employees: Employee[];
-  status: AsyncStatus;
-  error: string | null;
 }
 

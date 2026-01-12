@@ -28,6 +28,7 @@ export interface FortedleServerModelsEmployeeDto {
     'name'?: string | null;
     'firstName'?: string | null;
     'surname'?: string | null;
+    'email'?: string | null;
     'avatarImageUrl'?: string | null;
     'department'?: string | null;
     'office'?: string | null;

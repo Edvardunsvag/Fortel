@@ -4,7 +4,6 @@ import { Game } from './Game';
 import { FeatureKey } from '@/shared/redux/enums';
 import type { RootState } from '@/app/store';
 import type { Employee } from '@/features/employees/types';
-import { AsyncStatus } from '@/shared/redux/enums';
 import { ActiveTab } from '@/features/sidebar/navigationSlice';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
 
@@ -57,11 +56,6 @@ describe('Game - Input Field Visibility', () => {
   const hashedEmployeeId = hashEmployeeId(mockEmployees[0].id, testDate);
 
   const createMockState = (overrides?: Partial<RootState>): RootState => ({
-    [FeatureKey.Employees]: {
-      employees: mockEmployees,
-      status: AsyncStatus.Succeeded,
-      error: null,
-    },
     [FeatureKey.Game]: {
       employeeOfTheDayId: hashedEmployeeId,
       guesses: [],
@@ -70,6 +64,7 @@ describe('Game - Input Field Visibility', () => {
       attemptedByUserId: null,
       attemptDate: null,
       funfactRevealed: false,
+      roundId: null,
     },
     [FeatureKey.Auth]: {
       account: {
@@ -79,16 +74,6 @@ describe('Game - Input Field Visibility', () => {
       },
       accessToken: null,
       isAuthenticated: true,
-    },
-    [FeatureKey.Leaderboard]: {
-      data: {
-        leaderboard: [],
-        date: '2024-01-01',
-      },
-      status: AsyncStatus.Idle,
-      error: null,
-      submitStatus: AsyncStatus.Idle,
-      submitError: null,
     },
     [FeatureKey.Navigation]: {
       activeTab: ActiveTab.Play,

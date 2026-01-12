@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/app/hooks';
-import { selectEmployees, selectEmployeesStatus } from '@/features/employees/employeesSlice';
-import type { Employee } from '@/features/employees/types';
-import { AsyncStatus } from '@/shared/redux/enums';
+import { useEmployees } from '@/features/employees/queries';
 import styles from './EmployeesPage.module.scss';
+import { Employee } from '../types';
 
 export const EmployeesPage = () => {
   const { t } = useTranslation();
-  const employees = useAppSelector(selectEmployees);
-  const status = useAppSelector(selectEmployeesStatus);
+  const { data: employees = [], isLoading, isError } = useEmployees();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
 
   const selectedEmployee = employees.find((emp) => emp.id === selectedEmployeeId) || null;
@@ -25,7 +22,7 @@ export const EmployeesPage = () => {
     }
   };
 
-  if (status === AsyncStatus.Loading) {
+  if (isLoading) {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
@@ -36,7 +33,7 @@ export const EmployeesPage = () => {
     );
   }
 
-  if (status === AsyncStatus.Failed) {
+  if (isError) {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>

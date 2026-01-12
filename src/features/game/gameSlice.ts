@@ -6,14 +6,7 @@ import type { GameState, Guess } from './types';
 import { HintType, HintResult } from './types';
 import { hashEmployeeId } from '@/shared/utils/hashUtils';
 import { getTodayDateString } from '@/shared/utils/dateUtils';
-import { createAppAsyncThunk } from '@/app/createAppAsyncThunk';
-import * as roundApi from './api';
-import type {
-  FortedleServerModelsSaveGuessRequest,
-  FortedleServerModelsRevealFunfactRequest,
-  FortedleServerModelsStartRoundRequest,
-} from '@/shared/api/generated/index';
-import { roundFromDto, type RoundDto } from './fromDto';
+import type { RoundDto } from './fromDto';
 
 // Cost of revealing the funfact (in guesses)
 export const FUNFACT_REVEAL_COST = 1;
@@ -245,68 +238,6 @@ export const selectCanGuess = (state: RootState): boolean => {
 
 export const selectRoundId = (state: RootState): number | null =>
   state.game.roundId;
-
-
-
-// Async thunks for round management
-export const loadRoundFromServer = createAppAsyncThunk(
-  'game/loadRoundFromServer',
-  async (params: { userId: string; date?: string }, { rejectWithValue, dispatch }) => {
-    try {
-      const apiRound = await roundApi.getCurrentRound(params.userId, params.date);
-      if (apiRound) {
-        const round = roundFromDto(apiRound);
-        dispatch(loadRoundFromState({ round }));
-        return round;
-      }
-      return null;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to load round');
-    }
-  }
-);
-
-export const startRoundOnServer = createAppAsyncThunk(
-  'game/startRoundOnServer',
-  async (params: FortedleServerModelsStartRoundRequest, { rejectWithValue, dispatch }) => {
-    try {
-      const apiRound = await roundApi.startRound(params);
-      const round = roundFromDto(apiRound);
-      dispatch(loadRoundFromState({ round }));
-      return round;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to start round');
-    }
-  }
-);
-
-export const saveGuessToServer = createAppAsyncThunk(
-  'game/saveGuessToServer',
-  async (params: FortedleServerModelsSaveGuessRequest, { rejectWithValue, dispatch }) => {
-    try {
-      const apiRound = await roundApi.saveGuess(params);
-      const round = roundFromDto(apiRound);
-      dispatch(loadRoundFromState({ round }));
-      return round;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to save guess');
-    }
-  }
-);
-
-export const revealFunfactOnServer = createAppAsyncThunk(
-  'game/revealFunfactOnServer',
-  async (params: FortedleServerModelsRevealFunfactRequest, { rejectWithValue, dispatch }) => {
-    try {
-      const apiRound = await roundApi.revealFunfact(params);
-      const round = roundFromDto(apiRound);
-      dispatch(loadRoundFromState({ round }));
-      return round;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to reveal funfact');
-    }
-  }
-);
 
 
 

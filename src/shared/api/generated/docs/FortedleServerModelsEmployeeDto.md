@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **name** | **string** |  | [optional] [default to undefined]
 **firstName** | **string** |  | [optional] [default to undefined]
 **surname** | **string** |  | [optional] [default to undefined]
+**email** | **string** |  | [optional] [default to undefined]
 **avatarImageUrl** | **string** |  | [optional] [default to undefined]
 **department** | **string** |  | [optional] [default to undefined]
 **office** | **string** |  | [optional] [default to undefined]
@@ -28,6 +29,7 @@ const instance: FortedleServerModelsEmployeeDto = {
     name,
     firstName,
     surname,
+    email,
     avatarImageUrl,
     department,
     office,

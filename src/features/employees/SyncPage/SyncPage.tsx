@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { syncEmployeesData, selectEmployeesStatus, selectEmployees } from '@/features/employees/employeesSlice';
-import { AsyncStatus } from '@/shared/redux/enums';
+import { useAppSelector } from '@/app/hooks';
+import { useSyncEmployees, useEmployees } from '@/features/employees/queries';
 import styles from './SyncPage.module.scss';
 import { selectAccount } from '@/features/auth/authSlice';
 import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
@@ -10,16 +9,14 @@ import { toSyncRequest } from '@/features/employees/toDto';
 
 export const SyncPage = () => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-
   const account = useAppSelector(selectAccount);
-  const employeesStatus = useAppSelector(selectEmployeesStatus);
-  const employees = useAppSelector(selectEmployees);
+  const { data: employees = [] } = useEmployees();
+  const syncMutation = useSyncEmployees();
   const [tokenInput, setTokenInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [alreadySynced, setAlreadySynced] = useState(false);
-  const isSyncing = employeesStatus === AsyncStatus.Loading;
+  const isSyncing = syncMutation.isPending;
   const hasEmployees = employees.length > 0;
 
   const handleSync = async (e: React.FormEvent) => {
@@ -37,18 +34,14 @@ export const SyncPage = () => {
 
     try {
       const request = toSyncRequest(accessToken);
-      const result = await dispatch(syncEmployeesData(request));
+      const result = await syncMutation.mutateAsync(request);
       
-      if (syncEmployeesData.fulfilled.match(result)) {
-        if (result.payload.alreadySynced) {
-          setAlreadySynced(true);
-        } else {
-          setSyncSuccess(true);
-        }
-        setTokenInput('');
-      } else if (syncEmployeesData.rejected.match(result)) {
-        setError(result.payload as string || t('sync.failedToSync'));
+      if (result.alreadySynced) {
+        setAlreadySynced(true);
+      } else {
+        setSyncSuccess(true);
       }
+      setTokenInput('');
     } catch (err) {
       setError(err instanceof Error ? err.message : t('sync.failedToSync'));
     }
@@ -103,7 +96,7 @@ export const SyncPage = () => {
             )}
             {syncSuccess && (
               <p className={styles.success}>
-                {t('sync.dataSynced')} {employeesStatus === AsyncStatus.Succeeded && t('sync.employeesLoaded')}
+                {t('sync.dataSynced')} {t('sync.employeesLoaded')}
               </p>
             )}
             <div className={styles.tokenActions}>

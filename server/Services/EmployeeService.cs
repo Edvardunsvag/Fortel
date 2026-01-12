@@ -31,6 +31,7 @@ public class EmployeeService : IEmployeeService
             Name = e.Name,
             FirstName = e.FirstName,
             Surname = e.Surname,
+            Email = e.Email ?? string.Empty,
             AvatarImageUrl = e.AvatarImageUrl,
             Department = e.Department,
             Office = e.Office,

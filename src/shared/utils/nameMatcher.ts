@@ -1,5 +1,5 @@
-import { compareTwoStrings } from 'string-similarity';
-import type { Employee } from '@/features/employees/types';
+import { compareTwoStrings } from "string-similarity";
+import type { Employee } from "@/features/employees/types";
 
 /**
  * Normalize a name for comparison
@@ -8,9 +8,9 @@ const normalizeName = (name: string): string => {
   return name
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics
+    .replace(/\s+/g, " ") // Replace multiple spaces with single space
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // Remove diacritics
 };
 
 interface MatchResult {
@@ -25,10 +25,7 @@ interface MatchResult {
  * @param employees - List of employees to search
  * @returns The matching employee with the highest score or null if no good match found
  */
-export const findMatchingEmployee = (
-  userName: string | undefined,
-  employees: Employee[]
-): Employee | null => {
+export const findMatchingEmployee = (userName: string | undefined, employees: Employee[]): Employee | null => {
   if (!userName || employees.length === 0) {
     return null;
   }
@@ -59,16 +56,16 @@ export const findMatchingEmployee = (
 
     // Store all matches above threshold
     if (nameScore >= threshold) {
-      matches.push({ employee, score: nameScore, matchType: 'name' });
+      matches.push({ employee, score: nameScore, matchType: "name" });
     }
     if (fullNameScore >= threshold) {
-      matches.push({ employee, score: fullNameScore, matchType: 'fullName' });
+      matches.push({ employee, score: fullNameScore, matchType: "fullName" });
     }
     if (firstNameScore >= threshold) {
-      matches.push({ employee, score: firstNameScore, matchType: 'firstName' });
+      matches.push({ employee, score: firstNameScore, matchType: "firstName" });
     }
     if (surnameScore >= threshold) {
-      matches.push({ employee, score: surnameScore, matchType: 'surname' });
+      matches.push({ employee, score: surnameScore, matchType: "surname" });
     }
   }
 
@@ -83,4 +80,3 @@ export const findMatchingEmployee = (
 
   return bestMatch.employee;
 };
-

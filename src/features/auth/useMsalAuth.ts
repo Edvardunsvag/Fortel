@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { useMsal } from '@azure/msal-react';
-import { useAppDispatch } from '@/app/hooks';
-import { setAccount, setAccessToken, clearAuth, toSerializableAccount } from './authSlice';
-import { loginRequest } from '@/shared/config/msalConfig';
+import { useEffect } from "react";
+import { useMsal } from "@azure/msal-react";
+import { useAppDispatch } from "@/app/hooks";
+import { setAccount, setAccessToken, clearAuth, toSerializableAccount } from "./authSlice";
+import { loginRequest } from "@/shared/config/msalConfig";
 
 /**
  * Custom hook to manage MSAL authentication state and sync with Redux
@@ -29,7 +29,7 @@ export const useMsalAuth = () => {
           dispatch(setAccessToken(response.accessToken));
         })
         .catch((error) => {
-          console.error('Failed to acquire token silently:', error);
+          console.error("Failed to acquire token silently:", error);
           dispatch(setAccessToken(null));
         });
     } else {
@@ -41,7 +41,7 @@ export const useMsalAuth = () => {
     try {
       await instance.loginPopup(loginRequest);
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
   };
 
@@ -50,7 +50,7 @@ export const useMsalAuth = () => {
       await instance.logoutPopup();
       dispatch(clearAuth());
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -67,17 +67,16 @@ export const useMsalAuth = () => {
       });
       return response.accessToken;
     } catch (error) {
-      console.error('Failed to acquire token:', error);
+      console.error("Failed to acquire token:", error);
       return null;
     }
   };
 
   return {
     isAuthenticated: accounts.length > 0,
-    isLoading: inProgress === 'login' || inProgress === 'ssoSilent',
+    isLoading: inProgress === "login" || inProgress === "ssoSilent",
     handleLogin,
     handleLogout,
     getAccessToken,
   };
 };
-

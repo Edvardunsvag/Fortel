@@ -1,27 +1,27 @@
-import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders } from '@/test/test-utils';
-import { Game } from './Game';
-import { FeatureKey } from '@/shared/redux/enums';
-import type { RootState } from '@/app/store';
-import type { Employee } from '@/features/employees/types';
-import { ActiveTab } from '@/features/sidebar/navigationSlice';
-import { hashEmployeeId } from '@/shared/utils/hashUtils';
+import { describe, it, expect, vi } from "vitest";
+import { renderWithProviders } from "@/test/test-utils";
+import { Game } from "./Game";
+import { FeatureKey } from "@/shared/redux/enums";
+import type { RootState } from "@/app/store";
+import type { Employee } from "@/features/employees/types";
+import { ActiveTab } from "@/features/sidebar/navigationSlice";
+import { hashEmployeeId } from "@/shared/utils/hashUtils";
 
 // Mock i18n
-vi.mock('react-i18next', () => ({
+vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
 // Mock canvas-confetti
-vi.mock('canvas-confetti', () => ({
+vi.mock("canvas-confetti", () => ({
   default: vi.fn(),
 }));
 
 // Mock date utilities to return consistent dates for testing
-vi.mock('@/shared/utils/dateUtils', () => ({
-  getTodayDateString: () => '2024-01-01',
+vi.mock("@/shared/utils/dateUtils", () => ({
+  getTodayDateString: () => "2024-01-01",
   getDateSeed: vi.fn((dateString: string) => {
     let hash = 0;
     for (let i = 0; i < dateString.length; i++) {
@@ -34,57 +34,58 @@ vi.mock('@/shared/utils/dateUtils', () => ({
   selectIndexBySeed: vi.fn((seed: number, arrayLength: number) => seed % arrayLength),
 }));
 
-describe('Game - Input Field Visibility', () => {
+describe("Game - Input Field Visibility", () => {
   const mockEmployees: Employee[] = [
     {
-      id: '1',
-      name: 'John Doe',
-      firstName: 'John',
-      surname: 'Doe',
-      department: 'Engineering',
-      office: 'Oslo',
-      teams: ['Frontend'],
+      id: "1",
+      name: "John Doe",
+      firstName: "John",
+      surname: "Doe",
+      department: "Engineering",
+      office: "Oslo",
+      teams: ["Frontend"],
       age: 30,
-      supervisor: 'Jane Manager',
-      avatarImageUrl: '',
-      funfact: 'Loves coding',
+      supervisor: "Jane Manager",
+      avatarImageUrl: "",
+      funfact: "Loves coding",
       interests: [],
     },
   ];
 
-  const testDate = '2024-01-01';
+  const testDate = "2024-01-01";
   const hashedEmployeeId = hashEmployeeId(mockEmployees[0].id, testDate);
 
-  const createMockState = (overrides?: Partial<RootState>): RootState => ({
-    [FeatureKey.Game]: {
-      employeeOfTheDayId: hashedEmployeeId,
-      guesses: [],
-      status: 'playing',
-      currentDate: testDate,
-      attemptedByUserId: null,
-      attemptDate: null,
-      funfactRevealed: false,
-      roundId: null,
-    },
-    [FeatureKey.Auth]: {
-      account: {
-        localAccountId: 'user-1',
-        username: 'john.doe',
-        name: 'John Doe',
+  const createMockState = (overrides?: Partial<RootState>): RootState =>
+    ({
+      [FeatureKey.Game]: {
+        employeeOfTheDayId: hashedEmployeeId,
+        guesses: [],
+        status: "playing",
+        currentDate: testDate,
+        attemptedByUserId: null,
+        attemptDate: null,
+        funfactRevealed: false,
+        roundId: null,
       },
-      accessToken: null,
-      isAuthenticated: true,
-    },
-    [FeatureKey.Navigation]: {
-      activeTab: ActiveTab.Play,
-    },
-    [FeatureKey.I18n]: {
-      language: 'en',
-    },
-    ...overrides,
-  } as RootState);
+      [FeatureKey.Auth]: {
+        account: {
+          localAccountId: "user-1",
+          username: "john.doe",
+          name: "John Doe",
+        },
+        accessToken: null,
+        isAuthenticated: true,
+      },
+      [FeatureKey.Navigation]: {
+        activeTab: ActiveTab.Play,
+      },
+      [FeatureKey.I18n]: {
+        language: "en",
+      },
+      ...overrides,
+    }) as RootState;
 
-  it('should show input field when canGuess is true', () => {
+  it("should show input field when canGuess is true", () => {
     const mockState = createMockState();
     const { getByLabelText } = renderWithProviders(<Game />, {
       preloadedState: mockState,
@@ -95,12 +96,12 @@ describe('Game - Input Field Visibility', () => {
     expect(input).toBeInTheDocument();
   });
 
-  it('should not show input field when canGuess is false', () => {
+  it("should not show input field when canGuess is false", () => {
     const mockState = createMockState({
       [FeatureKey.Game]: {
         employeeOfTheDayId: hashedEmployeeId,
         guesses: [],
-        status: 'won', // This makes canGuess false
+        status: "won", // This makes canGuess false
         currentDate: testDate,
         attemptedByUserId: null,
         attemptDate: null,
@@ -118,4 +119,3 @@ describe('Game - Input Field Visibility', () => {
     expect(input).not.toBeInTheDocument();
   });
 });
-

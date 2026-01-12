@@ -1,4 +1,4 @@
-@use '../../../shared/styles/variables.scss' as *;
+@use "../../../shared/styles/variables.scss" as *;
 
 .page {
   min-height: 100vh;
@@ -51,4 +51,3 @@
   color: $color-dark-fill;
   margin: 0;
 }
-

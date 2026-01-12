@@ -2,8 +2,8 @@ import type {
   FortedleServerModelsGuessDto,
   FortedleServerModelsGuessHintDto,
   FortedleServerModelsRoundDto,
-} from '@/shared/api/generated/index';
-import type { Guess, GuessHint, HintResult, HintType } from './types';
+} from "@/shared/api/generated/index";
+import type { Guess, GuessHint, HintResult, HintType } from "./types";
 
 export interface RoundDto {
   id: number;
@@ -22,14 +22,16 @@ export interface RoundDto {
  */
 export const guessFromDto = (dto: FortedleServerModelsGuessDto): Guess => {
   return {
-    employeeId: dto.employeeId ?? '',
-    employeeName: dto.employeeName ?? '',
+    employeeId: dto.employeeId ?? "",
+    employeeName: dto.employeeName ?? "",
     avatarImageUrl: dto.avatarImageUrl ?? undefined,
-    hints: (dto.hints ?? []).map((hint: FortedleServerModelsGuessHintDto): GuessHint => ({
-      type: hint.type as HintType,
-      result: hint.result as HintResult,
-      message: hint.message ?? '',
-    })),
+    hints: (dto.hints ?? []).map(
+      (hint: FortedleServerModelsGuessHintDto): GuessHint => ({
+        type: hint.type as HintType,
+        result: hint.result as HintResult,
+        message: hint.message ?? "",
+      })
+    ),
     isCorrect: dto.isCorrect ?? false,
   };
 };
@@ -40,14 +42,13 @@ export const guessFromDto = (dto: FortedleServerModelsGuessDto): Guess => {
 export const roundFromDto = (dto: FortedleServerModelsRoundDto): RoundDto => {
   return {
     id: dto.id ?? 0,
-    userId: dto.userId ?? '',
-    date: dto.date ?? '',
-    status: dto.status ?? '',
+    userId: dto.userId ?? "",
+    date: dto.date ?? "",
+    status: dto.status ?? "",
     employeeOfTheDayId: dto.employeeOfTheDayId ?? null,
     guesses: (dto.guesses ?? []).map(guessFromDto),
     funfactRevealed: dto.funfactRevealed ?? false,
-    startedAt: dto.startedAt ?? '',
+    startedAt: dto.startedAt ?? "",
     finishedAt: dto.finishedAt ?? null,
   };
 };
-

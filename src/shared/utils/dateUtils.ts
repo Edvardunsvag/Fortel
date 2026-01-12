@@ -24,6 +24,5 @@ export const selectIndexBySeed = (seed: number, arrayLength: number): number => 
  * Gets today's date as YYYY-MM-DD string
  */
 export const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split("T")[0];
 };
-

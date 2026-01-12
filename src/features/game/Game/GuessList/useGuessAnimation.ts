@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
-import type { Guess } from '@/features/game/types';
-import { ANIMATION_CONFIG } from './utils';
+import { useEffect, useState, useRef } from "react";
+import type { Guess } from "@/features/game/types";
+import { ANIMATION_CONFIG } from "./utils";
 
 /**
  * Custom hook to manage guess animation state
@@ -42,4 +42,3 @@ export const useGuessAnimation = (guesses: Guess[]) => {
 
   return animatedGuesses;
 };
-

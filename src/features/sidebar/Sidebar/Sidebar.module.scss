@@ -1,4 +1,4 @@
-@use '../../../shared/styles/variables.scss' as *;
+@use "../../../shared/styles/variables.scss" as *;
 
 .sidebar {
   position: fixed;
@@ -60,7 +60,9 @@
   border: none;
   text-align: left;
   cursor: pointer;
-  transition: background-color $transition-normal, color $transition-normal;
+  transition:
+    background-color $transition-normal,
+    color $transition-normal;
   color: $color-dark-fill;
   font-size: 1rem;
   font-weight: 500;
@@ -163,4 +165,3 @@
     right: $spacing-md;
   }
 }
-

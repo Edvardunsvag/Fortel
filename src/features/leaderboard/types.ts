@@ -10,4 +10,3 @@ export interface LeaderboardData {
   date: string;
   leaderboard: LeaderboardEntry[];
 }
-

@@ -1,4 +1,4 @@
-import type { FortedleServerModelsSyncRequest } from '@/shared/api/generated/index';
+import type { FortedleServerModelsSyncRequest } from "@/shared/api/generated/index";
 
 /**
  * Maps application types to SyncRequest
@@ -8,4 +8,3 @@ export const toSyncRequest = (accessToken: string): FortedleServerModelsSyncRequ
     accessToken: accessToken.trim(),
   };
 };
-

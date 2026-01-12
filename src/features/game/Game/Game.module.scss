@@ -1,4 +1,4 @@
-@use '../../../shared/styles/variables.scss' as *;
+@use "../../../shared/styles/variables.scss" as *;
 
 .page {
   min-height: 100vh;
@@ -174,7 +174,9 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color $transition-normal, transform $transition-fast;
+  transition:
+    background-color $transition-normal,
+    transform $transition-fast;
   white-space: normal;
   word-wrap: break-word;
   height: fit-content;
@@ -281,7 +283,9 @@
   font-size: 2rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color $transition-normal, transform $transition-fast;
+  transition:
+    background-color $transition-normal,
+    transform $transition-fast;
   display: block;
   text-align: center;
 
@@ -337,4 +341,3 @@
     font-size: 1rem;
   }
 }
-

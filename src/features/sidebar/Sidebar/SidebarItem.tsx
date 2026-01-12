@@ -1,7 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
-import { ActiveTab } from '@/features/sidebar';
-import { tabToRoute } from '@/shared/routes';
-import styles from './Sidebar.module.scss';
+import { Link, useLocation } from "react-router-dom";
+import { ActiveTab } from "@/features/sidebar";
+import { tabToRoute } from "@/shared/routes";
+import styles from "./Sidebar.module.scss";
 
 interface SidebarItemProps {
   tab: ActiveTab;
@@ -12,14 +12,7 @@ interface SidebarItemProps {
   onKeyDown: (event: React.KeyboardEvent, tab: ActiveTab) => void;
 }
 
-export const SidebarItem = ({
-  tab,
-  icon,
-  label,
-  activeTab,
-  onTabClick,
-  onKeyDown,
-}: SidebarItemProps) => {
+export const SidebarItem = ({ tab, icon, label, activeTab, onTabClick, onKeyDown }: SidebarItemProps) => {
   const location = useLocation();
   const route = tabToRoute[tab];
   const isActive = activeTab === tab || location.pathname === route;
@@ -28,11 +21,11 @@ export const SidebarItem = ({
     <li>
       <Link
         to={route}
-        className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+        className={`${styles.navItem} ${isActive ? styles.active : ""}`}
         onClick={() => onTabClick(tab)}
         onKeyDown={(e) => onKeyDown(e, tab)}
         aria-label={label}
-        aria-current={isActive ? 'page' : undefined}
+        aria-current={isActive ? "page" : undefined}
       >
         <span className={styles.icon}>{icon}</span>
         <span className={styles.label}>{label}</span>
@@ -40,4 +33,3 @@ export const SidebarItem = ({
     </li>
   );
 };
-

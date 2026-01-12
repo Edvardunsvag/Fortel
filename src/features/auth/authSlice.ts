@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '@/app/store';
-import type { AccountInfo } from '@azure/msal-browser';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "@/app/store";
+import type { AccountInfo } from "@azure/msal-browser";
 
 /**
  * Serializable account type - only includes properties we actually use
@@ -32,7 +32,7 @@ export const toSerializableAccount = (account: AccountInfo | null): Serializable
   if (!account) {
     return null;
   }
-  
+
   return {
     name: account.name,
     username: account.username,
@@ -41,7 +41,7 @@ export const toSerializableAccount = (account: AccountInfo | null): Serializable
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setAccount: (state, action: PayloadAction<SerializableAccountInfo | null>) => {
@@ -66,4 +66,3 @@ export const selectAccessToken = (state: RootState): string | null => state.auth
 export const selectIsAuthenticated = (state: RootState): boolean => state.auth.isAuthenticated;
 
 export const authReducer = authSlice.reducer;
-

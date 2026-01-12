@@ -1,4 +1,4 @@
-export { gameReducer, initializeGame, revealFunfact, makeGuess, FUNFACT_REVEAL_COST } from './gameSlice';
+export { gameReducer, initializeGame, revealFunfact, makeGuess, FUNFACT_REVEAL_COST } from "./gameSlice";
 export {
   selectEmployeeOfTheDayId,
   selectFunfactRevealed,
@@ -6,7 +6,6 @@ export {
   selectTotalGuesses,
   selectGameStatus,
   selectCanGuess,
-} from './gameSlice';
-export { HintType, HintResult } from './types';
-export type { GameState, Guess, GuessHint } from './types';
-
+} from "./gameSlice";
+export { HintType, HintResult } from "./types";
+export type { GameState, Guess, GuessHint } from "./types";

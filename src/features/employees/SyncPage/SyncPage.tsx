@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '@/app/hooks';
-import { useSyncEmployees, useEmployees } from '@/features/employees/queries';
-import styles from './SyncPage.module.scss';
-import { selectAccount } from '@/features/auth/authSlice';
-import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
-import { toSyncRequest } from '@/features/employees/toDto';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/app/hooks";
+import { useSyncEmployees, useEmployees } from "@/features/employees/queries";
+import styles from "./SyncPage.module.scss";
+import { selectAccount } from "@/features/auth/authSlice";
+import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
+import { toSyncRequest } from "@/features/employees/toDto";
 
 export const SyncPage = () => {
   const { t } = useTranslation();
   const account = useAppSelector(selectAccount);
   const { data: employees = [] } = useEmployees();
   const syncMutation = useSyncEmployees();
-  const [tokenInput, setTokenInput] = useState('');
+  const [tokenInput, setTokenInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [alreadySynced, setAlreadySynced] = useState(false);
@@ -26,7 +26,7 @@ export const SyncPage = () => {
     setAlreadySynced(false);
 
     if (!tokenInput.trim()) {
-      setError(t('sync.pleaseEnterToken'));
+      setError(t("sync.pleaseEnterToken"));
       return;
     }
 
@@ -35,20 +35,20 @@ export const SyncPage = () => {
     try {
       const request = toSyncRequest(accessToken);
       const result = await syncMutation.mutateAsync(request);
-      
+
       if (result.alreadySynced) {
         setAlreadySynced(true);
       } else {
         setSyncSuccess(true);
       }
-      setTokenInput('');
+      setTokenInput("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('sync.failedToSync'));
+      setError(err instanceof Error ? err.message : t("sync.failedToSync"));
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       const form = e.currentTarget.form;
       if (form) {
@@ -62,21 +62,17 @@ export const SyncPage = () => {
   return (
     <div className={styles.pageContent}>
       <div className={styles.container}>
-        <h1 className={styles.title}>{t('sync.title')}</h1>
-        <p className={styles.subtitle}>
-          {t('sync.subtitle')}
-        </p>
-        
+        <h1 className={styles.title}>{t("sync.title")}</h1>
+        <p className={styles.subtitle}>{t("sync.subtitle")}</p>
+
         {hasEmployees && !isAdmin ? (
           <div className={styles.tokenForm}>
-            <p className={styles.success}>
-              {t('sync.alreadySynced')}
-            </p>
+            <p className={styles.success}>{t("sync.alreadySynced")}</p>
           </div>
         ) : (
           <form onSubmit={handleSync} className={styles.tokenForm}>
             <label htmlFor="token-input" className={styles.tokenLabel}>
-              {t('sync.accessToken')}
+              {t("sync.accessToken")}
             </label>
             <textarea
               id="token-input"
@@ -84,42 +80,34 @@ export const SyncPage = () => {
               value={tokenInput}
               onChange={(e) => setTokenInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t('sync.tokenPlaceholder')}
+              placeholder={t("sync.tokenPlaceholder")}
               rows={4}
               disabled={isSyncing}
             />
             {error && <p className={styles.error}>{error}</p>}
-            {alreadySynced && (
-              <p className={styles.success}>
-                {t('sync.alreadySynced')}
-              </p>
-            )}
+            {alreadySynced && <p className={styles.success}>{t("sync.alreadySynced")}</p>}
             {syncSuccess && (
               <p className={styles.success}>
-                {t('sync.dataSynced')} {t('sync.employeesLoaded')}
+                {t("sync.dataSynced")} {t("sync.employeesLoaded")}
               </p>
             )}
             <div className={styles.tokenActions}>
-              <button
-                className={styles.submitButton}
-                type="submit"
-                disabled={isSyncing || !tokenInput.trim()}
-              >
-                {isSyncing ? t('sync.syncing') : t('sync.syncData')}
+              <button className={styles.submitButton} type="submit" disabled={isSyncing || !tokenInput.trim()}>
+                {isSyncing ? t("sync.syncing") : t("sync.syncData")}
               </button>
             </div>
             <p className={styles.instructions}>
-              <strong>{t('sync.howToGetToken')}</strong>
+              <strong>{t("sync.howToGetToken")}</strong>
               <br />
-              {t('sync.step1')}
+              {t("sync.step1")}
               <br />
-              {t('sync.step2')}
+              {t("sync.step2")}
               <br />
-              {t('sync.step3')}
+              {t("sync.step3")}
               <br />
-              {t('sync.step4')}
+              {t("sync.step4")}
               <br />
-              {t('sync.step5')}
+              {t("sync.step5")}
             </p>
           </form>
         )}
@@ -127,4 +115,3 @@ export const SyncPage = () => {
     </div>
   );
 };
-

@@ -1,8 +1,8 @@
-import type { Guess } from '@/features/game/types';
-import { HintType } from '@/features/game/types';
-import { FlipBox } from '../../FlipBox';
-import { calculateBoxDelay, getHintArrow, getHintResult, getHintValue } from '../utils';
-import styles from './HintCell.module.scss';
+import type { Guess } from "@/features/game/types";
+import { HintType } from "@/features/game/types";
+import { FlipBox } from "../../FlipBox";
+import { calculateBoxDelay, getHintArrow, getHintResult, getHintValue } from "../utils";
+import styles from "./HintCell.module.scss";
 
 interface HintCellProps {
   guess: Guess;
@@ -13,14 +13,7 @@ interface HintCellProps {
   t: (key: string) => string;
 }
 
-export const HintCell = ({
-  guess,
-  hintType,
-  guessIndex,
-  boxIndex,
-  isAnimated,
-  t,
-}: HintCellProps) => {
+export const HintCell = ({ guess, hintType, guessIndex, boxIndex, isAnimated, t }: HintCellProps) => {
   const delay = calculateBoxDelay(guessIndex, boxIndex, isAnimated);
   const value = getHintValue(guess, hintType);
   const result = getHintResult(guess, hintType);
@@ -39,4 +32,3 @@ export const HintCell = ({
     </td>
   );
 };
-

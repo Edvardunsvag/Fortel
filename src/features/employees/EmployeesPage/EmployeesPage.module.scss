@@ -1,4 +1,4 @@
-@use '../../../shared/styles/variables.scss' as *;
+@use "../../../shared/styles/variables.scss" as *;
 
 .pageContent {
   min-height: 100vh;
@@ -106,7 +106,9 @@
   border-radius: $radius-md;
   text-align: left;
   cursor: pointer;
-  transition: background-color $transition-normal, border-color $transition-normal;
+  transition:
+    background-color $transition-normal,
+    border-color $transition-normal;
   color: $color-dark-fill;
   font-size: 1rem;
 
@@ -284,4 +286,3 @@
   font-size: 0.9375rem;
   font-weight: 500;
 }
-

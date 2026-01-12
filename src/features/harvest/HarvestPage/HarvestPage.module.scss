@@ -1,4 +1,4 @@
-@use '../../../shared/styles/variables.scss' as *;
+@use "../../../shared/styles/variables.scss" as *;
 
 .page {
   min-height: 100vh;
@@ -286,7 +286,8 @@
 }
 
 @keyframes ticketPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

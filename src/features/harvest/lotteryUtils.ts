@@ -1,13 +1,13 @@
-import type { HarvestTimeEntry } from './types';
+import type { HarvestTimeEntry } from "./types";
 
 /**
  * Check if a user is eligible for a lottery ticket based on their time entries
- * 
+ *
  * Eligibility criteria:
  * - Must have at least 8 hours logged for each day Monday-Friday
  * - All time entries for the week must be created AND updated before Friday 15:00
  *   (No updates allowed after the deadline - entries must be completely finalized)
- * 
+ *
  * @param timeEntries - Array of time entries for the week
  * @param fridayDate - The date of the Friday to check against (YYYY-MM-DD format)
  * @param timezone - Optional timezone (defaults to UTC). Should match user's timezone from Harvest
@@ -28,16 +28,16 @@ export interface LotteryEligibilityResult {
 
 export const checkLotteryEligibility = (
   timeEntries: HarvestTimeEntry[],
-  fridayDate: string, // YYYY-MM-DD format
+  fridayDate: string // YYYY-MM-DD format
 ): LotteryEligibilityResult => {
   // Parse Friday date using local date constructor to avoid timezone issues
-  const [year, month, day] = fridayDate.split('-').map(Number);
+  const [year, month, day] = fridayDate.split("-").map(Number);
   const friday = new Date(year, month - 1, day);
-  
+
   if (isNaN(friday.getTime())) {
     return {
       isEligible: false,
-      reason: 'Invalid Friday date',
+      reason: "Invalid Friday date",
       dailyHours: [],
       cutoffTime: new Date(),
       latestEntryTime: null,
@@ -48,7 +48,7 @@ export const checkLotteryEligibility = (
   if (friday.getDay() !== 5) {
     return {
       isEligible: false,
-      reason: 'Provided date is not a Friday',
+      reason: "Provided date is not a Friday",
       dailyHours: [],
       cutoffTime: new Date(),
       latestEntryTime: null,
@@ -58,7 +58,7 @@ export const checkLotteryEligibility = (
   // Set cutoff time to Friday 15:00 (3 PM) in local time
   const cutoffTime = new Date(friday);
   cutoffTime.setHours(15, 0, 0, 0);
-  
+
   // If timezone is provided, we need to convert to UTC for comparison
   // For simplicity, we'll assume the cutoffTime is already in the correct timezone
   // In production, you'd want to use a library like date-fns-tz or moment-timezone
@@ -70,8 +70,8 @@ export const checkLotteryEligibility = (
   // Helper to format date as YYYY-MM-DD using local components
   const formatDate = (date: Date): string => {
     const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
   };
 
@@ -91,7 +91,7 @@ export const checkLotteryEligibility = (
   // Process each time entry
   for (const entry of timeEntries) {
     // Parse spent_date as local date to avoid timezone issues
-    const [entryYear, entryMonth, entryDay] = entry.spent_date.split('-').map(Number);
+    const [entryYear, entryMonth, entryDay] = entry.spent_date.split("-").map(Number);
     const entryDate = new Date(entryYear, entryMonth - 1, entryDay);
     const dateKey = entry.spent_date;
 
@@ -101,8 +101,13 @@ export const checkLotteryEligibility = (
     const fridayMidnight = new Date(friday).setHours(23, 59, 59, 999);
     const entryMidnight = entryDate.setHours(0, 0, 0, 0);
     const entryDayOfWeek = entryDate.getDay();
-    
-    if (entryMidnight >= mondayMidnight && entryMidnight <= fridayMidnight && entryDayOfWeek >= 1 && entryDayOfWeek <= 5) {
+
+    if (
+      entryMidnight >= mondayMidnight &&
+      entryMidnight <= fridayMidnight &&
+      entryDayOfWeek >= 1 &&
+      entryDayOfWeek <= 5
+    ) {
       const existing = dailyHoursMap.get(dateKey) || { hours: 0, lastUpdated: null };
       existing.hours += entry.hours;
 
@@ -126,7 +131,7 @@ export const checkLotteryEligibility = (
   }
 
   // Check eligibility
-  const dailyHours: LotteryEligibilityResult['dailyHours'] = [];
+  const dailyHours: LotteryEligibilityResult["dailyHours"] = [];
   let allDaysMeetRequirement = true;
   let allEntriesBeforeCutoff = true;
 
@@ -135,7 +140,7 @@ export const checkLotteryEligibility = (
     date.setDate(monday.getDate() + i);
     const dateKey = formatDate(date);
     const dayData = dailyHoursMap.get(dateKey) || { hours: 0, lastUpdated: null };
-    
+
     const meetsRequirement = dayData.hours >= 8;
     if (!meetsRequirement) {
       allDaysMeetRequirement = false;
@@ -169,10 +174,10 @@ export const checkLotteryEligibility = (
       const missingDays = dailyHours
         .filter((d) => !d.meetsRequirement)
         .map((d) => d.date)
-        .join(', ');
+        .join(", ");
       reason = `Missing 8 hours on: ${missingDays}`;
     } else if (!allEntriesBeforeCutoff) {
-      const latestTime = latestEntryTime?.toISOString() || 'unknown';
+      const latestTime = latestEntryTime?.toISOString() || "unknown";
       reason = `Some entries were updated after Friday 15:00. Latest update: ${latestTime}`;
     }
   }
@@ -195,7 +200,7 @@ export const getCurrentWeekFriday = (): string => {
   const daysUntilFriday = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
   const friday = new Date(today);
   friday.setDate(today.getDate() + daysUntilFriday);
-  return friday.toISOString().split('T')[0];
+  return friday.toISOString().split("T")[0];
 };
 
 /**
@@ -204,5 +209,5 @@ export const getCurrentWeekFriday = (): string => {
 export const getPreviousWeekFriday = (): string => {
   const friday = new Date(getCurrentWeekFriday());
   friday.setDate(friday.getDate() - 7);
-  return friday.toISOString().split('T')[0];
+  return friday.toISOString().split("T")[0];
 };

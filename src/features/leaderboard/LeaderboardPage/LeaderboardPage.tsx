@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next';
-import { useLeaderboard } from '@/features/leaderboard/queries';
-import styles from './LeaderboardPage.module.scss';
+import { useTranslation } from "react-i18next";
+import { useLeaderboard } from "@/features/leaderboard/queries";
+import styles from "./LeaderboardPage.module.scss";
 
 export const LeaderboardPage = () => {
   const { t } = useTranslation();
@@ -12,13 +12,13 @@ export const LeaderboardPage = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const language = localStorage.getItem('fortedle_language') || 'en';
-    const locale = language === 'nb' ? 'nb-NO' : 'en-US';
+    const language = localStorage.getItem("fortedle_language") || "en";
+    const locale = language === "nb" ? "nb-NO" : "en-US";
     return date.toLocaleDateString(locale, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -26,8 +26,8 @@ export const LeaderboardPage = () => {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
-          <h1 className={styles.title}>{t('leaderboard.title')}</h1>
-          <p className={styles.subtitle}>{t('leaderboard.loading')}</p>
+          <h1 className={styles.title}>{t("leaderboard.title")}</h1>
+          <p className={styles.subtitle}>{t("leaderboard.loading")}</p>
         </div>
       </div>
     );
@@ -37,90 +37,92 @@ export const LeaderboardPage = () => {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
-          <h1 className={styles.title}>{t('leaderboard.title')}</h1>
-          <p className={styles.subtitle} style={{ color: 'var(--color-error)' }}>
-            {error instanceof Error ? error.message : t('leaderboard.failedToLoad')}
+          <h1 className={styles.title}>{t("leaderboard.title")}</h1>
+          <p className={styles.subtitle} style={{ color: "var(--color-error)" }}>
+            {error instanceof Error ? error.message : t("leaderboard.failedToLoad")}
           </p>
           <button
             onClick={handleRefresh}
             style={{
-              marginTop: '1rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: 'var(--color-link-blue)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.5rem',
-              cursor: 'pointer',
+              marginTop: "1rem",
+              padding: "0.5rem 1rem",
+              backgroundColor: "var(--color-link-blue)",
+              color: "white",
+              border: "none",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
             }}
           >
-            {t('leaderboard.retry')}
+            {t("leaderboard.retry")}
           </button>
         </div>
       </div>
     );
   }
 
-  const today = leaderboard?.date ? formatDate(leaderboard.date).charAt(0).toUpperCase() + formatDate(leaderboard.date).slice(1) : t('leaderboard.title');
+  const today = leaderboard?.date
+    ? formatDate(leaderboard.date).charAt(0).toUpperCase() + formatDate(leaderboard.date).slice(1)
+    : t("leaderboard.title");
 
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <h1 className={styles.title}>{t('leaderboard.title')}</h1>
+        <h1 className={styles.title}>{t("leaderboard.title")}</h1>
         <p className={styles.subtitle}>{today}</p>
 
         {leaderboard && leaderboard.leaderboard.length > 0 ? (
           <div className={styles.content}>
             <table
               style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                marginTop: '2rem',
+                width: "100%",
+                borderCollapse: "collapse",
+                marginTop: "2rem",
               }}
             >
               <thead>
                 <tr
                   style={{
-                    borderBottom: '2px solid var(--color-border-light)',
+                    borderBottom: "2px solid var(--color-border-light)",
                   }}
                 >
                   <th
                     style={{
-                      textAlign: 'left',
-                      padding: '1rem',
+                      textAlign: "left",
+                      padding: "1rem",
                       fontWeight: 600,
-                      color: 'var(--color-dark-fill)',
+                      color: "var(--color-dark-fill)",
                     }}
                   >
-                    {t('leaderboard.rank')}
+                    {t("leaderboard.rank")}
                   </th>
                   <th
                     style={{
-                      textAlign: 'left',
-                      padding: '1rem',
+                      textAlign: "left",
+                      padding: "1rem",
                       fontWeight: 600,
-                      color: 'var(--color-dark-fill)',
+                      color: "var(--color-dark-fill)",
                     }}
                   >
-                    {t('leaderboard.name')}
+                    {t("leaderboard.name")}
                   </th>
                   <th
                     style={{
-                      textAlign: 'center',
-                      padding: '1rem',
-                      width: '80px',
+                      textAlign: "center",
+                      padding: "1rem",
+                      width: "80px",
                     }}
                   >
                     {/* Avatar column - no header text */}
                   </th>
                   <th
                     style={{
-                      textAlign: 'right',
-                      padding: '1rem',
+                      textAlign: "right",
+                      padding: "1rem",
                       fontWeight: 600,
-                      color: 'var(--color-dark-fill)',
+                      color: "var(--color-dark-fill)",
                     }}
                   >
-                    {t('leaderboard.score')}
+                    {t("leaderboard.score")}
                   </th>
                 </tr>
               </thead>
@@ -129,24 +131,24 @@ export const LeaderboardPage = () => {
                   <tr
                     key={`${entry.name}-${entry.rank}`}
                     style={{
-                      borderBottom: '1px solid var(--color-border-light)',
+                      borderBottom: "1px solid var(--color-border-light)",
                     }}
                   >
                     <td
                       style={{
-                        padding: '1rem',
-                        color: 'var(--color-dark-fill)',
+                        padding: "1rem",
+                        color: "var(--color-dark-fill)",
                       }}
                     >
-                      {entry.rank === 1 && '🥇'}
-                      {entry.rank === 2 && '🥈'}
-                      {entry.rank === 3 && '🥉'}
+                      {entry.rank === 1 && "🥇"}
+                      {entry.rank === 2 && "🥈"}
+                      {entry.rank === 3 && "🥉"}
                       {entry.rank > 3 && `#${entry.rank}`}
                     </td>
                     <td
                       style={{
-                        padding: '1rem',
-                        color: 'var(--color-dark-fill)',
+                        padding: "1rem",
+                        color: "var(--color-dark-fill)",
                         fontWeight: entry.rank <= 3 ? 600 : 400,
                       }}
                     >
@@ -154,8 +156,8 @@ export const LeaderboardPage = () => {
                     </td>
                     <td
                       style={{
-                        padding: '1rem',
-                        textAlign: 'center',
+                        padding: "1rem",
+                        textAlign: "center",
                       }}
                     >
                       {entry.avatarImageUrl ? (
@@ -163,24 +165,24 @@ export const LeaderboardPage = () => {
                           src={entry.avatarImageUrl}
                           alt={`${entry.name} avatar`}
                           style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
                           }}
                         />
                       ) : (
                         <div
                           style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            backgroundColor: 'var(--color-border-light)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'var(--color-dark-fill)',
-                            fontSize: '1.2rem',
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            backgroundColor: "var(--color-border-light)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--color-dark-fill)",
+                            fontSize: "1.2rem",
                             fontWeight: 600,
                           }}
                         >
@@ -190,13 +192,13 @@ export const LeaderboardPage = () => {
                     </td>
                     <td
                       style={{
-                        padding: '1rem',
-                        textAlign: 'right',
-                        color: 'var(--color-dark-fill)',
+                        padding: "1rem",
+                        textAlign: "right",
+                        color: "var(--color-dark-fill)",
                         fontWeight: entry.rank <= 3 ? 600 : 400,
                       }}
                     >
-                      {entry.score} {entry.score === 1 ? t('game.guess') : t('game.guesses_plural')}
+                      {entry.score} {entry.score === 1 ? t("game.guess") : t("game.guesses_plural")}
                     </td>
                   </tr>
                 ))}
@@ -205,13 +207,10 @@ export const LeaderboardPage = () => {
           </div>
         ) : (
           <div className={styles.content}>
-            <p className={styles.text}>
-              {t('leaderboard.noScores')}
-            </p>
+            <p className={styles.text}>{t("leaderboard.noScores")}</p>
           </div>
         )}
       </div>
     </div>
   );
 };
-

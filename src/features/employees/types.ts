@@ -12,4 +12,3 @@ export interface Employee {
   funfact?: string | null; // Fun fact about the employee
   interests?: string[]; // Array of interests
 }
-

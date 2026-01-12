@@ -1,4 +1,4 @@
-@use '../../../shared/styles/variables.scss' as *;
+@use "../../../shared/styles/variables.scss" as *;
 
 .page {
   min-height: 100vh;
@@ -75,7 +75,7 @@
     position: relative;
 
     &::before {
-      content: '•';
+      content: "•";
       position: absolute;
       left: -$spacing-lg;
       color: $color-link-blue;
@@ -83,4 +83,3 @@
     }
   }
 }
-

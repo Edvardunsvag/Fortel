@@ -1,19 +1,19 @@
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import type { Employee } from '@/features/employees/types';
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import type { Employee } from "@/features/employees/types";
 import {
   selectCanGuess,
   selectFunfactRevealed,
   selectGameStatus,
   selectGuesses,
   selectRoundId,
-} from '@/features/game/gameSlice';
-import { revealFunfact, loadRoundFromState } from '@/features/game/gameSlice';
-import { useRevealFunfact } from '@/features/game/queries';
-import { toRevealFunfactRequest } from '@/features/game/toDto';
-import type { Guess } from '@/features/game/types';
-import { useTranslation } from 'react-i18next';
-import { GuessInput } from './GuessInput';
-import styles from './Game.module.scss';
+} from "@/features/game/gameSlice";
+import { revealFunfact, loadRoundFromState } from "@/features/game/gameSlice";
+import { useRevealFunfact } from "@/features/game/queries";
+import { toRevealFunfactRequest } from "@/features/game/toDto";
+import type { Guess } from "@/features/game/types";
+import { useTranslation } from "react-i18next";
+import { GuessInput } from "./GuessInput";
+import styles from "./Game.module.scss";
 
 interface GameInputRowProps {
   inputValue: string;
@@ -22,12 +22,7 @@ interface GameInputRowProps {
   employees: Employee[];
 }
 
-export const GameInputRow = ({
-  inputValue,
-  onInputChange,
-  onGuess,
-  employees,
-}: GameInputRowProps) => {
+export const GameInputRow = ({ inputValue, onInputChange, onGuess, employees }: GameInputRowProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const canGuess = useAppSelector(selectCanGuess);
@@ -39,13 +34,13 @@ export const GameInputRow = ({
 
   const handleRevealFunfact = () => {
     if (!roundId) {
-      console.warn('Cannot reveal funfact: roundId is not available');
+      console.warn("Cannot reveal funfact: roundId is not available");
       return;
     }
-    
+
     // Update local state
     dispatch(revealFunfact());
-    
+
     // Save to server
     const request = toRevealFunfactRequest(roundId);
     revealFunfactMutation.mutate(request, {
@@ -53,7 +48,7 @@ export const GameInputRow = ({
         dispatch(loadRoundFromState({ round }));
       },
       onError: (error) => {
-        console.error('Failed to reveal funfact on server:', error);
+        console.error("Failed to reveal funfact on server:", error);
       },
     });
   };
@@ -73,14 +68,9 @@ export const GameInputRow = ({
           guessedEmployeeIds={guesses.map((guess: Guess) => guess.employeeId)}
         />
       </div>
-      {gameStatus === 'playing' && (
-        <button
-          className={styles.revealButton}
-          onClick={handleRevealFunfact}
-          type="button"
-          disabled={funfactRevealed}
-        >
-          {t('game.buyInterests')}
+      {gameStatus === "playing" && (
+        <button className={styles.revealButton} onClick={handleRevealFunfact} type="button" disabled={funfactRevealed}>
+          {t("game.buyInterests")}
         </button>
       )}
     </div>

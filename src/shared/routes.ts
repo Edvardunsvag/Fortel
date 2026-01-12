@@ -2,12 +2,12 @@
  * Route paths for the application
  */
 export const routes = {
-  play: '/',
-  leaderboard: '/leaderboard',
-  rules: '/rules',
-  employees: '/employees',
-  harvest: '/harvest',
-  sync: '/sync',
+  play: "/",
+  leaderboard: "/leaderboard",
+  rules: "/rules",
+  employees: "/employees",
+  harvest: "/harvest",
+  sync: "/sync",
 } as const;
 
 /**
@@ -26,10 +26,10 @@ export const tabToRoute: Record<string, string> = {
  * Map route paths to ActiveTab enum
  */
 export const routeToTab: Record<string, string> = {
-  [routes.play]: 'play',
-  [routes.leaderboard]: 'leaderboard',
-  [routes.rules]: 'rules',
-  [routes.employees]: 'employees',
-  [routes.harvest]: 'harvest',
-  [routes.sync]: 'sync',
+  [routes.play]: "play",
+  [routes.leaderboard]: "leaderboard",
+  [routes.rules]: "rules",
+  [routes.employees]: "employees",
+  [routes.harvest]: "harvest",
+  [routes.sync]: "sync",
 };

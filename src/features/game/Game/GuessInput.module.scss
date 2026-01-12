@@ -1,5 +1,5 @@
-@use '../../../shared/styles/variables.scss' as *;
-@use 'sass:color';
+@use "../../../shared/styles/variables.scss" as *;
+@use "sass:color";
 
 .container {
   margin-bottom: $spacing-xl;
@@ -92,4 +92,3 @@
   font-size: 0.875rem;
   font-weight: 600;
 }
-

@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next';
-import { useMsalAuth } from '@/features/auth/useMsalAuth';
-import { useAppSelector } from '@/app/hooks';
-import { selectIsAuthenticated, selectAccount } from '@/features/auth/authSlice';
-import styles from './LoginButton.module.scss';
+import { useTranslation } from "react-i18next";
+import { useMsalAuth } from "@/features/auth/useMsalAuth";
+import { useAppSelector } from "@/app/hooks";
+import { selectIsAuthenticated, selectAccount } from "@/features/auth/authSlice";
+import styles from "./LoginButton.module.scss";
 
 export const LoginButton = () => {
   const { t } = useTranslation();
@@ -19,7 +19,7 @@ export const LoginButton = () => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleClick();
     }
@@ -33,9 +33,9 @@ export const LoginButton = () => {
           onClick={handleClick}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          aria-label={t('auth.logout')}
+          aria-label={t("auth.logout")}
         >
-          {isLoading ? t('auth.loggingOut') : t('auth.logout')}
+          {isLoading ? t("auth.loggingOut") : t("auth.logout")}
         </button>
       </div>
     );
@@ -47,10 +47,9 @@ export const LoginButton = () => {
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       disabled={isLoading}
-      aria-label={t('auth.login')}
+      aria-label={t("auth.login")}
     >
-      {isLoading ? t('auth.loggingIn') : t('auth.login')}
+      {isLoading ? t("auth.loggingIn") : t("auth.login")}
     </button>
   );
 };
-

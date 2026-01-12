@@ -1,4 +1,4 @@
-@use './shared/styles/variables.scss' as *;
+@use "./shared/styles/variables.scss" as *;
 
 .app {
   min-height: 100vh;
@@ -8,13 +8,13 @@
 
   // Subtle background pattern
   &::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 50%, $color-overlay-light 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, $color-overlay-light 0%, transparent 50%);
     pointer-events: none;
@@ -28,4 +28,3 @@
   right: $spacing-md;
   z-index: 50;
 }
-

@@ -1,5 +1,4 @@
 /**
  * Admin configuration
  */
-export const ADMIN_ACCOUNT = 'edvard.unsvag@fortedigital.com';
-
+export const ADMIN_ACCOUNT = "edvard.unsvag@fortedigital.com";

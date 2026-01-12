@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { HintResult } from '@/features/game/types';
-import styles from './FlipBox.module.scss';
+import { useEffect, useState } from "react";
+import { HintResult } from "@/features/game/types";
+import styles from "./FlipBox.module.scss";
 
 interface FlipBoxProps {
   label: string;
@@ -8,7 +8,7 @@ interface FlipBoxProps {
   result: HintResult;
   delay?: number;
   showArrow?: boolean;
-  arrowDirection?: 'up' | 'down';
+  arrowDirection?: "up" | "down";
 }
 
 export const FlipBox = ({
@@ -17,7 +17,7 @@ export const FlipBox = ({
   result,
   delay = 0,
   showArrow = false,
-  arrowDirection = 'up',
+  arrowDirection = "up",
 }: FlipBoxProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -32,28 +32,28 @@ export const FlipBox = ({
 
   const getResultClass = (): string => {
     switch (result) {
-      case 'correct':
+      case "correct":
         return styles.correct;
-      case 'partial':
+      case "partial":
         return styles.partial;
-      case 'incorrect':
-      case 'none':
+      case "incorrect":
+      case "none":
         return styles.incorrect;
-      case 'higher':
+      case "higher":
         return styles.higher;
-      case 'lower':
+      case "lower":
         return styles.lower;
-      case 'equal':
+      case "equal":
         return styles.equal;
       default:
-        return '';
+        return "";
     }
   };
 
   return (
     <div className={styles.flipContainer}>
       <div
-        className={`${styles.flipBox} ${getResultClass()} ${isFlipped ? styles.flipped : ''}`}
+        className={`${styles.flipBox} ${getResultClass()} ${isFlipped ? styles.flipped : ""}`}
         aria-label={`${label}: ${value} - ${result}`}
       >
         <div className={styles.flipInner}>
@@ -64,12 +64,10 @@ export const FlipBox = ({
             <span className={styles.value}>{value}</span>
             {showArrow && (
               <span
-                className={`${styles.arrow} ${
-                  arrowDirection === 'up' ? styles.arrowUp : styles.arrowDown
-                }`}
+                className={`${styles.arrow} ${arrowDirection === "up" ? styles.arrowUp : styles.arrowDown}`}
                 aria-hidden="true"
               >
-                {arrowDirection === 'up' ? '↑' : '↓'}
+                {arrowDirection === "up" ? "↑" : "↓"}
               </span>
             )}
           </div>
@@ -78,4 +76,3 @@ export const FlipBox = ({
     </div>
   );
 };
-

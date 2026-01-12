@@ -1,14 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAppSelector, useAppDispatch } from '@/app/hooks';
-import type { AppDispatch } from '@/app/store';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import type { AppDispatch } from "@/app/store";
 import {
   fetchHarvestUser,
   fetchHarvestTimeEntries,
   exchangeCodeForToken,
   refreshAccessToken,
   fetchHarvestAccounts,
-} from './api';
-import type { HarvestUser, HarvestTimeEntry } from './types';
+} from "./api";
+import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
   selectHarvestToken,
   setTokenFromAuth,
@@ -16,28 +16,25 @@ import {
   setTokenAccountId,
   clearHarvest,
   type HarvestToken,
-} from './harvestSlice';
+} from "./harvestSlice";
 
 // Query keys
 export const harvestKeys = {
-  all: ['harvest'] as const,
-  user: () => [...harvestKeys.all, 'user'] as const,
-  timeEntries: (from: string, to: string) => [...harvestKeys.all, 'timeEntries', from, to] as const,
+  all: ["harvest"] as const,
+  user: () => [...harvestKeys.all, "user"] as const,
+  timeEntries: (from: string, to: string) => [...harvestKeys.all, "timeEntries", from, to] as const,
 };
 
 /**
  * Helper to get a valid token, refreshing if needed
  */
-const getValidToken = async (
-  token: HarvestToken | null,
-  dispatch: AppDispatch
-): Promise<HarvestToken> => {
+const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch): Promise<HarvestToken> => {
   if (!token) {
-    throw new Error('Not authenticated with Harvest');
+    throw new Error("Not authenticated with Harvest");
   }
 
   if (!token.accountId) {
-    throw new Error('Account ID is missing. Please re-authenticate.');
+    throw new Error("Account ID is missing. Please re-authenticate.");
   }
 
   // Check if token is expired and refresh if needed
@@ -52,14 +49,14 @@ const getValidToken = async (
         expiresAt: Date.now() + tokenResponse.expires_in * 1000,
         accountId: tokenResponse.account_id || token.accountId,
       };
-      sessionStorage.setItem('harvest_token', JSON.stringify(newToken));
+      sessionStorage.setItem("harvest_token", JSON.stringify(newToken));
       dispatch(setTokenFromRefresh(newToken));
       return newToken;
     } catch (error) {
       // If refresh fails, clear token and require re-auth
-      sessionStorage.removeItem('harvest_token');
+      sessionStorage.removeItem("harvest_token");
       dispatch(clearHarvest());
-      throw new Error('Token expired. Please re-authenticate.');
+      throw new Error("Token expired. Please re-authenticate.");
     }
   }
 
@@ -82,7 +79,7 @@ export const useHarvestUser = (enabled = true) => {
     enabled: enabled && token !== null,
     retry: (failureCount, error) => {
       // Don't retry on 401 errors (auth issues)
-      if (error instanceof Error && error.message.includes('401')) {
+      if (error instanceof Error && error.message.includes("401")) {
         return false;
       }
       return failureCount < 2;
@@ -115,61 +112,53 @@ export const useHarvestTimeEntries = (from: string, to: string, enabled = true) 
           user = userData;
         }
       } catch (error) {
-        throw new Error(
-          error instanceof Error ? error.message : 'Failed to fetch user info'
-        );
+        throw new Error(error instanceof Error ? error.message : "Failed to fetch user info");
       }
 
       const userId = user.id;
 
       try {
-        const response = await fetchHarvestTimeEntries(
-          validToken.accountId,
-          validToken.accessToken,
-          userId,
-          from,
-          to
-        );
+        const response = await fetchHarvestTimeEntries(validToken.accountId, validToken.accessToken, userId, from, to);
         return response.time_entries;
       } catch (error) {
         // If 401, try refreshing token once
-        if (error instanceof Error && error.message.includes('401')) {
-        // Try to refresh token
-        try {
-          if (!token) {
-            throw new Error('No token to refresh');
+        if (error instanceof Error && error.message.includes("401")) {
+          // Try to refresh token
+          try {
+            if (!token) {
+              throw new Error("No token to refresh");
+            }
+            const tokenResponse = await refreshAccessToken(token.refreshToken);
+            const refreshedToken: HarvestToken = {
+              ...token,
+              accessToken: tokenResponse.access_token,
+              refreshToken: tokenResponse.refresh_token || token.refreshToken,
+              expiresAt: Date.now() + tokenResponse.expires_in * 1000,
+              accountId: tokenResponse.account_id || token.accountId,
+            };
+            sessionStorage.setItem("harvest_token", JSON.stringify(refreshedToken));
+            dispatch(setTokenFromRefresh(refreshedToken));
+
+            const retryResponse = await fetchHarvestTimeEntries(
+              refreshedToken.accountId,
+              refreshedToken.accessToken,
+              userId,
+              from,
+              to
+            );
+            return retryResponse.time_entries;
+          } catch (refreshError) {
+            // If refresh fails, throw the original error
+            throw error;
           }
-          const tokenResponse = await refreshAccessToken(token.refreshToken);
-          const refreshedToken: HarvestToken = {
-            ...token,
-            accessToken: tokenResponse.access_token,
-            refreshToken: tokenResponse.refresh_token || token.refreshToken,
-            expiresAt: Date.now() + tokenResponse.expires_in * 1000,
-            accountId: tokenResponse.account_id || token.accountId,
-          };
-          sessionStorage.setItem('harvest_token', JSON.stringify(refreshedToken));
-          dispatch(setTokenFromRefresh(refreshedToken));
-          
-          const retryResponse = await fetchHarvestTimeEntries(
-            refreshedToken.accountId,
-            refreshedToken.accessToken,
-            userId,
-            from,
-            to
-          );
-          return retryResponse.time_entries;
-        } catch (refreshError) {
-          // If refresh fails, throw the original error
-          throw error;
-        }
         }
         throw error;
       }
     },
-    enabled: enabled && token !== null && from !== '' && to !== '',
+    enabled: enabled && token !== null && from !== "" && to !== "",
     retry: (failureCount, error) => {
       // Don't retry on 401 errors (auth issues)
-      if (error instanceof Error && error.message.includes('401')) {
+      if (error instanceof Error && error.message.includes("401")) {
         return false;
       }
       return failureCount < 1;
@@ -184,18 +173,14 @@ export const useAuthenticateHarvest = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
-  return useMutation<
-    { token: HarvestToken },
-    Error,
-    { code: string; state: string }
-  >({
+  return useMutation<{ token: HarvestToken }, Error, { code: string; state: string }>({
     mutationFn: async ({ code, state }) => {
       // Verify state (should match what we stored)
-      const storedState = sessionStorage.getItem('harvest_oauth_state');
+      const storedState = sessionStorage.getItem("harvest_oauth_state");
       if (storedState !== state) {
-        throw new Error('Invalid state parameter. Possible CSRF attack.');
+        throw new Error("Invalid state parameter. Possible CSRF attack.");
       }
-      sessionStorage.removeItem('harvest_oauth_state');
+      sessionStorage.removeItem("harvest_oauth_state");
 
       // Exchange code for token
       const tokenResponse = await exchangeCodeForToken(code);
@@ -205,15 +190,13 @@ export const useAuthenticateHarvest = () => {
       try {
         const accountsResponse = await fetchHarvestAccounts(tokenResponse.access_token);
         // Use the first Harvest account ID (not Forecast)
-        const harvestAccount = accountsResponse.accounts.find(
-          (acc) => acc.product === 'harvest'
-        );
+        const harvestAccount = accountsResponse.accounts.find((acc) => acc.product === "harvest");
         if (harvestAccount) {
           accountId = harvestAccount.id.toString();
         }
       } catch (error) {
         // If accounts fetch fails, fall back to extracted account_id
-        console.warn('Failed to fetch accounts, using extracted account ID:', error);
+        console.warn("Failed to fetch accounts, using extracted account ID:", error);
       }
 
       const token: HarvestToken = {
@@ -224,7 +207,7 @@ export const useAuthenticateHarvest = () => {
       };
 
       // Store token in sessionStorage for persistence
-      sessionStorage.setItem('harvest_token', JSON.stringify(token));
+      sessionStorage.setItem("harvest_token", JSON.stringify(token));
 
       // Set token in Redux
       dispatch(setTokenFromAuth(token));
@@ -250,7 +233,7 @@ export const useRefreshHarvestToken = () => {
   return useMutation<HarvestToken, Error, void>({
     mutationFn: async () => {
       if (!token) {
-        throw new Error('No token to refresh');
+        throw new Error("No token to refresh");
       }
 
       const tokenResponse = await refreshAccessToken(token.refreshToken);
@@ -263,8 +246,8 @@ export const useRefreshHarvestToken = () => {
         accountId: tokenResponse.account_id || token.accountId,
       };
 
-      sessionStorage.setItem('harvest_token', JSON.stringify(newToken));
-      
+      sessionStorage.setItem("harvest_token", JSON.stringify(newToken));
+
       // Update Redux state
       dispatch(setTokenFromRefresh(newToken));
 
@@ -285,29 +268,23 @@ export const useTestHarvestApi = () => {
   const token = useAppSelector(selectHarvestToken);
   const queryClient = useQueryClient();
 
-  return useMutation<
-    { user: HarvestUser; accounts: any; updatedAccountId?: string },
-    Error,
-    void
-  >({
+  return useMutation<{ user: HarvestUser; accounts: any; updatedAccountId?: string }, Error, void>({
     mutationFn: async () => {
       if (!token) {
-        throw new Error('No token available');
+        throw new Error("No token available");
       }
 
       // Check if token is expired
       if (Date.now() >= token.expiresAt - 60000) {
-        throw new Error('Token expired. Please re-authenticate.');
+        throw new Error("Token expired. Please re-authenticate.");
       }
 
       // Fetch accounts first to get the correct account ID
       const accounts = await fetchHarvestAccounts(token.accessToken);
 
       // Use the first Harvest account ID (not Forecast)
-      const harvestAccount = accounts.accounts.find((acc) => acc.product === 'harvest');
-      const correctAccountId = harvestAccount
-        ? harvestAccount.id.toString()
-        : token.accountId;
+      const harvestAccount = accounts.accounts.find((acc) => acc.product === "harvest");
+      const correctAccountId = harvestAccount ? harvestAccount.id.toString() : token.accountId;
 
       // Fetch user with the correct account ID
       const user = await fetchHarvestUser(token.accessToken, correctAccountId);
@@ -315,7 +292,7 @@ export const useTestHarvestApi = () => {
       // Update token with correct account ID if it's different
       if (correctAccountId !== token.accountId) {
         const updatedToken = { ...token, accountId: correctAccountId };
-        sessionStorage.setItem('harvest_token', JSON.stringify(updatedToken));
+        sessionStorage.setItem("harvest_token", JSON.stringify(updatedToken));
         // Update Redux state
         dispatch(setTokenAccountId(correctAccountId));
         return { user, accounts, updatedAccountId: correctAccountId };
@@ -327,11 +304,8 @@ export const useTestHarvestApi = () => {
       // Cache user data
       queryClient.setQueryData(harvestKeys.user(), data.user);
       // Log accounts to console for debugging
-      console.log('Harvest Accounts:', data.accounts);
-      console.log(
-        'Using Account ID:',
-        data.updatedAccountId || token?.accountId
-      );
+      console.log("Harvest Accounts:", data.accounts);
+      console.log("Using Account ID:", data.updatedAccountId || token?.accountId);
     },
   });
 };

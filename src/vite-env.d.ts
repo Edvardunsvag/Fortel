@@ -1,16 +1,16 @@
 /// <reference types="vite/client" />
 
-declare module '*.module.scss' {
+declare module "*.module.scss" {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
 
-declare module '*.scss' {
+declare module "*.scss" {
   const content: { [className: string]: string };
   export default content;
 }
 
-declare module 'string-similarity' {
+declare module "string-similarity" {
   export function compareTwoStrings(str1: string, str2: string): number;
   export function findBestMatch(
     mainString: string,
@@ -21,4 +21,3 @@ declare module 'string-similarity' {
     bestMatchIndex: number;
   };
 }
-

@@ -98,6 +98,7 @@ The application assumes the following API endpoints exist:
 ## Daily Employee Selection
 
 Currently, the employee of the day is selected randomly. In production, this should be:
+
 - Deterministic based on the current date
 - Consistent across all users for the same day
 - Different each day
@@ -119,4 +120,3 @@ The `gameSlice` tracks the current date and resets the game when the date change
 - Share results
 - Better daily employee selection algorithm
 - More hint types
-

@@ -1,5 +1,5 @@
-import type { FortedleServerModelsEmployeeDto, FortedleServerModelsSyncResponse } from '@/shared/api/generated/index';
-import type { Employee } from './types';
+import type { FortedleServerModelsEmployeeDto, FortedleServerModelsSyncResponse } from "@/shared/api/generated/index";
+import type { Employee } from "./types";
 
 export interface SyncResult {
   success: boolean;
@@ -13,15 +13,15 @@ export interface SyncResult {
  */
 export const employeeFromDto = (dto: FortedleServerModelsEmployeeDto): Employee => {
   return {
-    id: dto.id ?? '',
-    name: dto.name ?? '',
-    firstName: dto.firstName ?? '',
-    surname: dto.surname ?? '',
+    id: dto.id ?? "",
+    name: dto.name ?? "",
+    firstName: dto.firstName ?? "",
+    surname: dto.surname ?? "",
     avatarImageUrl: dto.avatarImageUrl ?? undefined,
-    department: dto.department ?? '',
-    office: dto.office ?? '',
+    department: dto.department ?? "",
+    office: dto.office ?? "",
     teams: dto.teams ?? [],
-    age: dto.age ?? '-',
+    age: dto.age ?? "-",
     supervisor: dto.supervisor ?? undefined,
     funfact: dto.funfact ?? null,
     interests: dto.interests ?? [],
@@ -34,8 +34,7 @@ export const employeeFromDto = (dto: FortedleServerModelsEmployeeDto): Employee 
 export const syncResultFromDto = (dto: FortedleServerModelsSyncResponse): SyncResult => {
   return {
     success: dto.success ?? false,
-    message: dto.message ?? '',
+    message: dto.message ?? "",
     count: dto.count ?? 0,
   };
 };
-

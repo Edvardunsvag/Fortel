@@ -1,4 +1,4 @@
-@use './shared/styles/variables.scss' as *;
+@use "./shared/styles/variables.scss" as *;
 
 * {
   box-sizing: border-box;
@@ -8,16 +8,16 @@
 
 // Font face declarations for volksans
 @font-face {
-  font-family: 'volksans Regular';
-  src: url('/fonts/volksans-regular.woff2') format('woff2');
+  font-family: "volksans Regular";
+  src: url("/fonts/volksans-regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'volksans Bold';
-  src: url('/fonts/volksans-bold.woff2') format('woff2');
+  font-family: "volksans Bold";
+  src: url("/fonts/volksans-bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -31,15 +31,12 @@ body {
   color: $color-dark-accent;
   font-feature-settings: normal;
   background-color: $color-primary-beige;
-
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 #root {
   min-height: 100vh;
 }
-

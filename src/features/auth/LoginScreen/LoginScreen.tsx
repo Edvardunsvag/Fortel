@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next';
-import { useMsalAuth } from '@/features/auth/useMsalAuth';
-import styles from './LoginScreen.module.scss';
-import { LanguageToggle } from '@/features/sidebar/LanguageToggle/LanguageToggle';
+import { useTranslation } from "react-i18next";
+import { useMsalAuth } from "@/features/auth/useMsalAuth";
+import styles from "./LoginScreen.module.scss";
+import { LanguageToggle } from "@/features/sidebar/LanguageToggle/LanguageToggle";
 
 export const LoginScreen = () => {
   const { t } = useTranslation();
@@ -12,7 +12,7 @@ export const LoginScreen = () => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleClick();
     }
@@ -24,19 +24,18 @@ export const LoginScreen = () => {
         <LanguageToggle />
       </div>
       <div className={styles.content}>
-        <h1 className={styles.title}>{t('loginScreen.title')}</h1>
-        <p className={styles.subtitle}>{t('loginScreen.subtitle')}</p>
+        <h1 className={styles.title}>{t("loginScreen.title")}</h1>
+        <p className={styles.subtitle}>{t("loginScreen.subtitle")}</p>
         <button
           className={styles.loginButton}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          aria-label={t('auth.login')}
+          aria-label={t("auth.login")}
         >
-          {isLoading ? t('auth.loggingIn') : t('auth.login')}
+          {isLoading ? t("auth.loggingIn") : t("auth.login")}
         </button>
       </div>
     </div>
   );
 };
-

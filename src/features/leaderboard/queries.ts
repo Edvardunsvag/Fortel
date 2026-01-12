@@ -1,13 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchLeaderboard, submitScore } from './api';
-import { leaderboardFromDto } from './fromDto';
-import type { LeaderboardData } from './types';
-import type { FortedleServerModelsSubmitScoreRequest } from '@/shared/api/generated/index';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchLeaderboard, submitScore } from "./api";
+import { leaderboardFromDto } from "./fromDto";
+import type { LeaderboardData } from "./types";
+import type { FortedleServerModelsSubmitScoreRequest } from "@/shared/api/generated/index";
 
 // Query keys
 export const leaderboardKeys = {
-  all: ['leaderboard'] as const,
-  lists: () => [...leaderboardKeys.all, 'list'] as const,
+  all: ["leaderboard"] as const,
+  lists: () => [...leaderboardKeys.all, "list"] as const,
   list: (date?: string) => [...leaderboardKeys.lists(), date] as const,
 };
 

@@ -24,4 +24,3 @@ export const findEmployeeByHash = <T extends { id: string }>(
 ): T | undefined => {
   return employees.find((emp) => hashEmployeeId(emp.id, dateString) === hashedId);
 };
-

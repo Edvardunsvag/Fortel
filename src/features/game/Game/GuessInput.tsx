@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import type { Employee } from '@/features/employees/types';
-import styles from './GuessInput.module.scss';
+import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import type { Employee } from "@/features/employees/types";
+import styles from "./GuessInput.module.scss";
 
 interface GuessInputProps {
   value: string;
@@ -56,7 +56,7 @@ export const GuessInput = ({
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
         handleSelectEmployee(suggestions[selectedIndex]);
@@ -65,15 +65,13 @@ export const GuessInput = ({
       } else if (value.trim()) {
         handleSubmit();
       }
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev < suggestions.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === 'ArrowUp') {
+      setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setShowSuggestions(false);
       setSelectedIndex(-1);
     }
@@ -92,14 +90,12 @@ export const GuessInput = ({
 
   const handleSubmit = () => {
     const exactMatch = employees.find(
-      (emp) => 
-        emp.name.toLowerCase() === value.toLowerCase().trim() &&
-        !guessedEmployeeIds.includes(emp.id)
+      (emp) => emp.name.toLowerCase() === value.toLowerCase().trim() && !guessedEmployeeIds.includes(emp.id)
     );
 
     if (exactMatch) {
       onGuess(exactMatch.id);
-      onChange('');
+      onChange("");
     }
   };
 
@@ -109,11 +105,8 @@ export const GuessInput = ({
     handleSelectEmployee(employee);
   };
 
-  const handleSuggestionKeyDown = (
-    e: React.KeyboardEvent<HTMLLIElement>,
-    employee: Employee
-  ) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+  const handleSuggestionKeyDown = (e: React.KeyboardEvent<HTMLLIElement>, employee: Employee) => {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleSelectEmployee(employee);
     }
@@ -122,7 +115,7 @@ export const GuessInput = ({
   return (
     <div className={styles.container}>
       <label htmlFor="guess-input" className={styles.label}>
-        {t('game.enterEmployeeName')}
+        {t("game.enterEmployeeName")}
       </label>
       <div className={styles.inputWrapper}>
         <input
@@ -150,28 +143,21 @@ export const GuessInput = ({
           }}
           disabled={disabled}
           className={styles.input}
-          placeholder={t('game.typeEmployeeName')}
-          aria-label={t('game.enterEmployeeName')}
+          placeholder={t("game.typeEmployeeName")}
+          aria-label={t("game.enterEmployeeName")}
           aria-autocomplete="list"
           aria-expanded={showSuggestions}
           aria-controls="suggestions-list"
         />
         {showSuggestions && suggestions.length > 0 && (
-          <ul
-            id="suggestions-list"
-            ref={suggestionsRef}
-            className={styles.suggestions}
-            role="listbox"
-          >
+          <ul id="suggestions-list" ref={suggestionsRef} className={styles.suggestions} role="listbox">
             {suggestions.map((employee, index) => {
               const displayName = `${employee.firstName} ${employee.surname}`;
-              
+
               return (
                 <li
                   key={employee.id}
-                  className={`${styles.suggestion} ${
-                    index === selectedIndex ? styles.selected : ''
-                  }`}
+                  className={`${styles.suggestion} ${index === selectedIndex ? styles.selected : ""}`}
                   role="option"
                   aria-selected={index === selectedIndex}
                   onClick={(e) => handleSuggestionClick(e, employee)}
@@ -192,4 +178,3 @@ export const GuessInput = ({
     </div>
   );
 };
-

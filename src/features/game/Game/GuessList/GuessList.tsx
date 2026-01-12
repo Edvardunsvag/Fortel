@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import type { Guess } from '@/features/game/types';
-import { EmployeeCell } from './EmployeeCell/EmployeeCell';
-import { HintCell } from './HintCell/HintCell';
-import { useGuessAnimation } from './useGuessAnimation';
-import { TABLE_COLUMNS } from './utils';
-import styles from './GuessList.module.scss';
+import { useTranslation } from "react-i18next";
+import type { Guess } from "@/features/game/types";
+import { EmployeeCell } from "./EmployeeCell/EmployeeCell";
+import { HintCell } from "./HintCell/HintCell";
+import { useGuessAnimation } from "./useGuessAnimation";
+import { TABLE_COLUMNS } from "./utils";
+import styles from "./GuessList.module.scss";
 
 interface GuessListProps {
   guesses: Guess[];
@@ -19,7 +19,7 @@ export const GuessList = ({ guesses }: GuessListProps) => {
   }
 
   const reversedGuesses = [...guesses].reverse();
-  
+
   return (
     <div className={styles.container}>
       <div className={styles.tableWrapper}>
@@ -65,4 +65,3 @@ export const GuessList = ({ guesses }: GuessListProps) => {
     </div>
   );
 };
-

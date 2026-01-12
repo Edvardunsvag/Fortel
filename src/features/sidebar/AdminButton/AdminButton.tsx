@@ -1,10 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { selectAccount } from '@/features/auth/authSlice';
-import { useEmployees } from '@/features/employees/queries';
-import { initializeGame } from '@/features/game/gameSlice';
-import { ADMIN_ACCOUNT } from '@/shared/config/adminConfig';
-import styles from './AdminButton.module.scss';
+import { useTranslation } from "react-i18next";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { selectAccount } from "@/features/auth/authSlice";
+import { useEmployees } from "@/features/employees/queries";
+import { initializeGame } from "@/features/game/gameSlice";
+import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
+import styles from "./AdminButton.module.scss";
 
 export const AdminButton = () => {
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export const AdminButton = () => {
     // Randomly select a new employee
     const randomIndex = Math.floor(Math.random() * employees.length);
     const selectedEmployee = employees[randomIndex];
-    console.log('selectedEmployee', selectedEmployee);
+    console.log("selectedEmployee", selectedEmployee);
 
     if (selectedEmployee) {
       dispatch(initializeGame(selectedEmployee.id));
@@ -34,7 +34,7 @@ export const AdminButton = () => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleChangeEmployee();
     }
@@ -46,11 +46,10 @@ export const AdminButton = () => {
       onClick={handleChangeEmployee}
       onKeyDown={handleKeyDown}
       type="button"
-      aria-label={t('admin.changeEmployee')}
-      title={t('admin.changeEmployee')}
+      aria-label={t("admin.changeEmployee")}
+      title={t("admin.changeEmployee")}
     >
-      🔄 {t('admin.changeEmployee')}
+      🔄 {t("admin.changeEmployee")}
     </button>
   );
 };
-

@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useAppSelector } from '@/app/hooks';
-import { selectLanguage } from './i18nSlice';
-import i18n from './i18n';
+import { useEffect } from "react";
+import { useAppSelector } from "@/app/hooks";
+import { selectLanguage } from "./i18nSlice";
+import i18n from "./i18n";
 
 export const useI18nSync = () => {
   const language = useAppSelector(selectLanguage);
@@ -12,4 +12,3 @@ export const useI18nSync = () => {
     }
   }, [language]);
 };
-

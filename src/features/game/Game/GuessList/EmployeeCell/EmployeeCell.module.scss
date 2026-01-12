@@ -1,4 +1,4 @@
-@use '../../../../../shared/styles/variables.scss' as *;
+@use "../../../../../shared/styles/variables.scss" as *;
 
 .employeeCell {
   padding: $spacing-sm;
@@ -57,4 +57,3 @@
     font-size: 0.75rem;
   }
 }
-

@@ -4,8 +4,8 @@ import type {
   FortedleServerModelsRevealFunfactRequest,
   FortedleServerModelsSaveGuessRequest,
   FortedleServerModelsStartRoundRequest,
-} from '@/shared/api/generated/index';
-import type { Guess } from './types';
+} from "@/shared/api/generated/index";
+import type { Guess } from "./types";
 
 /**
  * Maps the application Guess type to the generated GuessDto
@@ -15,11 +15,13 @@ export const guessToDto = (guess: Guess): FortedleServerModelsGuessDto => {
     employeeId: guess.employeeId,
     employeeName: guess.employeeName,
     avatarImageUrl: guess.avatarImageUrl ?? undefined,
-    hints: guess.hints.map((hint): FortedleServerModelsGuessHintDto => ({
-      type: hint.type,
-      result: hint.result,
-      message: hint.message,
-    })),
+    hints: guess.hints.map(
+      (hint): FortedleServerModelsGuessHintDto => ({
+        type: hint.type,
+        result: hint.result,
+        message: hint.message,
+      })
+    ),
     isCorrect: guess.isCorrect,
   };
 };
@@ -42,9 +44,7 @@ export const toSaveGuessRequest = (
 /**
  * Maps application types to RevealFunfactRequest
  */
-export const toRevealFunfactRequest = (
-  roundId: number
-): FortedleServerModelsRevealFunfactRequest => {
+export const toRevealFunfactRequest = (roundId: number): FortedleServerModelsRevealFunfactRequest => {
   return {
     roundId,
   };
@@ -64,4 +64,3 @@ export const toStartRoundRequest = (
     employeeOfTheDayId: employeeOfTheDayId ?? undefined,
   };
 };
-

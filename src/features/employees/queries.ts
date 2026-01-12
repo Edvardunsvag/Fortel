@@ -1,14 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchEmployees, syncEmployees } from './api';
-import { employeeFromDto, syncResultFromDto } from './fromDto';
-import type { Employee } from './types';
-import type { SyncResult } from './fromDto';
-import type { FortedleServerModelsSyncRequest } from '@/shared/api/generated/index';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchEmployees, syncEmployees } from "./api";
+import { employeeFromDto, syncResultFromDto } from "./fromDto";
+import type { Employee } from "./types";
+import type { SyncResult } from "./fromDto";
+import type { FortedleServerModelsSyncRequest } from "@/shared/api/generated/index";
 
 // Query keys
 export const employeeKeys = {
-  all: ['employees'] as const,
-  lists: () => [...employeeKeys.all, 'list'] as const,
+  all: ["employees"] as const,
+  lists: () => [...employeeKeys.all, "list"] as const,
 };
 
 /**

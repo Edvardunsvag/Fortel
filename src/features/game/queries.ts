@@ -1,17 +1,17 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { getCurrentRound, startRound, saveGuess, revealFunfact } from './api';
-import { roundFromDto } from './fromDto';
-import type { RoundDto } from './fromDto';
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getCurrentRound, startRound, saveGuess, revealFunfact } from "./api";
+import { roundFromDto } from "./fromDto";
+import type { RoundDto } from "./fromDto";
 import type {
   FortedleServerModelsStartRoundRequest,
   FortedleServerModelsSaveGuessRequest,
   FortedleServerModelsRevealFunfactRequest,
-} from '@/shared/api/generated/index';
+} from "@/shared/api/generated/index";
 
 // Query keys
 export const roundKeys = {
-  all: ['rounds'] as const,
-  current: (userId: string, date?: string) => [...roundKeys.all, 'current', userId, date] as const,
+  all: ["rounds"] as const,
+  current: (userId: string, date?: string) => [...roundKeys.all, "current", userId, date] as const,
 };
 
 /**

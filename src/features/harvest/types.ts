@@ -61,7 +61,7 @@ export interface HarvestTimeEntriesResponse {
 export interface HarvestAccount {
   id: number;
   name: string;
-  product: 'harvest' | 'forecast';
+  product: "harvest" | "forecast";
   google_sign_in_required?: boolean;
   mfa_required?: boolean;
 }

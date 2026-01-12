@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useEmployees } from '@/features/employees/queries';
-import styles from './EmployeesPage.module.scss';
-import { Employee } from '../types';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useEmployees } from "@/features/employees/queries";
+import styles from "./EmployeesPage.module.scss";
+import { Employee } from "../types";
 
 export const EmployeesPage = () => {
   const { t } = useTranslation();
@@ -16,7 +16,7 @@ export const EmployeesPage = () => {
   };
 
   const handleEmployeeKeyDown = (event: React.KeyboardEvent, employeeId: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleEmployeeClick(employeeId);
     }
@@ -26,8 +26,8 @@ export const EmployeesPage = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
-          <h1 className={styles.title}>{t('employees.title')}</h1>
-          <p className={styles.loadingText}>{t('employees.loading')}</p>
+          <h1 className={styles.title}>{t("employees.title")}</h1>
+          <p className={styles.loadingText}>{t("employees.loading")}</p>
         </div>
       </div>
     );
@@ -37,8 +37,8 @@ export const EmployeesPage = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
-          <h1 className={styles.title}>{t('employees.title')}</h1>
-          <p className={styles.errorText}>{t('employees.failedToLoad')}</p>
+          <h1 className={styles.title}>{t("employees.title")}</h1>
+          <p className={styles.errorText}>{t("employees.failedToLoad")}</p>
         </div>
       </div>
     );
@@ -48,8 +48,8 @@ export const EmployeesPage = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
-          <h1 className={styles.title}>{t('employees.title')}</h1>
-          <p className={styles.emptyText}>{t('employees.noEmployees')}</p>
+          <h1 className={styles.title}>{t("employees.title")}</h1>
+          <p className={styles.emptyText}>{t("employees.noEmployees")}</p>
         </div>
       </div>
     );
@@ -58,7 +58,7 @@ export const EmployeesPage = () => {
   return (
     <div className={styles.pageContent}>
       <div className={styles.container}>
-        <h1 className={styles.title}>{t('employees.title')}</h1>
+        <h1 className={styles.title}>{t("employees.title")}</h1>
       </div>
       <div className={styles.employeesLayout}>
         <div className={styles.employeeList}>
@@ -66,9 +66,7 @@ export const EmployeesPage = () => {
             {employees.map((employee) => (
               <li key={employee.id}>
                 <button
-                  className={`${styles.employeeItem} ${
-                    selectedEmployeeId === employee.id ? styles.selected : ''
-                  }`}
+                  className={`${styles.employeeItem} ${selectedEmployeeId === employee.id ? styles.selected : ""}`}
                   onClick={() => handleEmployeeClick(employee.id)}
                   onKeyDown={(e) => handleEmployeeKeyDown(e, employee.id)}
                   aria-label={`Select ${employee.name}`}
@@ -76,11 +74,7 @@ export const EmployeesPage = () => {
                   role="option"
                 >
                   {employee.avatarImageUrl ? (
-                    <img
-                      src={employee.avatarImageUrl}
-                      alt={`${employee.name} avatar`}
-                      className={styles.avatar}
-                    />
+                    <img src={employee.avatarImageUrl} alt={`${employee.name} avatar`} className={styles.avatar} />
                   ) : (
                     <div className={styles.avatarPlaceholder}>
                       {employee.firstName.charAt(0)}
@@ -99,7 +93,7 @@ export const EmployeesPage = () => {
             <EmployeeDetails employee={selectedEmployee} />
           ) : (
             <div className={styles.emptyState}>
-              <p className={styles.emptyStateText}>{t('employees.selectEmployee')}</p>
+              <p className={styles.emptyStateText}>{t("employees.selectEmployee")}</p>
             </div>
           )}
         </div>
@@ -119,11 +113,7 @@ const EmployeeDetails = ({ employee }: EmployeeDetailsProps) => {
     <div className={styles.detailsContent}>
       <div className={styles.detailsHeader}>
         {employee.avatarImageUrl ? (
-          <img
-            src={employee.avatarImageUrl}
-            alt={`${employee.name} avatar`}
-            className={styles.detailsAvatar}
-          />
+          <img src={employee.avatarImageUrl} alt={`${employee.name} avatar`} className={styles.detailsAvatar} />
         ) : (
           <div className={styles.detailsAvatarPlaceholder}>
             {employee.firstName.charAt(0)}
@@ -134,37 +124,37 @@ const EmployeeDetails = ({ employee }: EmployeeDetailsProps) => {
       </div>
 
       <div className={styles.detailsSection}>
-        <h3 className={styles.sectionTitle}>{t('employees.personalInformation')}</h3>
+        <h3 className={styles.sectionTitle}>{t("employees.personalInformation")}</h3>
         <dl className={styles.detailsList}>
           <div className={styles.detailItem}>
-            <dt className={styles.detailLabel}>{t('employees.firstName')}</dt>
+            <dt className={styles.detailLabel}>{t("employees.firstName")}</dt>
             <dd className={styles.detailValue}>{employee.firstName}</dd>
           </div>
           <div className={styles.detailItem}>
-            <dt className={styles.detailLabel}>{t('employees.surname')}</dt>
+            <dt className={styles.detailLabel}>{t("employees.surname")}</dt>
             <dd className={styles.detailValue}>{employee.surname}</dd>
           </div>
           <div className={styles.detailItem}>
-            <dt className={styles.detailLabel}>{t('employees.age')}</dt>
+            <dt className={styles.detailLabel}>{t("employees.age")}</dt>
             <dd className={styles.detailValue}>{employee.age}</dd>
           </div>
         </dl>
       </div>
 
       <div className={styles.detailsSection}>
-        <h3 className={styles.sectionTitle}>{t('employees.workInformation')}</h3>
+        <h3 className={styles.sectionTitle}>{t("employees.workInformation")}</h3>
         <dl className={styles.detailsList}>
           <div className={styles.detailItem}>
-            <dt className={styles.detailLabel}>{t('employees.department')}</dt>
+            <dt className={styles.detailLabel}>{t("employees.department")}</dt>
             <dd className={styles.detailValue}>{employee.department}</dd>
           </div>
           <div className={styles.detailItem}>
-            <dt className={styles.detailLabel}>{t('employees.office')}</dt>
+            <dt className={styles.detailLabel}>{t("employees.office")}</dt>
             <dd className={styles.detailValue}>{employee.office}</dd>
           </div>
           {employee.supervisor && (
             <div className={styles.detailItem}>
-              <dt className={styles.detailLabel}>{t('employees.supervisor')}</dt>
+              <dt className={styles.detailLabel}>{t("employees.supervisor")}</dt>
               <dd className={styles.detailValue}>{employee.supervisor}</dd>
             </div>
           )}
@@ -173,7 +163,7 @@ const EmployeeDetails = ({ employee }: EmployeeDetailsProps) => {
 
       {employee.teams && employee.teams.length > 0 && (
         <div className={styles.detailsSection}>
-          <h3 className={styles.sectionTitle}>{t('employees.teams')}</h3>
+          <h3 className={styles.sectionTitle}>{t("employees.teams")}</h3>
           <ul className={styles.teamsList}>
             {employee.teams.map((team, index) => (
               <li key={index} className={styles.teamItem}>
@@ -186,4 +176,3 @@ const EmployeeDetails = ({ employee }: EmployeeDetailsProps) => {
     </div>
   );
 };
-

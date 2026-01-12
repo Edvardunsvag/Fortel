@@ -1,4 +1,4 @@
-import type { FortedleServerModelsSubmitScoreRequest } from '@/shared/api/generated/index';
+import type { FortedleServerModelsSubmitScoreRequest } from "@/shared/api/generated/index";
 
 /**
  * Maps application types to SubmitScoreRequest
@@ -14,4 +14,3 @@ export const toSubmitScoreRequest = (
     avatarImageUrl: avatarImageUrl ?? undefined,
   };
 };
-

@@ -1,5 +1,5 @@
-@use '../../../shared/styles/variables.scss' as *;
-@use 'sass:color';
+@use "../../../shared/styles/variables.scss" as *;
+@use "sass:color";
 
 .pageContent {
   min-height: 100vh;
@@ -121,8 +121,7 @@
     background-color: $color-light-grey;
     padding: 0.125rem 0.25rem;
     border-radius: $radius-sm;
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
     font-size: 0.875em;
   }
 }
-

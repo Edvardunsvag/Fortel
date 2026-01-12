@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
 import { selectActiveTab, ActiveTab } from "@/features/sidebar/navigationSlice";
 import { selectAccount } from "@/features/auth/authSlice";
-import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
 import { SidebarItem } from "./SidebarItem";
 import { LanguageToggle } from "../LanguageToggle/LanguageToggle";
 import { LoginButton } from "../LoginButton/LoginButton";
@@ -16,7 +15,6 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const activeTab = useAppSelector(selectActiveTab);
   const account = useAppSelector(selectAccount);
-  const isAdmin = account?.username === ADMIN_ACCOUNT;
 
   const handleTabClick = (tab: ActiveTab) => {
     const route = tabToRoute[tab];
@@ -54,30 +52,6 @@ export const Sidebar = () => {
           onKeyDown={handleKeyDown}
         />
         <SidebarItem
-          tab={ActiveTab.Leaderboard}
-          icon="🏆"
-          label={t("sidebar.leaderboard")}
-          activeTab={activeTab}
-          onTabClick={handleTabClick}
-          onKeyDown={handleKeyDown}
-        />
-        <SidebarItem
-          tab={ActiveTab.Rules}
-          icon="📖"
-          label={t("sidebar.rules")}
-          activeTab={activeTab}
-          onTabClick={handleTabClick}
-          onKeyDown={handleKeyDown}
-        />
-        <SidebarItem
-          tab={ActiveTab.Employees}
-          icon="👥"
-          label={t("sidebar.employees")}
-          activeTab={activeTab}
-          onTabClick={handleTabClick}
-          onKeyDown={handleKeyDown}
-        />
-        <SidebarItem
           tab={ActiveTab.Harvest}
           icon="⏰"
           label={t("sidebar.harvest")}
@@ -85,16 +59,6 @@ export const Sidebar = () => {
           onTabClick={handleTabClick}
           onKeyDown={handleKeyDown}
         />
-        {isAdmin && (
-          <SidebarItem
-            tab={ActiveTab.Sync}
-            icon="🔄"
-            label={t("sidebar.sync")}
-            activeTab={activeTab}
-            onTabClick={handleTabClick}
-            onKeyDown={handleKeyDown}
-          />
-        )}
       </ul>
       <div className={styles.adminContainer}>
         <AdminButton />

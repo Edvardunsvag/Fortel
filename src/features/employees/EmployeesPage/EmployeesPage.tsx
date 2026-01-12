@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useEmployees } from "@/features/employees/queries";
+import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./EmployeesPage.module.scss";
 import { Employee } from "../types";
 
@@ -26,6 +27,7 @@ export const EmployeesPage = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
+          <GameNavigationChips />
           <h1 className={styles.title}>{t("employees.title")}</h1>
           <p className={styles.loadingText}>{t("employees.loading")}</p>
         </div>
@@ -37,6 +39,7 @@ export const EmployeesPage = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
+          <GameNavigationChips />
           <h1 className={styles.title}>{t("employees.title")}</h1>
           <p className={styles.errorText}>{t("employees.failedToLoad")}</p>
         </div>
@@ -48,6 +51,7 @@ export const EmployeesPage = () => {
     return (
       <div className={styles.pageContent}>
         <div className={styles.container}>
+          <GameNavigationChips />
           <h1 className={styles.title}>{t("employees.title")}</h1>
           <p className={styles.emptyText}>{t("employees.noEmployees")}</p>
         </div>
@@ -58,6 +62,7 @@ export const EmployeesPage = () => {
   return (
     <div className={styles.pageContent}>
       <div className={styles.container}>
+        <GameNavigationChips />
         <h1 className={styles.title}>{t("employees.title")}</h1>
       </div>
       <div className={styles.employeesLayout}>

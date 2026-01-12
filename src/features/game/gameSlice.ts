@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "@/app/store";
 import type { Employee } from "@/features/employees/types";
 import type { GameState, Guess } from "./types";
-import { HintType, HintResult } from "./types";
+import { HintType, HintResult, GameSubTab } from "./types";
 import { hashEmployeeId } from "@/shared/utils/hashUtils";
 import { getTodayDateString } from "@/shared/utils/dateUtils";
 import type { RoundDto } from "./fromDto";
@@ -20,6 +20,7 @@ const initialState: GameState = {
   attemptDate: null,
   funfactRevealed: false,
   roundId: null,
+  activeSubTab: GameSubTab.Play,
 };
 
 const calculateHints = (guessed: Employee, target: Employee): Guess["hints"] => {
@@ -194,10 +195,14 @@ const gameSlice = createSlice({
         state.status = "won";
       }
     },
+    setActiveSubTab: (state, action: PayloadAction<GameSubTab>) => {
+      state.activeSubTab = action.payload;
+    },
   },
 });
 
-export const { initializeGame, revealFunfact, makeGuess, loadRoundFromState } = gameSlice.actions;
+export { GameSubTab } from "./types";
+export const { initializeGame, revealFunfact, makeGuess, loadRoundFromState, setActiveSubTab } = gameSlice.actions;
 
 export const selectEmployeeOfTheDayId = (state: RootState): string | null => state.game.employeeOfTheDayId;
 
@@ -219,5 +224,7 @@ export const selectCanGuess = (state: RootState): boolean => {
 };
 
 export const selectRoundId = (state: RootState): number | null => state.game.roundId;
+
+export const selectActiveSubTab = (state: RootState): GameSubTab => state.game.activeSubTab;
 
 export const gameReducer = gameSlice.reducer;

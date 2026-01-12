@@ -6,6 +6,7 @@ import type { RootState } from "@/app/store";
 import type { Employee } from "@/features/employees/types";
 import { ActiveTab } from "@/features/sidebar/navigationSlice";
 import { hashEmployeeId } from "@/shared/utils/hashUtils";
+import { GameSubTab } from "../types";
 
 // Mock i18n
 vi.mock("react-i18next", () => ({
@@ -107,6 +108,7 @@ describe("Game - Input Field Visibility", () => {
         attemptDate: null,
         funfactRevealed: false,
         roundId: null,
+        activeSubTab: GameSubTab.Play,
       },
     });
 

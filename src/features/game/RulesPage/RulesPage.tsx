@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { GameNavigationChips } from "../Game/GameNavigationChips";
 import styles from "./RulesPage.module.scss";
 import { ColorLegend } from "./ColorLegend";
 
@@ -8,6 +9,7 @@ export const RulesPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
+        <GameNavigationChips />
         <h1 className={styles.title}>{t("rules.title")}</h1>
         <div className={styles.content}>
           <section className={styles.section}>

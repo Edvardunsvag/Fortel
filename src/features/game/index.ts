@@ -7,5 +7,6 @@ export {
   selectGameStatus,
   selectCanGuess,
 } from "./gameSlice";
-export { HintType, HintResult } from "./types";
+export { HintType, HintResult, GameSubTab } from "./types";
 export type { GameState, Guess, GuessHint } from "./types";
+export { setActiveSubTab, selectActiveSubTab } from "./gameSlice";

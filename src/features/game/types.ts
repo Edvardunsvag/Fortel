@@ -30,6 +30,14 @@ export interface Guess {
   isCorrect: boolean;
 }
 
+export enum GameSubTab {
+  Play = "play",
+  Leaderboard = "leaderboard",
+  Rules = "rules",
+  Employees = "employees",
+  Sync = "sync",
+}
+
 export interface GameState {
   employeeOfTheDayId: string | null; // Hashed ID for the employee of the day
   guesses: Guess[];
@@ -39,4 +47,5 @@ export interface GameState {
   attemptDate: string | null; // Date when the attempt was made (ISO date string)
   funfactRevealed: boolean; // Whether the funfact and interests hint has been revealed
   roundId: number | null; // ID of the current round from the server
+  activeSubTab: GameSubTab; // Active sub-navigation tab within the Game feature
 }

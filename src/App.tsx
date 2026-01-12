@@ -9,6 +9,7 @@ import { EmployeesPage } from "./features/employees/EmployeesPage/EmployeesPage"
 import { HarvestPage } from "./features/harvest/HarvestPage/HarvestPage";
 import { LoginScreen } from "./features/auth/LoginScreen/LoginScreen";
 import { ActiveTab, setActiveTab } from "./features/sidebar/navigationSlice";
+import { GameSubTab, setActiveSubTab } from "./features/game";
 import { useI18nSync } from "./features/i18n/useI18nSync";
 import { useMsalAuth } from "./features/auth/useMsalAuth";
 import { selectIsAuthenticated, selectAccount } from "./features/auth/authSlice";
@@ -32,7 +33,27 @@ export const App = () => {
     const path = location.pathname;
     const tab = routeToTab[path];
     if (tab) {
-      dispatch(setActiveTab(tab as ActiveTab));
+      // Set ActiveTab for sidebar navigation
+      // All game-related routes (play, leaderboard, rules, employees, sync) should show Play as active
+      if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees" || tab === "sync") {
+        dispatch(setActiveTab(ActiveTab.Play));
+      } else if (tab === "harvest") {
+        dispatch(setActiveTab(ActiveTab.Harvest));
+      }
+      
+      // Sync Game sub-navigation for Fortedle-related routes
+      const gameSubTabMap: Record<string, GameSubTab> = {
+        [routes.play]: GameSubTab.Play,
+        [routes.leaderboard]: GameSubTab.Leaderboard,
+        [routes.rules]: GameSubTab.Rules,
+        [routes.employees]: GameSubTab.Employees,
+        [routes.sync]: GameSubTab.Sync,
+      };
+      
+      const gameSubTab = gameSubTabMap[path];
+      if (gameSubTab) {
+        dispatch(setActiveSubTab(gameSubTab));
+      }
     }
   }, [location.pathname, dispatch]);
 

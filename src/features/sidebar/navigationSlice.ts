@@ -4,10 +4,6 @@ import type { RootState } from "@/app/store";
 
 export enum ActiveTab {
   Play = "play",
-  Leaderboard = "leaderboard",
-  Rules = "rules",
-  Sync = "sync",
-  Employees = "employees",
   Harvest = "harvest",
 }
 

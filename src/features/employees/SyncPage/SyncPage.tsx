@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/app/hooks";
 import { useSyncEmployees, useEmployees } from "@/features/employees/queries";
+import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./SyncPage.module.scss";
 import { selectAccount } from "@/features/auth/authSlice";
 import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
@@ -62,6 +63,7 @@ export const SyncPage = () => {
   return (
     <div className={styles.pageContent}>
       <div className={styles.container}>
+        <GameNavigationChips />
         <h1 className={styles.title}>{t("sync.title")}</h1>
         <p className={styles.subtitle}>{t("sync.subtitle")}</p>
 

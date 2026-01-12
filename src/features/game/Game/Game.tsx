@@ -30,6 +30,7 @@ import { StartGameButton } from "./StartGameButton";
 import { useLeaderboard, useSubmitScore } from "@/features/leaderboard/queries";
 import { toSubmitScoreRequest } from "@/features/leaderboard/toDto";
 import { GuessList } from "./GuessList/GuessList";
+import { GameNavigationChips } from "./GameNavigationChips";
 
 export const Game = () => {
   const { t } = useTranslation();
@@ -204,6 +205,7 @@ export const Game = () => {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
+        <GameNavigationChips />
         <GameHeader />
         <FunfactReveal employeeOfTheDayId={employeeOfTheDayId} employees={employees} />
 

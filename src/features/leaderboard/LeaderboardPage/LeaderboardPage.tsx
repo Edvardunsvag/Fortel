@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useLeaderboard } from "@/features/leaderboard/queries";
+import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./LeaderboardPage.module.scss";
 
 export const LeaderboardPage = () => {
@@ -26,6 +27,7 @@ export const LeaderboardPage = () => {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
+          <GameNavigationChips />
           <h1 className={styles.title}>{t("leaderboard.title")}</h1>
           <p className={styles.subtitle}>{t("leaderboard.loading")}</p>
         </div>
@@ -37,6 +39,7 @@ export const LeaderboardPage = () => {
     return (
       <div className={styles.page}>
         <div className={styles.container}>
+          <GameNavigationChips />
           <h1 className={styles.title}>{t("leaderboard.title")}</h1>
           <p className={styles.subtitle} style={{ color: "var(--color-error)" }}>
             {error instanceof Error ? error.message : t("leaderboard.failedToLoad")}
@@ -67,6 +70,7 @@ export const LeaderboardPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
+        <GameNavigationChips />
         <h1 className={styles.title}>{t("leaderboard.title")}</h1>
         <p className={styles.subtitle}>{today}</p>
 

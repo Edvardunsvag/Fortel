@@ -222,6 +222,115 @@
   margin-top: $spacing-xl;
 }
 
+.rulesContent,
+.lotteryContent {
+  background-color: $color-white;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  border: 1px solid $color-border-medium;
+
+  h4 {
+    margin: $spacing-lg 0 $spacing-md 0;
+    color: $color-dark-accent;
+    font-size: 1.25rem;
+  }
+
+  ul {
+    margin: $spacing-md 0;
+    padding-left: $spacing-xl;
+    color: $color-dark-fill;
+
+    li {
+      margin-bottom: $spacing-sm;
+      line-height: 1.6;
+    }
+  }
+
+  p {
+    color: $color-dark-fill;
+    line-height: 1.6;
+    margin: $spacing-md 0;
+  }
+}
+
+.totalTicketsBadge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.totalTicketsText {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $color-dark-accent;
+  line-height: 1.2;
+}
+
+.ticketIconLarge {
+  font-size: 5rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  animation: ticketFloat 3s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes ticketFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg) scale(1);
+  }
+  25% {
+    transform: translateY(-6px) rotate(2deg) scale(1.05);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-2deg) scale(1.08);
+  }
+  75% {
+    transform: translateY(-6px) rotate(2deg) scale(1.05);
+  }
+}
+
+.eligibleWeeks {
+  margin-top: $spacing-lg;
+}
+
+.nextLottery {
+  margin-top: $spacing-lg;
+}
+
+.countdown {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.countdownItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md;
+  background-color: $color-overlay-beige;
+  border-radius: $radius-md;
+  min-width: 80px;
+}
+
+.countdownValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $color-dark-accent;
+  line-height: 1;
+  margin-bottom: $spacing-xs;
+}
+
+.countdownLabel {
+  font-size: 0.75rem;
+  color: $color-dark-fill;
+  text-align: center;
+  line-height: 1.2;
+}
+
 .dateRange {
   display: grid;
   grid-template-columns: 1fr 1fr;

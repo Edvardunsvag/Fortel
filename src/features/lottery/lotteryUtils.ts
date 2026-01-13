@@ -179,9 +179,7 @@ export const checkLotteryEligibility = (
 
   if (!isEligible) {
     if (!allDaysMeetRequirement) {
-      const missingDays = dailyHours
-        .filter((d) => !d.meetsRequirement)
-        .map((d) => d.date);
+      const missingDays = dailyHours.filter((d) => !d.meetsRequirement).map((d) => d.date);
       reasonKey = "missingHours";
       reasonData = { missingDays };
       // Keep backward compatibility with plain string
@@ -225,4 +223,77 @@ export const getPreviousWeekFriday = (): string => {
   const friday = new Date(getCurrentWeekFriday());
   friday.setDate(friday.getDate() - 7);
   return friday.toISOString().split("T")[0];
+};
+
+/**
+ * Get the next lottery date (first Friday after month change)
+ * The lottery always happens on the first Friday after a month change
+ * @returns Friday date in YYYY-MM-DD format
+ */
+export const getNextLotteryDate = (): string => {
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  // Get first day of next month
+  const firstDayOfNextMonth = new Date(currentYear, currentMonth + 1, 1);
+
+  // Find the first Friday in or after the first day of next month
+  const dayOfWeek = firstDayOfNextMonth.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+  // Calculate days to add to get to Friday
+  // Friday is day 5 (0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday)
+  let daysToFriday: number;
+  if (dayOfWeek <= 5) {
+    // Sunday-Friday: calculate days to Friday
+    // If it's Friday (5), add 0 days. If it's Thursday (4), add 1 day, etc.
+    daysToFriday = 5 - dayOfWeek;
+  } else {
+    // Saturday (6): go to next Friday (6 days forward)
+    daysToFriday = 6;
+  }
+
+  const friday = new Date(firstDayOfNextMonth);
+  friday.setDate(firstDayOfNextMonth.getDate() + daysToFriday);
+  // Set time to 15:00 (3 PM) - the cutoff time
+  friday.setHours(15, 0, 0, 0);
+
+  // Format as YYYY-MM-DD
+  const formatDate = (date: Date): string => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  return formatDate(friday);
+};
+
+/**
+ * Get the next lottery date as a Date object (with time set to 15:00)
+ * @returns Date object for the next lottery Friday at 15:00
+ */
+export const getNextLotteryDateTime = (): Date => {
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  // Get first day of next month
+  const firstDayOfNextMonth = new Date(currentYear, currentMonth + 1, 1);
+
+  // Find the first Friday in or after the first day of next month
+  const dayOfWeek = firstDayOfNextMonth.getDay();
+
+  let daysToFriday: number;
+  if (dayOfWeek <= 5) {
+    daysToFriday = 5 - dayOfWeek;
+  } else {
+    daysToFriday = 6;
+  }
+
+  const friday = new Date(firstDayOfNextMonth);
+  friday.setDate(firstDayOfNextMonth.getDate() + daysToFriday);
+  friday.setHours(15, 0, 0, 0);
+
+  return friday;
 };

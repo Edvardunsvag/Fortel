@@ -1,0 +1,61 @@
+@use "../../../shared/styles/variables.scss" as *;
+
+.navigationChips {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-overlay-beige;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  border: none;
+  font-weight: 500;
+  color: $color-dark-accent;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    transform $transition-fast;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background-color: $color-secondary-beige;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    background-color: $color-dark-accent;
+    color: $color-white;
+    border: none;
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($color-dark-accent, 0.9);
+    }
+  }
+}
+
+.icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.label {
+  line-height: 1.2;
+}

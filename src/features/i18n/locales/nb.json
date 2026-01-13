@@ -169,7 +169,7 @@
     "subtitle": "Vennligst logg inn med din Microsoft-konto for å få tilgang til spillet og topplisten."
   },
   "lottery": {
-    "title": "Harvest Tidsregistrering",
+    "title": "Timelotteriet",
     "description": "Koble til din Harvest-konto for å se tidsregistreringene dine. Du vil bli omdirigert til Harvest for å autorisere denne applikasjonen.",
     "connect": "Koble til Harvest",
     "connecting": "Kobler til...",
@@ -191,6 +191,38 @@
     "week": "Uke",
     "ticketsSaved": "{{count}} lodd",
     "ticketsSaved_plural": "{{count}} lodd",
+    "navigation": {
+      "timeEntries": "Dine timer",
+      "rules": "Regler",
+      "lottery": "Lotteri"
+    },
+    "rules": {
+      "title": "Lotteriregler",
+      "eligibility": "Kvalifikasjonskriterier",
+      "rule1": "Må ha minst 8 timer registrert for hver dag mandag-fredag",
+      "rule2": "Alle tidsregistreringer for uken må være opprettet OG oppdatert før fredag 15:00",
+      "howItWorks": "Hvordan det fungerer",
+      "description": "Hver uke du oppfyller kvalifikasjonskriteriene, tjener du 1 lodd. Jo flere lodd du har, jo bedre er sjansene dine i lotteriet!"
+    },
+    "lottery": {
+      "title": "Dine lodd",
+      "totalTickets": "Du har {{count}} lodd",
+      "totalTickets_plural": "Du har {{count}} lodd",
+      "totalTicketsLabel": "lodd",
+      "nextLottery": "Neste lotteri",
+      "nextLotteryDate": "Neste lotteri blir holdt {{date}} klokken 15:00",
+      "eligibleWeeks": "Kvalifiserte uker",
+      "countdown": {
+        "days": "{{count}} dag",
+        "days_plural": "{{count}} dager",
+        "hours": "{{count}} time",
+        "hours_plural": "{{count}} timer",
+        "minutes": "{{count}} minutt",
+        "minutes_plural": "{{count}} minutter",
+        "seconds": "{{count}} sekund",
+        "seconds_plural": "{{count}} sekunder"
+      }
+    },
     "eligibility": {
       "missingHours": "Mangler 8 timer på: {{dates}}",
       "entriesUpdatedAfterDeadline": "Noen registreringer ble oppdatert etter fredag 15:00. Siste oppdatering: {{timestamp}}"

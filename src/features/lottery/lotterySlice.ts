@@ -8,12 +8,20 @@ export interface HarvestToken {
   accountId: string;
 }
 
+export enum LotterySubTab {
+  TimeEntries = "timeEntries",
+  Rules = "rules",
+  Lottery = "lottery",
+}
+
 interface LotteryState {
   token: HarvestToken | null;
+  activeSubTab: LotterySubTab;
 }
 
 const initialState: LotteryState = {
   token: null,
+  activeSubTab: LotterySubTab.TimeEntries,
 };
 
 const lotterySlice = createSlice({
@@ -58,13 +66,17 @@ const lotterySlice = createSlice({
       state.token = null;
       sessionStorage.removeItem("harvest_token");
     },
+    setActiveSubTab: (state, action: PayloadAction<LotterySubTab>) => {
+      state.activeSubTab = action.payload;
+    },
   },
 });
 
-export const { setTokenFromAuth, setTokenFromRefresh, setTokenAccountId, loadTokenFromStorage, clearLottery } =
+export const { setTokenFromAuth, setTokenFromRefresh, setTokenAccountId, loadTokenFromStorage, clearLottery, setActiveSubTab } =
   lotterySlice.actions;
 
 export const selectLotteryToken = (state: RootState) => state.lottery.token;
 export const selectIsLotteryAuthenticated = (state: RootState) => state.lottery.token !== null;
+export const selectActiveLotterySubTab = (state: RootState) => state.lottery.activeSubTab;
 
 export const lotteryReducer = lotterySlice.reducer;

@@ -201,6 +201,8 @@
       "eligibility": "Eligibility Criteria",
       "rule1": "Must have at least 8 hours logged for each day Monday-Friday",
       "rule2": "All time entries for the week must be created AND updated before Friday 15:00",
+      "monthChange": "Month Change",
+      "rule3": "If you are late with time entries across month change, you lose all saved tickets for that month",
       "howItWorks": "How It Works",
       "description": "Each week you meet the eligibility criteria, you earn 1 lottery ticket. The more tickets you have, the better your chances in the lottery!"
     },

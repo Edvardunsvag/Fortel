@@ -460,6 +460,10 @@ export const LotteryPage = () => {
                     <li>{t("lottery.rules.rule1")}</li>
                     <li>{t("lottery.rules.rule2")}</li>
                   </ul>
+                  <h4>{t("lottery.rules.monthChange")}</h4>
+                  <ul>
+                    <li>{t("lottery.rules.rule3")}</li>
+                  </ul>
                   <h4>{t("lottery.rules.howItWorks")}</h4>
                   <p>{t("lottery.rules.description")}</p>
                 </div>

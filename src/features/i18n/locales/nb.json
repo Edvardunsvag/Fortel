@@ -201,6 +201,8 @@
       "eligibility": "Kvalifikasjonskriterier",
       "rule1": "Må ha minst 8 timer registrert for hver dag mandag-fredag",
       "rule2": "Alle tidsregistreringer for uken må være opprettet OG oppdatert før fredag 15:00",
+      "monthChange": "Månedsskifte",
+      "rule3": "Hvis man er for sen med timer over månedsskifte, mister man alle oppsparte lodd den måneden",
       "howItWorks": "Hvordan det fungerer",
       "description": "Hver uke du oppfyller kvalifikasjonskriteriene, tjener du 1 lodd. Jo flere lodd du har, jo bedre er sjansene dine i lotteriet!"
     },

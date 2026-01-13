@@ -188,6 +188,12 @@
     "from": "fra",
     "to": "til",
     "totalHours": "Totalt antall timer",
-    "week": "Uke"
+    "week": "Uke",
+    "ticketsSaved": "{{count}} lodd",
+    "ticketsSaved_plural": "{{count}} lodd",
+    "eligibility": {
+      "missingHours": "Mangler 8 timer på: {{dates}}",
+      "entriesUpdatedAfterDeadline": "Noen registreringer ble oppdatert etter fredag 15:00. Siste oppdatering: {{timestamp}}"
+    }
   }
 }

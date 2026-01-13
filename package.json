@@ -30,7 +30,8 @@
     "react-i18next": "^16.5.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^7.12.0",
-    "string-similarity": "^4.0.4"
+    "string-similarity": "^4.0.4",
+    "date-fns": "^3.0.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.15.0",

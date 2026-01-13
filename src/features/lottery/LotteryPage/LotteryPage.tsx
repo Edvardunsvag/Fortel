@@ -7,10 +7,11 @@ import { checkLotteryEligibility } from "../lotteryUtils";
 import { getHarvestAuthUrl, generateState } from "@/shared/config/harvestConfig";
 import { routes } from "@/shared/routes";
 import { useTranslation } from "react-i18next";
+import { getISOWeek, getISOWeekYear, startOfISOWeek, addDays, format } from "date-fns";
 import styles from "./LotteryPage.module.scss";
 
 export const LotteryPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const token = useAppSelector(selectLotteryToken);
@@ -20,6 +21,20 @@ export const LotteryPage = () => {
   const [dateRange, setDateRange] = useState<{ from: string; to: string } | null>(null);
   const [openWeeks, setOpenWeeks] = useState<Set<string>>(new Set());
   const hasAutoFetched = useRef(false);
+
+  // Helper function to format timestamp in a readable way
+  const formatTimestamp = (isoString: string): string => {
+    const date = new Date(isoString);
+    const language = i18n.language || localStorage.getItem("fortedle_language") || "en";
+    const locale = language === "nb" ? "nb-NO" : "en-US";
+    return date.toLocaleString(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   // TanStack Query hooks
   const authenticateMutation = useAuthenticateLottery();
@@ -155,26 +170,21 @@ export const LotteryPage = () => {
     }
   };
 
-  // Group time entries by week
+  // Group time entries by week using ISO week numbers
   const groupEntriesByWeek = () => {
     const weeks: { [key: string]: typeof timeEntries } = {};
 
     timeEntries.forEach((entry) => {
       // Parse the spent_date (YYYY-MM-DD format)
       const [year, month, day] = entry.spent_date.split("-").map(Number);
-      const date = new Date(year, month - 1, day); // Use local date constructor to avoid timezone issues
+      const date = new Date(year, month - 1, day);
 
-      // Get the Monday of the week (ISO week starts on Monday)
-      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Days to subtract to get Monday
-      const monday = new Date(date);
-      monday.setDate(date.getDate() + diff);
+      // Get ISO week number and year (handles year boundaries correctly)
+      const weekNumber = getISOWeek(date);
+      const weekYear = getISOWeekYear(date);
 
-      // Format as YYYY-MM-DD using local date components to avoid timezone conversion
-      const mondayYear = monday.getFullYear();
-      const mondayMonth = String(monday.getMonth() + 1).padStart(2, "0");
-      const mondayDay = String(monday.getDate()).padStart(2, "0");
-      const weekKey = `${mondayYear}-${mondayMonth}-${mondayDay}`;
+      // Create a unique key for this week: "2024-W01" format
+      const weekKey = `${weekYear}-W${String(weekNumber).padStart(2, "0")}`;
 
       if (!weeks[weekKey]) {
         weeks[weekKey] = [];
@@ -182,45 +192,42 @@ export const LotteryPage = () => {
       weeks[weekKey].push(entry);
     });
 
-    // Sort weeks by date
+    // Sort weeks by year and week number (newest first)
     return Object.entries(weeks)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([weekStart, entries]) => {
-        // Parse weekStart (YYYY-MM-DD) as local date
-        const [year, month, day] = weekStart.split("-").map(Number);
-        const weekStartDate = new Date(year, month - 1, day);
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([weekKey, entries]) => {
+        // Get Monday of the week from any entry in this week
+        const [year, month, day] = entries[0].spent_date.split("-").map(Number);
+        const sampleDate = new Date(year, month - 1, day);
+        const monday = startOfISOWeek(sampleDate);
+        const friday = addDays(monday, 4);
 
-        // Format dates as YYYY-MM-DD using local components
-        const formatDate = (date: Date): string => {
-          const y = date.getFullYear();
-          const m = String(date.getMonth() + 1).padStart(2, "0");
-          const d = String(date.getDate()).padStart(2, "0");
-          return `${y}-${m}-${d}`;
-        };
-
-        // Calculate Friday of this week (Monday + 4 days) - this is the week end for lottery purposes
-        const fridayDate = new Date(weekStartDate);
-        fridayDate.setDate(weekStartDate.getDate() + 4);
-        const fridayDateString = formatDate(fridayDate);
+        // Format dates as YYYY-MM-DD
+        const weekStart = format(monday, "yyyy-MM-dd");
+        const weekEnd = format(friday, "yyyy-MM-dd");
 
         const weekHours = entries.reduce((sum, entry) => sum + entry.hours, 0);
 
         // Check lottery eligibility
-        const lotteryCheck = checkLotteryEligibility(entries, fridayDateString);
+        const lotteryCheck = checkLotteryEligibility(entries, weekEnd);
 
         return {
-          weekStart,
-          weekEnd: fridayDateString, // Week end is Friday, not Saturday
+          weekKey, // e.g., "2024-W01"
+          weekStart, // e.g., "2024-01-01" (Monday)
+          weekEnd, // e.g., "2024-01-05" (Friday)
           entries,
           hours: weekHours,
           isLotteryEligible: lotteryCheck.isEligible,
           lotteryReason: lotteryCheck.reason,
+          lotteryReasonKey: lotteryCheck.reasonKey,
+          lotteryReasonData: lotteryCheck.reasonData,
         };
       });
   };
 
   const weeklyData = groupEntriesByWeek();
   const totalHours = timeEntries.reduce((sum, entry) => sum + entry.hours, 0);
+  const totalLotteryTickets = weeklyData.filter((week) => week.isLotteryEligible).length;
 
   return (
     <div className={styles.page}>
@@ -249,9 +256,19 @@ export const LotteryPage = () => {
         ) : (
           <div className={styles.authenticated}>
             <div className={styles.userInfo}>
-              <h2>
-                {t("lottery.welcome")}, {user?.first_name} {user?.last_name}!
-              </h2>
+              <div className={styles.userInfoHeader}>
+                <h2 className={styles.userWelcome}>
+                  {t("lottery.welcome")}, {user?.first_name} {user?.last_name}!
+                </h2>
+                {weeklyData.length > 0 && (
+                  <div className={styles.lotteryTicketsCount}>
+                    <span className={styles.ticketIcon}>🎫</span>
+                    <span className={styles.ticketCount}>
+                      {t("lottery.ticketsSaved", { count: totalLotteryTickets })}
+                    </span>
+                  </div>
+                )}
+              </div>
               <p>
                 <strong>{t("lottery.email")}:</strong> {user?.email}
               </p>
@@ -326,17 +343,32 @@ export const LotteryPage = () => {
                           >
                             <div className={styles.weekHeaderContent}>
                               <div className={styles.weekTitleContainer}>
-                                <h5 className={styles.weekTitle}>
-                                  {t("lottery.week")}: {week.weekStart} - {week.weekEnd}
-                                </h5>
-                                {week.isLotteryEligible && (
-                                  <span
-                                    className={styles.lotteryTicket}
-                                    title="This week qualifies for 1 lottery ticket! 🎫"
-                                    aria-label="Lottery ticket earned"
-                                  >
-                                    🎫
-                                  </span>
+                                <div className={styles.weekTitleWrapper}>
+                                  <h5 className={styles.weekTitle}>
+                                    {t("lottery.week")}: {week.weekStart} - {week.weekEnd}
+                                  </h5>
+                                  {week.isLotteryEligible && (
+                                    <span
+                                      className={styles.lotteryTicket}
+                                      title="This week qualifies for 1 lottery ticket! 🎫"
+                                      aria-label="Lottery ticket earned"
+                                    >
+                                      🎫
+                                    </span>
+                                  )}
+                                </div>
+                                {!week.isLotteryEligible && week.lotteryReasonKey && (
+                                  <p className={styles.lotteryReason} aria-live="polite">
+                                    {week.lotteryReasonKey === "missingHours" && week.lotteryReasonData?.missingDays
+                                      ? t("lottery.eligibility.missingHours", {
+                                          dates: week.lotteryReasonData.missingDays.join(", "),
+                                        })
+                                      : week.lotteryReasonKey === "entriesUpdatedAfterDeadline" &&
+                                        week.lotteryReasonData?.latestUpdate &&
+                                        t("lottery.eligibility.entriesUpdatedAfterDeadline", {
+                                          timestamp: formatTimestamp(week.lotteryReasonData.latestUpdate),
+                                        })}
+                                  </p>
                                 )}
                               </div>
                               <span className={styles.weekHours}>

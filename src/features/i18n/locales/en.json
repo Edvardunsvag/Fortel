@@ -188,6 +188,12 @@
     "from": "from",
     "to": "to",
     "totalHours": "Total Hours",
-    "week": "Week"
+    "week": "Week",
+    "ticketsSaved": "{{count}} ticket",
+    "ticketsSaved_plural": "{{count}} tickets",
+    "eligibility": {
+      "missingHours": "Missing 8 hours on: {{dates}}",
+      "entriesUpdatedAfterDeadline": "Some entries were updated after Friday 15:00. Latest update: {{timestamp}}"
+    }
   }
 }

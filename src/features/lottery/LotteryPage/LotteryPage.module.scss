@@ -150,7 +150,7 @@
 
 .userInfo {
   background-color: $color-overlay-beige;
-  padding: $spacing-lg;
+  padding: $spacing-lg $spacing-lg $spacing-lg 0;
   border-radius: $radius-md;
   margin-bottom: $spacing-xl;
 
@@ -163,6 +163,38 @@
     margin: $spacing-xs 0;
     color: $color-dark-fill;
   }
+}
+
+.userInfoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.userWelcome {
+  margin: 0;
+  color: $color-dark-accent;
+}
+
+.lotteryTicketsCount {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+}
+
+.ticketIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.ticketCount {
+  white-space: nowrap;
 }
 
 .logoutButton {
@@ -264,6 +296,13 @@
 
 .weekTitleContainer {
   display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.weekTitleWrapper {
+  display: flex;
   align-items: center;
   gap: $spacing-sm;
 }
@@ -273,6 +312,14 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: $color-dark-accent;
+}
+
+.lotteryReason {
+  margin: 0;
+  font-size: 0.875rem;
+  color: $color-dark-accent;
+  font-style: italic;
+  line-height: 1.4;
 }
 
 .lotteryTicket {

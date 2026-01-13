@@ -16,6 +16,11 @@ import type { HarvestTimeEntry } from "./types";
 export interface LotteryEligibilityResult {
   isEligible: boolean;
   reason?: string;
+  reasonKey?: "missingHours" | "entriesUpdatedAfterDeadline";
+  reasonData?: {
+    missingDays?: string[];
+    latestUpdate?: string;
+  };
   dailyHours: {
     date: string;
     hours: number;
@@ -169,15 +174,23 @@ export const checkLotteryEligibility = (
   const isEligible = allDaysMeetRequirement && allEntriesBeforeCutoff;
 
   let reason: string | undefined;
+  let reasonKey: "missingHours" | "entriesUpdatedAfterDeadline" | undefined;
+  let reasonData: { missingDays?: string[]; latestUpdate?: string } | undefined;
+
   if (!isEligible) {
     if (!allDaysMeetRequirement) {
       const missingDays = dailyHours
         .filter((d) => !d.meetsRequirement)
-        .map((d) => d.date)
-        .join(", ");
-      reason = `Missing 8 hours on: ${missingDays}`;
+        .map((d) => d.date);
+      reasonKey = "missingHours";
+      reasonData = { missingDays };
+      // Keep backward compatibility with plain string
+      reason = `Missing 8 hours on: ${missingDays.join(", ")}`;
     } else if (!allEntriesBeforeCutoff) {
       const latestTime = latestEntryTime?.toISOString() || "unknown";
+      reasonKey = "entriesUpdatedAfterDeadline";
+      reasonData = { latestUpdate: latestTime };
+      // Keep backward compatibility with plain string
       reason = `Some entries were updated after Friday 15:00. Latest update: ${latestTime}`;
     }
   }
@@ -185,6 +198,8 @@ export const checkLotteryEligibility = (
   return {
     isEligible,
     reason,
+    reasonKey,
+    reasonData,
     dailyHours,
     cutoffTime,
     latestEntryTime,

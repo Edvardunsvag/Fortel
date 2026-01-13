@@ -8,7 +8,7 @@ import { gameReducer } from "@/features/game/gameSlice";
 import { navigationReducer } from "@/features/sidebar/navigationSlice";
 import { authReducer } from "@/features/auth/authSlice";
 import { i18nReducer } from "@/features/i18n/i18nSlice";
-import { harvestReducer } from "@/features/harvest/harvestSlice";
+import { lotteryReducer } from "@/features/lottery/lotterySlice";
 import type { RootState } from "@/app/store";
 import { queryClient } from "@/app/queryClient";
 import { MsalProvider } from "@azure/msal-react";
@@ -30,7 +30,7 @@ function createTestStore(preloadedState?: Partial<RootState>) {
       [FeatureKey.Navigation]: navigationReducer,
       [FeatureKey.Auth]: authReducer,
       [FeatureKey.I18n]: i18nReducer,
-      [FeatureKey.Harvest]: harvestReducer,
+      [FeatureKey.Lottery]: lotteryReducer,
     },
     preloadedState: preloadedState as RootState | undefined,
   });

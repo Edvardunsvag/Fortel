@@ -4,7 +4,7 @@
     "leaderboard": "Leaderboard",
     "rules": "Rules",
     "employees": "Employees",
-    "harvest": "Time Lottery",
+    "lottery": "Time Lottery",
     "sync": "Sync"
   },
   "admin": {
@@ -168,7 +168,7 @@
     "title": "Welcome to Fortedle",
     "subtitle": "Please log in with your Microsoft account to access the game and leaderboard."
   },
-  "harvest": {
+  "lottery": {
     "title": "Harvest Time Tracking",
     "description": "Connect your Harvest account to view your time entries. You'll be redirected to Harvest to authorize this application.",
     "connect": "Connect with Harvest",

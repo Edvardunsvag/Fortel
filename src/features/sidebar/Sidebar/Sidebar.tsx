@@ -52,9 +52,9 @@ export const Sidebar = () => {
           onKeyDown={handleKeyDown}
         />
         <SidebarItem
-          tab={ActiveTab.Harvest}
+          tab={ActiveTab.Lottery}
           icon="⏰"
-          label={t("sidebar.harvest")}
+          label={t("sidebar.lottery")}
           activeTab={activeTab}
           onTabClick={handleTabClick}
           onKeyDown={handleKeyDown}

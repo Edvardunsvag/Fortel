@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { clearHarvest, loadTokenFromStorage, selectIsHarvestAuthenticated, selectHarvestToken } from "../harvestSlice";
-import { useHarvestUser, useHarvestTimeEntries, useAuthenticateHarvest, useTestHarvestApi } from "../queries";
+import { clearLottery, loadTokenFromStorage, selectIsLotteryAuthenticated, selectLotteryToken } from "../lotterySlice";
+import { useLotteryUser, useLotteryTimeEntries, useAuthenticateLottery, useTestLotteryApi } from "../queries";
 import { checkLotteryEligibility } from "../lotteryUtils";
 import { getHarvestAuthUrl, generateState } from "@/shared/config/harvestConfig";
 import { routes } from "@/shared/routes";
 import { useTranslation } from "react-i18next";
-import styles from "./HarvestPage.module.scss";
+import styles from "./LotteryPage.module.scss";
 
-export const HarvestPage = () => {
+export const LotteryPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const token = useAppSelector(selectHarvestToken);
-  const isAuthenticated = useAppSelector(selectIsHarvestAuthenticated);
+  const token = useAppSelector(selectLotteryToken);
+  const isAuthenticated = useAppSelector(selectIsLotteryAuthenticated);
 
   const [selectedMonth, setSelectedMonth] = useState("");
   const [dateRange, setDateRange] = useState<{ from: string; to: string } | null>(null);
@@ -22,9 +22,9 @@ export const HarvestPage = () => {
   const hasAutoFetched = useRef(false);
 
   // TanStack Query hooks
-  const authenticateMutation = useAuthenticateHarvest();
-  const testApiMutation = useTestHarvestApi();
-  const { data: user, isLoading: isLoadingUser, error: userError } = useHarvestUser(isAuthenticated);
+  const authenticateMutation = useAuthenticateLottery();
+  const testApiMutation = useTestLotteryApi();
+  const { data: user, isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
 
   // Calculate date range from selected month
   const [fromDate, setFromDate] = useState("");
@@ -47,7 +47,7 @@ export const HarvestPage = () => {
     data: timeEntries = [],
     isLoading: isLoadingEntries,
     error: entriesError,
-  } = useHarvestTimeEntries(fromDate, toDate, isAuthenticated && !!fromDate && !!toDate);
+  } = useLotteryTimeEntries(fromDate, toDate, isAuthenticated && !!fromDate && !!toDate);
 
   const isLoading = isLoadingUser || isLoadingEntries || authenticateMutation.isPending || testApiMutation.isPending;
   const error =
@@ -72,10 +72,10 @@ export const HarvestPage = () => {
 
     if (code && state && !authenticateMutation.isPending && !authenticateMutation.isSuccess) {
       authenticateMutation.mutate({ code, state });
-      // Ensure we stay on Harvest tab by navigating to /harvest
-      navigate(routes.harvest, { replace: true });
+      // Ensure we stay on Lottery tab by navigating to /lottery
+      navigate(routes.lottery, { replace: true });
       // Clean up URL params
-      window.history.replaceState({}, "", routes.harvest);
+      window.history.replaceState({}, "", routes.lottery);
       hasAutoFetched.current = false; // Reset flag to allow auto-fetch after auth
     }
   }, [authenticateMutation, navigate]);
@@ -129,7 +129,7 @@ export const HarvestPage = () => {
   };
 
   const handleLogout = () => {
-    dispatch(clearHarvest());
+    dispatch(clearLottery());
   };
 
   const handleTestApi = () => {
@@ -225,16 +225,16 @@ export const HarvestPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <h1 className={styles.title}>{t("harvest.title")}</h1>
+        <h1 className={styles.title}>{t("lottery.title")}</h1>
 
         {!isAuthenticated ? (
           <div className={styles.loginForm}>
-            <p className={styles.description}>{t("harvest.description")}</p>
+            <p className={styles.description}>{t("lottery.description")}</p>
 
             {error && <div className={styles.error}>{error}</div>}
 
             <button onClick={handleLogin} className={styles.button} disabled={isLoading} type="button">
-              {isLoading ? t("harvest.connecting") : t("harvest.connect")}
+              {isLoading ? t("lottery.connecting") : t("lottery.connect")}
             </button>
 
             {token && (
@@ -250,26 +250,26 @@ export const HarvestPage = () => {
           <div className={styles.authenticated}>
             <div className={styles.userInfo}>
               <h2>
-                {t("harvest.welcome")}, {user?.first_name} {user?.last_name}!
+                {t("lottery.welcome")}, {user?.first_name} {user?.last_name}!
               </h2>
               <p>
-                <strong>{t("harvest.email")}:</strong> {user?.email}
+                <strong>{t("lottery.email")}:</strong> {user?.email}
               </p>
               <p>
-                <strong>{t("harvest.userId")}:</strong> {user?.id}
+                <strong>{t("lottery.userId")}:</strong> {user?.id}
               </p>
               <button onClick={handleLogout} className={styles.logoutButton} type="button">
-                {t("harvest.disconnect")}
+                {t("lottery.disconnect")}
               </button>
             </div>
 
             <div className={styles.dataSection}>
-              <h3>{t("harvest.fetchEntries")}</h3>
+              <h3>{t("lottery.fetchEntries")}</h3>
 
               <div className={styles.monthSelector}>
                 <div className={styles.formGroup}>
                   <label htmlFor="selectedMonth" className={styles.label}>
-                    {t("harvest.selectMonth")}
+                    {t("lottery.selectMonth")}
                   </label>
                   <input
                     id="selectedMonth"
@@ -288,25 +288,25 @@ export const HarvestPage = () => {
                 disabled={isLoading || !selectedMonth}
                 type="button"
               >
-                {isLoading ? t("harvest.loading") : t("harvest.getEntries")}
+                {isLoading ? t("lottery.loading") : t("lottery.getEntries")}
               </button>
 
               {error && <div className={styles.error}>{error}</div>}
 
               {timeEntries.length > 0 && (
                 <div className={styles.results}>
-                  <h4>{t("harvest.results")}</h4>
+                  <h4>{t("lottery.results")}</h4>
                   <p className={styles.summary}>
-                    {t("harvest.foundEntries", { count: timeEntries.length })}
+                    {t("lottery.foundEntries", { count: timeEntries.length })}
                     {dateRange && (
                       <>
                         {" "}
-                        {t("harvest.from")} {dateRange.from} {t("harvest.to")} {dateRange.to}
+                        {t("lottery.from")} {dateRange.from} {t("lottery.to")} {dateRange.to}
                       </>
                     )}
                     <br />
                     <strong>
-                      {t("harvest.totalHours")}: {totalHours.toFixed(2)}
+                      {t("lottery.totalHours")}: {totalHours.toFixed(2)}
                     </strong>
                   </p>
 
@@ -327,7 +327,7 @@ export const HarvestPage = () => {
                             <div className={styles.weekHeaderContent}>
                               <div className={styles.weekTitleContainer}>
                                 <h5 className={styles.weekTitle}>
-                                  {t("harvest.week")}: {week.weekStart} - {week.weekEnd}
+                                  {t("lottery.week")}: {week.weekStart} - {week.weekEnd}
                                 </h5>
                                 {week.isLotteryEligible && (
                                   <span

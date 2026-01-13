@@ -6,7 +6,7 @@ import { Game } from "./features/game/Game/Game";
 import { RulesPage } from "./features/game/RulesPage/RulesPage";
 import { SyncPage } from "./features/employees/SyncPage/SyncPage";
 import { EmployeesPage } from "./features/employees/EmployeesPage/EmployeesPage";
-import { HarvestPage } from "./features/harvest/HarvestPage/HarvestPage";
+import { LotteryPage } from "./features/lottery/LotteryPage/LotteryPage";
 import { LoginScreen } from "./features/auth/LoginScreen/LoginScreen";
 import { ActiveTab, setActiveTab } from "./features/sidebar/navigationSlice";
 import { GameSubTab, setActiveSubTab } from "./features/game";
@@ -37,8 +37,8 @@ export const App = () => {
       // All game-related routes (play, leaderboard, rules, employees, sync) should show Play as active
       if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees" || tab === "sync") {
         dispatch(setActiveTab(ActiveTab.Play));
-      } else if (tab === "harvest") {
-        dispatch(setActiveTab(ActiveTab.Harvest));
+      } else if (tab === "lottery") {
+        dispatch(setActiveTab(ActiveTab.Lottery));
       }
       
       // Sync Game sub-navigation for Fortedle-related routes
@@ -70,7 +70,7 @@ export const App = () => {
         <Route path={routes.leaderboard} element={<LeaderboardPage />} />
         <Route path={routes.rules} element={<RulesPage />} />
         <Route path={routes.employees} element={<EmployeesPage />} />
-        <Route path={routes.harvest} element={<HarvestPage />} />
+        <Route path={routes.lottery} element={<LotteryPage />} />
         <Route path={routes.sync} element={isAdmin ? <SyncPage /> : <Navigate to={routes.play} replace />} />
         <Route path="*" element={<Navigate to={routes.play} replace />} />
       </Routes>

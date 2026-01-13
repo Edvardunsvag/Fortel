@@ -4,7 +4,7 @@
     "leaderboard": "Toppliste",
     "rules": "Regler",
     "employees": "Ansatte",
-    "harvest": "Timelotteriet",
+    "lottery": "Timelotteriet",
     "sync": "Synkroniser"
   },
   "admin": {
@@ -168,7 +168,7 @@
     "title": "Velkommen til Fortedle",
     "subtitle": "Vennligst logg inn med din Microsoft-konto for å få tilgang til spillet og topplisten."
   },
-  "harvest": {
+  "lottery": {
     "title": "Harvest Tidsregistrering",
     "description": "Koble til din Harvest-konto for å se tidsregistreringene dine. Du vil bli omdirigert til Harvest for å autorisere denne applikasjonen.",
     "connect": "Koble til Harvest",

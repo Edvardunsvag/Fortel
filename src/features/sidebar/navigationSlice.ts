@@ -4,7 +4,7 @@ import type { RootState } from "@/app/store";
 
 export enum ActiveTab {
   Play = "play",
-  Harvest = "harvest",
+  Lottery = "lottery",
 }
 
 interface NavigationState {

@@ -8,16 +8,16 @@ export interface HarvestToken {
   accountId: string;
 }
 
-interface HarvestState {
+interface LotteryState {
   token: HarvestToken | null;
 }
 
-const initialState: HarvestState = {
+const initialState: LotteryState = {
   token: null,
 };
 
-const harvestSlice = createSlice({
-  name: "harvest",
+const lotterySlice = createSlice({
+  name: "lottery",
   initialState,
   reducers: {
     setTokenFromAuth: (state, action: PayloadAction<HarvestToken>) => {
@@ -54,17 +54,17 @@ const harvestSlice = createSlice({
         }
       }
     },
-    clearHarvest: (state) => {
+    clearLottery: (state) => {
       state.token = null;
       sessionStorage.removeItem("harvest_token");
     },
   },
 });
 
-export const { setTokenFromAuth, setTokenFromRefresh, setTokenAccountId, loadTokenFromStorage, clearHarvest } =
-  harvestSlice.actions;
+export const { setTokenFromAuth, setTokenFromRefresh, setTokenAccountId, loadTokenFromStorage, clearLottery } =
+  lotterySlice.actions;
 
-export const selectHarvestToken = (state: RootState) => state.harvest.token;
-export const selectIsHarvestAuthenticated = (state: RootState) => state.harvest.token !== null;
+export const selectLotteryToken = (state: RootState) => state.lottery.token;
+export const selectIsLotteryAuthenticated = (state: RootState) => state.lottery.token !== null;
 
-export const harvestReducer = harvestSlice.reducer;
+export const lotteryReducer = lotterySlice.reducer;

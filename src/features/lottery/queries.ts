@@ -10,19 +10,19 @@ import {
 } from "./api";
 import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
-  selectHarvestToken,
+  selectLotteryToken,
   setTokenFromAuth,
   setTokenFromRefresh,
   setTokenAccountId,
-  clearHarvest,
+  clearLottery,
   type HarvestToken,
-} from "./harvestSlice";
+} from "./lotterySlice";
 
 // Query keys
-export const harvestKeys = {
-  all: ["harvest"] as const,
-  user: () => [...harvestKeys.all, "user"] as const,
-  timeEntries: (from: string, to: string) => [...harvestKeys.all, "timeEntries", from, to] as const,
+export const lotteryKeys = {
+  all: ["lottery"] as const,
+  user: () => [...lotteryKeys.all, "user"] as const,
+  timeEntries: (from: string, to: string) => [...lotteryKeys.all, "timeEntries", from, to] as const,
 };
 
 /**
@@ -55,7 +55,7 @@ const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch):
     } catch (error) {
       // If refresh fails, clear token and require re-auth
       sessionStorage.removeItem("harvest_token");
-      dispatch(clearHarvest());
+      dispatch(clearLottery());
       throw new Error("Token expired. Please re-authenticate.");
     }
   }
@@ -66,12 +66,12 @@ const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch):
 /**
  * Query hook for fetching Harvest user
  */
-export const useHarvestUser = (enabled = true) => {
+export const useLotteryUser = (enabled = true) => {
   const dispatch = useAppDispatch();
-  const token = useAppSelector(selectHarvestToken);
+  const token = useAppSelector(selectLotteryToken);
 
   return useQuery<HarvestUser>({
-    queryKey: harvestKeys.user(),
+    queryKey: lotteryKeys.user(),
     queryFn: async () => {
       const validToken = await getValidToken(token, dispatch);
       return fetchHarvestUser(validToken.accessToken, validToken.accountId);
@@ -90,24 +90,24 @@ export const useHarvestUser = (enabled = true) => {
 /**
  * Query hook for fetching Harvest time entries
  */
-export const useHarvestTimeEntries = (from: string, to: string, enabled = true) => {
+export const useLotteryTimeEntries = (from: string, to: string, enabled = true) => {
   const dispatch = useAppDispatch();
-  const token = useAppSelector(selectHarvestToken);
+  const token = useAppSelector(selectLotteryToken);
   const queryClient = useQueryClient();
 
   return useQuery<HarvestTimeEntry[]>({
-    queryKey: harvestKeys.timeEntries(from, to),
+    queryKey: lotteryKeys.timeEntries(from, to),
     queryFn: async () => {
       const validToken = await getValidToken(token, dispatch);
 
       // Fetch user info if we don't have it yet (needed for user ID)
       let user: HarvestUser | undefined;
       try {
-        const userData = queryClient.getQueryData<HarvestUser>(harvestKeys.user());
+        const userData = queryClient.getQueryData<HarvestUser>(lotteryKeys.user());
         if (!userData) {
           user = await fetchHarvestUser(validToken.accessToken, validToken.accountId);
           // Cache the user data
-          queryClient.setQueryData(harvestKeys.user(), user);
+          queryClient.setQueryData(lotteryKeys.user(), user);
         } else {
           user = userData;
         }
@@ -169,7 +169,7 @@ export const useHarvestTimeEntries = (from: string, to: string, enabled = true) 
 /**
  * Mutation hook for authenticating with OAuth code
  */
-export const useAuthenticateHarvest = () => {
+export const useAuthenticateLottery = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
@@ -216,7 +216,7 @@ export const useAuthenticateHarvest = () => {
     },
     onSuccess: () => {
       // Invalidate user query to refetch after authentication
-      queryClient.invalidateQueries({ queryKey: harvestKeys.user() });
+      queryClient.invalidateQueries({ queryKey: lotteryKeys.user() });
     },
   });
 };
@@ -225,10 +225,10 @@ export const useAuthenticateHarvest = () => {
  * Mutation hook for refreshing Harvest token
  * Note: This is typically called automatically by getValidToken, but can be used manually
  */
-export const useRefreshHarvestToken = () => {
+export const useRefreshLotteryToken = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  const token = useAppSelector(selectHarvestToken);
+  const token = useAppSelector(selectLotteryToken);
 
   return useMutation<HarvestToken, Error, void>({
     mutationFn: async () => {
@@ -255,7 +255,7 @@ export const useRefreshHarvestToken = () => {
     },
     onSuccess: () => {
       // Invalidate queries that depend on token
-      queryClient.invalidateQueries({ queryKey: harvestKeys.all });
+      queryClient.invalidateQueries({ queryKey: lotteryKeys.all });
     },
   });
 };
@@ -263,9 +263,9 @@ export const useRefreshHarvestToken = () => {
 /**
  * Mutation hook for testing Harvest API calls
  */
-export const useTestHarvestApi = () => {
+export const useTestLotteryApi = () => {
   const dispatch = useAppDispatch();
-  const token = useAppSelector(selectHarvestToken);
+  const token = useAppSelector(selectLotteryToken);
   const queryClient = useQueryClient();
 
   return useMutation<{ user: HarvestUser; accounts: any; updatedAccountId?: string }, Error, void>({
@@ -302,7 +302,7 @@ export const useTestHarvestApi = () => {
     },
     onSuccess: (data) => {
       // Cache user data
-      queryClient.setQueryData(harvestKeys.user(), data.user);
+      queryClient.setQueryData(lotteryKeys.user(), data.user);
       // Log accounts to console for debugging
       console.log("Harvest Accounts:", data.accounts);
       console.log("Using Account ID:", data.updatedAccountId || token?.accountId);

@@ -4,7 +4,7 @@ import { gameReducer } from "@/features/game/gameSlice";
 import { navigationReducer } from "@/features/sidebar/navigationSlice";
 import { authReducer } from "@/features/auth/authSlice";
 import { i18nReducer } from "@/features/i18n/i18nSlice";
-import { harvestReducer } from "@/features/harvest/harvestSlice";
+import { lotteryReducer } from "@/features/lottery/lotterySlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,7 +12,7 @@ export const store = configureStore({
     [FeatureKey.Navigation]: navigationReducer,
     [FeatureKey.Auth]: authReducer,
     [FeatureKey.I18n]: i18nReducer,
-    [FeatureKey.Harvest]: harvestReducer,
+    [FeatureKey.Lottery]: lotteryReducer,
   },
 });
 

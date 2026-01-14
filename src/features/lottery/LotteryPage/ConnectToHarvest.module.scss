@@ -1,0 +1,86 @@
+@use "shared/styles/variables.scss" as *;
+
+.loginForm {
+  margin-top: $spacing-lg;
+}
+
+.description {
+  color: $color-dark-fill;
+  margin-bottom: $spacing-lg;
+  line-height: 1.6;
+}
+
+.error {
+  padding: $spacing-md;
+  background-color: $color-overlay-accent;
+  border: 1px solid $color-dark-accent;
+  border-radius: $radius-md;
+  color: $color-dark-accent;
+  margin-top: $spacing-md;
+}
+
+.button {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.testSection {
+  margin-top: $spacing-xl;
+  padding: $spacing-lg;
+  background-color: $color-overlay-beige;
+  border-radius: $radius-md;
+  border: 2px solid $color-link-blue;
+}
+
+.testDescription {
+  color: $color-dark-fill;
+  margin-bottom: $spacing-md;
+  font-weight: 500;
+}
+
+.testButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-link-blue;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-link-blue, 0.9);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}

@@ -4,7 +4,7 @@ import type { HarvestTimeEntry } from "../types";
 
 /**
  * Helper function to test the week grouping logic
- * This mirrors the logic from groupEntriesByWeek in LotteryPage.tsx
+ * This mirrors the logic from useGroupEntriesByWeek hook
  */
 function getWeekKeyForDate(dateString: string): string {
   const [year, month, day] = dateString.split("-").map(Number);

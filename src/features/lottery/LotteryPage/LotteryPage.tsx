@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
@@ -225,7 +225,9 @@ export const LotteryPage = () => {
   const totalHours = timeEntries.reduce((sum, entry) => sum + entry.hours, 0);
   const totalLotteryTickets = weeklyData.filter((week) => week.isLotteryEligible).length;
   const nextLotteryDate = getNextLotteryDate();
-  const nextLotteryDateTime = getNextLotteryDateTime();
+
+  // Memoize the lottery date time to prevent infinite loops
+  const nextLotteryDateTime = useMemo(() => getNextLotteryDateTime(), []);
 
   // Countdown state
   const [timeRemaining, setTimeRemaining] = useState<{

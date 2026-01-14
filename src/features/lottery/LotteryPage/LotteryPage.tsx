@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { getISOWeek, getISOWeekYear, startOfISOWeek, addDays, format } from "date-fns";
 import { formatDateReadable } from "@/shared/utils/dateUtils";
 import { LotteryNavigationChips } from "./LotteryNavigationChips";
+import { UserInfo } from "./UserInfo";
 import styles from "./LotteryPage.module.scss";
 
 export const LotteryPage = () => {
@@ -27,32 +28,16 @@ export const LotteryPage = () => {
   const isAuthenticated = useAppSelector(selectIsLotteryAuthenticated);
   const activeSubTab = useAppSelector(selectActiveLotterySubTab);
 
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [dateRange, setDateRange] = useState<{ from: string; to: string } | null>(null);
   const [openWeeks, setOpenWeeks] = useState<Set<string>>(new Set());
-  const hasAutoFetched = useRef(false);
 
   // TanStack Query hooks
   const authenticateMutation = useAuthenticateLottery();
   const testApiMutation = useTestLotteryApi();
   const { data: user, isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
 
-  // Calculate date range from selected month
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-
-  useEffect(() => {
-    if (selectedMonth) {
-      const [year, month] = selectedMonth.split("-").map(Number);
-      const firstDay = new Date(year, month - 1, 1);
-      const lastDay = new Date(year, month, 0);
-      const from = firstDay.toISOString().split("T")[0];
-      const to = lastDay.toISOString().split("T")[0];
-      setFromDate(from);
-      setToDate(to);
-      setDateRange({ from, to });
-    }
-  }, [selectedMonth]);
+  // Set date range to all of 2026
+  const fromDate = "2026-01-01";
+  const toDate = "2026-12-31";
 
   const {
     data: timeEntries = [],
@@ -87,7 +72,6 @@ export const LotteryPage = () => {
       navigate(routes.lottery, { replace: true });
       // Clean up URL params
       window.history.replaceState({}, "", routes.lottery);
-      hasAutoFetched.current = false; // Reset flag to allow auto-fetch after auth
     }
   }, [authenticateMutation, navigate]);
 
@@ -96,47 +80,10 @@ export const LotteryPage = () => {
     dispatch(loadTokenFromStorage());
   }, [dispatch]);
 
-  // Set default month to current month
-  useEffect(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    setSelectedMonth(`${year}-${month}`);
-  }, []);
-
-  // Auto-fetch current month after authentication completes
-  // The query will automatically fetch when enabled conditions are met
-  useEffect(() => {
-    if (
-      isAuthenticated &&
-      token &&
-      !hasAutoFetched.current &&
-      timeEntries.length === 0 &&
-      !isLoading &&
-      selectedMonth &&
-      fromDate &&
-      toDate
-    ) {
-      hasAutoFetched.current = true;
-    }
-  }, [isAuthenticated, token, timeEntries.length, isLoading, selectedMonth, fromDate, toDate]);
-
-  // Reset auto-fetch flag when month changes
-  useEffect(() => {
-    hasAutoFetched.current = false;
-  }, [selectedMonth]);
-
   const handleLogin = () => {
     const state = generateState();
     sessionStorage.setItem("harvest_oauth_state", state);
     window.location.href = getHarvestAuthUrl(state);
-  };
-
-  const handleFetchData = () => {
-    // The query will automatically refetch when fromDate/toDate change
-    // This is handled by the useEffect that sets fromDate/toDate from selectedMonth
-    // We just need to reset the auto-fetch flag to allow refetching
-    hasAutoFetched.current = false;
   };
 
   const handleLogout = () => {
@@ -289,79 +236,26 @@ export const LotteryPage = () => {
         ) : (
           <div className={styles.authenticated}>
             <LotteryNavigationChips />
-            <div className={styles.userInfo}>
-              <div className={styles.userInfoHeader}>
-                <h2 className={styles.userWelcome}>
-                  {t("lottery.welcome")}, {user?.first_name} {user?.last_name}!
-                </h2>
-                {weeklyData.length > 0 && (
-                  <div className={styles.lotteryTicketsCount}>
-                    <span className={styles.ticketIcon}>🎫</span>
-                    <span className={styles.ticketCount}>
-                      {t("lottery.ticketsSaved", { count: totalLotteryTickets })}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <p>
-                <strong>{t("lottery.email")}:</strong> {user?.email}
-              </p>
-              <p>
-                <strong>{t("lottery.userId")}:</strong> {user?.id}
-              </p>
-              <button onClick={handleLogout} className={styles.logoutButton} type="button">
-                {t("lottery.disconnect")}
-              </button>
-            </div>
-
+            <UserInfo
+              user={user}
+              weeklyDataLength={weeklyData.length}
+              totalLotteryTickets={totalLotteryTickets}
+              onLogout={handleLogout}
+            />
             {activeSubTab === LotterySubTab.TimeEntries && (
               <div className={styles.dataSection}>
                 <h3>{t("lottery.fetchEntries")}</h3>
-
-                <div className={styles.monthSelector}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="selectedMonth" className={styles.label}>
-                      {t("lottery.selectMonth")}
-                    </label>
-                    <input
-                      id="selectedMonth"
-                      type="month"
-                      value={selectedMonth}
-                      onChange={(e) => setSelectedMonth(e.target.value)}
-                      className={styles.input}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleFetchData}
-                  className={styles.button}
-                  disabled={isLoading || !selectedMonth}
-                  type="button"
-                >
-                  {isLoading ? t("lottery.loading") : t("lottery.getEntries")}
-                </button>
-
                 {error && <div className={styles.error}>{error}</div>}
-
                 {timeEntries.length > 0 && (
                   <div className={styles.results}>
-                    <h4>{t("lottery.results")}</h4>
                     <p className={styles.summary}>
-                      {t("lottery.foundEntries", { count: timeEntries.length })}
-                      {dateRange && (
-                        <>
-                          {" "}
-                          {t("lottery.from")} {dateRange.from} {t("lottery.to")} {dateRange.to}
-                        </>
-                      )}
+                      {t("lottery.foundEntries", { count: timeEntries.length })} {t("lottery.from")} {fromDate}{" "}
+                      {t("lottery.to")} {toDate}
                       <br />
                       <strong>
                         {t("lottery.totalHours")}: {totalHours.toFixed(2)}
                       </strong>
                     </p>
-
                     <div className={styles.weeksList}>
                       {weeklyData.map((week) => {
                         const isOpen = openWeeks.has(week.weekStart);

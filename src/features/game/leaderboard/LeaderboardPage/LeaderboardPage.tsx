@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { useLeaderboard } from "@/features/leaderboard/queries";
 import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./LeaderboardPage.module.scss";
+import { useLeaderboard } from "../queries";
 
 export const LeaderboardPage = () => {
   const { t } = useTranslation();

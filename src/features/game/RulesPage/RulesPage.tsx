@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { GameNavigationChips } from "../Game/GameNavigationChips";
+import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./RulesPage.module.scss";
 import { ColorLegend } from "./ColorLegend";
 

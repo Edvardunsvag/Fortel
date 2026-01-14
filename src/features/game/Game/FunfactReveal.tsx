@@ -1,10 +1,11 @@
 import { useAppSelector } from "@/app/hooks";
-import type { Employee } from "@/features/employees/types";
 import { selectFunfactRevealed } from "@/features/game/gameSlice";
+
 import { findEmployeeByHash } from "@/shared/utils/hashUtils";
 import { getTodayDateString } from "@/shared/utils/dateUtils";
 import { useTranslation } from "react-i18next";
 import styles from "./Game.module.scss";
+import { Employee } from "../employees";
 
 interface FunfactRevealProps {
   employeeOfTheDayId: string;

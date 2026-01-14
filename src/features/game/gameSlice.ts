@@ -1,12 +1,13 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "@/app/store";
-import type { Employee } from "@/features/employees/types";
 import type { GameState, Guess } from "./types";
+
 import { HintType, HintResult, GameSubTab } from "./types";
 import { hashEmployeeId } from "@/shared/utils/hashUtils";
 import { getTodayDateString } from "@/shared/utils/dateUtils";
 import type { RoundDto } from "./fromDto";
+import { Employee } from "./employees";
 
 // Cost of revealing the funfact (in guesses)
 export const FUNFACT_REVEAL_COST = 1;

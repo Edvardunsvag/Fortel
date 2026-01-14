@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import type { Employee } from "@/features/employees/types";
+import { Employee } from "../employees";
 import {
   selectCanGuess,
   selectFunfactRevealed,

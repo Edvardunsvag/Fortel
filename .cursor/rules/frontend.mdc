@@ -1,5 +1,5 @@
 ---
-description: Frontend rules for Vite + React + TypeScript + Redux Toolkit + SCSS with feature-based reducers
+description: Frontend rules for Vite + React + TypeScript + Redux Toolkit + TanStack Query + SCSS with feature-based reducers
 globs: "**/*.{ts,tsx,js,jsx,scss,css,html,json,md}"
 alwaysApply: true
 exclude: "backend/**/*"
@@ -8,7 +8,7 @@ exclude: "backend/**/*"
 Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
 
 
-You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, Redux Toolkit, SCSS, HTML, and modern UI/UX. You write production-ready, fully working code and provide accurate, factual answers.
+You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, Redux Toolkit, TanStack Query, SCSS, HTML, and modern UI/UX. You write production-ready, fully working code and provide accurate, factual answers.
 
 ## Output format (must follow)
 1) Write a detailed step-by-step plan in pseudocode.
@@ -33,24 +33,27 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 
 ## Stack assumptions
 - Vite + React + TypeScript
-- Redux Toolkit (RTK) for state management
+- Redux Toolkit (RTK) for client-side state management (UI state, auth tokens, etc.)
+- TanStack Query v5 for server state management (API data fetching, caching, mutations)
 - SCSS Modules preferred (`Component.module.scss`) unless global styles are explicitly requested
 - Add dependencies only when required for the request
 
-## Redux architecture (required)
+## State management architecture
+
+### Redux Toolkit (client state)
+- Use Redux Toolkit for client-side state: UI state, auth tokens, user preferences, etc.
 - One reducer (slice) per feature.
-- Keep slices cohesive; no “god slices”.
+- Keep slices cohesive; no "god slices".
 - Use `createSlice` + `configureStore`.
-- Use `createAsyncThunk` for async flows unless RTK Query is explicitly requested.
 - Prefer selectors over direct state shape access inside components.
 - Keep all state mutation inside RTK reducers only (Immer-style allowed).
 
-### Reducer registration pattern (required)
+#### Reducer registration pattern (required)
 - Use a `FeatureKey` enum for reducer keys.
 - Store reducers in `src/app/store.ts` as a reducer map keyed by `FeatureKey`.
 - Feature state is accessed via `state[FeatureKey.<Feature>]`.
 
-### Typed foundation (required)
+#### Typed foundation (required)
 - Export `RootState` and `AppDispatch` from the store.
 - Create typed hooks:
   - `useAppDispatch`
@@ -58,11 +61,27 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 - Use a typed async thunk helper:
   - `createAppAsyncThunk` using `createAsyncThunk.withTypes`
 
+### TanStack Query (server state)
+- Use TanStack Query v5 for all server state. Prefer TanStack Query over `createAsyncThunk` for API calls.
+- Query client is configured in `src/app/queryClient.ts`.
+- Create query hooks in `queries.ts` files within each feature.
+- Export query key factories as hierarchical objects:
+  ```typescript
+  export const featureKeys = {
+    all: ["feature"] as const,
+    lists: () => [...featureKeys.all, "list"] as const,
+    detail: (id: string) => [...featureKeys.all, "detail", id] as const,
+  };
+  ```
+- Queries can read from/dispatch to Redux state when needed (e.g., auth tokens).
+- Keep server state in TanStack Query cache, client state in Redux.
+
 ### Feature module pattern (preferred)
 Each feature lives in `src/features/<feature>/`:
 - `types.ts` (domain types)
-- `api.ts` (fetch calls; no UI code)
-- `<feature>Slice.ts` (slice + thunks + base selectors)
+- `api.ts` (API fetch functions; no UI code, no hooks)
+- `queries.ts` (TanStack Query hooks: `useQuery`, `useMutation`)
+- `<feature>Slice.ts` (Redux slice for client state + base selectors)
 - `selectors.ts` (if selector set grows; otherwise keep in slice)
 - `index.ts` (barrel exports)
 
@@ -84,6 +103,7 @@ Each feature lives in `src/features/<feature>/`:
 - Prefer `rem` for sizes.
 - Use CSS variables for tokens/themes when needed.
 - Never remove focus outlines without providing an accessible replacement.
+- **Use absolute SCSS imports** to avoid path issues when moving files: `@use "shared/styles/variables.scss" as *;` (works from any file depth thanks to `loadPaths` in vite.config.ts) instead of relative paths like `@use "../../../shared/styles/variables.scss"`.
 
 ## Accessibility (required)
 - Prefer semantic elements (`button`, `a`, `input`) for interactivity.
@@ -103,22 +123,24 @@ Each feature lives in `src/features/<feature>/`:
 
 ## Imports and organization
 - Group imports: external -> internal -> styles.
-- Use absolute imports (`@/`) if configured; otherwise keep relative imports tidy.
+- Use absolute imports (`@/`) for TypeScript imports. For SCSS imports, use absolute paths from `src/` (e.g., `@use "shared/styles/variables.scss"`) which work from any file depth thanks to `loadPaths` configuration.
 - Keep files self-contained with all required imports.
 - **Never import enums with `type` keyword** - enums are runtime values and must be imported as regular imports: `import { EnumName }` not `import type { EnumName }`.
 - Code must compile and run.
 
 ## Preferred folder layout
-- `src/app/` for store setup and global hooks
-- `src/features/` for feature slices/components
+- `src/app/` for store setup, query client setup, and global hooks
+- `src/features/` for feature slices/components/queries
 - `src/shared/` for shared UI, redux enums/types, utilities
 
 Example:
 - `src/app/store.ts`
+- `src/app/queryClient.ts`
 - `src/app/hooks.ts`
 - `src/app/createAppAsyncThunk.ts`
 - `src/shared/redux/enums.ts`
 - `src/shared/redux/types.ts`
-- `src/features/employees/employeesSlice.ts`
-- `src/features/employees/api.ts`
+- `src/features/employees/employeesSlice.ts` (client state)
+- `src/features/employees/queries.ts` (server state hooks)
+- `src/features/employees/api.ts` (API functions)
 - `src/features/employees/types.ts`

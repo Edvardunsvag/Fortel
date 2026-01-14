@@ -1,5 +1,5 @@
 import { compareTwoStrings } from "string-similarity";
-import type { Employee } from "@/features/employees/types";
+import { Employee } from "@/features/game/employees";
 
 /**
  * Normalize a name for comparison

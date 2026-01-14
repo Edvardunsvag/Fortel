@@ -1,9 +1,10 @@
 import { useAppSelector } from "@/app/hooks";
 import { selectAccount } from "@/features/auth/authSlice";
 import { selectEmployeeOfTheDayId, selectAttemptedByUserId } from "@/features/game/gameSlice";
-import type { Employee } from "@/features/employees/types";
+
 import { useTranslation } from "react-i18next";
 import styles from "./Game.module.scss";
+import { Employee } from "../employees";
 
 interface StartGameButtonProps {
   onStartGame: () => void;

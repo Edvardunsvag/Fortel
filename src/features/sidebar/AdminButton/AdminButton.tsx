@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { selectAccount } from "@/features/auth/authSlice";
-import { useEmployees } from "@/features/employees/queries";
 import { initializeGame } from "@/features/game/gameSlice";
+
 import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
 import styles from "./AdminButton.module.scss";
+import { useEmployees } from "@/features/game/employees";
 
 export const AdminButton = () => {
   const { t } = useTranslation();

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useEmployees } from "@/features/employees/queries";
 import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./EmployeesPage.module.scss";
-import { Employee } from "../types";
+import { Employee } from "@/features/game/employees";
+import { useEmployees } from "../queries";
 
 export const EmployeesPage = () => {
   const { t } = useTranslation();

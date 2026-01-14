@@ -1,7 +1,7 @@
 import type { Guess } from "@/features/game/types";
 import { HintType } from "@/features/game/types";
-import { FlipBox } from "../../FlipBox";
-import { calculateBoxDelay, getHintArrow, getHintResult, getHintValue } from "../utils";
+import { FlipBox } from "@/features/game/Game/FlipBox";
+import { calculateBoxDelay, getHintArrow, getHintResult, getHintValue } from "@/features/game/Game/GuessList/utils";
 import styles from "./HintCell.module.scss";
 
 interface HintCellProps {

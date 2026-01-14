@@ -3,11 +3,10 @@ import { renderWithProviders } from "@/test/test-utils";
 import { Game } from "./Game";
 import { FeatureKey } from "@/shared/redux/enums";
 import type { RootState } from "@/app/store";
-import type { Employee } from "@/features/employees/types";
 import { ActiveTab } from "@/features/sidebar/navigationSlice";
 import { hashEmployeeId } from "@/shared/utils/hashUtils";
-import { GameSubTab } from "../types";
-
+import { GameSubTab } from "@/features/game/types";
+import type { Employee } from "@/features/game/employees/types";
 // Mock i18n
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({

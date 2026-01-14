@@ -1,7 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { selectAccount } from "@/features/auth/authSlice";
-import { useEmployees } from "@/features/employees/queries";
-import type { Employee } from "@/features/employees/types";
+
+import { useEmployees } from "@/features/game/employees";
+import type { Employee } from "@/features/game/employees/types";
 import {
   calculateHintsForGuess,
   FUNFACT_REVEAL_COST,
@@ -20,17 +21,19 @@ import { findEmployeeByHash, hashEmployeeId } from "@/shared/utils/hashUtils";
 import { findMatchingEmployee } from "@/shared/utils/nameMatcher";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { triggerConfetti } from "../utils";
+import { triggerConfetti } from "@/features/game/utils";
 import styles from "./Game.module.scss";
 import { GameStatus } from "./GameStatus";
 import { GameHeader } from "./GameHeader";
 import { FunfactReveal } from "./FunfactReveal";
 import { GameInputRow } from "./GameInputRow";
 import { StartGameButton } from "./StartGameButton";
-import { useLeaderboard, useSubmitScore } from "@/features/leaderboard/queries";
-import { toSubmitScoreRequest } from "@/features/leaderboard/toDto";
+
 import { GuessList } from "./GuessList/GuessList";
 import { GameNavigationChips } from "./GameNavigationChips";
+import { useLeaderboard } from "../leaderboard/queries";
+import { useSubmitScore } from "../leaderboard/queries";
+import { toSubmitScoreRequest } from "../leaderboard/toDto";
 
 export const Game = () => {
   const { t } = useTranslation();

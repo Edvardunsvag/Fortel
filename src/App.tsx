@@ -1,11 +1,9 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import styles from "./App.module.scss";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { LeaderboardPage } from "./features/leaderboard/LeaderboardPage/LeaderboardPage";
 import { Game } from "./features/game/Game/Game";
 import { RulesPage } from "./features/game/RulesPage/RulesPage";
-import { SyncPage } from "./features/employees/SyncPage/SyncPage";
-import { EmployeesPage } from "./features/employees/EmployeesPage/EmployeesPage";
+
 import { LotteryPage } from "./features/lottery/LotteryPage/LotteryPage";
 import { LoginScreen } from "./features/auth/LoginScreen/LoginScreen";
 import { ActiveTab, setActiveTab } from "./features/sidebar/navigationSlice";
@@ -17,6 +15,9 @@ import { ADMIN_ACCOUNT } from "./shared/config/adminConfig";
 import { Sidebar } from "./features/sidebar/Sidebar/Sidebar";
 import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
+import { LeaderboardPage } from "./features/game/leaderboard/LeaderboardPage/LeaderboardPage";
+import { EmployeesPage } from "./features/game/employees/EmployeesPage/EmployeesPage";
+import { SyncPage } from "./features/game/employees/SyncPage/SyncPage";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -40,7 +41,7 @@ export const App = () => {
       } else if (tab === "lottery") {
         dispatch(setActiveTab(ActiveTab.Lottery));
       }
-      
+
       // Sync Game sub-navigation for Fortedle-related routes
       const gameSubTabMap: Record<string, GameSubTab> = {
         [routes.play]: GameSubTab.Play,
@@ -49,7 +50,7 @@ export const App = () => {
         [routes.employees]: GameSubTab.Employees,
         [routes.sync]: GameSubTab.Sync,
       };
-      
+
       const gameSubTab = gameSubTabMap[path];
       if (gameSubTab) {
         dispatch(setActiveSubTab(gameSubTab));

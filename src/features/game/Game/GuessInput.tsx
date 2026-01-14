@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import type { Employee } from "@/features/employees/types";
 import styles from "./GuessInput.module.scss";
+import { Employee } from "../employees";
 
 interface GuessInputProps {
   value: string;

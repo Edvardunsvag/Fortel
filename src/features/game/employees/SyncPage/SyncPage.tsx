@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/app/hooks";
-import { useSyncEmployees, useEmployees } from "@/features/employees/queries";
+import { useSyncEmployees } from "@/features/game/employees/queries";
+import { useEmployees } from "@/features/game/employees";
 import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./SyncPage.module.scss";
 import { selectAccount } from "@/features/auth/authSlice";
 import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
-import { toSyncRequest } from "@/features/employees/toDto";
+import { toSyncRequest } from "@/features/game/employees/toDto";
 
 export const SyncPage = () => {
   const { t } = useTranslation();

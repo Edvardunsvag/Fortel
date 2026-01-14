@@ -15,6 +15,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: "modern-compiler", // Use modern Sass API
+        loadPaths: [path.resolve(__dirname, "./src")], // Enables imports like "shared/styles/variables.scss" from any file
       },
     },
   },

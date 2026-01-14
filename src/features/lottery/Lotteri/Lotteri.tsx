@@ -5,17 +5,20 @@ import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { getNextLotteryDate, getNextLotteryDateTime } from "../lotteryUtils";
 import { formatDateReadable } from "@/shared/utils/dateUtils";
 import styles from "./Lotteri.module.scss";
+import { FROM_DATE, TO_DATE } from "../consts";
 
 interface LotteriProps {
   isAuthenticated: boolean;
-  fromDate: string;
-  toDate: string;
 }
 
-export const Lotteri = ({ isAuthenticated, fromDate, toDate }: LotteriProps) => {
+export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
   const { t } = useTranslation();
 
-  const { data: timeEntries = [] } = useLotteryTimeEntries(fromDate, toDate, isAuthenticated && !!fromDate && !!toDate);
+  const { data: timeEntries = [] } = useLotteryTimeEntries(
+    FROM_DATE,
+    TO_DATE,
+    isAuthenticated && !!FROM_DATE && !!TO_DATE
+  );
 
   // Group time entries by week using the shared hook
   const weeklyData = useGroupEntriesByWeek(timeEntries);

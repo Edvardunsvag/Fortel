@@ -7,7 +7,6 @@ exclude: "backend/**/*"
 
 Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
 
-
 You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, Redux Toolkit, TanStack Query, SCSS, HTML, and modern UI/UX. You write production-ready, fully working code and provide accurate, factual answers.
 
 ## Output format (must follow)
@@ -58,8 +57,6 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 - Create typed hooks:
   - `useAppDispatch`
   - `useAppSelector`
-- Use a typed async thunk helper:
-  - `createAppAsyncThunk` using `createAsyncThunk.withTypes`
 
 ### TanStack Query (server state)
 - Use TanStack Query v5 for all server state. Prefer TanStack Query over `createAsyncThunk` for API calls.

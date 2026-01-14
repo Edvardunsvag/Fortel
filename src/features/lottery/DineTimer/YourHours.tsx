@@ -3,23 +3,22 @@ import { useTranslation } from "react-i18next";
 import { useLotteryTimeEntries } from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { formatDateReadable } from "@/shared/utils/dateUtils";
-import styles from "./DineTimer.module.scss";
+import styles from "./YourHours.module.scss";
+import { FROM_DATE, TO_DATE } from "../consts";
 
-interface DineTimerProps {
+interface YourHoursProps {
   isAuthenticated: boolean;
   error?: string;
-  fromDate: string;
-  toDate: string;
 }
 
-export const DineTimer = ({ isAuthenticated, error, fromDate, toDate }: DineTimerProps) => {
+export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
   const { t } = useTranslation();
   const [openWeeks, setOpenWeeks] = useState<Set<string>>(new Set());
 
   const { data: timeEntries = [], error: entriesError } = useLotteryTimeEntries(
-    fromDate,
-    toDate,
-    isAuthenticated && !!fromDate && !!toDate
+    FROM_DATE,
+    TO_DATE,
+    isAuthenticated && !!FROM_DATE && !!TO_DATE
   );
 
   const displayError = error || entriesError?.message;
@@ -45,7 +44,6 @@ export const DineTimer = ({ isAuthenticated, error, fromDate, toDate }: DineTime
 
   // Group time entries by week using the shared hook
   const weeklyData = useGroupEntriesByWeek(timeEntries);
-  const totalHours = timeEntries.reduce((sum, entry) => sum + entry.hours, 0);
 
   return (
     <div className={styles.dataSection}>
@@ -53,14 +51,6 @@ export const DineTimer = ({ isAuthenticated, error, fromDate, toDate }: DineTime
       {displayError && <div className={styles.error}>{displayError}</div>}
       {timeEntries.length > 0 && (
         <div className={styles.results}>
-          <p className={styles.summary}>
-            {t("lottery.foundEntries", { count: timeEntries.length })} {t("lottery.from")} {fromDate} {t("lottery.to")}{" "}
-            {toDate}
-            <br />
-            <strong>
-              {t("lottery.totalHours")}: {totalHours.toFixed(2)}
-            </strong>
-          </p>
           <div className={styles.weeksList}>
             {weeklyData.map((week) => {
               const isOpen = openWeeks.has(week.weekStart);

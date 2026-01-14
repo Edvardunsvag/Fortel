@@ -16,10 +16,11 @@ import { useTranslation } from "react-i18next";
 import { LotteryNavigationChips } from "./LotteryNavigationChips";
 import { UserInfo } from "./UserInfo";
 import { ConnectToHarvest } from "./ConnectToHarvest";
-import { DineTimer } from "../DineTimer/DineTimer";
+import { YourHours } from "../DineTimer/YourHours";
 import { Regler } from "../Regler/Regler";
 import { Lotteri } from "../Lotteri/Lotteri";
 import styles from "./LotteryPage.module.scss";
+import { FROM_DATE, TO_DATE } from "../consts";
 
 export const LotteryPage = () => {
   const { t } = useTranslation();
@@ -33,15 +34,11 @@ export const LotteryPage = () => {
   const testApiMutation = useTestLotteryApi();
   const { data: user, isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
 
-  // Set date range to all of 2026
-  const fromDate = "2026-01-01";
-  const toDate = "2026-12-31";
-
   const {
     data: timeEntries = [],
     isLoading: isLoadingEntries,
     error: entriesError,
-  } = useLotteryTimeEntries(fromDate, toDate, isAuthenticated && !!fromDate && !!toDate);
+  } = useLotteryTimeEntries(FROM_DATE, TO_DATE, isAuthenticated && !!FROM_DATE && !!TO_DATE);
 
   const isLoading = isLoadingUser || isLoadingEntries || authenticateMutation.isPending || testApiMutation.isPending;
   const error =
@@ -112,14 +109,12 @@ export const LotteryPage = () => {
               onLogout={handleLogout}
             />
             {activeSubTab === LotterySubTab.TimeEntries && (
-              <DineTimer isAuthenticated={isAuthenticated} error={error} fromDate={fromDate} toDate={toDate} />
+              <YourHours isAuthenticated={isAuthenticated} error={error} />
             )}
 
             {activeSubTab === LotterySubTab.Rules && <Regler />}
 
-            {activeSubTab === LotterySubTab.Lottery && (
-              <Lotteri isAuthenticated={isAuthenticated} fromDate={fromDate} toDate={toDate} />
-            )}
+            {activeSubTab === LotterySubTab.Lottery && <Lotteri isAuthenticated={isAuthenticated} />}
           </div>
         )}
       </div>

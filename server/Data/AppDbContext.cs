@@ -14,7 +14,6 @@ public class AppDbContext : DbContext
     public DbSet<LeaderboardEntry> LeaderboardEntries { get; set; }
     public DbSet<Round> Rounds { get; set; }
     public DbSet<LotteryTicket> LotteryTickets { get; set; }
-    public DbSet<WinningTicket> WinningTickets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,20 +71,6 @@ public class AppDbContext : DbContext
                 .HasDatabaseName("idx_lottery_tickets_eligible_week");
             entity.HasIndex(e => e.IsUsed)
                 .HasDatabaseName("idx_lottery_tickets_is_used");
-        });
-
-        // Configure WinningTicket entity
-        modelBuilder.Entity<WinningTicket>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.UserId)
-                .HasDatabaseName("idx_winning_tickets_user_id");
-            entity.HasIndex(e => e.LotteryTicketId)
-                .HasDatabaseName("idx_winning_tickets_lottery_ticket_id");
-            entity.HasIndex(e => e.Week)
-                .HasDatabaseName("idx_winning_tickets_week");
-            entity.HasIndex(e => e.CreatedAt)
-                .HasDatabaseName("idx_winning_tickets_created_at");
         });
     }
 }

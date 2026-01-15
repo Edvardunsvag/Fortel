@@ -26,6 +26,7 @@ export const TimeBankNavigationChips = ({ activeTab, onTabChange }: TimeBankNavi
   const { t } = useTranslation();
   const navRef = useRef<HTMLDivElement>(null);
   const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 });
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const handleKeyDown = (event: React.KeyboardEvent, subTab: TimeBankSubTab) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -45,19 +46,25 @@ export const TimeBankNavigationChips = ({ activeTab, onTabChange }: TimeBankNavi
           left: activeButton.offsetLeft,
           width: activeButton.offsetWidth,
         });
+        // Enable transitions after initial position is set
+        if (!isInitialized) {
+          requestAnimationFrame(() => setIsInitialized(true));
+        }
       }
     }
-  }, [activeTab]);
+  }, [activeTab, isInitialized]);
 
   return (
     <nav ref={navRef} className={styles.navigationChips} aria-label="Time Bank navigation">
-      <div
-        className={styles.slider}
-        style={{
-          transform: `translateX(${sliderStyle.left}px)`,
-          width: `${sliderStyle.width}px`,
-        }}
-      />
+      {sliderStyle.width > 0 && (
+        <div
+          className={`${styles.slider} ${isInitialized ? styles.animated : ""}`}
+          style={{
+            transform: `translateX(${sliderStyle.left}px)`,
+            width: `${sliderStyle.width}px`,
+          }}
+        />
+      )}
       {subTabs.map((subTab) => {
         const isActive = activeTab === subTab;
         return (

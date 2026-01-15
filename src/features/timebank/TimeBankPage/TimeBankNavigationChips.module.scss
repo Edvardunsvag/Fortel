@@ -16,9 +16,12 @@
   height: calc(100% - #{$spacing-md}); // Account for padding-bottom
   background-color: $color-dark-accent;
   border-radius: 1rem;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
   pointer-events: none;
+
+  &.animated {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 .chip {

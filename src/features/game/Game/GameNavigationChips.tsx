@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
@@ -38,6 +39,9 @@ export const GameNavigationChips = () => {
   const activeSubTab = useAppSelector(selectActiveSubTab);
   const account = useAppSelector(selectAccount);
   const isAdmin = isAdminAccount(account?.username);
+  const navRef = useRef<HTMLDivElement>(null);
+  const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 });
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const handleChipClick = (subTab: GameSubTab) => {
     const route = subTabToRoute[subTab];
@@ -62,14 +66,41 @@ export const GameNavigationChips = () => {
     ...(isAdmin ? [GameSubTab.Sync] : []),
   ];
 
+  // Update slider position when active tab changes
+  useEffect(() => {
+    if (navRef.current) {
+      const activeButton = navRef.current.querySelector(`[data-tab="${activeSubTab}"]`) as HTMLElement;
+      if (activeButton) {
+        setSliderStyle({
+          left: activeButton.offsetLeft,
+          width: activeButton.offsetWidth,
+        });
+        // Enable transitions after initial position is set
+        if (!isInitialized) {
+          requestAnimationFrame(() => setIsInitialized(true));
+        }
+      }
+    }
+  }, [activeSubTab, isInitialized]);
+
   return (
-    <nav className={styles.navigationChips} aria-label="Game navigation">
+    <nav ref={navRef} className={styles.navigationChips} aria-label="Game navigation">
+      {sliderStyle.width > 0 && (
+        <div
+          className={`${styles.slider} ${isInitialized ? styles.animated : ""}`}
+          style={{
+            transform: `translateX(${sliderStyle.left}px)`,
+            width: `${sliderStyle.width}px`,
+          }}
+        />
+      )}
       {subTabs.map((subTab) => {
         const isActive = activeSubTab === subTab;
         return (
           <button
             key={subTab}
             type="button"
+            data-tab={subTab}
             className={`${styles.chip} ${isActive ? styles.active : ""}`}
             onClick={() => handleChipClick(subTab)}
             onKeyDown={(e) => handleKeyDown(e, subTab)}

@@ -20,7 +20,7 @@ import {
   type HarvestToken,
 } from "./lotterySlice";
 
-// Query keys
+// Query keys//
 export const lotteryKeys = {
   all: ["lottery"] as const,
   user: () => [...lotteryKeys.all, "user"] as const,

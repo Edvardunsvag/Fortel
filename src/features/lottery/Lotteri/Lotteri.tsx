@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useLotteryTimeEntries, useLotteryUser, useSyncLotteryTickets } from "../queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLotteryTimeEntries, useLotteryUser, useSyncLotteryTickets, useLotteryTickets, useAllWinners, lotteryKeys } from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { getNextLotteryDate, getNextLotteryDateTime } from "../lotteryUtils";
 import { formatDateReadable } from "@/shared/utils/dateUtils";
@@ -25,11 +26,25 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
 
   // Group time entries by week using the shared hook
   const weeklyData = useGroupEntriesByWeek(timeEntries);
-  const totalLotteryTickets = weeklyData.filter((week) => week.isLotteryEligible).length;
   const eligibleWeeks = weeklyData.filter((week) => week.isLotteryEligible).map((week) => week.weekKey);
   const nextLotteryDate = getNextLotteryDate();
 
   const syncTicketsMutation = useSyncLotteryTickets();
+  const queryClient = useQueryClient();
+  const hasSyncedRef = useRef(false);
+  const isAutoSyncingRef = useRef(false);
+
+  // Get synced tickets count
+  const userId = user?.id.toString() || null;
+  const { data: syncedTickets = [] } = useLotteryTickets(
+    userId,
+    isAuthenticated && !!userId
+  );
+  const syncedTicketsCount = syncedTickets.length;
+
+  // Check for winners
+  const { data: winnersData } = useAllWinners();
+  const hasWinners = (winnersData?.weeklyWinners || []).length > 0;
 
   // Memoize the lottery date time to prevent infinite loops
   const nextLotteryDateTime = useMemo(() => getNextLotteryDateTime(), []);
@@ -67,21 +82,58 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
     return () => clearInterval(interval);
   }, [nextLotteryDateTime]);
 
+  // Auto-sync tickets on mount when user and eligibleWeeks are available
+  useEffect(() => {
+    const autoSync = async () => {
+      if (!user || eligibleWeeks.length === 0 || hasSyncedRef.current || syncTicketsMutation.isPending) {
+        return;
+      }
+
+      const userName = `${user.first_name} ${user.last_name}`.trim();
+      const userIdStr = user.id.toString();
+
+      try {
+        hasSyncedRef.current = true;
+        isAutoSyncingRef.current = true;
+        await syncTicketsMutation.mutateAsync({
+          userId: userIdStr,
+          name: userName,
+          image: null, // Harvest API doesn't provide user image
+          eligibleWeeks,
+        });
+        // Invalidate tickets query to refetch updated count
+        queryClient.invalidateQueries({ queryKey: lotteryKeys.tickets(userIdStr) });
+      } catch (error) {
+        // Error is handled by the mutation
+        console.error("Failed to sync lottery tickets:", error);
+        hasSyncedRef.current = false; // Allow retry on error
+      } finally {
+        isAutoSyncingRef.current = false;
+      }
+    };
+
+    autoSync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, eligibleWeeks.length]);
+
   const handleSyncTickets = async () => {
     if (!user || eligibleWeeks.length === 0) {
       return;
     }
 
     const userName = `${user.first_name} ${user.last_name}`.trim();
-    const userId = user.id.toString();
+    const userIdStr = user.id.toString();
 
     try {
+      isAutoSyncingRef.current = false; // Mark as manual sync
       await syncTicketsMutation.mutateAsync({
-        userId,
+        userId: userIdStr,
         name: userName,
         image: null, // Harvest API doesn't provide user image
         eligibleWeeks,
       });
+      // Invalidate tickets query to refetch updated count
+      queryClient.invalidateQueries({ queryKey: lotteryKeys.tickets(userIdStr) });
     } catch (error) {
       // Error is handled by the mutation
       console.error("Failed to sync lottery tickets:", error);
@@ -99,12 +151,48 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
     <div className={styles.dataSection}>
       <h3>{t("lottery.lottery.title")}</h3>
       <div className={styles.lotteryContent}>
+        {/* Show winners at the top if they exist */}
+        {hasWinners && <WinnersReveal />}
+
         <div className={styles.totalTicketsBadge}>
           <span className={styles.totalTicketsText}>
-            {t("lottery.lottery.totalTickets", { count: totalLotteryTickets })}
+            {t("lottery.lottery.totalTickets", { count: syncedTicketsCount })}
           </span>
           <span className={styles.ticketIconLarge}>🎫</span>
         </div>
+
+        {/* Show sync status only if there's an error or manual sync was just performed */}
+        {eligibleWeeks.length > 0 && user && (
+          <div className={styles.syncSection}>
+            {syncTicketsMutation.isError ? (
+              <div className={styles.syncStatus}>
+                <p className={styles.error} role="alert">
+                  {syncTicketsMutation.error instanceof Error
+                    ? syncTicketsMutation.error.message
+                    : t("lottery.lottery.syncError")}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleSyncTickets}
+                  onKeyDown={handleSyncKeyDown}
+                  className={styles.syncButton}
+                  aria-label={t("lottery.lottery.syncTickets")}
+                >
+                  {t("lottery.lottery.syncTickets")}
+                </button>
+              </div>
+            ) : syncTicketsMutation.isSuccess && syncTicketsMutation.data && !isAutoSyncingRef.current ? (
+              <div className={styles.syncStatus}>
+                <p className={styles.success} role="status">
+                  {t("lottery.lottery.syncSuccess", {
+                    synced: syncTicketsMutation.data.syncedCount,
+                    skipped: syncTicketsMutation.data.skippedCount,
+                  })}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        )}
 
         <div className={styles.nextLottery}>
           <h4>{t("lottery.lottery.nextLottery")}</h4>
@@ -158,37 +246,8 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
           </div>
         )}
 
-        {eligibleWeeks.length > 0 && user && (
-          <div className={styles.syncSection}>
-            <button
-              type="button"
-              onClick={handleSyncTickets}
-              onKeyDown={handleSyncKeyDown}
-              disabled={syncTicketsMutation.isPending}
-              className={styles.syncButton}
-              aria-label={t("lottery.lottery.syncTickets")}
-            >
-              {syncTicketsMutation.isPending ? t("lottery.lottery.syncing") : t("lottery.lottery.syncTickets")}
-            </button>
-            {syncTicketsMutation.isError && (
-              <p className={styles.error} role="alert">
-                {syncTicketsMutation.error instanceof Error
-                  ? syncTicketsMutation.error.message
-                  : t("lottery.lottery.syncError")}
-              </p>
-            )}
-            {syncTicketsMutation.isSuccess && syncTicketsMutation.data && (
-              <p className={styles.success} role="status">
-                {t("lottery.lottery.syncSuccess", {
-                  synced: syncTicketsMutation.data.syncedCount,
-                  skipped: syncTicketsMutation.data.skippedCount,
-                })}
-              </p>
-            )}
-          </div>
-        )}
-
-        <WinnersReveal />
+        {/* Show winners at the bottom if they don't exist (for the reveal button) */}
+        {!hasWinners && <WinnersReveal />}
       </div>
     </div>
   );

@@ -2,6 +2,13 @@
 
 .dataSection {
   margin-top: $spacing-xl;
+
+  h3 {
+    margin: 0 0 $spacing-md 0;
+    color: $color-dark-accent;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
 }
 
 .lotteryContent {
@@ -38,7 +45,11 @@
   display: flex;
   align-items: center;
   gap: $spacing-lg;
-  margin-bottom: $spacing-xl;
+  margin: 0 0 $spacing-xl 0;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba($color-overlay-beige, 0.3) 0%, rgba($color-overlay-beige, 0.1) 100%);
+  border-radius: $radius-md;
+  border: 1px solid rgba($color-border-medium, 0.5);
 }
 
 .totalTicketsText {
@@ -73,11 +84,11 @@
 }
 
 .eligibleWeeks {
-  margin-top: $spacing-lg;
+  margin-top: $spacing-xl;
 }
 
 .nextLottery {
-  margin-top: $spacing-lg;
+  margin-top: $spacing-xl;
 }
 
 .countdown {
@@ -113,9 +124,20 @@
 }
 
 .syncSection {
-  margin-top: $spacing-xl;
-  padding-top: $spacing-lg;
-  border-top: 1px solid $color-border-medium;
+  margin: $spacing-xl 0 0 0;
+  padding: 0;
+}
+
+.syncStatus {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  align-items: flex-start;
+}
+
+.syncStatusText {
+  color: $color-dark-fill;
+  font-size: 0.9375rem;
 }
 
 .syncButton {
@@ -151,20 +173,42 @@
 }
 
 .error {
-  margin-top: $spacing-md;
+  margin: 0 0 $spacing-sm 0;
   color: $color-error;
   font-size: 0.875rem;
 }
 
 .success {
-  margin-top: $spacing-md;
+  margin: 0;
   color: $color-success;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  &::before {
+    content: "✓";
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
 }
 
 .winnersRevealWrapper {
   position: relative;
-  margin: $spacing-lg 0;
+  margin: 0 0 $spacing-xl 0;
+  
+  // Make winners more prominent when at the top
+  &:first-child {
+    margin-top: 0;
+    margin-bottom: $spacing-xl;
+    
+    .winnersContainer {
+      background: linear-gradient(135deg, $color-overlay-beige 0%, rgba($color-overlay-beige, 0.95) 100%);
+      border-width: 3px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+  }
 }
 
 @keyframes subtleWiggle {

@@ -227,6 +227,8 @@
       },
       "syncTickets": "Sync my tickets",
       "syncing": "Syncing...",
+      "synced": "You have synced {{count}} ticket",
+      "synced_plural": "You have synced {{count}} tickets",
       "syncError": "Failed to sync tickets. Please try again.",
       "syncSuccess": "Synced {{synced}} ticket(s), skipped {{skipped}} duplicate(s).",
       "revealWinners": "Reveal winners",

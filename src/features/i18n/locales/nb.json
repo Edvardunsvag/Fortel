@@ -227,6 +227,8 @@
       },
       "syncTickets": "Synk mine lodd",
       "syncing": "Synker...",
+      "synced": "Du har synket {{count}} lodd",
+      "synced_plural": "Du har synket {{count}} lodd",
       "syncError": "Kunne ikke synke lodd. Prøv igjen.",
       "syncSuccess": "Synket {{synced}} lodd, hoppet over {{skipped}} duplikat(er).",
       "revealWinners": "Vis vinnere",

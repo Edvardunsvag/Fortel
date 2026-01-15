@@ -1,5 +1,55 @@
 @use "shared/styles/variables.scss" as *;
 
+// Animation keyframes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba($color-success, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba($color-success, 0.5);
+  }
+}
+
 .page {
   min-height: 100vh;
   padding-left: 16rem;
@@ -14,12 +64,14 @@
 }
 
 .container {
+  position: relative;
   max-width: 56rem;
   margin: 0 auto;
   background-color: $color-primary-beige;
   border-radius: $radius-lg;
   padding: $spacing-xxl;
   box-shadow: 0 2px 8px $color-shadow-light;
+  overflow: hidden;
 }
 
 .title {
@@ -125,6 +177,13 @@
   border-radius: $radius-md;
   margin-bottom: $spacing-xl;
   overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -223,9 +282,27 @@
 
 .fagtimerProgressFill {
   height: 100%;
-  background: $color-success;
+  background: linear-gradient(
+    90deg,
+    $color-success 0%,
+    #7bc67e 50%,
+    $color-success 100%
+  );
+  background-size: 200% 100%;
   border-radius: 4px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: shimmer 3s infinite linear;
+
+  &.complete {
+    background: linear-gradient(
+      90deg,
+      #fbbf24 0%,
+      #fcd34d 50%,
+      #fbbf24 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear, glow 2s ease-in-out infinite;
+  }
 }
 
 .fagtimerPercentage {
@@ -249,9 +326,11 @@
   font-weight: 700;
   line-height: 1;
   margin-bottom: $spacing-xs;
+  animation: countUp 0.5s ease-out 0.3s both;
 
   &.balancePositive {
     color: $color-success;
+    text-shadow: 0 0 20px rgba($color-success, 0.3);
   }
 
   &.balanceNegative {
@@ -260,6 +339,10 @@
 
   &.balanceNeutral {
     color: $color-dark-accent;
+  }
+
+  &.balanceCelebrate {
+    animation: countUp 0.5s ease-out 0.3s both, pulse 2s ease-in-out infinite 1s;
   }
 }
 
@@ -300,6 +383,7 @@
 // Weekly Breakdown - Similar to weeksList in Lottery
 .weeklyBreakdown {
   margin-top: $spacing-xl;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
 .weeklyBreakdownTitle {
@@ -321,6 +405,13 @@
   border: 1px solid $color-border-medium;
   border-radius: $radius-md;
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: $color-dark-accent;
+  }
 }
 
 .weekHeader {
@@ -581,4 +672,413 @@
     outline: 2px solid $color-link-blue;
     outline-offset: 2px;
   }
+}
+
+// ================================
+// Insights Row (Trend Chart + Stats)
+// ================================
+.insightsRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ================================
+// Trend Chart
+// ================================
+.trendChart {
+  background-color: $color-white;
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+
+.trendChartTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-md 0;
+}
+
+.trendChartContainer {
+  position: relative;
+  height: 150px;
+}
+
+.trendChartSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.trendChartZeroLine {
+  stroke: $color-dark-accent;
+  stroke-width: 0.5;
+  stroke-dasharray: 4, 4;
+  opacity: 0.3;
+}
+
+.trendChartArea {
+  fill: rgba($color-success, 0.1);
+}
+
+.trendChartLine {
+  stroke: $color-success;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trendChartPoint {
+  fill: $color-success;
+}
+
+.trendChartLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-xs;
+  font-size: 0.75rem;
+  color: $color-dark-fill;
+}
+
+.trendChartYLabels {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  font-size: 0.7rem;
+  color: $color-dark-fill;
+  text-align: right;
+  padding: $spacing-xs 0;
+}
+
+// ================================
+// Stats Card
+// ================================
+.statsCard {
+  background-color: $color-white;
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+
+.statsCardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-md 0;
+}
+
+.statsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.statItem {
+  text-align: center;
+  padding: $spacing-sm;
+  background-color: $color-overlay-beige;
+  border-radius: $radius-md;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-dark-accent;
+}
+
+.statValueSmall {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: $color-dark-fill;
+  margin-top: $spacing-xs;
+}
+
+.trendUp {
+  color: $color-success;
+}
+
+.trendDown {
+  color: $color-error;
+}
+
+.trendNeutral {
+  color: $color-dark-fill;
+}
+
+// ================================
+// Project Breakdown
+// ================================
+.projectBreakdown {
+  background-color: $color-white;
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: $spacing-lg;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.projectBreakdownTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-md 0;
+}
+
+.projectList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.projectItemWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.projectItem {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.projectItemClickable {
+  cursor: pointer;
+  padding: $spacing-sm;
+  margin: -$spacing-sm;
+  border-radius: $radius-md;
+  transition: background-color $transition-normal;
+
+  &:hover {
+    background-color: $color-overlay-beige;
+  }
+}
+
+.projectInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projectName {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: $color-dark-accent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
+}
+
+.projectChevron {
+  font-size: 0.6rem;
+  transition: transform $transition-normal;
+  color: $color-dark-fill;
+}
+
+.projectChevronOpen {
+  transform: rotate(90deg);
+}
+
+.projectHours {
+  font-size: 0.8rem;
+  color: $color-dark-fill;
+}
+
+.projectBarContainer {
+  height: 8px;
+  background-color: $color-overlay-beige;
+  border-radius: $radius-sm;
+  overflow: hidden;
+}
+
+.projectBar {
+  height: 100%;
+  border-radius: $radius-sm;
+  transition: width $transition-normal;
+}
+
+// Expandable tasks section
+.projectTasks {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.projectTasksOpen {
+  max-height: 500px;
+  transition: max-height 0.3s ease-in;
+}
+
+.projectTasksInner {
+  padding: $spacing-sm 0 0 $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.taskItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.taskInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.taskName {
+  font-size: 0.75rem;
+  color: $color-dark-fill;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 65%;
+}
+
+.taskHours {
+  font-size: 0.7rem;
+  color: $color-dark-fill;
+  opacity: 0.8;
+}
+
+.taskBarContainer {
+  height: 4px;
+  background-color: rgba($color-overlay-beige, 0.5);
+  border-radius: $radius-sm;
+  overflow: hidden;
+}
+
+.taskBar {
+  height: 100%;
+  border-radius: $radius-sm;
+  transition: width $transition-normal;
+}
+
+// ================================
+// AI Encouragement
+// ================================
+.aiEncouragement {
+  background: linear-gradient(135deg, rgba($color-success, 0.08) 0%, rgba($color-link-blue, 0.06) 100%);
+  border: 1px solid rgba($color-success, 0.2);
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-lg;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.aiEncouragementHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.aiEncouragementAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba($color-success, 0.3);
+}
+
+.aiEncouragementIcon {
+  font-size: 1.2rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.aiEncouragementTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aiEncouragementPlayButton {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: $spacing-xs;
+  border-radius: 50%;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba($color-dark-fill, 0.1);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.aiEncouragementContent {
+  min-height: 24px;
+}
+
+.aiEncouragementMessage {
+  font-size: 1rem;
+  color: $color-dark-accent;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.aiEncouragementLoading {
+  display: flex;
+  align-items: center;
+}
+
+.aiEncouragementDots {
+  font-size: 1.5rem;
+  color: $color-dark-fill;
+  animation: pulse 1.5s infinite;
+}
+
+.aiEncouragementTyping {
+  display: inline-block;
+  animation: blink 0.8s infinite;
+  color: $color-dark-fill;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }

@@ -270,6 +270,21 @@
       "subtitle": "Competency group participant",
       "note": "8 timer/mnd (unntatt jan, jul, aug, des)"
     },
+    "aiEncouragement": {
+      "title": "AI-coach"
+    },
+    "trendChart": {
+      "title": "Saldoutvikling"
+    },
+    "projectBreakdown": {
+      "title": "Timer per prosjekt"
+    },
+    "stats": {
+      "title": "Statistikk",
+      "avgPerWeek": "Snitt per uke",
+      "trend": "Trend",
+      "topProject": "Mest aktive prosjekt"
+    },
     "rules": {
       "workingHours": {
         "title": "Arbeidstid",

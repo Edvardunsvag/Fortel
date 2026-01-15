@@ -18,9 +18,9 @@ export const FagtimerCard = ({ balance }: FagtimerCardProps) => {
 
       <div className={styles.fagtimerContent}>
         <div className={styles.fagtimerStats}>
-          <span className={styles.fagtimerUsed}>{balance.used.toFixed(1)}h</span>
+          <span className={styles.fagtimerUsed}>{balance.used.toFixed(1)}{t("timebank.hourSuffix")}</span>
           <span className={styles.fagtimerSeparator}>/</span>
-          <span className={styles.fagtimerAvailable}>{balance.available}h</span>
+          <span className={styles.fagtimerAvailable}>{balance.available}{t("timebank.hourSuffix")}</span>
         </div>
 
         <div className={styles.fagtimerProgressContainer}>

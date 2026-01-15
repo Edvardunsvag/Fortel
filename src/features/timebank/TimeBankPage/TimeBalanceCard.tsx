@@ -21,14 +21,14 @@ export const TimeBalanceCard = ({ balance }: TimeBalanceCardProps) => {
   return (
     <div className={styles.balanceCard}>
       <div className={styles.balanceLabel}>{t("timebank.balanceLabel")}</div>
-      <div className={`${styles.balanceValue} ${balanceColorClass}`}>{formatBalance(balance.balance)}</div>
+      <div className={`${styles.balanceValue} ${balanceColorClass}`}>{formatBalance(balance.balance, t("timebank.hourSuffix"))}</div>
       <div className={styles.balanceDetails}>
         <div className={styles.balanceDetail}>
-          <div className={styles.balanceDetailValue}>{balance.totalLogged.toFixed(1)}h</div>
+          <div className={styles.balanceDetailValue}>{balance.totalLogged.toFixed(1)}{t("timebank.hourSuffix")}</div>
           <div className={styles.balanceDetailLabel}>{t("timebank.logged")}</div>
         </div>
         <div className={styles.balanceDetail}>
-          <div className={styles.balanceDetailValue}>{balance.totalExpected.toFixed(1)}h</div>
+          <div className={styles.balanceDetailValue}>{balance.totalExpected.toFixed(1)}{t("timebank.hourSuffix")}</div>
           <div className={styles.balanceDetailLabel}>{t("timebank.expected")}</div>
         </div>
       </div>

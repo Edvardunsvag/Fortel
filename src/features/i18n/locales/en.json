@@ -259,6 +259,8 @@
     "project": "Project",
     "total": "Total",
     "noEntries": "No entries this week",
+    "hourSuffix": "h",
+    "weekPrefix": "Week",
     "navigation": {
       "data": "Your Hours",
       "rules": "Rules"

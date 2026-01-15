@@ -19,9 +19,12 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTtsLoading, setIsTtsLoading] = useState(false);
-  const hasFetchedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const cachedAudioRef = useRef<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const isFetchingRef = useRef(false);
+  const mountCountRef = useRef(0);
 
   const isNorwegian = i18n.language === "nb" || i18n.language === "no";
 
@@ -33,11 +36,21 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
 
   const eddiAvatar = employees?.find((e) => e.email?.toLowerCase() === EDDI_EMAIL)?.avatarImageUrl;
 
-  // Fetch AI comment on mount
+  // Fetch AI comment once when component mounts
   useEffect(() => {
+    mountCountRef.current += 1;
+    const currentMount = mountCountRef.current;
+
     const hasData = timeBalance.totalLogged > 0 || timeBalance.totalExpected > 0;
-    if (!hasData || hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    if (!hasData || isFetchingRef.current) return;
+
+    // Mark as fetching to prevent duplicate calls
+    isFetchingRef.current = true;
+
+    // Reset state for new fetch
+    setMessage("");
+    setIsLoading(true);
+    cachedAudioRef.current = null;
 
     const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
     const apiKey = import.meta.env.VITE_AZURE_OPENAI_API_KEY;
@@ -45,13 +58,19 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
 
     if (!endpoint || !apiKey || !deployment) {
       setMessage(getFallback("no-config"));
+      setIsLoading(false);
+      isFetchingRef.current = false;
       return;
     }
 
-    const abortController = new AbortController();
-    const timeoutId = setTimeout(() => abortController.abort(), 30000);
+    // Abort any previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
 
-    setIsLoading(true);
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    timeoutIdRef.current = setTimeout(() => abortController.abort(), 30000);
 
     const { balance } = timeBalance;
     const sign = balance >= 0 ? "+" : "";
@@ -84,6 +103,7 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
 
         const decoder = new TextDecoder();
         let fullMessage = "";
+        let ttsFetchPromise: Promise<void> | null = null;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -92,23 +112,47 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
             if (line.startsWith("data: ") && line !== "data: [DONE]") {
               try {
                 const content = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content;
-                if (content) {
+                if (content && currentMount === mountCountRef.current) {
                   fullMessage += content;
                   setMessage(fullMessage);
+                  
+                  // Start TTS fetch early when we have a complete sentence (ends with . ! or ?)
+                  if (!ttsFetchPromise && fullMessage.length >= 50 && /[.!?]\s*$/.test(fullMessage.trim())) {
+                    ttsFetchPromise = prefetchTts(fullMessage).catch(() => { /* ignore errors */ });
+                  }
+                  
+                  // Add small delay to make streaming slower and more visible
+                  await new Promise(resolve => setTimeout(resolve, 50));
                 }
               } catch { /* skip */ }
             }
           }
         }
-        clearTimeout(timeoutId);
-        setIsLoading(false);
-        // Pre-fetch TTS audio
-        prefetchTts(fullMessage);
+        if (timeoutIdRef.current) {
+          clearTimeout(timeoutIdRef.current);
+          timeoutIdRef.current = null;
+        }
+        // Only update state if still on same mount
+        if (currentMount === mountCountRef.current) {
+          setIsLoading(false);
+          isFetchingRef.current = false;
+          // Update TTS with final complete message (will replace partial if already fetched)
+          if (fullMessage.trim()) {
+            prefetchTts(fullMessage);
+          }
+        }
       })
       .catch((error) => {
-        clearTimeout(timeoutId);
-        setMessage(getFallback(error.name === "AbortError" ? "timeout" : "error"));
-        setIsLoading(false);
+        if (timeoutIdRef.current) {
+          clearTimeout(timeoutIdRef.current);
+          timeoutIdRef.current = null;
+        }
+        // Only update state if still on same mount
+        if (currentMount === mountCountRef.current) {
+          setMessage(getFallback(error.name === "AbortError" ? "timeout" : "error"));
+          setIsLoading(false);
+          isFetchingRef.current = false;
+        }
       });
 
     async function prefetchTts(text: string) {
@@ -134,11 +178,29 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
     function getFallback(type: string) {
       const sign = timeBalance.balance >= 0 ? "+" : "";
       const bal = timeBalance.balance.toFixed(1);
-      if (type === "timeout") return isNorwegian ? `${sign}${bal}t - Eddi tok kaffe ☕` : `${sign}${bal}h - Eddi went for coffee ☕`;
+      if (type === "timeout") return isNorwegian ? `${sign}${bal}t - Eddi tenker på et svar... 🤔` : `${sign}${bal}h - Eddi is thinking for a response... 🤔`;
       if (type === "no-config") return isNorwegian ? `${sign}${bal}t 💪` : `${sign}${bal}h 💪`;
       return isNorwegian ? `${sign}${bal}t på bok 💸` : `${sign}${bal}h in the bank 💸`;
     }
-  }, [timeBalance, fagtimerBalance, isNorwegian]);
+
+    // Cleanup: abort request if component unmounts or effect re-runs
+    return () => {
+      // Only abort if this is still the current mount
+      if (currentMount === mountCountRef.current) {
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+          abortControllerRef.current = null;
+        }
+        if (timeoutIdRef.current) {
+          clearTimeout(timeoutIdRef.current);
+          timeoutIdRef.current = null;
+        }
+        isFetchingRef.current = false;
+      }
+    };
+    // Only run once when component mounts
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Play TTS (uses cached audio if available)
   const handlePlayClick = async () => {

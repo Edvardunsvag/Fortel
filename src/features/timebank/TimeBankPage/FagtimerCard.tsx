@@ -26,7 +26,7 @@ export const FagtimerCard = ({ balance }: FagtimerCardProps) => {
         <div className={styles.fagtimerProgressContainer}>
           <div className={styles.fagtimerProgressBar}>
             <div
-              className={styles.fagtimerProgressFill}
+              className={`${styles.fagtimerProgressFill} ${balance.percentage >= 100 ? styles.complete : ""}`}
               style={{ width: `${Math.min(balance.percentage, 100)}%` }}
             />
           </div>

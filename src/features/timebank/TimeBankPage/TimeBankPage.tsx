@@ -19,6 +19,8 @@ import { TimeframeSelector } from "./TimeframeSelector";
 import { TimeBalanceCard } from "./TimeBalanceCard";
 import { FagtimerCard } from "./FagtimerCard";
 import { WeeklyBreakdown } from "./WeeklyBreakdown";
+import { ProjectBreakdown } from "./ProjectBreakdown";
+import { AiEncouragement } from "./AiEncouragement";
 import { TimeBankRules } from "./TimeBankRules";
 import styles from "./TimeBankPage.module.scss";
 
@@ -157,12 +159,18 @@ export const TimeBankPage = () => {
                   <div className={styles.error}>{error.message}</div>
                 ) : (
                   <>
+                    <AiEncouragement timeBalance={timeBalance} fagtimerBalance={fagtimerBalance} />
+
                     <div className={styles.balanceRow}>
                       <TimeBalanceCard balance={timeBalance} />
                       <FagtimerCard balance={fagtimerBalance} />
                     </div>
+
                     {timeBalance.weeklyBreakdown.length > 0 && (
-                      <WeeklyBreakdown weeks={timeBalance.weeklyBreakdown} />
+                      <>
+                        <ProjectBreakdown weeks={timeBalance.weeklyBreakdown} />
+                        <WeeklyBreakdown weeks={timeBalance.weeklyBreakdown} />
+                      </>
                     )}
                   </>
                 )}

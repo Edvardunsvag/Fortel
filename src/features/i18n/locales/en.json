@@ -279,6 +279,21 @@
       "subtitle": "Competency group participant",
       "note": "8 hours/month (excl. Jan, Jul, Aug, Dec)"
     },
+    "aiEncouragement": {
+      "title": "AI Coach"
+    },
+    "trendChart": {
+      "title": "Balance Trend"
+    },
+    "projectBreakdown": {
+      "title": "Hours by Project"
+    },
+    "stats": {
+      "title": "Statistics",
+      "avgPerWeek": "Avg per week",
+      "trend": "Trend",
+      "topProject": "Most active project"
+    },
     "rules": {
       "workingHours": {
         "title": "Working Hours",

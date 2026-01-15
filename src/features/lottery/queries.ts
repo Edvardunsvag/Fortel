@@ -29,7 +29,7 @@ export const lotteryKeys = {
 };
 
 /**
- * Helper to get a valid token, refreshing if needed
+ * Helper to get a valid token, refreshing if needed//
  */
 const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch): Promise<HarvestToken> => {
   if (!token) {
@@ -356,3 +356,5 @@ export const useSyncLotteryTickets = () => {
     },
   });
 };
+
+//Comment to trigger a build

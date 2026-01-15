@@ -118,6 +118,7 @@ builder.Services.AddScoped<ILotteryDrawingService, LotteryDrawingService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<HarvestApiService>();
 
 // Add health checks
 builder.Services.AddHealthChecks()

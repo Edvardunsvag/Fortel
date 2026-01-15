@@ -168,9 +168,7 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
               className={styles.syncButton}
               aria-label={t("lottery.lottery.syncTickets")}
             >
-              {syncTicketsMutation.isPending
-                ? t("lottery.lottery.syncing")
-                : t("lottery.lottery.syncTickets")}
+              {syncTicketsMutation.isPending ? t("lottery.lottery.syncing") : t("lottery.lottery.syncTickets")}
             </button>
             {syncTicketsMutation.isError && (
               <p className={styles.error} role="alert">

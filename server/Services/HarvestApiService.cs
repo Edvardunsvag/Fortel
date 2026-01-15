@@ -196,6 +196,30 @@ public class HarvestApiService
         public List<HarvestTimeEntry> TimeEntries { get; set; } = new();
     }
 
+    public class HarvestUser
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("first_name")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [JsonPropertyName("last_name")]
+        public string LastName { get; set; } = string.Empty;
+
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = string.Empty;
+
+        [JsonPropertyName("timezone")]
+        public string Timezone { get; set; } = string.Empty;
+
+        [JsonPropertyName("weekly_capacity")]
+        public int WeeklyCapacity { get; set; }
+
+        [JsonPropertyName("is_active")]
+        public bool IsActive { get; set; }
+    }
+
     /// <summary>
     /// Gets a valid access token, refreshing if needed
     /// </summary>
@@ -289,6 +313,63 @@ public class HarvestApiService
         {
             _logger.LogError(ex, "Failed to fetch time entries from Harvest API for user {UserId}", userId);
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Fetches a user by ID from Harvest API
+    /// </summary>
+    public async Task<HarvestUser?> GetUserByIdAsync(
+        int userId,
+        string? accessToken = null,
+        string? refreshToken = null,
+        DateTime? tokenExpiresAt = null,
+        string? accountId = null)
+    {
+        // Get valid token (refresh if needed)
+        var (token, account) = await GetValidTokenAsync(accessToken, refreshToken, tokenExpiresAt, accountId);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new InvalidOperationException("Unable to obtain valid access token");
+        }
+
+        var url = $"https://api.harvestapp.com/v2/users/{userId}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("Authorization", $"Bearer {token}");
+        request.Headers.Add("User-Agent", "Fortedle App");
+
+        if (!string.IsNullOrEmpty(account))
+        {
+            request.Headers.Add("Harvest-Account-ID", account);
+        }
+
+        try
+        {
+            var response = await _httpClient.SendAsync(request);
+            
+            // Return null if user not found (404) or other non-success status
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _logger.LogWarning("Harvest user {UserId} not found", userId);
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<HarvestUser>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return result;
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Failed to fetch user from Harvest API for user ID {UserId}", userId);
+            return null;
         }
     }
 }

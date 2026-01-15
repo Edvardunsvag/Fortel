@@ -5,13 +5,13 @@ import { useEmployees } from "@/features/game/employees";
 import type { Employee } from "@/features/game/employees/types";
 import {
   calculateHintsForGuess,
-  FUNFACT_REVEAL_COST,
   loadRoundFromState,
   selectAttemptedByUserId,
   selectCanGuess,
   selectEmployeeOfTheDayId,
   selectGameStatus,
   selectGuesses,
+  selectFunfactRevealCost,
 } from "@/features/game/gameSlice";
 import { useCurrentRound, useStartRound, useSaveGuess } from "@/features/game/queries";
 import { toSaveGuessRequest, toStartRoundRequest } from "@/features/game/toDto";
@@ -20,7 +20,6 @@ import { getDateSeed, getTodayDateString, selectIndexBySeed } from "@/shared/uti
 import { findEmployeeByHash, hashEmployeeId } from "@/shared/utils/hashUtils";
 import { findMatchingEmployee } from "@/shared/utils/nameMatcher";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { triggerConfetti } from "@/features/game/utils";
 import styles from "./Game.module.scss";
 import { GameStatus } from "./GameStatus";
@@ -36,13 +35,13 @@ import { useSubmitScore } from "../leaderboard/queries";
 import { toSubmitScoreRequest } from "../leaderboard/toDto";
 
 export const Game = () => {
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { data: employees = [] } = useEmployees();
   const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
   const guesses = useAppSelector(selectGuesses);
   const gameStatus = useAppSelector(selectGameStatus);
   const canGuess = useAppSelector(selectCanGuess);
+  const funfactRevealCost = useAppSelector(selectFunfactRevealCost);
   const account = useAppSelector(selectAccount);
   const userId = account?.localAccountId || account?.username || null;
   const attemptedByUserId = useAppSelector(selectAttemptedByUserId);
@@ -126,7 +125,7 @@ export const Game = () => {
           if (!userHasAttempted) {
             // Calculate score: current guesses + 1 (for this correct guess) + funfact cost if revealed
             const funfactRevealed = round.funfactRevealed;
-            const score = guesses.length + 1 + (funfactRevealed ? FUNFACT_REVEAL_COST : 0);
+            const score = guesses.length + 1 + (funfactRevealed ? funfactRevealCost : 0);
 
             // Find the user's employee record to get their avatar
             const userEmployee = findMatchingEmployee(account.name, employees);
@@ -175,36 +174,20 @@ export const Game = () => {
     }
   };
 
-  // Show start button if game hasn't started yet
-  const startGameButtonElement = (
-    <StartGameButton onStartGame={handleStartGame} isStartingGame={isStartingGame} employees={employees} />
-  );
-
-  // Check if StartGameButton rendered content (it returns null if conditions aren't met)
-  if (!employeeOfTheDayId && userId && !attemptedByUserId) {
-    return startGameButtonElement;
-  }
-
-  if (!employeeOfTheDayId) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.loading}>{t("game.initializing")}</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.page}>
       <div className={styles.container}>
         <GameNavigationChips />
         <GameHeader />
-        <FunfactReveal employeeOfTheDayId={employeeOfTheDayId} employees={employees} />
-
-        <div className={styles.content}>
+        <FunfactReveal employees={employees} />
+      </div>
+      <div className={styles.gameLayout}>
+        <div className={styles.gameContent}>
           {gameStatus === "won" && showStatusMessage && (
             <GameStatus status={gameStatus} guesses={guesses} visible={true} />
+          )}
+          {!employeeOfTheDayId && userId && !attemptedByUserId && (
+            <StartGameButton onStartGame={handleStartGame} isStartingGame={isStartingGame} employees={employees} />
           )}
 
           <GameInputRow

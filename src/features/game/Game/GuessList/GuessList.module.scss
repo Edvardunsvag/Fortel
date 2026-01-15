@@ -1,7 +1,6 @@
 @use "../../../../shared/styles/variables.scss" as *;
 
 .container {
-  margin-top: $spacing-xl;
   width: 100%;
 }
 
@@ -27,10 +26,6 @@
   border-radius: $radius-sm;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.guessRow {
-  // Hover styles moved to EmployeeCell component
 }
 
 .correctBadge {

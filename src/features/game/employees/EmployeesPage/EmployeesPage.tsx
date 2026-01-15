@@ -78,7 +78,7 @@ export const EmployeesPage = () => {
                   aria-selected={selectedEmployeeId === employee.id}
                   role="option"
                 >
-                  {employee.avatarImageUrl ? (
+                  {employee.avatarImageUrl && !employee.avatarImageUrl.toLowerCase().includes("imagekit") ? (
                     <img src={employee.avatarImageUrl} alt={`${employee.name} avatar`} className={styles.avatar} />
                   ) : (
                     <div className={styles.avatarPlaceholder}>
@@ -114,16 +114,18 @@ interface EmployeeDetailsProps {
 const EmployeeDetails = ({ employee }: EmployeeDetailsProps) => {
   const { t } = useTranslation();
 
+  const shouldShowPlaceholder = !employee.avatarImageUrl || employee.avatarImageUrl.toLowerCase().includes("imagekit");
+
   return (
     <div className={styles.detailsContent}>
       <div className={styles.detailsHeader}>
-        {employee.avatarImageUrl ? (
-          <img src={employee.avatarImageUrl} alt={`${employee.name} avatar`} className={styles.detailsAvatar} />
-        ) : (
+        {shouldShowPlaceholder ? (
           <div className={styles.detailsAvatarPlaceholder}>
             {employee.firstName.charAt(0)}
             {employee.surname.charAt(0)}
           </div>
+        ) : (
+          <img src={employee.avatarImageUrl} alt={`${employee.name} avatar`} className={styles.detailsAvatar} />
         )}
         <h2 className={styles.detailsName}>{employee.name}</h2>
       </div>

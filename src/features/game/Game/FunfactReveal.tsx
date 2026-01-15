@@ -1,27 +1,73 @@
-import { useAppSelector } from "@/app/hooks";
-import { selectFunfactRevealed } from "@/features/game/gameSlice";
-
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import {
+  selectEmployeeOfTheDayId,
+  selectFunfactRevealed,
+  selectRoundId,
+  revealFunfact,
+  loadRoundFromState,
+  setHasFunfactOrInterests,
+} from "@/features/game/gameSlice";
+import { useRevealFunfact } from "@/features/game/queries";
+import { toRevealFunfactRequest } from "@/features/game/toDto";
 import { findEmployeeByHash } from "@/shared/utils/hashUtils";
 import { getTodayDateString } from "@/shared/utils/dateUtils";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./Game.module.scss";
 import { Employee } from "../employees";
 
 interface FunfactRevealProps {
-  employeeOfTheDayId: string;
   employees: Employee[];
 }
 
-export const FunfactReveal = ({ employeeOfTheDayId, employees }: FunfactRevealProps) => {
+export const FunfactReveal = ({ employees }: FunfactRevealProps) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
   const funfactRevealed = useAppSelector(selectFunfactRevealed);
+  const roundId = useAppSelector(selectRoundId);
+  const revealFunfactMutation = useRevealFunfact();
 
-  if (!funfactRevealed) {
+  // Calculate hasFunfactOrInterests - must be done before any early returns
+  const today = getTodayDateString();
+  const targetEmployee = employeeOfTheDayId ? findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today) : null;
+
+  const hasFunfactOrInterests = targetEmployee
+    ? !(!targetEmployee.funfact && (!targetEmployee.interests || targetEmployee.interests.length === 0))
+    : null;
+
+  // All hooks must be called before any conditional returns
+  useEffect(() => {
+    if (hasFunfactOrInterests !== null) {
+      dispatch(setHasFunfactOrInterests(hasFunfactOrInterests));
+    }
+  }, [dispatch, hasFunfactOrInterests]);
+
+  const handleRevealFunfact = () => {
+    if (!roundId) {
+      console.warn("Cannot reveal funfact: roundId is not available");
+      return;
+    }
+
+    // Update local state
+    dispatch(revealFunfact());
+
+    // Save to server
+    const request = toRevealFunfactRequest(roundId);
+    revealFunfactMutation.mutate(request, {
+      onSuccess: (round) => {
+        dispatch(loadRoundFromState({ round }));
+      },
+      onError: (error) => {
+        console.error("Failed to reveal funfact on server:", error);
+      },
+    });
+  };
+
+  // Now we can do early returns after all hooks
+  if (!employeeOfTheDayId) {
     return null;
   }
-
-  const today = getTodayDateString();
-  const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today);
 
   if (!targetEmployee) {
     return null;
@@ -32,29 +78,36 @@ export const FunfactReveal = ({ employeeOfTheDayId, employees }: FunfactRevealPr
   const hasNoFunfactOrInterests = !targetFunfact && (!targetInterests || targetInterests.length === 0);
 
   return (
-    <div className={styles.funfactClueContainer}>
-      {hasNoFunfactOrInterests ? (
-        <p className={`${styles.funfactClueText} ${styles.funfactClueTextNoContent}`}>
-          {t("game.noFunfactOrInterests")}
-        </p>
-      ) : (
-        <>
-          <h3 className={styles.funfactClueTitle}>{t("guessList.funfactClue")}</h3>
-          {targetFunfact && <p className={styles.funfactClueText}>{targetFunfact}</p>}
-          {targetInterests.length > 0 && (
-            <div className={styles.interestsContainer}>
-              <h4 className={styles.interestsTitle}>{t("guessList.interests")}</h4>
-              <div className={styles.interestsList}>
-                {targetInterests.map((interest: string, index: number) => (
-                  <span key={index} className={styles.interestTag}>
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+    <div className={styles.funfactRevealWrapper}>
+      {!funfactRevealed && (
+        <button className={styles.revealFunfactButton} onClick={handleRevealFunfact} type="button">
+          {t("game.buyInterests")}
+        </button>
       )}
+      <div className={`${styles.funfactClueContainer} ${!funfactRevealed ? styles.blurred : ""}`}>
+        {hasNoFunfactOrInterests ? (
+          <p className={`${styles.funfactClueText} ${styles.funfactClueTextNoContent}`}>
+            {t("game.noFunfactOrInterests")}
+          </p>
+        ) : (
+          <>
+            <h3 className={styles.funfactClueTitle}>{t("guessList.funfactClue")}</h3>
+            {targetFunfact && <p className={styles.funfactClueText}>{targetFunfact}</p>}
+            {targetInterests.length > 0 && (
+              <div className={styles.interestsContainer}>
+                <h4 className={styles.interestsTitle}>{t("guessList.interests")}</h4>
+                <div className={styles.interestsList}>
+                  {targetInterests.map((interest: string, index: number) => (
+                    <span key={index} className={styles.interestTag}>
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

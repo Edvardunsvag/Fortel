@@ -22,20 +22,14 @@ export const StartGameButton = ({ onStartGame, isStartingGame, employees }: Star
   // Show start button if game hasn't started yet
   if (!employeeOfTheDayId && userId && !attemptedByUserId) {
     return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>{t("game.title")}</h1>
-          <p className={styles.subtitle}>{t("game.subtitle")}</p>
-          <button
-            className={styles.startButton}
-            onClick={onStartGame}
-            type="button"
-            disabled={isStartingGame || employees.length === 0}
-          >
-            {isStartingGame ? t("game.startingGame") : t("game.startGame")}
-          </button>
-        </div>
-      </div>
+      <button
+        className={styles.startButton}
+        onClick={onStartGame}
+        type="button"
+        disabled={isStartingGame || employees.length === 0}
+      >
+        {isStartingGame ? t("game.startingGame") : t("game.startGame")}
+      </button>
     );
   }
 

@@ -22,6 +22,7 @@ const initialState: GameState = {
   funfactRevealed: false,
   roundId: null,
   activeSubTab: GameSubTab.Play,
+  hasFunfactOrInterests: null,
 };
 
 const calculateHints = (guessed: Employee, target: Employee): Guess["hints"] => {
@@ -147,6 +148,7 @@ const gameSlice = createSlice({
         state.attemptDate = null;
         state.funfactRevealed = false;
         state.roundId = null;
+        state.hasFunfactOrInterests = null;
       } else if (state.status === "idle") {
         state.status = "playing";
       }
@@ -161,6 +163,9 @@ const gameSlice = createSlice({
       }
 
       state.funfactRevealed = true;
+    },
+    setHasFunfactOrInterests: (state, action: PayloadAction<boolean>) => {
+      state.hasFunfactOrInterests = action.payload;
     },
     makeGuess: (state, action: PayloadAction<{ guessed: Employee; target: Employee; userId?: string | null }>) => {
       if (state.status !== "playing") {
@@ -203,7 +208,14 @@ const gameSlice = createSlice({
 });
 
 export { GameSubTab } from "./types";
-export const { initializeGame, revealFunfact, makeGuess, loadRoundFromState, setActiveSubTab } = gameSlice.actions;
+export const {
+  initializeGame,
+  revealFunfact,
+  makeGuess,
+  loadRoundFromState,
+  setActiveSubTab,
+  setHasFunfactOrInterests,
+} = gameSlice.actions;
 
 export const selectEmployeeOfTheDayId = (state: RootState): string | null => state.game.employeeOfTheDayId;
 
@@ -213,9 +225,15 @@ export const selectAttemptedByUserId = (state: RootState): string | null => stat
 
 export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
 
+export const selectHasFunfactOrInterests = (state: RootState): boolean | null => state.game.hasFunfactOrInterests;
+
+export const selectFunfactRevealCost = createSelector([selectHasFunfactOrInterests], (hasFunfactOrInterests): number =>
+  hasFunfactOrInterests ? FUNFACT_REVEAL_COST : 0
+);
+
 export const selectTotalGuesses = createSelector(
-  [selectGuesses, selectFunfactRevealed],
-  (guesses, funfactRevealed): number => guesses.length + (funfactRevealed ? FUNFACT_REVEAL_COST : 0)
+  [selectGuesses, selectFunfactRevealed, selectFunfactRevealCost],
+  (guesses, funfactRevealed, funfactRevealCost): number => guesses.length + (funfactRevealed ? funfactRevealCost : 0)
 );
 
 export const selectGameStatus = (state: RootState): GameState["status"] => state.game.status;

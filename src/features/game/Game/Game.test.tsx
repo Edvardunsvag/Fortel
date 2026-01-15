@@ -100,6 +100,7 @@ describe("Game - Input Field Visibility", () => {
     const mockState = createMockState({
       [FeatureKey.Game]: {
         employeeOfTheDayId: hashedEmployeeId,
+        hasFunfactOrInterests: false,
         guesses: [],
         status: "won", // This makes canGuess false
         currentDate: testDate,

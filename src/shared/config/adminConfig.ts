@@ -1,7 +1,11 @@
 /**
  * Admin configuration
  */
-export const ADMIN_ACCOUNTS = ["edvard.unsvag@fortedigital.com", "jorgen.borgersen@fortedigital.com"] as const;
+export const ADMIN_ACCOUNTS = [
+  "edvard.unsvag@fortedigital.com",
+  "jorgen.borgersen@fortedigital.com",
+  "jorgen.stensrud@fortedigital.com",
+] as const;
 
 /**
  * Check if an email is an admin account

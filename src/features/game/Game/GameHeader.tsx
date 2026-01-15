@@ -14,13 +14,15 @@ export const GameHeader = () => {
     <>
       <h1 className={styles.title}>{t("game.title")}</h1>
       <div className={styles.headerInfo}>
-        <p className={styles.subtitle}>
-          {t("game.subtitle")} {account?.name}!
-        </p>
         {gameStatus === "playing" && (
-          <div className={styles.guessCountBadge}>
-            {t("game.guesses")}: <strong>{totalGuesses}</strong>
-          </div>
+          <>
+            <p className={styles.subtitle}>
+              {t("game.subtitle")} {account?.name}!
+            </p>
+            <div className={styles.guessCountBadge}>
+              {t("game.guesses")}: <strong>{totalGuesses}</strong>
+            </div>
+          </>
         )}
       </div>
     </>

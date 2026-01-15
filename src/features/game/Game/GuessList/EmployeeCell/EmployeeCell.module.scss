@@ -1,17 +1,12 @@
 @use "../../../../../shared/styles/variables.scss" as *;
 
 .employeeCell {
-  padding: $spacing-sm;
   min-width: 120px;
   text-align: center;
   vertical-align: middle;
 }
 
 .employeeName {
-  background-color: $color-dark-fill;
-  padding: 0.5rem;
-  border-radius: $radius-sm;
-  border: 2px solid $color-border-medium;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,11 +34,16 @@
 }
 
 .avatarPlaceholder {
+  height: 80px;
+  width: 80px;
+  border-radius: $radius-sm;
+  background-color: $color-light-grey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-dark-fill;
   font-weight: 600;
   font-size: 0.875rem;
-  color: $color-primary-beige;
-  text-align: center;
-  padding: 0.5rem;
 }
 
 @media (max-width: 768px) {

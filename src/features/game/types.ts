@@ -48,4 +48,5 @@ export interface GameState {
   funfactRevealed: boolean; // Whether the funfact and interests hint has been revealed
   roundId: number | null; // ID of the current round from the server
   activeSubTab: GameSubTab; // Active sub-navigation tab within the Game feature
+  hasFunfactOrInterests: boolean | null; // Whether the employee of the day has funfact or interests
 }

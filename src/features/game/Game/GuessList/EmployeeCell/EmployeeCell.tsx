@@ -5,14 +5,19 @@ interface EmployeeCellProps {
   guess: Guess;
 }
 
-export const EmployeeCell = ({ guess }: EmployeeCellProps) => (
-  <td className={styles.employeeCell}>
-    <div className={styles.employeeName}>
-      {guess.avatarImageUrl ? (
-        <img src={guess.avatarImageUrl} alt={guess.employeeName} className={styles.avatarImage} />
-      ) : (
-        <div className={styles.avatarPlaceholder}>{guess.employeeName}</div>
-      )}
-    </div>
-  </td>
-);
+export const EmployeeCell = ({ guess }: EmployeeCellProps) => {
+  // Show placeholder if no avatar URL or if URL contains "imagekit"
+  const shouldShowPlaceholder = !guess.avatarImageUrl || guess.avatarImageUrl.toLowerCase().includes("imagekit");
+
+  return (
+    <td className={styles.employeeCell}>
+      <div className={styles.employeeName}>
+        {shouldShowPlaceholder ? (
+          <div className={styles.avatarPlaceholder}>{guess.employeeName}</div>
+        ) : (
+          <img src={guess.avatarImageUrl} alt={guess.employeeName} className={styles.avatarImage} />
+        )}
+      </div>
+    </td>
+  );
+};

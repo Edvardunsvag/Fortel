@@ -20,10 +20,34 @@
   border-radius: $radius-lg;
   padding: $spacing-xxl;
   box-shadow: 0 2px 8px $color-shadow-light;
+  margin-bottom: $spacing-xl;
 }
 
-.content {
-  margin-top: $spacing-xl;
+.gameLayout {
+  max-width: 56rem;
+  margin: 0 auto;
+  height: calc(100vh - 4rem);
+  min-height: 600px;
+
+  @media (max-width: 1024px) {
+    height: auto;
+    min-height: auto;
+  }
+}
+
+.gameContent {
+  background-color: $color-primary-beige;
+  border-radius: $radius-lg;
+  padding: $spacing-xxl;
+  box-shadow: 0 2px 8px $color-shadow-light;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  @media (max-width: 1024px) {
+    height: auto;
+    max-height: none;
+  }
 }
 
 .header {
@@ -145,23 +169,69 @@
   display: flex;
   gap: $spacing-md;
   align-items: flex-start;
-  margin-bottom: $spacing-xl;
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    flex-direction: row;
     gap: $spacing-sm;
-    align-items: stretch;
+    align-items: flex-start;
   }
 }
 
 .inputContainer {
-  flex: 0 0 70%;
+  flex: 1 1 100%;
   min-width: 0;
+}
+
+.submitButton {
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color $transition-normal,
+    transform $transition-fast;
+  margin-top: 2rem; // Align with input field (label height ~1.5rem + margin-bottom 0.5rem)
 
   @media (max-width: 768px) {
-    flex: 1 1 100%;
-    width: 100%;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-top: 2rem;
+    font-size: 1.25rem;
   }
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.arrowIcon {
+  display: inline-block;
+  line-height: 1;
 }
 
 .revealButton {
@@ -211,13 +281,83 @@
   }
 }
 
+.funfactRevealWrapper {
+  position: relative;
+  margin: $spacing-lg 0;
+}
+
+@keyframes subtleWiggle {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotate(-2deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotate(2deg);
+  }
+}
+
+.revealFunfactButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  padding: $spacing-md $spacing-lg;
+  background-color: #221c38;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    transform $transition-fast;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px $color-shadow-medium;
+  animation: subtleWiggle 2s ease-in-out infinite;
+  animation-delay: 1s;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(34, 28, 56, 0.9);
+    transform: translate(-50%, -50%) translateY(-1px);
+    box-shadow: 0 4px 12px $color-shadow-medium;
+    animation: none; // Stop animation on hover
+  }
+
+  &:active:not(:disabled) {
+    transform: translate(-50%, -50%) translateY(0);
+    animation: none; // Stop animation on active
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none; // Stop animation when disabled
+  }
+}
+
 .funfactClueContainer {
   background-color: $color-overlay-beige;
   border: 2px solid $color-dark-accent;
   border-radius: $radius-md;
   padding: $spacing-lg;
-  margin: $spacing-lg 0;
   text-align: center;
+  transition: filter $transition-normal;
+}
+
+.funfactClueContainer.blurred {
+  filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
 }
 
 .funfactClueTitle {

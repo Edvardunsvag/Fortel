@@ -1,17 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useMemo } from "react";
+import { ArrowRight } from "lucide-react";
+import { useAppSelector } from "@/app/hooks";
 import { Employee } from "../employees";
-import {
-  selectCanGuess,
-  selectFunfactRevealed,
-  selectGameStatus,
-  selectGuesses,
-  selectRoundId,
-} from "@/features/game/gameSlice";
-import { revealFunfact, loadRoundFromState } from "@/features/game/gameSlice";
-import { useRevealFunfact } from "@/features/game/queries";
-import { toRevealFunfactRequest } from "@/features/game/toDto";
+import { selectCanGuess, selectGuesses } from "@/features/game/gameSlice";
 import type { Guess } from "@/features/game/types";
-import { useTranslation } from "react-i18next";
 import { GuessInput } from "./GuessInput";
 import styles from "./Game.module.scss";
 
@@ -23,34 +15,34 @@ interface GameInputRowProps {
 }
 
 export const GameInputRow = ({ inputValue, onInputChange, onGuess, employees }: GameInputRowProps) => {
-  const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const canGuess = useAppSelector(selectCanGuess);
-  const gameStatus = useAppSelector(selectGameStatus);
-  const funfactRevealed = useAppSelector(selectFunfactRevealed);
   const guesses = useAppSelector(selectGuesses);
-  const roundId = useAppSelector(selectRoundId);
-  const revealFunfactMutation = useRevealFunfact();
 
-  const handleRevealFunfact = () => {
-    if (!roundId) {
-      console.warn("Cannot reveal funfact: roundId is not available");
-      return;
+  // Calculate first suggestion based on input value
+  const firstSuggestion = useMemo(() => {
+    if (!inputValue.trim()) {
+      return null;
     }
 
-    // Update local state
-    dispatch(revealFunfact());
-
-    // Save to server
-    const request = toRevealFunfactRequest(roundId);
-    revealFunfactMutation.mutate(request, {
-      onSuccess: (round) => {
-        dispatch(loadRoundFromState({ round }));
-      },
-      onError: (error) => {
-        console.error("Failed to reveal funfact on server:", error);
-      },
+    const guessedEmployeeIds = guesses.map((guess: Guess) => guess.employeeId);
+    const searchTerm = inputValue.toLowerCase().trim();
+    const filtered = employees.filter((emp) => {
+      if (guessedEmployeeIds.includes(emp.id)) {
+        return false;
+      }
+      const nameMatch = emp.name.toLowerCase().includes(searchTerm);
+      const firstNameMatch = emp.firstName.toLowerCase().includes(searchTerm);
+      const surnameMatch = emp.surname.toLowerCase().includes(searchTerm);
+      return nameMatch || firstNameMatch || surnameMatch;
     });
+
+    return filtered.length > 0 ? filtered[0] : null;
+  }, [inputValue, employees, guesses]);
+
+  const handleSubmitButtonClick = () => {
+    if (firstSuggestion) {
+      onGuess(firstSuggestion.id);
+    }
   };
 
   if (!canGuess) {
@@ -68,11 +60,15 @@ export const GameInputRow = ({ inputValue, onInputChange, onGuess, employees }: 
           guessedEmployeeIds={guesses.map((guess: Guess) => guess.employeeId)}
         />
       </div>
-      {gameStatus === "playing" && (
-        <button className={styles.revealButton} onClick={handleRevealFunfact} type="button" disabled={funfactRevealed}>
-          {t("game.buyInterests")}
-        </button>
-      )}
+      <button
+        className={styles.submitButton}
+        onClick={handleSubmitButtonClick}
+        type="button"
+        disabled={!firstSuggestion}
+        aria-label="Submit guess"
+      >
+        <ArrowRight className={styles.arrowIcon} size={20} />
+      </button>
     </div>
   );
 };

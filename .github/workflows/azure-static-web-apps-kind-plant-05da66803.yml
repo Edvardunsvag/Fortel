@@ -37,6 +37,9 @@ jobs:
           VITE_HARVEST_CLIENT_ID: ${{ secrets.VITE_HARVEST_CLIENT_ID }}
           VITE_HARVEST_CLIENT_SECRET: ${{ secrets.VITE_HARVEST_CLIENT_SECRET }}
           VITE_HARVEST_REDIRECT_URI: ${{ secrets.VITE_HARVEST_REDIRECT_URI }}
+          VITE_AZURE_OPENAI_ENDPOINT: ${{ secrets.VITE_AZURE_OPENAI_ENDPOINT }}
+          VITE_AZURE_OPENAI_API_KEY: ${{ secrets.VITE_AZURE_OPENAI_API_KEY }}
+          VITE_AZURE_OPENAI_DEPLOYMENT: ${{ secrets.VITE_AZURE_OPENAI_DEPLOYMENT }}
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
       - name: Get Id Token
@@ -57,6 +60,9 @@ jobs:
           VITE_HARVEST_CLIENT_ID: ${{ secrets.VITE_HARVEST_CLIENT_ID }}
           VITE_HARVEST_CLIENT_SECRET: ${{ secrets.VITE_HARVEST_CLIENT_SECRET }}
           VITE_HARVEST_REDIRECT_URI: ${{ secrets.VITE_HARVEST_REDIRECT_URI }}
+          VITE_AZURE_OPENAI_ENDPOINT: ${{ secrets.VITE_AZURE_OPENAI_ENDPOINT }}
+          VITE_AZURE_OPENAI_API_KEY: ${{ secrets.VITE_AZURE_OPENAI_API_KEY }}
+          VITE_AZURE_OPENAI_DEPLOYMENT: ${{ secrets.VITE_AZURE_OPENAI_DEPLOYMENT }}
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_KIND_PLANT_05DA66803 }}
           action: "upload"

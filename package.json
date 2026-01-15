@@ -15,7 +15,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "prepare": "husky",
-    "generate:api": "openapi-generator-cli generate -i http://localhost:8080/swagger/v1/swagger.json -g typescript-axios -o src/shared/api/generated --additional-properties=typescriptThreePlus=true,withInterfaces=true,supportsES6=true,enumPropertyNaming=original,modelPropertyNaming=original"
+    "generate:api": "openapi-generator-cli generate -i http://localhost:8080/swagger/v1/swagger.json -g typescript-axios -o src/shared/api/generated --additional-properties=typescriptThreePlus=true,withInterfaces=true,supportsES6=true,enumPropertyNaming=original,modelPropertyNaming=original",
+    "test:24seven": "tsx scripts/test-24seven-api.ts"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.27.0",
@@ -25,6 +26,7 @@
     "axios": "^1.6.0",
     "canvas-confetti": "^1.9.4",
     "date-fns": "^3.0.0",
+    "dotenv": "^17.2.3",
     "i18next": "^25.7.3",
     "lucide-react": "^0.562.0",
     "react": "^18.2.0",
@@ -32,6 +34,7 @@
     "react-i18next": "^16.5.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^7.12.0",
+    "soap": "^1.6.3",
     "string-similarity": "^4.0.4"
   },
   "devDependencies": {
@@ -42,6 +45,7 @@
     "@types/canvas-confetti": "^1.9.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@types/soap": "^0.18.0",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -53,6 +57,7 @@
     "jsdom": "^27.4.0",
     "prettier": "^3.7.4",
     "sass": "^1.69.5",
+    "tsx": "^4.21.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
     "vitest": "^4.0.16"

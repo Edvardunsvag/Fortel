@@ -108,6 +108,34 @@ const gameState = state[FeatureKey.Game];
 - Frontend: Request `.env` file from team, place in root
 - Backend: Configure PostgreSQL connection in `server/appsettings.json` or via environment variables (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
 
+## Clean Code Principles
+
+### General
+- Write self-documenting code with clear naming (functions, variables, classes)
+- Keep functions small and single-purpose
+- Avoid magic numbers and strings - use constants
+- Don't repeat yourself (DRY) - extract reusable logic
+- Fail fast - validate inputs early
+- Handle errors gracefully with meaningful messages
+
+### Frontend (React/TypeScript)
+- Use functional components with hooks
+- Keep components small and focused - split when they grow large
+- Colocate related code (component, styles, tests)
+- Use TypeScript strictly - avoid `any`
+- Memoize expensive computations (`useMemo`, `useCallback`)
+- Prefer composition over prop drilling
+- Keep business logic out of components - use hooks or utilities
+
+### Backend (.NET)
+- Follow RESTful conventions for API endpoints
+- Use dependency injection for services
+- Keep controllers thin - business logic belongs in services
+- Use async/await for I/O operations
+- Validate DTOs at the controller level
+- Return appropriate HTTP status codes
+- Log meaningful information at appropriate levels
+
 ## Git Workflow
 
 This project uses **Conventional Commits**. When asked to commit changes:

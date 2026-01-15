@@ -1,0 +1,584 @@
+@use "shared/styles/variables.scss" as *;
+
+.page {
+  min-height: 100vh;
+  padding-left: 16rem;
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  padding-right: $spacing-xl;
+
+  @media (max-width: 768px) {
+    padding-left: 4rem;
+    padding-right: $spacing-md;
+  }
+}
+
+.container {
+  max-width: 56rem;
+  margin: 0 auto;
+  background-color: $color-primary-beige;
+  border-radius: $radius-lg;
+  padding: $spacing-xxl;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0;
+  color: $color-dark-accent;
+}
+
+.error {
+  padding: $spacing-md;
+  background-color: $color-overlay-accent;
+  border: 1px solid $color-dark-accent;
+  border-radius: $radius-md;
+  color: $color-dark-accent;
+  margin-top: $spacing-md;
+}
+
+.loading {
+  text-align: center;
+  padding: $spacing-xxl;
+  color: $color-dark-fill;
+}
+
+.authenticated {
+  margin-top: $spacing-lg;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.timeframeRow {
+  margin-bottom: $spacing-lg;
+}
+
+.timeframeSelector {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.timeframeDropdown {
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $color-border-medium;
+  border-radius: $radius-md;
+  background-color: $color-white;
+  color: $color-dark-accent;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.customDateRange {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.dateInputGroup {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.dateLabel {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+}
+
+.dateInput {
+  padding: $spacing-xs $spacing-sm;
+  border: 1px solid $color-border-medium;
+  border-radius: $radius-md;
+  background-color: $color-white;
+  color: $color-dark-accent;
+  font-size: 0.875rem;
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+// Combined Balance Row - Time Balance + Fagtimer side by side
+.balanceRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background-color: $color-white;
+  border: 1px solid $color-border-medium;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-xl;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Left side: Time Balance
+.balanceCard {
+  padding: $spacing-xl;
+  border-right: 1px solid $color-border-medium;
+
+  @media (max-width: 768px) {
+    border-right: none;
+    border-bottom: 1px solid $color-border-medium;
+  }
+}
+
+// Right side: Fagtimer Card
+.fagtimerCard {
+  padding: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+}
+
+.fagtimerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: $spacing-md;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+}
+
+.fagtimerTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-dark-fill;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fagtimerSubtitle {
+  font-size: 0.75rem;
+  color: $color-dark-fill;
+  opacity: 0.6;
+}
+
+.fagtimerContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  flex: 1;
+}
+
+.fagtimerStats {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+}
+
+.fagtimerUsed {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $color-dark-accent;
+  line-height: 1;
+}
+
+.fagtimerSeparator {
+  font-size: 1.5rem;
+  color: $color-dark-fill;
+  opacity: 0.3;
+  margin: 0 $spacing-xs;
+}
+
+.fagtimerAvailable {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: $color-dark-fill;
+  opacity: 0.7;
+}
+
+.fagtimerProgressContainer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.fagtimerProgressBar {
+  flex: 1;
+  height: 8px;
+  background-color: rgba($color-dark-accent, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.fagtimerProgressFill {
+  height: 100%;
+  background: $color-success;
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fagtimerPercentage {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  min-width: 40px;
+  text-align: right;
+}
+
+.fagtimerNote {
+  font-size: 0.7rem;
+  color: $color-dark-fill;
+  opacity: 0.5;
+  margin: 0;
+  margin-top: auto;
+}
+
+.balanceValue {
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: $spacing-xs;
+
+  &.balancePositive {
+    color: $color-success;
+  }
+
+  &.balanceNegative {
+    color: $color-error;
+  }
+
+  &.balanceNeutral {
+    color: $color-dark-accent;
+  }
+}
+
+.balanceLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-dark-fill;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $spacing-md;
+}
+
+.balanceDetails {
+  display: flex;
+  gap: $spacing-xl;
+  flex-wrap: wrap;
+  margin-top: $spacing-sm;
+}
+
+.balanceDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.balanceDetailValue {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+}
+
+.balanceDetailLabel {
+  font-size: 0.7rem;
+  color: $color-dark-fill;
+  opacity: 0.7;
+}
+
+// Weekly Breakdown - Similar to weeksList in Lottery
+.weeklyBreakdown {
+  margin-top: $spacing-xl;
+}
+
+.weeklyBreakdownTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-lg 0;
+}
+
+.weeksList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// Week card - matches Lottery week cards
+.week {
+  background-color: $color-white;
+  border: 1px solid $color-border-medium;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.weekHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+  user-select: none;
+
+  &:hover {
+    background-color: $color-overlay-beige;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: -2px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+.weekHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  gap: $spacing-md;
+}
+
+.weekTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0;
+}
+
+.weekStats {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.weekHours {
+  font-size: 1rem;
+  color: $color-dark-fill;
+}
+
+.weekBalance {
+  font-size: 1rem;
+  font-weight: 600;
+
+  &.positive {
+    color: $color-success;
+  }
+
+  &.negative {
+    color: $color-error;
+  }
+
+  &.neutral {
+    color: $color-dark-fill;
+  }
+}
+
+.weekCumulative {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+}
+
+.weekChevron {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+  transition: transform 0.3s ease;
+  margin-left: $spacing-md;
+  flex-shrink: 0;
+}
+
+.weekChevronOpen {
+  transform: rotate(180deg);
+}
+
+// Expandable content - matches Lottery pattern
+.weekContent {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.weekContentOpen {
+  grid-template-rows: 1fr;
+}
+
+.weekContentInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.weekDetails {
+  padding: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 1px solid $color-border-medium;
+  overflow-x: auto;
+}
+
+.detailsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 600px;
+
+  th,
+  td {
+    padding: $spacing-sm $spacing-md;
+    text-align: center;
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  th {
+    background-color: $color-overlay-beige;
+    font-weight: 600;
+    color: $color-dark-accent;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background-color: $color-overlay-beige;
+  }
+}
+
+.projectHeader {
+  text-align: left !important;
+  min-width: 200px;
+}
+
+.dayHeader {
+  min-width: 50px;
+
+  .dayName {
+    display: block;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .dayDate {
+    display: block;
+    font-size: 0.65rem;
+    color: $color-dark-fill;
+    opacity: 0.7;
+  }
+}
+
+.totalHeader {
+  font-weight: 700;
+  min-width: 50px;
+}
+
+.projectCell {
+  text-align: left !important;
+
+  .projectName {
+    font-weight: 500;
+    color: $color-dark-accent;
+  }
+
+  .taskName {
+    font-size: 0.75rem;
+    color: $color-dark-fill;
+    opacity: 0.7;
+  }
+}
+
+.hoursCell {
+  color: $color-dark-fill;
+}
+
+.totalCell {
+  font-weight: 600;
+  color: $color-dark-accent;
+}
+
+.absenceRow {
+  background-color: rgba(#ff9800, 0.1) !important;
+
+  .projectName {
+    color: #e65100;
+  }
+}
+
+.noEntries {
+  text-align: center !important;
+  color: $color-dark-fill;
+  opacity: 0.6;
+  padding: $spacing-lg !important;
+}
+
+// Connect Section - matches ConnectToHarvest
+.connectSection {
+  margin-top: $spacing-lg;
+}
+
+.connectText {
+  color: $color-dark-fill;
+  margin-bottom: $spacing-lg;
+  line-height: 1.6;
+}
+
+.connectButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+// Disconnect button - matches Lottery's logoutButton (outlined style)
+.disconnectButton {
+  margin-top: $spacing-xl;
+  padding: $spacing-sm $spacing-md;
+  background-color: transparent;
+  color: $color-dark-accent;
+  border: 1px solid $color-dark-accent;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover {
+    background-color: $color-overlay-beige;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}

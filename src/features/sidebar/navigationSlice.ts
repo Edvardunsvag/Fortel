@@ -5,6 +5,7 @@ import type { RootState } from "@/app/store";
 export enum ActiveTab {
   Play = "play",
   Lottery = "lottery",
+  TimeBank = "timebank",
 }
 
 interface NavigationState {

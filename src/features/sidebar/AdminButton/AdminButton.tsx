@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { selectAccount } from "@/features/auth/authSlice";
 import { initializeGame } from "@/features/game/gameSlice";
 
-import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
+import { isAdminAccount } from "@/shared/config/adminConfig";
 import styles from "./AdminButton.module.scss";
 import { useEmployees } from "@/features/game/employees";
 
@@ -13,7 +13,7 @@ export const AdminButton = () => {
   const account = useAppSelector(selectAccount);
   const { data: employees = [] } = useEmployees();
 
-  const isAdmin = account?.username === ADMIN_ACCOUNT;
+  const isAdmin = isAdminAccount(account?.username);
 
   if (!isAdmin) {
     return null;

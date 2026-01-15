@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { selectAccount } from "@/features/auth/authSlice";
-import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
+import { isAdminAccount } from "@/shared/config/adminConfig";
 import { GameSubTab, setActiveSubTab, selectActiveSubTab } from "@/features/game/gameSlice";
 import { routes } from "@/shared/routes";
 import styles from "./GameNavigationChips.module.scss";
@@ -37,7 +37,7 @@ export const GameNavigationChips = () => {
   const dispatch = useAppDispatch();
   const activeSubTab = useAppSelector(selectActiveSubTab);
   const account = useAppSelector(selectAccount);
-  const isAdmin = account?.username === ADMIN_ACCOUNT;
+  const isAdmin = isAdminAccount(account?.username);
 
   const handleChipClick = (subTab: GameSubTab) => {
     const route = subTabToRoute[subTab];

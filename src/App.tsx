@@ -11,7 +11,7 @@ import { GameSubTab, setActiveSubTab } from "./features/game";
 import { useI18nSync } from "./features/i18n/useI18nSync";
 import { useMsalAuth } from "./features/auth/useMsalAuth";
 import { selectIsAuthenticated, selectAccount } from "./features/auth/authSlice";
-import { ADMIN_ACCOUNT } from "./shared/config/adminConfig";
+import { isAdminAccount } from "./shared/config/adminConfig";
 import { Sidebar } from "./features/sidebar/Sidebar/Sidebar";
 import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
@@ -24,7 +24,7 @@ export const App = () => {
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const account = useAppSelector(selectAccount);
-  const isAdmin = account?.username === ADMIN_ACCOUNT;
+  const isAdmin = isAdminAccount(account?.username);
 
   useI18nSync();
   useMsalAuth();

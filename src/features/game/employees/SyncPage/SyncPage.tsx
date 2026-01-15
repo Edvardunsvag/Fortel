@@ -6,7 +6,7 @@ import { useEmployees } from "@/features/game/employees";
 import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./SyncPage.module.scss";
 import { selectAccount } from "@/features/auth/authSlice";
-import { ADMIN_ACCOUNT } from "@/shared/config/adminConfig";
+import { isAdminAccount } from "@/shared/config/adminConfig";
 import { toSyncRequest } from "@/features/game/employees/toDto";
 
 export const SyncPage = () => {
@@ -59,7 +59,7 @@ export const SyncPage = () => {
     }
   };
 
-  const isAdmin = account?.username === ADMIN_ACCOUNT;
+  const isAdmin = isAdminAccount(account?.username);
 
   return (
     <div className={styles.pageContent}>

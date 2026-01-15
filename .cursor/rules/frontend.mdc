@@ -82,6 +82,17 @@ Each feature lives in `src/features/<feature>/`:
 - `selectors.ts` (if selector set grows; otherwise keep in slice)
 - `index.ts` (barrel exports)
 
+### API Client Usage (required)
+- **CRITICAL: Never add any API code to the frontend without running `npm run generate:api` first.**
+- All API endpoints must be accessed through the generated clients from `src/shared/api/client.ts`.
+- The generated API clients are created from the backend Swagger/OpenAPI spec.
+- After adding new backend endpoints, always:
+  1. Start the backend server
+  2. Run `npm run generate:api` to regenerate the API client
+  3. Then add frontend code that uses the newly generated client methods
+- Do not use direct `fetch` calls or create manual API functions. Always use the generated client methods.
+- Do not add type assertions or workarounds for missing API methods. Generate the client first.
+
 ## Enums and types
 - Create enums when they improve clarity and reduce magic strings (e.g. FeatureKey, AsyncStatus).
 - Prefer string enums for stable keys.

@@ -111,3 +111,53 @@
   text-align: center;
   line-height: 1.2;
 }
+
+.syncSection {
+  margin-top: $spacing-xl;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $color-border-medium;
+}
+
+.syncButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  min-width: 200px;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.error {
+  margin-top: $spacing-md;
+  color: $color-error;
+  font-size: 0.875rem;
+}
+
+.success {
+  margin-top: $spacing-md;
+  color: $color-success;
+  font-size: 0.875rem;
+}

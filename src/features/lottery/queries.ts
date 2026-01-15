@@ -7,6 +7,8 @@ import {
   exchangeCodeForToken,
   refreshAccessToken,
   fetchHarvestAccounts,
+  syncLotteryTickets,
+  fetchLotteryTickets,
 } from "./api";
 import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
@@ -23,6 +25,7 @@ export const lotteryKeys = {
   all: ["lottery"] as const,
   user: () => [...lotteryKeys.all, "user"] as const,
   timeEntries: (from: string, to: string) => [...lotteryKeys.all, "timeEntries", from, to] as const,
+  tickets: (userId: string) => [...lotteryKeys.all, "tickets", userId] as const,
 };
 
 /**
@@ -306,6 +309,50 @@ export const useTestLotteryApi = () => {
       // Log accounts to console for debugging
       console.log("Harvest Accounts:", data.accounts);
       console.log("Using Account ID:", data.updatedAccountId || token?.accountId);
+    },
+  });
+};
+
+/**
+ * Query hook for fetching lottery tickets for a user
+ */
+export const useLotteryTickets = (userId: string | null, enabled = true) => {
+  return useQuery({
+    queryKey: lotteryKeys.tickets(userId || ""),
+    queryFn: async () => {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+      return fetchLotteryTickets(userId);
+    },
+    enabled: enabled && userId !== null && userId !== "",
+    retry: (failureCount, error) => {
+      // Don't retry on 400/404 errors (invalid userId)
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Mutation hook for syncing lottery tickets
+ */
+export const useSyncLotteryTickets = () => {
+  return useMutation<
+    { syncedCount: number; skippedCount: number; totalCount: number },
+    Error,
+    { userId: string; name: string; image: string | null | undefined; eligibleWeeks: string[] }
+  >({
+    mutationFn: async ({ userId, name, image, eligibleWeeks }) => {
+      const response = await syncLotteryTickets(userId, name, image, eligibleWeeks);
+      // Map the response to ensure all properties are defined (generated types have optional properties)
+      return {
+        syncedCount: response.syncedCount ?? 0,
+        skippedCount: response.skippedCount ?? 0,
+        totalCount: response.totalCount ?? 0,
+      };
     },
   });
 };

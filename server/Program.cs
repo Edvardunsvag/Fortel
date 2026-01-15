@@ -1,5 +1,7 @@
 using Fortedle.Server.Data;
 using Fortedle.Server.Services;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -109,6 +111,7 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<ISyncService, SyncService>();
 builder.Services.AddScoped<IRoundService, RoundService>();
 builder.Services.AddScoped<ILotteryTicketService, LotteryTicketService>();
+builder.Services.AddScoped<ILotteryDrawingService, LotteryDrawingService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient();
@@ -116,6 +119,15 @@ builder.Services.AddHttpClient();
 // Add health checks
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString);
+
+// Configure Hangfire
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(connectionString));
+
+builder.Services.AddHangfireServer();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -159,6 +171,9 @@ app.UseCors();
 
 // Explicit routing
 app.UseRouting();
+
+// Hangfire Dashboard (optional - can be restricted in production)
+app.UseHangfireDashboard();
 
 // Enable Swagger in both Development and Production
 app.UseSwagger(c =>
@@ -416,6 +431,18 @@ var port = builder.Configuration["Kestrel:Endpoints:Http:Url"]?.Split(':').LastO
     ?? "3001";
 logger.LogInformation("Server starting on port {Port}", port);
 logger.LogInformation("Allowed CORS origins: {Origins}", string.Join(", ", allowedOrigins));
+
+// Set up Hangfire recurring job for lottery drawing (every Friday at 15:00)
+RecurringJob.AddOrUpdate<ILotteryDrawingService>(
+    "lottery-drawing-friday-15-00",
+    service => service.DrawWinningTicketsAsync(),
+    "0 15 * * 5", // Cron expression: Every Friday at 15:00 (UTC)
+    new RecurringJobOptions
+    {
+        TimeZone = TimeZoneInfo.Utc
+    });
+
+logger.LogInformation("Hangfire recurring job 'lottery-drawing-friday-15-00' scheduled for every Friday at 15:00 UTC");
 
 app.Run();
 

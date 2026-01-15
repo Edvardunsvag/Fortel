@@ -40,14 +40,21 @@ dotnet tool install --global dotnet-ef
 ```bash
 # Create the database
 createdb -U postgres fortedle
+
+# Verify the database was created
+psql -U postgres -l
 ```
+
+# End of Selection
+
+````
 
 **Option B: Using the provided script**
 
 ```bash
 # Run the database creation script
 ./create-db.sh
-```
+````
 
 ### 4. Configure Database Connection
 

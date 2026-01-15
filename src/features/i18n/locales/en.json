@@ -5,7 +5,8 @@
     "rules": "Rules",
     "employees": "Employees",
     "lottery": "Time Lottery",
-    "sync": "Sync"
+    "sync": "Sync",
+    "timebank": "Time Bank"
   },
   "admin": {
     "changeEmployee": "Change today's employee"
@@ -228,6 +229,72 @@
     "eligibility": {
       "missingHours": "Missing 8 hours on: {{dates}}",
       "entriesUpdatedAfterDeadline": "Some entries were updated after Friday 15:00. Latest update: {{timestamp}}"
+    }
+  },
+  "timebank": {
+    "title": "Time Bank",
+    "connectDescription": "Connect your Harvest account to view your time balance.",
+    "connectToHarvest": "Connect with Harvest",
+    "connecting": "Connecting...",
+    "disconnect": "Disconnect",
+    "loading": "Loading time data...",
+    "yearToDate": "Year to Date",
+    "thisMonth": "This Month",
+    "rolling3Months": "Last 3 Months",
+    "custom": "Custom",
+    "fromDate": "From",
+    "toDate": "To",
+    "selectTimeframe": "Select timeframe",
+    "balanceLabel": "Time Balance",
+    "logged": "Logged",
+    "expected": "Expected",
+    "weeklyBreakdown": "Weekly Breakdown",
+    "week": "Week",
+    "balance": "Balance",
+    "cumulative": "Cumulative",
+    "project": "Project",
+    "total": "Total",
+    "noEntries": "No entries this week",
+    "navigation": {
+      "data": "Your Hours",
+      "rules": "Rules"
+    },
+    "fagtimer": {
+      "title": "Competency Hours",
+      "subtitle": "Competency group participant",
+      "note": "8 hours/month (excl. Jan, Jul, Aug, Dec)"
+    },
+    "rules": {
+      "workingHours": {
+        "title": "Working Hours",
+        "coreTime": "Core time is 9:00-15:00 Monday to Friday.",
+        "regularHours": "Regular working hours are 8 hours/day, 40 hours/week including lunch break."
+      },
+      "overtime": {
+        "title": "Overtime",
+        "intro": "At Forte, we want overtime to be used when it creates clear value — for the customer, the professional environment, colleagues, or the company as a whole. We trust that everyone makes good decisions about when overtime is necessary, in line with our shared principles of balance and responsibility.",
+        "examplesTitle": "Examples where overtime may apply:",
+        "example1": "You work on a 100% billable project and also contribute to sales work, mentor roles, professional activities, or initiatives that strengthen Forte.",
+        "example2": "You perform customer work beyond 100% billability, in consultation with the customer and account owner, in accordance with current agreements.",
+        "nonBillableNote": "If you are not on a fully billable project, tasks beyond project work are expected to be completed within normal working hours. Should extra effort be needed, this can be agreed with your personnel manager.",
+        "compensationTitle": "Compensation for Overtime",
+        "compensationIntro": "Overtime is work beyond regular working hours. You can choose to take overtime as salary compensation (registered in 24SO) or time off at these rates:",
+        "mondayToSaturday": "Monday–Saturday",
+        "sunday": "Sunday",
+        "timeOffNote": "Time off must be taken within 90 days after the overtime was earned (and by year-end at the latest). If you take time off the same week, you don't need to register it in Harvest. If you take time off later, use the \"Avspasering\" time code.",
+        "limitsTitle": "Maximum Overtime Limits",
+        "limit1": "10 hours in a 7-day period",
+        "limit2": "25 hours over a 4-week continuous period",
+        "limit3": "200 hours per year"
+      },
+      "flextime": {
+        "title": "Flextime",
+        "intro": "Flextime is a trust-based arrangement that provides room to adapt your workday to life outside work, and to different project commitments and work rhythms. We trust that you use flextime in a way that considers your own needs, the team's rhythm, and the customer's expectations.",
+        "practiceTitle": "Practicing Flextime",
+        "practice1": "Flextime is taken off 1:1 and must be used within 90 days of earning (and by year-end at the latest).",
+        "practice2": "If you flex within the same week, you don't need to register it separately in Harvest.",
+        "practice3": "When taking time off in another week, use the \"Avspasering\" time code so the weekly schedule shows 40 registered hours."
+      }
     }
   }
 }

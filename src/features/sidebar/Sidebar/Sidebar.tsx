@@ -59,6 +59,14 @@ export const Sidebar = () => {
           onTabClick={handleTabClick}
           onKeyDown={handleKeyDown}
         />
+        <SidebarItem
+          tab={ActiveTab.TimeBank}
+          icon="🏦"
+          label={t("sidebar.timebank")}
+          activeTab={activeTab}
+          onTabClick={handleTabClick}
+          onKeyDown={handleKeyDown}
+        />
       </ul>
       <div className={styles.adminContainer}>
         <AdminButton />

@@ -5,7 +5,8 @@
     "rules": "Regler",
     "employees": "Ansatte",
     "lottery": "Timelotteriet",
-    "sync": "Synkroniser"
+    "sync": "Synkroniser",
+    "timebank": "Timebank"
   },
   "admin": {
     "changeEmployee": "Bytt dagens ansatt"
@@ -228,6 +229,72 @@
     "eligibility": {
       "missingHours": "Mangler 8 timer på: {{dates}}",
       "entriesUpdatedAfterDeadline": "Noen registreringer ble oppdatert etter fredag 15:00. Siste oppdatering: {{timestamp}}"
+    }
+  },
+  "timebank": {
+    "title": "Timebank",
+    "connectDescription": "Koble til din Harvest-konto for å se din timesaldo.",
+    "connectToHarvest": "Koble til Harvest",
+    "connecting": "Kobler til...",
+    "disconnect": "Koble fra",
+    "loading": "Laster timedata...",
+    "yearToDate": "År til dato",
+    "thisMonth": "Denne måneden",
+    "rolling3Months": "Siste 3 måneder",
+    "custom": "Egendefinert",
+    "fromDate": "Fra",
+    "toDate": "Til",
+    "selectTimeframe": "Velg tidsperiode",
+    "balanceLabel": "Timesaldo",
+    "logged": "Registrert",
+    "expected": "Forventet",
+    "weeklyBreakdown": "Ukentlig oversikt",
+    "week": "Uke",
+    "balance": "Saldo",
+    "cumulative": "Kumulativ",
+    "project": "Prosjekt",
+    "total": "Total",
+    "noEntries": "Ingen oppføringer denne uken",
+    "navigation": {
+      "data": "Dine timer",
+      "rules": "Regler"
+    },
+    "fagtimer": {
+      "title": "Fagtimer",
+      "subtitle": "Competency group participant",
+      "note": "8 timer/mnd (unntatt jan, jul, aug, des)"
+    },
+    "rules": {
+      "workingHours": {
+        "title": "Arbeidstid",
+        "coreTime": "Kjernetid er fra kl 9-15 mandag til fredag.",
+        "regularHours": "Ordinær arbeidstid er 8 t/dag, 40 t/uke inkl. lunsjpause."
+      },
+      "overtime": {
+        "title": "Overtid",
+        "intro": "I Forte ønsker vi at overtid skal brukes når det skaper tydelig verdi, for kunden, fagmiljøet, kollegaer eller selskapet som helhet. Vi har tillit til at hver enkelt gjør gode vurderinger av når overtid er nødvendig, og at dette skjer i tråd med våre felles prinsipper om balanse og ansvar.",
+        "examplesTitle": "Eksempler på situasjoner der overtid kan være aktuelt:",
+        "example1": "Du jobber i et 100 % fakturerbart prosjekt og bidrar i tillegg til salgsarbeid, mentorroller, fag eller initiativer som styrker Forte.",
+        "example2": "Du utfører kundearbeid utover 100 % fakturerbarhet, i samråd med kunde og kundeeier, i henhold til gjeldende avtale.",
+        "nonBillableNote": "Dersom du ikke er i et fullt fakturerbart prosjekt, forventes det at oppgaver utover prosjektarbeidet gjennomføres innenfor normal arbeidstid. Skulle det likevel være behov for ekstra innsats, kan dette avtales med personalleder.",
+        "compensationTitle": "Definisjon og kompensasjon for overtid",
+        "compensationIntro": "Overtid er arbeid utover ordinær arbeidstid. Du kan velge å ta ut overtid som lønnskompensasjon (registreres i 24SO) eller avspasering etter disse satsene:",
+        "mondayToSaturday": "Mandag–lørdag",
+        "sunday": "Søndag",
+        "timeOffNote": "Avspasering tas ut innen 90 dager etter at overtiden er opptjent (må senest tas ut inneværende år). Dersom det avspaseres inneværende uke trengs det ikke registreres i Harvest, men dersom det avspaseres senere brukes timekoden «Avspasering».",
+        "limitsTitle": "Maksimalt antall overtidstimer",
+        "limit1": "10 timer på en 7 dagers periode",
+        "limit2": "25 timer over en fire ukers sammenhengende periode",
+        "limit3": "200 timer i året"
+      },
+      "flextime": {
+        "title": "Fleksitid",
+        "intro": "Fleksitid er en tillitsbasert ordning som gir rom for å tilpasse arbeidshverdagen til livet utenfor jobben, og til ulike prosjektforpliktelser og arbeidsrytmer. Vi stoler på at du bruker fleksitiden på en måte som ivaretar både egne behov, teamets rytme og kundens forventninger.",
+        "practiceTitle": "Praktisering av fleksitid",
+        "practice1": "Fleksitid avspaseres 1:1 og tas ut innen 90 dager fra opptjening (må senest tas ut inneværende år).",
+        "practice2": "Dersom du flekser innenfor samme uke, trenger du ikke registrere det særskilt i Harvest.",
+        "practice3": "Ved uttak i en annen uke brukes timekoden «Avspasering» slik at ukeplanen viser totalt 40 registrerte timer."
+      }
     }
   }
 }

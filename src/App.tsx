@@ -5,6 +5,7 @@ import { Game } from "./features/game/Game/Game";
 import { RulesPage } from "./features/game/RulesPage/RulesPage";
 
 import { LotteryPage } from "./features/lottery/LotteryPage/LotteryPage";
+import { TimeBankPage } from "./features/timebank";
 import { LoginScreen } from "./features/auth/LoginScreen/LoginScreen";
 import { ActiveTab, setActiveTab } from "./features/sidebar/navigationSlice";
 import { GameSubTab, setActiveSubTab } from "./features/game";
@@ -40,6 +41,8 @@ export const App = () => {
         dispatch(setActiveTab(ActiveTab.Play));
       } else if (tab === "lottery") {
         dispatch(setActiveTab(ActiveTab.Lottery));
+      } else if (tab === "timebank") {
+        dispatch(setActiveTab(ActiveTab.TimeBank));
       }
 
       // Sync Game sub-navigation for Fortedle-related routes
@@ -72,6 +75,7 @@ export const App = () => {
         <Route path={routes.rules} element={<RulesPage />} />
         <Route path={routes.employees} element={<EmployeesPage />} />
         <Route path={routes.lottery} element={<LotteryPage />} />
+        <Route path={routes.timebank} element={<TimeBankPage />} />
         <Route path={routes.sync} element={isAdmin ? <SyncPage /> : <Navigate to={routes.play} replace />} />
         <Route path="*" element={<Navigate to={routes.play} replace />} />
       </Routes>

@@ -1,0 +1,75 @@
+@use "shared/styles/variables.scss" as *;
+
+.navigationChips {
+  position: relative;
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: calc(100% - #{$spacing-md}); // Account for padding-bottom
+  background-color: $color-dark-accent;
+  border-radius: 1rem;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.chip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: transparent;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  border: none;
+  font-weight: 500;
+  color: $color-dark-accent;
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    transform $transition-fast;
+  white-space: nowrap;
+
+  &:hover:not(:disabled):not(.active) {
+    background-color: $color-secondary-beige;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    color: $color-white;
+    font-weight: 600;
+    background-color: transparent;
+
+    &:hover:not(:disabled) {
+      transform: none;
+    }
+  }
+}
+
+.icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.label {
+  line-height: 1.2;
+}

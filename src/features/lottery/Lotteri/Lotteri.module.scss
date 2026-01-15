@@ -161,3 +161,156 @@
   color: $color-success;
   font-size: 0.875rem;
 }
+
+.winnersRevealWrapper {
+  position: relative;
+  margin: $spacing-lg 0;
+}
+
+@keyframes subtleWiggle {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotate(-2deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotate(2deg);
+  }
+}
+
+.revealWinnersButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  padding: $spacing-md $spacing-lg;
+  background-color: #221c38;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    transform $transition-fast;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px $color-shadow-medium;
+  animation: subtleWiggle 2s ease-in-out infinite;
+  animation-delay: 1s;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(34, 28, 56, 0.9);
+    transform: translate(-50%, -50%) translateY(-1px);
+    box-shadow: 0 4px 12px $color-shadow-medium;
+    animation: none; // Stop animation on hover
+  }
+
+  &:active:not(:disabled) {
+    transform: translate(-50%, -50%) translateY(0);
+    animation: none; // Stop animation on active
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    animation: none; // Stop animation when disabled
+  }
+}
+
+.winnersContainer {
+  background-color: $color-overlay-beige;
+  border: 2px solid $color-dark-accent;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  text-align: center;
+  transition: filter $transition-normal;
+}
+
+.winnersContainer.blurred {
+  filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
+}
+
+.winnersTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-lg 0;
+}
+
+.winnersText {
+  font-size: 1rem;
+  color: $color-dark-fill;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.weekGroup {
+  margin-bottom: $spacing-xl;
+  text-align: left;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.weekLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-md 0;
+}
+
+.winnersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.winnerItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-white;
+  border-radius: $radius-sm;
+  border: 1px solid $color-border-medium;
+}
+
+.winnerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.winnerAvatarPlaceholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: $color-border-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-dark-fill;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.winnerName {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+  font-weight: 500;
+}

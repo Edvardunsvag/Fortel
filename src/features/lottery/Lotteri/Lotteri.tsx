@@ -4,6 +4,7 @@ import { useLotteryTimeEntries, useLotteryUser, useSyncLotteryTickets } from "..
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { getNextLotteryDate, getNextLotteryDateTime } from "../lotteryUtils";
 import { formatDateReadable } from "@/shared/utils/dateUtils";
+import { WinnersReveal } from "./WinnersReveal";
 import styles from "./Lotteri.module.scss";
 import { FROM_DATE, TO_DATE } from "../consts";
 
@@ -188,6 +189,8 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
             )}
           </div>
         )}
+
+        <WinnersReveal />
       </div>
     </div>
   );

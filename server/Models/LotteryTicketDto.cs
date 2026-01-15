@@ -26,3 +26,23 @@ public class LotteryTicketDto
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
+
+public class WinnerDto
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Image { get; set; }
+    public string Week { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+}
+
+public class WeeklyWinnersDto
+{
+    public string Week { get; set; } = string.Empty;
+    public List<WinnerDto> Winners { get; set; } = new();
+}
+
+public class AllWinnersResponse
+{
+    public List<WeeklyWinnersDto> WeeklyWinners { get; set; } = new();
+}

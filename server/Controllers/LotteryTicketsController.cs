@@ -85,6 +85,51 @@ public class LotteryTicketsController : ControllerBase
         }
     }
 
+    [HttpGet("winners")]
+    public async Task<ActionResult<AllWinnersResponse>> GetWinners()
+    {
+        try
+        {
+            // Query winning tickets joined with lottery tickets to get Name and Image
+            var winners = await _context.WinningTickets
+                .Include(wt => wt.LotteryTicket)
+                .OrderByDescending(wt => wt.Week)
+                .ThenByDescending(wt => wt.CreatedAt)
+                .Select(wt => new WinnerDto
+                {
+                    UserId = wt.UserId,
+                    Name = wt.LotteryTicket != null ? wt.LotteryTicket.Name : string.Empty,
+                    Image = wt.LotteryTicket != null ? wt.LotteryTicket.Image : null,
+                    Week = wt.Week,
+                    CreatedAt = wt.CreatedAt
+                })
+                .ToListAsync();
+
+            // Group winners by week
+            var weeklyWinners = winners
+                .GroupBy(w => w.Week)
+                .Select(g => new WeeklyWinnersDto
+                {
+                    Week = g.Key,
+                    Winners = g.OrderByDescending(w => w.CreatedAt).ToList()
+                })
+                .OrderByDescending(w => w.Week)
+                .ToList();
+
+            var response = new AllWinnersResponse
+            {
+                WeeklyWinners = weeklyWinners
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching winners");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
     [HttpPost("seed-test-data")]
     public async Task<ActionResult<object>> SeedTestData()
     {

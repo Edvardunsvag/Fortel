@@ -287,3 +287,38 @@ export const syncLotteryTickets = async (
     throw new Error(error instanceof Error ? error.message : "Failed to sync lottery tickets");
   }
 };
+
+/**
+ * Fetches all winners grouped by week
+ *
+ * @returns All winners grouped by week
+ */
+export const fetchAllWinners = async (): Promise<{
+  weeklyWinners: Array<{
+    week: string;
+    winners: Array<{
+      userId: string;
+      name: string;
+      image: string | null;
+      week: string;
+      createdAt: string;
+    }>;
+  }>;
+}> => {
+  try {
+    // Method will be available after regenerating API client: npm run generate:api
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsWinnersGet();
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch winners: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch winners");
+  }
+};

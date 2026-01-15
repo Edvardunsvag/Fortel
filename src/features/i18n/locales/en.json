@@ -228,7 +228,14 @@
       "syncTickets": "Sync my tickets",
       "syncing": "Syncing...",
       "syncError": "Failed to sync tickets. Please try again.",
-      "syncSuccess": "Synced {{synced}} ticket(s), skipped {{skipped}} duplicate(s)."
+      "syncSuccess": "Synced {{synced}} ticket(s), skipped {{skipped}} duplicate(s).",
+      "revealWinners": "Reveal winners",
+      "winners": {
+        "title": "Winners",
+        "week": "Week",
+        "noWinners": "No winners yet.",
+        "error": "Failed to load winners."
+      }
     },
     "eligibility": {
       "missingHours": "Missing 8 hours on: {{dates}}",

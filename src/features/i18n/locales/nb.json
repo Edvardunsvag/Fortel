@@ -228,7 +228,14 @@
       "syncTickets": "Synk mine lodd",
       "syncing": "Synker...",
       "syncError": "Kunne ikke synke lodd. Prøv igjen.",
-      "syncSuccess": "Synket {{synced}} lodd, hoppet over {{skipped}} duplikat(er)."
+      "syncSuccess": "Synket {{synced}} lodd, hoppet over {{skipped}} duplikat(er).",
+      "revealWinners": "Vis vinnere",
+      "winners": {
+        "title": "Vinnere",
+        "week": "Uke",
+        "noWinners": "Ingen vinnere ennå.",
+        "error": "Kunne ikke laste vinnere."
+      }
     },
     "eligibility": {
       "missingHours": "Mangler 8 timer på: {{dates}}",

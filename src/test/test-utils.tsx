@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
 import { FeatureKey } from "@/shared/redux/enums";
 import { gameReducer } from "@/features/game/gameSlice";
@@ -42,11 +43,13 @@ export function renderWithProviders(
 ) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <MsalProvider instance={msalInstance}>
-        <QueryClientProvider client={queryClient}>
-          <Provider store={store}>{children}</Provider>
-        </QueryClientProvider>
-      </MsalProvider>
+      <MemoryRouter>
+        <MsalProvider instance={msalInstance}>
+          <QueryClientProvider client={queryClient}>
+            <Provider store={store}>{children}</Provider>
+          </QueryClientProvider>
+        </MsalProvider>
+      </MemoryRouter>
     );
   }
 

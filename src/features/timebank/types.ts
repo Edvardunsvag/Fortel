@@ -26,6 +26,7 @@ export interface WeekBalance {
   expected: number; // 40 or prorated for partial weeks
   balance: number; // logged - expected
   cumulativeBalance: number; // Running total
+  
   entries: ProjectEntry[]; // Grouped by project/task for display
 }
 

@@ -266,6 +266,8 @@
     "project": "Prosjekt",
     "total": "Total",
     "noEntries": "Ingen oppføringer denne uken",
+    "hourSuffix": "t",
+    "weekPrefix": "Uke",
     "navigation": {
       "data": "Dine timer",
       "rules": "Regler"

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format, parseISO } from "date-fns";
 import type { WeekBalance } from "../types";
-import { formatBalance, getBalanceClass, getWeekDates, formatHoursDisplay } from "../timebankUtils";
+import { formatBalance, getBalanceClass, getWeekDates, formatHoursDisplay, formatWeekKey } from "../timebankUtils";
 import styles from "./TimeBankPage.module.scss";
 
 interface WeeklyBreakdownProps {
@@ -59,16 +59,16 @@ export const WeeklyBreakdown = ({ weeks }: WeeklyBreakdownProps) => {
                 }}
               >
                 <div className={styles.weekHeaderContent}>
-                  <h4 className={styles.weekTitle}>{week.weekKey}</h4>
+                  <h4 className={styles.weekTitle}>{formatWeekKey(week.weekKey, t("timebank.weekPrefix"))}</h4>
                   <div className={styles.weekStats}>
                     <span className={styles.weekHours}>
-                      {week.logged.toFixed(1)}h / {week.expected.toFixed(1)}h
+                      {week.logged.toFixed(1)}{t("timebank.hourSuffix")} / {week.expected.toFixed(1)}{t("timebank.hourSuffix")}
                     </span>
                     <span className={`${styles.weekBalance} ${getBalanceColorClass(week.balance)}`}>
-                      {formatBalance(week.balance)}
+                      {formatBalance(week.balance, t("timebank.hourSuffix"))}
                     </span>
                     <span className={styles.weekCumulative}>
-                      ({formatBalance(week.cumulativeBalance)})
+                      ({formatBalance(week.cumulativeBalance, t("timebank.hourSuffix"))})
                     </span>
                   </div>
                 </div>

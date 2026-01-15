@@ -249,9 +249,19 @@ export const calculateTimeBalance = (
 /**
  * Format balance for display with + or - prefix
  */
-export const formatBalance = (balance: number): string => {
+export const formatBalance = (balance: number, hourSuffix: string = "h"): string => {
   const sign = balance >= 0 ? "+" : "";
-  return `${sign}${balance.toFixed(1)}h`;
+  return `${sign}${balance.toFixed(1)}${hourSuffix}`;
+};
+
+/**
+ * Format week key for display (e.g., "2026-W03" -> "Uke 3" or "Week 3")
+ */
+export const formatWeekKey = (weekKey: string, weekPrefix: string): string => {
+  const match = weekKey.match(/^\d{4}-W(\d{2})$/);
+  if (!match) return weekKey;
+  const weekNumber = parseInt(match[1], 10);
+  return `${weekPrefix} ${weekNumber}`;
 };
 
 /**

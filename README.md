@@ -75,39 +75,7 @@ npm run dev
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with the following variables:
-
-```bash
-# API Configuration (optional)
-# In development, Vite proxy handles /api routes automatically
-# In production, set this to your backend URL or it defaults to the deployed backend
-VITE_API_URL=https://your-backend-url.com
-
-# Azure AD Authentication (required for login)
-VITE_AZURE_CLIENT_ID=your-azure-client-id
-VITE_AZURE_TENANT_ID=your-tenant-id  # Optional, defaults to 'common'
-VITE_AZURE_REDIRECT_URI=http://localhost:5173  # Optional, defaults to current origin
-
-# Harvest OAuth (required for time lottery feature)
-VITE_HARVEST_CLIENT_ID=your-harvest-client-id
-VITE_HARVEST_CLIENT_SECRET=your-harvest-client-secret
-VITE_HARVEST_REDIRECT_URI=http://localhost:5173/time-lottery  # Optional, auto-detected based on environment
-```
-
-**Required variables:**
-
-- `VITE_AZURE_CLIENT_ID` - Required for Azure AD authentication
-- `VITE_HARVEST_CLIENT_ID` - Required for Harvest OAuth integration
-- `VITE_HARVEST_CLIENT_SECRET` - Required for Harvest OAuth integration
-
-**Optional variables:**
-
-- `VITE_API_URL` - Backend API URL (only needed in production if different from default)
-- `VITE_AZURE_TENANT_ID` - Azure AD tenant ID (defaults to 'common')
-- `VITE_AZURE_REDIRECT_URI` - Azure AD redirect URI (defaults to current origin)
-- `VITE_HARVEST_REDIRECT_URI` - Harvest redirect URI (auto-detected based on environment)
-
-**Note:** In development, the Vite dev server automatically proxies `/api` requests to `http://localhost:8080` (configured in `vite.config.ts`).
+Ask a developer on the team to pass you the `.env` file and place it in the root directory.
 
 ### Build
 

@@ -36,4 +36,13 @@ if ! npm run build; then
   exit 1
 fi
 
-echo "✅ API client is in sync and build passes"
+echo ""
+echo "🧪 Running tests..."
+if ! npm run test:ci; then
+  echo ""
+  echo "❌ Tests failed! Please fix failing tests before committing."
+  exit 1
+fi
+
+echo ""
+echo "✅ API client is in sync, build passes, and all tests pass"

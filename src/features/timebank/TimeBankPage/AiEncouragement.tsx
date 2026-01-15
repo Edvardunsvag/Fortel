@@ -18,8 +18,10 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isTtsLoading, setIsTtsLoading] = useState(false);
   const hasFetchedRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const cachedAudioRef = useRef<string | null>(null);
 
   const isNorwegian = i18n.language === "nb" || i18n.language === "no";
 
@@ -100,12 +102,34 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
         }
         clearTimeout(timeoutId);
         setIsLoading(false);
+        // Pre-fetch TTS audio
+        prefetchTts(fullMessage);
       })
       .catch((error) => {
         clearTimeout(timeoutId);
         setMessage(getFallback(error.name === "AbortError" ? "timeout" : "error"));
         setIsLoading(false);
       });
+
+    async function prefetchTts(text: string) {
+      if (!text) return;
+      try {
+        setIsTtsLoading(true);
+        const response = await fetch(
+          `${endpoint}openai/deployments/gpt-4o-mini-tts/audio/speech?api-version=2025-03-01-preview`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "api-key": apiKey },
+            body: JSON.stringify({ model: "gpt-4o-mini-tts", input: text, voice: "cedar" }),
+          }
+        );
+        if (response.ok) {
+          const blob = await response.blob();
+          cachedAudioRef.current = URL.createObjectURL(blob);
+        }
+      } catch { /* ignore */ }
+      finally { setIsTtsLoading(false); }
+    }
 
     function getFallback(type: string) {
       const sign = timeBalance.balance >= 0 ? "+" : "";
@@ -116,7 +140,7 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
     }
   }, [timeBalance, fagtimerBalance, isNorwegian]);
 
-  // Play TTS
+  // Play TTS (uses cached audio if available)
   const handlePlayClick = async () => {
     if (isPlaying && audioRef.current) {
       audioRef.current.pause();
@@ -125,6 +149,18 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
     }
     if (!message) return;
 
+    // Use cached audio if available
+    if (cachedAudioRef.current) {
+      const audio = new Audio(cachedAudioRef.current);
+      audioRef.current = audio;
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => setIsPlaying(false);
+      setIsPlaying(true);
+      await audio.play();
+      return;
+    }
+
+    // Fallback: fetch on demand
     const endpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT;
     const apiKey = import.meta.env.VITE_AZURE_OPENAI_API_KEY;
     if (!endpoint || !apiKey) return;
@@ -142,7 +178,9 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
       if (!response.ok) throw new Error("TTS failed");
 
       const blob = await response.blob();
-      const audio = new Audio(URL.createObjectURL(blob));
+      const audioUrl = URL.createObjectURL(blob);
+      cachedAudioRef.current = audioUrl;
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
       audio.onended = () => setIsPlaying(false);
       audio.onerror = () => setIsPlaying(false);
@@ -164,8 +202,8 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
         )}
         <span className={styles.aiEncouragementTitle}>Eddi</span>
         {message && !isLoading && (
-          <button className={styles.aiEncouragementPlayButton} onClick={handlePlayClick} aria-label={isPlaying ? "Pause" : "Play"}>
-            {isPlaying ? "⏸️" : "🔊"}
+          <button className={styles.aiEncouragementPlayButton} onClick={handlePlayClick} aria-label={isPlaying ? "Pause" : "Play"} disabled={isTtsLoading}>
+            {isTtsLoading ? "⏳" : isPlaying ? "⏸️" : "🔊"}
           </button>
         )}
       </div>

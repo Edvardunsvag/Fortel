@@ -5,7 +5,6 @@ base.ts
 common.ts
 configuration.ts
 docs/EmployeesApi.md
-docs/FortedleServerModelsAllWinnersResponse.md
 docs/FortedleServerModelsEmployeeDto.md
 docs/FortedleServerModelsGuessDto.md
 docs/FortedleServerModelsGuessHintDto.md
@@ -22,8 +21,6 @@ docs/FortedleServerModelsSyncLotteryTicketsRequest.md
 docs/FortedleServerModelsSyncLotteryTicketsResponse.md
 docs/FortedleServerModelsSyncRequest.md
 docs/FortedleServerModelsSyncResponse.md
-docs/FortedleServerModelsWeeklyWinnersDto.md
-docs/FortedleServerModelsWinnerDto.md
 docs/HealthApi.md
 docs/LeaderboardApi.md
 docs/LotteryTicketsApi.md

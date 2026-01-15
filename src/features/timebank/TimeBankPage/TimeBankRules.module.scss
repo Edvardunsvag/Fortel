@@ -6,6 +6,13 @@
   gap: $spacing-xl;
 }
 
+.mainTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: 0 0 $spacing-lg 0;
+}
+
 .section {
   // Section wrapper
 }

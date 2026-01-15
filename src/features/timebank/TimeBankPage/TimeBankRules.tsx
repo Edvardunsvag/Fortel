@@ -6,6 +6,8 @@ export const TimeBankRules = () => {
 
   return (
     <div className={styles.rulesContainer}>
+      <h1 className={styles.mainTitle}>{t("timebank.rules.title")}</h1>
+
       {/* Working Hours */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("timebank.rules.workingHours.title")}</h2>

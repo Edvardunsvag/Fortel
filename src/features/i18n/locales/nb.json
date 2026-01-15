@@ -295,6 +295,7 @@
       "topProject": "Mest aktive prosjekt"
     },
     "rules": {
+      "title": "Arbeidstid, overtid, fleksibel arbeidstidsordning og reisetid",
       "workingHours": {
         "title": "Arbeidstid",
         "coreTime": "Kjernetid er fra kl 9-15 mandag til fredag.",

@@ -94,6 +94,17 @@ export interface FortedleServerModelsSubmitScoreResponse {
     'success'?: boolean;
     'result'?: FortedleServerModelsLeaderboardEntryDto;
 }
+export interface FortedleServerModelsSyncLotteryTicketsRequest {
+    'userId'?: string | null;
+    'name'?: string | null;
+    'image'?: string | null;
+    'eligibleWeeks'?: Array<string> | null;
+}
+export interface FortedleServerModelsSyncLotteryTicketsResponse {
+    'syncedCount'?: number;
+    'skippedCount'?: number;
+    'totalCount'?: number;
+}
 export interface FortedleServerModelsSyncRequest {
     'accessToken'?: string | null;
 }
@@ -486,6 +497,116 @@ export class LeaderboardApi extends BaseAPI implements LeaderboardApiInterface {
      */
     public apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig) {
         return LeaderboardApiFp(this.configuration).apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * LotteryTicketsApi - axios parameter creator
+ */
+export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsSyncPost: async (fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/sync`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsSyncLotteryTicketsRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * LotteryTicketsApi - functional programming interface
+ */
+export const LotteryTicketsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = LotteryTicketsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsSyncLotteryTicketsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsSyncPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * LotteryTicketsApi - factory interface
+ */
+export const LotteryTicketsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = LotteryTicketsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSyncLotteryTicketsResponse> {
+            return localVarFp.apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * LotteryTicketsApi - interface
+ */
+export interface LotteryTicketsApiInterface {
+    /**
+     * 
+     * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSyncLotteryTicketsResponse>;
+
+}
+
+/**
+ * LotteryTicketsApi - object-oriented interface
+ */
+export class LotteryTicketsApi extends BaseAPI implements LotteryTicketsApiInterface {
+    /**
+     * 
+     * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

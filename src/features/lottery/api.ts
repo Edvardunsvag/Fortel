@@ -1,5 +1,10 @@
 import type { HarvestUser, HarvestTimeEntriesResponse, HarvestAccountsResponse } from "./types";
 import { harvestConfig } from "@/shared/config/harvestConfig";
+import { lotteryTicketsApi } from "@/shared/api/client";
+import type {
+  FortedleServerModelsSyncLotteryTicketsRequest,
+  FortedleServerModelsSyncLotteryTicketsResponse,
+} from "@/shared/api/generated/index";
 
 /**
  * Extract account ID from Harvest access token
@@ -207,4 +212,78 @@ export const fetchHarvestTimeEntries = async (
   }
 
   return response.json();
+};
+
+/**
+ * Fetches all lottery tickets for a user
+ *
+ * @param userId - User ID (from Harvest user)
+ */
+export const fetchLotteryTickets = async (
+  userId: string
+): Promise<
+  Array<{
+    id: number;
+    userId: string;
+    name: string;
+    image: string | null;
+    eligibleWeek: string;
+    isUsed: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>
+> => {
+  try {
+    // Method will be available after regenerating API client: npm run generate:api
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsGet(userId);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch lottery tickets: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch lottery tickets");
+  }
+};
+
+/**
+ * Syncs lottery tickets for a user
+ * Sends eligible weeks to the backend to be stored as lottery tickets
+ *
+ * @param userId - User ID (from Harvest user)
+ * @param name - User name
+ * @param image - User image URL (optional)
+ * @param eligibleWeeks - Array of eligible week keys (e.g., ["2024-W01", "2024-W02"])
+ */
+export const syncLotteryTickets = async (
+  userId: string,
+  name: string,
+  image: string | null | undefined,
+  eligibleWeeks: string[]
+): Promise<FortedleServerModelsSyncLotteryTicketsResponse> => {
+  try {
+    const request: FortedleServerModelsSyncLotteryTicketsRequest = {
+      userId,
+      name,
+      image: image || null,
+      eligibleWeeks,
+    };
+
+    const response = await lotteryTicketsApi.apiLotteryTicketsSyncPost(request);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to sync lottery tickets: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to sync lottery tickets");
+  }
 };

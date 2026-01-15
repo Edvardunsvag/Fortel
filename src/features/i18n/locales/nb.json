@@ -223,7 +223,11 @@
         "minutes_plural": "{{count}} minutter",
         "seconds": "{{count}} sekund",
         "seconds_plural": "{{count}} sekunder"
-      }
+      },
+      "syncTickets": "Synk mine lodd",
+      "syncing": "Synker...",
+      "syncError": "Kunne ikke synke lodd. Prøv igjen.",
+      "syncSuccess": "Synket {{synced}} lodd, hoppet over {{skipped}} duplikat(er)."
     },
     "eligibility": {
       "missingHours": "Mangler 8 timer på: {{dates}}",

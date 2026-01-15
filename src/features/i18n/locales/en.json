@@ -223,7 +223,11 @@
         "minutes_plural": "{{count}} minutes",
         "seconds": "{{count}} second",
         "seconds_plural": "{{count}} seconds"
-      }
+      },
+      "syncTickets": "Sync my tickets",
+      "syncing": "Syncing...",
+      "syncError": "Failed to sync tickets. Please try again.",
+      "syncSuccess": "Synced {{synced}} ticket(s), skipped {{skipped}} duplicate(s)."
     },
     "eligibility": {
       "missingHours": "Missing 8 hours on: {{dates}}",

@@ -108,6 +108,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<ISyncService, SyncService>();
 builder.Services.AddScoped<IRoundService, RoundService>();
+builder.Services.AddScoped<ILotteryTicketService, LotteryTicketService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient();

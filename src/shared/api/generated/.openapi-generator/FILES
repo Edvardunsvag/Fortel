@@ -16,10 +16,13 @@ docs/FortedleServerModelsSaveGuessRequest.md
 docs/FortedleServerModelsStartRoundRequest.md
 docs/FortedleServerModelsSubmitScoreRequest.md
 docs/FortedleServerModelsSubmitScoreResponse.md
+docs/FortedleServerModelsSyncLotteryTicketsRequest.md
+docs/FortedleServerModelsSyncLotteryTicketsResponse.md
 docs/FortedleServerModelsSyncRequest.md
 docs/FortedleServerModelsSyncResponse.md
 docs/HealthApi.md
 docs/LeaderboardApi.md
+docs/LotteryTicketsApi.md
 docs/RoundsApi.md
 docs/SyncApi.md
 git_push.sh

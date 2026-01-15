@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useLotteryTimeEntries } from "../queries";
+import { useLotteryTimeEntries, useLotteryUser, useSyncLotteryTickets } from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { getNextLotteryDate, getNextLotteryDateTime } from "../lotteryUtils";
 import { formatDateReadable } from "@/shared/utils/dateUtils";
@@ -20,10 +20,15 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
     isAuthenticated && !!FROM_DATE && !!TO_DATE
   );
 
+  const { data: user } = useLotteryUser(isAuthenticated);
+
   // Group time entries by week using the shared hook
   const weeklyData = useGroupEntriesByWeek(timeEntries);
   const totalLotteryTickets = weeklyData.filter((week) => week.isLotteryEligible).length;
+  const eligibleWeeks = weeklyData.filter((week) => week.isLotteryEligible).map((week) => week.weekKey);
   const nextLotteryDate = getNextLotteryDate();
+
+  const syncTicketsMutation = useSyncLotteryTickets();
 
   // Memoize the lottery date time to prevent infinite loops
   const nextLotteryDateTime = useMemo(() => getNextLotteryDateTime(), []);
@@ -60,6 +65,34 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
 
     return () => clearInterval(interval);
   }, [nextLotteryDateTime]);
+
+  const handleSyncTickets = async () => {
+    if (!user || eligibleWeeks.length === 0) {
+      return;
+    }
+
+    const userName = `${user.first_name} ${user.last_name}`.trim();
+    const userId = user.id.toString();
+
+    try {
+      await syncTicketsMutation.mutateAsync({
+        userId,
+        name: userName,
+        image: null, // Harvest API doesn't provide user image
+        eligibleWeeks,
+      });
+    } catch (error) {
+      // Error is handled by the mutation
+      console.error("Failed to sync lottery tickets:", error);
+    }
+  };
+
+  const handleSyncKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleSyncTickets();
+    }
+  };
 
   return (
     <div className={styles.dataSection}>
@@ -121,6 +154,38 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
                   </li>
                 ))}
             </ul>
+          </div>
+        )}
+
+        {eligibleWeeks.length > 0 && user && (
+          <div className={styles.syncSection}>
+            <button
+              type="button"
+              onClick={handleSyncTickets}
+              onKeyDown={handleSyncKeyDown}
+              disabled={syncTicketsMutation.isPending}
+              className={styles.syncButton}
+              aria-label={t("lottery.lottery.syncTickets")}
+            >
+              {syncTicketsMutation.isPending
+                ? t("lottery.lottery.syncing")
+                : t("lottery.lottery.syncTickets")}
+            </button>
+            {syncTicketsMutation.isError && (
+              <p className={styles.error} role="alert">
+                {syncTicketsMutation.error instanceof Error
+                  ? syncTicketsMutation.error.message
+                  : t("lottery.lottery.syncError")}
+              </p>
+            )}
+            {syncTicketsMutation.isSuccess && syncTicketsMutation.data && (
+              <p className={styles.success} role="status">
+                {t("lottery.lottery.syncSuccess", {
+                  synced: syncTicketsMutation.data.syncedCount,
+                  skipped: syncTicketsMutation.data.skippedCount,
+                })}
+              </p>
+            )}
           </div>
         )}
       </div>

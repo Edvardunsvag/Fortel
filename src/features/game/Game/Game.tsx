@@ -175,16 +175,6 @@ export const Game = () => {
     }
   };
 
-  if (employees.length === 0) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.empty}>{t("game.noEmployees")}</div>
-        </div>
-      </div>
-    );
-  }
-
   // Show start button if game hasn't started yet
   const startGameButtonElement = (
     <StartGameButton onStartGame={handleStartGame} isStartingGame={isStartingGame} employees={employees} />

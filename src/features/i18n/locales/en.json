@@ -295,6 +295,7 @@
       "topProject": "Most active project"
     },
     "rules": {
+      "title": "Working hours, overtime, flexible working arrangements and travel time",
       "workingHours": {
         "title": "Working Hours",
         "coreTime": "Core time is 9:00-15:00 Monday to Friday.",

@@ -11,6 +11,8 @@ public interface ILotteryDrawingService
 
 public class LotteryDrawingService : ILotteryDrawingService
 {
+    private const int WinnersPerWeek = 3;
+
     private readonly AppDbContext _context;
     private readonly ILogger<LotteryDrawingService> _logger;
 
@@ -30,14 +32,14 @@ public class LotteryDrawingService : ILotteryDrawingService
             var now = DateTime.UtcNow;
             var week = GetWeekString(now);
 
-            // Check if we've already drawn winners for this week
-            var existingWinners = await _context.WinningTickets
+            // Check if we've already drawn the required number of winners for this week
+            var existingWinnersCount = await _context.WinningTickets
                 .Where(w => w.Week == week)
-                .AnyAsync();
+                .CountAsync();
 
-            if (existingWinners)
+            if (existingWinnersCount >= WinnersPerWeek)
             {
-                _logger.LogInformation("Winners for week {Week} have already been drawn. Skipping.", week);
+                _logger.LogInformation("Already have {Count} winners for week {Week}. Skipping drawing.", existingWinnersCount, week);
                 return;
             }
 
@@ -52,13 +54,13 @@ public class LotteryDrawingService : ILotteryDrawingService
                 return;
             }
 
-            if (availableTickets.Count < 3)
+            if (availableTickets.Count < WinnersPerWeek)
             {
                 _logger.LogWarning("Only {Count} available tickets found. Drawing all available tickets.", availableTickets.Count);
             }
 
-            // Pick 3 random tickets (or fewer if less than 3 available)
-            var ticketsToDraw = Math.Min(3, availableTickets.Count);
+            // Pick random tickets (or fewer if less than WinnersPerWeek available)
+            var ticketsToDraw = Math.Min(WinnersPerWeek, availableTickets.Count);
             var random = new Random();
             var winningTickets = availableTickets
                 .OrderBy(_ => random.Next())

@@ -1,6 +1,7 @@
 using Fortedle.Server.Data;
 using Fortedle.Server.Services;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,8 +27,9 @@ builder.Services.AddControllers()
     });
 
 // Configure CORS
+var defaultOrigins = new[] { "http://localhost:5173", "http://localhost:8080" };
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
-    ?? new[] { "http://localhost:5173" };
+    ?? defaultOrigins;
 
 builder.Services.AddCors(options =>
 {
@@ -36,6 +38,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(allowedOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader()
+            .AllowCredentials()
             .WithExposedHeaders("Content-Type")
             .SetPreflightMaxAge(TimeSpan.FromHours(24));
     });
@@ -125,7 +128,7 @@ builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
-    .UsePostgreSqlStorage(connectionString));
+    .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
 
 builder.Services.AddHangfireServer();
 
@@ -173,7 +176,15 @@ app.UseCors();
 app.UseRouting();
 
 // Hangfire Dashboard (optional - can be restricted in production)
-app.UseHangfireDashboard();
+var dashboardOptions = new DashboardOptions();
+if (app.Environment.IsDevelopment())
+{
+    // Allow all requests in development - use empty array to disable authorization
+    dashboardOptions.Authorization = Array.Empty<IDashboardAuthorizationFilter>();
+}
+// In production, you may want to add proper authorization
+// dashboardOptions.Authorization = new[] { new LocalRequestsOnlyAuthorizationFilter() };
+app.UseHangfireDashboard("/hangfire", dashboardOptions);
 
 // Enable Swagger in both Development and Production
 app.UseSwagger(c =>

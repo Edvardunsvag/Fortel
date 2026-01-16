@@ -13,16 +13,46 @@ export enum LotterySubTab {
   Rules = "rules",
   Lottery = "lottery",
   Employees = "employees",
+  LuckyWheel = "luckyWheel",
+}
+
+export type SpinPhase = "idle" | "spinning" | "revealing" | "complete";
+
+export interface MonthlyWinner {
+  userId: string;
+  name: string;
+  image: string | null;
+  color: string | null;
+  month: string;
+  position: number;
+  ticketsConsumed: number;
+  createdAt: string;
+}
+
+export interface WheelState {
+  currentSpinIndex: number;
+  isSpinning: boolean;
+  revealedWinners: MonthlyWinner[];
+  spinPhase: SpinPhase;
 }
 
 interface LotteryState {
   token: HarvestToken | null;
   activeSubTab: LotterySubTab;
+  wheel: WheelState;
 }
+
+const initialWheelState: WheelState = {
+  currentSpinIndex: 0,
+  isSpinning: false,
+  revealedWinners: [],
+  spinPhase: "idle",
+};
 
 const initialState: LotteryState = {
   token: null,
   activeSubTab: LotterySubTab.TimeEntries,
+  wheel: initialWheelState,
 };
 
 const lotterySlice = createSlice({
@@ -70,6 +100,23 @@ const lotterySlice = createSlice({
     setActiveSubTab: (state, action: PayloadAction<LotterySubTab>) => {
       state.activeSubTab = action.payload;
     },
+    // Wheel state reducers
+    setSpinPhase: (state, action: PayloadAction<SpinPhase>) => {
+      state.wheel.spinPhase = action.payload;
+      state.wheel.isSpinning = action.payload === "spinning";
+    },
+    advanceSpinIndex: (state) => {
+      state.wheel.currentSpinIndex += 1;
+    },
+    addRevealedWinner: (state, action: PayloadAction<MonthlyWinner>) => {
+      state.wheel.revealedWinners.push(action.payload);
+    },
+    resetWheel: (state) => {
+      state.wheel = initialWheelState;
+    },
+    setRevealedWinners: (state, action: PayloadAction<MonthlyWinner[]>) => {
+      state.wheel.revealedWinners = action.payload;
+    },
   },
 });
 
@@ -80,10 +127,22 @@ export const {
   loadTokenFromStorage,
   clearLottery,
   setActiveSubTab,
+  setSpinPhase,
+  advanceSpinIndex,
+  addRevealedWinner,
+  resetWheel,
+  setRevealedWinners,
 } = lotterySlice.actions;
 
 export const selectLotteryToken = (state: RootState) => state.lottery.token;
 export const selectIsLotteryAuthenticated = (state: RootState) => state.lottery.token !== null;
 export const selectActiveLotterySubTab = (state: RootState) => state.lottery.activeSubTab;
+
+// Wheel selectors
+export const selectWheelState = (state: RootState) => state.lottery.wheel;
+export const selectCurrentSpinIndex = (state: RootState) => state.lottery.wheel.currentSpinIndex;
+export const selectIsSpinning = (state: RootState) => state.lottery.wheel.isSpinning;
+export const selectRevealedWinners = (state: RootState) => state.lottery.wheel.revealedWinners;
+export const selectSpinPhase = (state: RootState) => state.lottery.wheel.spinPhase;
 
 export const lotteryReducer = lotterySlice.reducer;

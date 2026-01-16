@@ -354,3 +354,127 @@ export const fetchEmployeeStatistics = async (): Promise<{
     throw new Error(error instanceof Error ? error.message : "Failed to fetch employee statistics");
   }
 };
+
+// ============ Grand Finale Lucky Wheel API Functions ============
+
+export interface WheelSegment {
+  userId: string;
+  name: string;
+  image: string | null;
+  color: string;
+  ticketId: number;
+}
+
+export interface WheelParticipant {
+  userId: string;
+  name: string;
+  image: string | null;
+  color: string;
+  ticketCount: number;
+}
+
+export interface WheelDataResponse {
+  segments: WheelSegment[];
+  participants: WheelParticipant[];
+  totalTickets: number;
+}
+
+// MonthlyWinner type is exported from lotterySlice to avoid duplicate exports
+import type { MonthlyWinner } from "./lotterySlice";
+export type { MonthlyWinner } from "./lotterySlice";
+
+export interface MonthlyWinnersResponse {
+  month: string;
+  winners: MonthlyWinner[];
+  isDrawComplete: boolean;
+}
+
+export interface LotteryConfig {
+  monthlyWinnerCount: number;
+  nextMonthlyDrawDate: string;
+  currentMonth: string;
+}
+
+/**
+ * Fetches wheel data (segments and participants)
+ */
+export const fetchWheelData = async (): Promise<WheelDataResponse> => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsWheelGet();
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch wheel data: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch wheel data");
+  }
+};
+
+/**
+ * Fetches monthly winners for a specific month
+ */
+export const fetchMonthlyWinners = async (month?: string): Promise<MonthlyWinnersResponse> => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsMonthlyWinnersGet(month);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch monthly winners: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch monthly winners");
+  }
+};
+
+/**
+ * Fetches the latest monthly winners
+ */
+export const fetchLatestMonthlyWinners = async (): Promise<MonthlyWinnersResponse> => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsMonthlyWinnersLatestGet();
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch latest monthly winners: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch latest monthly winners");
+  }
+};
+
+/**
+ * Fetches lottery configuration
+ */
+export const fetchLotteryConfig = async (): Promise<LotteryConfig> => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsConfigGet();
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch lottery config: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch lottery config");
+  }
+};

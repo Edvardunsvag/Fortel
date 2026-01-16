@@ -60,3 +60,55 @@ public class EmployeeStatisticsResponse
 {
     public List<EmployeeStatisticsDto> Employees { get; set; } = new();
 }
+
+// Monthly lottery / Grand Finale wheel DTOs
+public class MonthlyWinnerDto
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Image { get; set; }
+    public string? Color { get; set; }
+    public string Month { get; set; } = string.Empty;
+    public int Position { get; set; }
+    public int TicketsConsumed { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class MonthlyWinnersResponse
+{
+    public string Month { get; set; } = string.Empty;
+    public List<MonthlyWinnerDto> Winners { get; set; } = new();
+    public bool IsDrawComplete { get; set; }
+}
+
+public class WheelSegmentDto
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Image { get; set; }
+    public string Color { get; set; } = string.Empty;
+    public int TicketId { get; set; }
+}
+
+public class WheelParticipantDto
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Image { get; set; }
+    public string Color { get; set; } = string.Empty;
+    public int TicketCount { get; set; }
+}
+
+public class WheelDataResponse
+{
+    public List<WheelSegmentDto> Segments { get; set; } = new();
+    public List<WheelParticipantDto> Participants { get; set; } = new();
+    public int TotalTickets { get; set; }
+}
+
+public class LotteryConfigDto
+{
+    public int MonthlyWinnerCount { get; set; }
+    public DateTime NextMonthlyDrawDate { get; set; }
+    public string CurrentMonth { get; set; } = string.Empty;
+}

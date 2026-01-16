@@ -206,7 +206,8 @@
       "timeEntries": "Dine timer",
       "rules": "Regler",
       "lottery": "Lotteri",
-      "employees": "Ansatte"
+      "employees": "Ansatte",
+      "luckyWheel": "Grand Finale"
     },
     "rules": {
       "title": "Lotteriregler",
@@ -264,6 +265,41 @@
       "wins": "Gevinster",
       "noEmployees": "Ingen ansatte med lodd funnet.",
       "error": "Kunne ikke laste ansattstatistikk."
+    },
+    "luckyWheel": {
+      "title": "Grand Finale",
+      "subtitle": "Månedlig lykkehjul-trekning",
+      "nextDraw": "Neste trekning",
+      "lockedDescription": "Hjulet blir tilgjengelig når den månedlige trekningen er klar",
+      "days": "dager",
+      "hours": "timer",
+      "minutes": "min",
+      "seconds": "sek",
+      "participants": {
+        "title": "Deltakere",
+        "empty": "Ingen deltakere ennå",
+        "totalTickets": "{{count}} lodd i hjulet",
+        "tickets": "lodd"
+      },
+      "controls": {
+        "spinning": "Spinner...",
+        "revealing": "Avslører...",
+        "complete": "Fullført!",
+        "startSpin": "SNURR!",
+        "nextSpin": "Neste snurr",
+        "spinProgress": "Snurr {{current}} av {{total}}",
+        "reset": "Tilbakestill"
+      },
+      "winners": {
+        "title": "Vinnere",
+        "notYetDrawn": "Vinnere er ikke trukket ennå",
+        "tickets": "{{count}} lodd"
+      },
+      "winnerReveal": {
+        "andTheWinnerIs": "Og vinneren er...",
+        "withTickets": "med {{count}} lodd",
+        "continue": "Fortsett"
+      }
     }
   },
   "timebank": {

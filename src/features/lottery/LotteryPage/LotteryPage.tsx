@@ -20,6 +20,7 @@ import { YourHours } from "../DineTimer/YourHours";
 import { Regler } from "../Regler/Regler";
 import { Lotteri } from "../Lotteri/Lotteri";
 import { EmployeeStatistics } from "./EmployeeStatistics";
+import { LuckyWheel } from "../LuckyWheel";
 import styles from "./LotteryPage.module.scss";
 import { FROM_DATE, TO_DATE } from "../consts";
 
@@ -122,6 +123,8 @@ export const LotteryPage = () => {
         {activeSubTab === LotterySubTab.Lottery && <Lotteri isAuthenticated={isAuthenticated} />}
 
         {activeSubTab === LotterySubTab.Employees && <EmployeeStatistics />}
+
+        {activeSubTab === LotterySubTab.LuckyWheel && <LuckyWheel isAuthenticated={isAuthenticated} />}
       </div>
     </div>
   );

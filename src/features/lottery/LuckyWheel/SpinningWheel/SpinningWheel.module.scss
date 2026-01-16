@@ -1,0 +1,45 @@
+.wheelContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel {
+  border-radius: 50%;
+  filter: drop-shadow(0 8px 32px rgba(255, 215, 0, 0.3));
+  transition: filter 0.3s ease;
+
+  &.spinning {
+    filter: drop-shadow(0 8px 48px rgba(255, 215, 0, 0.5));
+  }
+}
+
+.pointer {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.pointerSvg {
+  width: 30px;
+  height: 50px;
+}
+
+// Glow animation for when spinning
+@keyframes wheelGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 8px 32px rgba(255, 215, 0, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 8px 48px rgba(255, 215, 0, 0.6));
+  }
+}
+
+.wheel.spinning {
+  animation: wheelGlow 1s ease-in-out infinite;
+}

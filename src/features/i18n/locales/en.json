@@ -206,7 +206,8 @@
       "timeEntries": "Your Hours",
       "rules": "Rules",
       "lottery": "Lottery",
-      "employees": "Employees"
+      "employees": "Employees",
+      "luckyWheel": "Grand Finale"
     },
     "rules": {
       "title": "Lottery Rules",
@@ -264,6 +265,41 @@
       "wins": "Wins",
       "noEmployees": "No employees with lottery tickets found.",
       "error": "Failed to load employee statistics."
+    },
+    "luckyWheel": {
+      "title": "Grand Finale",
+      "subtitle": "Monthly Lucky Wheel Draw",
+      "nextDraw": "Next Draw",
+      "lockedDescription": "The wheel will be available when the monthly draw is ready",
+      "days": "days",
+      "hours": "hrs",
+      "minutes": "min",
+      "seconds": "sec",
+      "participants": {
+        "title": "Participants",
+        "empty": "No participants yet",
+        "totalTickets": "{{count}} tickets in the wheel",
+        "tickets": "tickets"
+      },
+      "controls": {
+        "spinning": "Spinning...",
+        "revealing": "Revealing...",
+        "complete": "Complete!",
+        "startSpin": "SPIN!",
+        "nextSpin": "Next Spin",
+        "spinProgress": "Spin {{current}} of {{total}}",
+        "reset": "Reset"
+      },
+      "winners": {
+        "title": "Winners",
+        "notYetDrawn": "Winners not yet drawn",
+        "tickets": "{{count}} tickets"
+      },
+      "winnerReveal": {
+        "andTheWinnerIs": "And the winner is...",
+        "withTickets": "with {{count}} tickets",
+        "continue": "Continue"
+      }
     }
   },
   "timebank": {

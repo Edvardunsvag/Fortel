@@ -118,3 +118,71 @@ export const triggerRainbowCelebration = () => {
 
   frame();
 };
+
+/**
+ * Grand Finale confetti explosion for the lucky wheel
+ */
+export const triggerGrandFinaleConfetti = () => {
+  const colors = ["#fbbf24", "#f59e0b", "#ef4444", "#22c55e", "#3b82f6", "#8b5cf6"];
+  const duration = 3000;
+  const end = Date.now() + duration;
+
+  // Initial big burst
+  confetti({
+    particleCount: 100,
+    spread: 100,
+    origin: { x: 0.5, y: 0.5 },
+    colors,
+    startVelocity: 45,
+  });
+
+  const frame = () => {
+    if (Date.now() > end) return;
+
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.6 },
+      colors,
+    });
+
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.6 },
+      colors,
+    });
+
+    requestAnimationFrame(frame);
+  };
+
+  frame();
+};
+
+/**
+ * Winner reveal confetti for individual winner announcements
+ */
+export const triggerWinnerRevealConfetti = () => {
+  const colors = ["#fbbf24", "#f59e0b", "#fcd34d", "#ffffff"];
+
+  confetti({
+    particleCount: 60,
+    spread: 70,
+    origin: { x: 0.5, y: 0.6 },
+    colors,
+    startVelocity: 35,
+    gravity: 0.8,
+  });
+
+  setTimeout(() => {
+    confetti({
+      particleCount: 40,
+      spread: 90,
+      origin: { x: 0.5, y: 0.7 },
+      colors,
+      startVelocity: 25,
+    });
+  }, 200);
+};

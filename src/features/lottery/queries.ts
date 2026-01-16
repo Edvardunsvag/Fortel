@@ -11,7 +11,12 @@ import {
   fetchLotteryTickets,
   fetchAllWinners,
   fetchEmployeeStatistics,
+  fetchWheelData,
+  fetchMonthlyWinners,
+  fetchLatestMonthlyWinners,
+  fetchLotteryConfig,
 } from "./api";
+import type { WheelDataResponse, MonthlyWinnersResponse, LotteryConfig } from "./api";
 import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
   selectLotteryToken,
@@ -30,6 +35,11 @@ export const lotteryKeys = {
   tickets: (userId: string) => [...lotteryKeys.all, "tickets", userId] as const,
   winners: () => [...lotteryKeys.all, "winners"] as const,
   statistics: () => [...lotteryKeys.all, "statistics"] as const,
+  // Grand Finale Lucky Wheel keys
+  wheelData: () => [...lotteryKeys.all, "wheelData"] as const,
+  monthlyWinners: (month?: string) => [...lotteryKeys.all, "monthlyWinners", month] as const,
+  latestMonthlyWinners: () => [...lotteryKeys.all, "latestMonthlyWinners"] as const,
+  lotteryConfig: () => [...lotteryKeys.all, "config"] as const,
 };
 
 /**
@@ -399,4 +409,68 @@ export const useEmployeeStatistics = () => {
   });
 };
 
-//Comment to trigger a build
+// ============ Grand Finale Lucky Wheel Query Hooks ============
+
+/**
+ * Query hook for fetching wheel data (segments and participants)
+ */
+export const useWheelData = () => {
+  return useQuery<WheelDataResponse>({
+    queryKey: lotteryKeys.wheelData(),
+    queryFn: fetchWheelData,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Query hook for fetching monthly winners for a specific month
+ */
+export const useMonthlyWinners = (month?: string) => {
+  return useQuery<MonthlyWinnersResponse>({
+    queryKey: lotteryKeys.monthlyWinners(month),
+    queryFn: () => fetchMonthlyWinners(month),
+    retry: (failureCount, error) => {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Query hook for fetching the latest monthly winners
+ */
+export const useLatestMonthlyWinners = () => {
+  return useQuery<MonthlyWinnersResponse>({
+    queryKey: lotteryKeys.latestMonthlyWinners(),
+    queryFn: fetchLatestMonthlyWinners,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Query hook for fetching lottery configuration
+ */
+export const useLotteryConfig = () => {
+  return useQuery<LotteryConfig>({
+    queryKey: lotteryKeys.lotteryConfig(),
+    queryFn: fetchLotteryConfig,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};

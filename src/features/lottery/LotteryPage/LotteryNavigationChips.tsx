@@ -9,6 +9,7 @@ const subTabToTranslationKey: Record<LotterySubTab, string> = {
   [LotterySubTab.Rules]: "lottery.navigation.rules",
   [LotterySubTab.Lottery]: "lottery.navigation.lottery",
   [LotterySubTab.Employees]: "lottery.navigation.employees",
+  [LotterySubTab.LuckyWheel]: "lottery.navigation.luckyWheel",
 };
 
 const subTabToIcon: Record<LotterySubTab, string> = {
@@ -16,6 +17,7 @@ const subTabToIcon: Record<LotterySubTab, string> = {
   [LotterySubTab.Rules]: "📖",
   [LotterySubTab.Lottery]: "🎫",
   [LotterySubTab.Employees]: "👥",
+  [LotterySubTab.LuckyWheel]: "🎡",
 };
 
 export const LotteryNavigationChips = () => {
@@ -42,6 +44,7 @@ export const LotteryNavigationChips = () => {
     LotterySubTab.Rules,
     LotterySubTab.Lottery,
     LotterySubTab.Employees,
+    LotterySubTab.LuckyWheel,
   ];
 
   // Update slider position when active tab changes

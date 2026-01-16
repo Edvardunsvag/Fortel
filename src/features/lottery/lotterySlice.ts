@@ -72,8 +72,16 @@ const lotterySlice = createSlice({
   },
 });
 
-export const { setTokenFromAuth, setTokenFromRefresh, setTokenAccountId, loadTokenFromStorage, clearLottery, setActiveSubTab } =
-  lotterySlice.actions;
+export const {
+  setTokenFromAuth,
+  setTokenFromRefresh,
+  setTokenAccountId,
+  loadTokenFromStorage,
+  clearLottery,
+  setActiveSubTab,
+} = lotterySlice.actions;
+
+//Added comment in lotterySlice.ts to trigger a build
 
 export const selectLotteryToken = (state: RootState) => state.lottery.token;
 export const selectIsLotteryAuthenticated = (state: RootState) => state.lottery.token !== null;

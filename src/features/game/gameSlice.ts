@@ -124,8 +124,13 @@ const gameSlice = createSlice({
       const round = action.payload.round;
       const today = getTodayDateString();
 
-      // Only load if it's for today
-      if (round.date === today) {
+      // Load if it's for today OR if it's the same round we're already playing OR if the game is won
+      // This handles timezone differences and ensures state updates after saving guesses
+      const isToday = round.date === today;
+      const isCurrentRound = state.roundId === round.id || state.employeeOfTheDayId === round.employeeOfTheDayId;
+      const isWon = round.status === "won";
+
+      if (isToday || isCurrentRound || isWon) {
         state.employeeOfTheDayId = round.employeeOfTheDayId;
         state.guesses = round.guesses;
         state.status = round.status === "won" ? "won" : "playing";

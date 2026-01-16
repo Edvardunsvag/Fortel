@@ -103,18 +103,6 @@ export const useWheelAnimation = ({
         spinAmount += 360;
       }
 
-      // Debug logging
-      console.log("=== spinToSegment ===");
-      console.log("targetIndex:", targetIndex);
-      console.log("segmentCount:", segmentCount);
-      console.log("segmentAngle:", segmentAngle);
-      console.log("targetSegmentCenterFromTop:", targetSegmentCenterFromTop);
-      console.log("currentRotation:", rotation);
-      console.log("currentNormalized:", currentNormalized);
-      console.log("spinAmount:", spinAmount);
-      console.log("finalRotation:", rotation + spinAmount);
-      console.log("finalRotation % 360:", (rotation + spinAmount) % 360);
-
       startRotationRef.current = rotation;
       targetRotationRef.current = rotation + spinAmount;
       startTimeRef.current = null;

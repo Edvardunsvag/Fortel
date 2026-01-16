@@ -516,41 +516,32 @@ public class LotteryTicketsController : ControllerBase
         {
             var targetMonth = month ?? $"{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month:D2}";
 
-            // Get winners for this month to restore their tickets
-            var winners = await _context.MonthlyWinningTickets
-                .Where(w => w.Month == targetMonth)
+            // Restore ALL used tickets (not just current month's winners)
+            var usedTickets = await _context.LotteryTickets
+                .Where(t => t.IsUsed)
                 .ToListAsync();
 
-            // Restore tickets for all winners
-            var ticketsRestored = 0;
-            foreach (var winner in winners)
+            foreach (var ticket in usedTickets)
             {
-                var tickets = await _context.LotteryTickets
-                    .Where(t => t.UserId == winner.UserId && t.IsUsed)
-                    .ToListAsync();
-
-                foreach (var ticket in tickets)
-                {
-                    ticket.IsUsed = false;
-                    ticket.UpdatedAt = DateTime.UtcNow;
-                    ticketsRestored++;
-                }
+                ticket.IsUsed = false;
+                ticket.UpdatedAt = DateTime.UtcNow;
             }
 
-            // Delete the monthly winners
-            _context.MonthlyWinningTickets.RemoveRange(winners);
+            // Delete ALL monthly winners (full reset)
+            var allWinners = await _context.MonthlyWinningTickets.ToListAsync();
+            _context.MonthlyWinningTickets.RemoveRange(allWinners);
 
             await _context.SaveChangesAsync();
 
             _logger.LogInformation(
-                "Reset month {Month}: removed {WinnerCount} winners, restored {TicketCount} tickets",
-                targetMonth, winners.Count, ticketsRestored);
+                "Full reset: restored {TicketCount} tickets, removed {WinnerCount} winners",
+                usedTickets.Count, allWinners.Count);
 
             return Ok(new
             {
-                message = $"Month {targetMonth} reset successfully",
-                winnersRemoved = winners.Count,
-                ticketsRestored
+                message = "Full reset completed successfully",
+                winnersRemoved = allWinners.Count,
+                ticketsRestored = usedTickets.Count
             });
         }
         catch (Exception ex)

@@ -51,9 +51,9 @@ export const WinnersBoard = ({ winners, month }: WinnersBoardProps) => {
       <p className={styles.month}>{formatMonth(month)}</p>
 
       <div className={styles.winnersList}>
-        {winners.map((winner) => (
+        {winners.map((winner, index) => (
           <div
-            key={`${winner.userId}-${winner.position}`}
+            key={`${winner.month}-${winner.position}-${index}`}
             className={styles.winner}
           >
             <div className={styles.position}>

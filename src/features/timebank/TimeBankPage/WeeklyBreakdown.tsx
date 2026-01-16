@@ -67,9 +67,6 @@ export const WeeklyBreakdown = ({ weeks }: WeeklyBreakdownProps) => {
                     <span className={`${styles.weekBalance} ${getBalanceColorClass(week.balance)}`}>
                       {formatBalance(week.balance, t("timebank.hourSuffix"))}
                     </span>
-                    <span className={styles.weekCumulative}>
-                      ({formatBalance(week.cumulativeBalance, t("timebank.hourSuffix"))})
-                    </span>
                   </div>
                 </div>
                 <span className={`${styles.weekChevron} ${isExpanded ? styles.weekChevronOpen : ""}`}>

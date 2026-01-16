@@ -16,6 +16,7 @@ import {
   max,
 } from "date-fns";
 import type { HarvestTimeEntry } from "@/features/lottery/types";
+import { detectDailyHourPattern } from "@/features/lottery/lotteryUtils";
 import { Timeframe } from "./types";
 import type { TimeBalance, WeekBalance, DateRange, ProjectEntry } from "./types";
 
@@ -165,6 +166,9 @@ export const calculateTimeBalance = (
   const rangeFrom = parseISO(dateRange.from);
   const rangeTo = parseISO(dateRange.to);
 
+  // Detect daily hour pattern (7.5 or 8 hours per day)
+  const { dailyTarget } = detectDailyHourPattern(timeEntries);
+
   // Group all entries by ISO week
   const weekMap = new Map<string, HarvestTimeEntry[]>();
 
@@ -220,6 +224,16 @@ export const calculateTimeBalance = (
     const entries = weekMap.get(weekKey) || [];
     const logged = entries.reduce((sum, entry) => sum + entry.hours, 0);
 
+    // Calculate billable hours (entries with external client, excluding internal)
+    const billableHours = entries
+      .filter((entry) => {
+        if (!entry.client) return false;
+        // Exclude internal client
+        const clientName = entry.client.name?.toLowerCase() || "";
+        return !clientName.includes("forte digital internal");
+      })
+      .reduce((sum, entry) => sum + entry.hours, 0);
+
     // Calculate Avspasering hours separately (tracked per week, deducted only from total)
     const avspaseringsHours = entries
       .filter(isAvspaseringsEntry)
@@ -228,6 +242,13 @@ export const calculateTimeBalance = (
     // Calculate expected hours (working days in this week within range × 8)
     const workingDays = countWorkingDaysInWeek(weekStart, weekEnd, rangeFrom, rangeTo);
     const expected = workingDays * HOURS_PER_DAY;
+
+    // Calculate billing target for this week (using detected daily pattern: 7.5 or 8)
+    const weeklyBillingTarget = workingDays * dailyTarget;
+
+    // Calculate billing difference (positive = under target, negative = over target)
+    // This allows surplus from one week to offset deficit in another
+    const possibleOvertimeHours = weeklyBillingTarget - billableHours;
 
     // Weekly balance: logged - expected (no avspasering deduction)
     // The weekly view should show the correct 40t/40t = 0t balance
@@ -246,6 +267,8 @@ export const calculateTimeBalance = (
       balance,
       cumulativeBalance,
       avspaseringsHours,
+      billableHours,
+      possibleOvertimeHours,
       entries: groupedEntries,
     };
   });

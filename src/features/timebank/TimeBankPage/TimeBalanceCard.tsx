@@ -15,6 +15,13 @@ export const TimeBalanceCard = ({ balance }: TimeBalanceCardProps) => {
   const hasTriggeredRef = useRef(false);
   const [shouldShake, setShouldShake] = useState(false);
 
+  // Calculate total possible overtime hours across all weeks
+  // Sum all differences (positive and negative), then take max with 0
+  const totalPossibleOvertime = Math.max(
+    0,
+    balance.weeklyBreakdown.reduce((sum, week) => sum + week.possibleOvertimeHours, 0)
+  );
+
   // Trigger confetti for positive balance or shake for negative
   useEffect(() => {
     if (hasTriggeredRef.current) return;
@@ -55,6 +62,11 @@ export const TimeBalanceCard = ({ balance }: TimeBalanceCardProps) => {
           <div className={styles.balanceDetailLabel}>{t("timebank.expected")}</div>
         </div>
       </div>
+      {totalPossibleOvertime > 0 && (
+        <div className={styles.possibleOvertimeTotal}>
+          {t("timebank.possibleOvertime")}: {totalPossibleOvertime.toFixed(1)}{t("timebank.hourSuffix")}
+        </div>
+      )}
     </div>
   );
 };

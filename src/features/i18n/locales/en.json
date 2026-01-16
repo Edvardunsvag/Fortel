@@ -328,6 +328,7 @@
     "noEntries": "No entries this week",
     "hourSuffix": "h",
     "weekPrefix": "Week",
+    "possibleOvertime": "Available for billing",
     "navigation": {
       "data": "Your Hours",
       "rules": "Rules"

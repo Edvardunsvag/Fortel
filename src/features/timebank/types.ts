@@ -24,9 +24,9 @@ export interface WeekBalance {
   weekEnd: string; // YYYY-MM-DD (Friday)
   logged: number;
   expected: number; // 40 or prorated for partial weeks
-  balance: number; // logged - expected
+  balance: number; // (logged - avspasering) - expected
   cumulativeBalance: number; // Running total
-  
+  avspaseringsHours: number; // Hours taken as time off in lieu (deducted from balance)
   entries: ProjectEntry[]; // Grouped by project/task for display
 }
 

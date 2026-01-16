@@ -60,6 +60,14 @@
   @media (max-width: 768px) {
     padding-left: 4rem;
     padding-right: $spacing-md;
+    padding-top: $spacing-md;
+    padding-bottom: calc($spacing-xl + env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 480px) {
+    padding-left: $spacing-sm;
+    padding-right: $spacing-sm;
+    padding-top: $spacing-sm;
   }
 }
 
@@ -72,6 +80,16 @@
   padding: $spacing-xxl;
   box-shadow: 0 2px 8px $color-shadow-light;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: $spacing-lg;
+    border-radius: $radius-md;
+  }
+
+  @media (max-width: 480px) {
+    padding: $spacing-md;
+    border-radius: $radius-sm;
+  }
 }
 
 .title {
@@ -79,6 +97,10 @@
   font-weight: 500;
   margin: 0;
   color: $color-dark-accent;
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
 }
 
 .error {
@@ -118,6 +140,12 @@
   align-items: center;
   gap: $spacing-md;
   flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-sm;
+  }
 }
 
 .timeframeDropdown {
@@ -133,6 +161,12 @@
     outline: 2px solid $color-link-blue;
     outline-offset: 2px;
   }
+
+  @media (max-width: 480px) {
+    padding: $spacing-md;
+    font-size: 1rem;
+    min-height: 48px; // Touch-friendly
+  }
 }
 
 .customDateRange {
@@ -140,12 +174,25 @@
   align-items: center;
   gap: $spacing-md;
   flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-sm;
+    width: 100%;
+  }
 }
 
 .dateInputGroup {
   display: flex;
   align-items: center;
   gap: $spacing-xs;
+
+  @media (max-width: 480px) {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
 }
 
 .dateLabel {
@@ -164,6 +211,13 @@
   &:focus {
     outline: 2px solid $color-link-blue;
     outline-offset: 2px;
+  }
+
+  @media (max-width: 480px) {
+    padding: $spacing-sm $spacing-md;
+    font-size: 1rem;
+    min-height: 44px;
+    flex: 1;
   }
 }
 
@@ -188,6 +242,23 @@
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
+
+  @media (max-width: 480px) {
+    margin-bottom: $spacing-lg;
+    border-radius: $radius-sm;
+
+    &:hover {
+      transform: none; // Disable hover transform on touch
+      box-shadow: none;
+    }
+  }
+}
+
+// Shake animation for negative balance
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 
 // Left side: Time Balance
@@ -199,6 +270,14 @@
     border-right: none;
     border-bottom: 1px solid $color-border-medium;
   }
+
+  @media (max-width: 480px) {
+    padding: $spacing-lg $spacing-md;
+  }
+}
+
+.balanceCardShake {
+  animation: shake 0.5s ease-in-out;
 }
 
 // Right side: Fagtimer Card
@@ -206,6 +285,10 @@
   padding: $spacing-xl;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 480px) {
+    padding: $spacing-lg $spacing-md;
+  }
 }
 
 .fagtimerHeader {
@@ -250,6 +333,10 @@
   font-weight: 700;
   color: $color-dark-accent;
   line-height: 1;
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
 }
 
 .fagtimerSeparator {
@@ -344,6 +431,10 @@
   &.balanceCelebrate {
     animation: countUp 0.5s ease-out 0.3s both, pulse 2s ease-in-out infinite 1s;
   }
+
+  @media (max-width: 480px) {
+    font-size: 2.25rem;
+  }
 }
 
 .balanceLabel {
@@ -435,6 +526,11 @@
   &:focus:not(:focus-visible) {
     outline: none;
   }
+
+  @media (max-width: 480px) {
+    padding: $spacing-md;
+    min-height: 56px; // Touch-friendly tap target
+  }
 }
 
 .weekHeaderContent {
@@ -443,6 +539,12 @@
   align-items: center;
   flex: 1;
   gap: $spacing-md;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-xs;
+  }
 }
 
 .weekTitle {
@@ -450,17 +552,30 @@
   font-weight: 600;
   color: $color-dark-accent;
   margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 }
 
 .weekStats {
   display: flex;
   align-items: center;
   gap: $spacing-lg;
+
+  @media (max-width: 480px) {
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
 }
 
 .weekHours {
   font-size: 1rem;
   color: $color-dark-fill;
+
+  @media (max-width: 480px) {
+    font-size: 0.875rem;
+  }
 }
 
 .weekBalance {
@@ -478,11 +593,19 @@
   &.neutral {
     color: $color-dark-fill;
   }
+
+  @media (max-width: 480px) {
+    font-size: 0.875rem;
+  }
 }
 
 .weekCumulative {
   font-size: 0.875rem;
   color: $color-dark-fill;
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
 }
 
 .weekChevron {
@@ -711,6 +834,12 @@
     outline: 2px solid $color-link-blue;
     outline-offset: 2px;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
+  }
 }
 
 // Disconnect button - matches Lottery's logoutButton (outlined style)
@@ -732,6 +861,12 @@
   &:focus {
     outline: 2px solid $color-link-blue;
     outline-offset: 2px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    min-height: 44px;
+    margin-top: $spacing-lg;
   }
 }
 
@@ -898,6 +1033,16 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
+
+  @media (max-width: 480px) {
+    padding: $spacing-md;
+    border-radius: $radius-md;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
 }
 
 .projectBreakdownTitle {
@@ -933,6 +1078,12 @@
 
   &:hover {
     background-color: $color-overlay-beige;
+  }
+
+  @media (max-width: 480px) {
+    padding: $spacing-md;
+    margin: -$spacing-md;
+    min-height: 48px; // Touch-friendly
   }
 }
 
@@ -1057,6 +1208,16 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   }
+
+  @media (max-width: 480px) {
+    padding: $spacing-md;
+    border-radius: $radius-md;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
 }
 
 .aiEncouragementHeader {
@@ -1107,6 +1268,16 @@
 
   &:active {
     transform: scale(0.95);
+  }
+
+  @media (max-width: 480px) {
+    padding: $spacing-sm;
+    font-size: 1.4rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

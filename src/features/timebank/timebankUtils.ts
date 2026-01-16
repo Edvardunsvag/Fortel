@@ -23,7 +23,7 @@ const HOURS_PER_DAY = 8;
 
 /**
  * Check if a time entry is an absence entry (vacation, time off, etc.)
- * These should not count towards the time bank balance
+ * These are highlighted in the UI but still count towards logged hours
  */
 const isAbsenceEntry = (entry: HarvestTimeEntry): boolean => {
   const projectName = entry.project?.name?.toLowerCase() || "";
@@ -45,6 +45,15 @@ const isAbsenceEntry = (entry: HarvestTimeEntry): boolean => {
   ];
 
   return absenceTaskPatterns.some((pattern) => taskName.includes(pattern));
+};
+
+/**
+ * Check if a time entry is specifically an Avspasering entry
+ * Avspasering hours should be deducted from the time balance
+ */
+const isAvspaseringsEntry = (entry: HarvestTimeEntry): boolean => {
+  const taskName = entry.task?.name?.toLowerCase() || "";
+  return taskName.includes("avspasering");
 };
 
 /**
@@ -211,11 +220,17 @@ export const calculateTimeBalance = (
     const entries = weekMap.get(weekKey) || [];
     const logged = entries.reduce((sum, entry) => sum + entry.hours, 0);
 
+    // Calculate Avspasering hours separately (tracked per week, deducted only from total)
+    const avspaseringsHours = entries
+      .filter(isAvspaseringsEntry)
+      .reduce((sum, entry) => sum + entry.hours, 0);
+
     // Calculate expected hours (working days in this week within range × 8)
-    // Expected is NOT reduced by absence - absence hours count towards logged
     const workingDays = countWorkingDaysInWeek(weekStart, weekEnd, rangeFrom, rangeTo);
     const expected = workingDays * HOURS_PER_DAY;
 
+    // Weekly balance: logged - expected (no avspasering deduction)
+    // The weekly view should show the correct 40t/40t = 0t balance
     const balance = logged - expected;
     cumulativeBalance += balance;
 
@@ -230,6 +245,7 @@ export const calculateTimeBalance = (
       expected,
       balance,
       cumulativeBalance,
+      avspaseringsHours,
       entries: groupedEntries,
     };
   });
@@ -237,11 +253,16 @@ export const calculateTimeBalance = (
   // Calculate totals
   const totalLogged = weeklyBreakdown.reduce((sum, week) => sum + week.logged, 0);
   const totalExpected = weeklyBreakdown.reduce((sum, week) => sum + week.expected, 0);
+  const totalAvspaseringsHours = weeklyBreakdown.reduce((sum, week) => sum + week.avspaseringsHours, 0);
+
+  // Total balance: deduct Avspasering from the overall timesaldo
+  // Avspasering hours are "time off in lieu" - you're using your banked hours
+  const balance = (totalLogged - totalAvspaseringsHours) - totalExpected;
 
   return {
     totalLogged,
     totalExpected,
-    balance: totalLogged - totalExpected,
+    balance,
     weeklyBreakdown,
   };
 };

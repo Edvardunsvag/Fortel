@@ -163,6 +163,18 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     (winner: MonthlyWinner): number => {
       // Find a segment belonging to this winner in displaySegments
       const segmentIndex = displaySegments.findIndex((s) => s.userId === winner.userId);
+
+      // Debug logging
+      console.log("=== findWinnerSegmentIndex ===");
+      console.log("Winner:", winner.name, "userId:", winner.userId, "color:", winner.color);
+      console.log("Found segment index:", segmentIndex);
+      if (segmentIndex >= 0) {
+        const segment = displaySegments[segmentIndex];
+        console.log("Segment at index:", segment.name, "userId:", segment.userId, "color:", segment.color);
+      }
+      console.log("Total displaySegments:", displaySegments.length);
+      console.log("First 5 segments:", displaySegments.slice(0, 5).map(s => ({ name: s.name, color: s.color })));
+
       return segmentIndex >= 0 ? segmentIndex : 0;
     },
     [displaySegments]

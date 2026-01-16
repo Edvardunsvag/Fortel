@@ -67,6 +67,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   const dispatch = useAppDispatch();
   const wheelRef = useRef<SpinningWheelHandle>(null);
 
+  // Flag to skip auto-population after manually triggering a draw
+  const skipAutoPopulateRef = useRef(false);
+
   // Redux state
   const spinPhase = useAppSelector(selectSpinPhase);
   const currentSpinIndex = useAppSelector(selectCurrentSpinIndex);
@@ -123,14 +126,17 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     !isDrawComplete && spinPhase === "idle" && currentSpinIndex < monthlyWinners.length && displaySegments.length > 0;
 
   // Initialize revealed winners from fetched data on mount
+  // Skip if we just triggered a manual draw (to let the user spin through winners)
   useEffect(() => {
-    if (monthlyWinners.length > 0 && revealedWinners.length === 0) {
+    if (monthlyWinners.length > 0 && revealedWinners.length === 0 && !skipAutoPopulateRef.current) {
       // Pre-populate revealed winners if draw is already done
       dispatch(setRevealedWinners(monthlyWinners));
       if (monthlyWinners.length >= winnerCount) {
         dispatch(setSpinPhase("complete"));
       }
     }
+    // Reset the flag after checking
+    skipAutoPopulateRef.current = false;
   }, [monthlyWinners, revealedWinners.length, winnerCount, dispatch]);
 
   // Update countdown
@@ -241,6 +247,8 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     try {
       await lotteryTicketsApi.apiLotteryTicketsMonthlyDrawPost();
       setAdminStatus(`✅ Draw complete!`);
+      // Skip auto-population so user can spin through winners
+      skipAutoPopulateRef.current = true;
       // Reset wheel state and refetch data
       dispatch(resetWheel());
       wheelRef.current?.reset();
@@ -305,6 +313,8 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setAdminStatus(null);
     try {
       await lotteryTicketsApi.apiLotteryTicketsResetMonthPost();
+      // Skip auto-population after reset
+      skipAutoPopulateRef.current = true;
       // Reset local wheel state
       dispatch(resetWheel());
       wheelRef.current?.reset();

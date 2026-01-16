@@ -88,42 +88,244 @@
 }
 
 .nextLottery {
-  margin-top: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+  padding: $spacing-xl;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.05) 0%,
+    rgba(255, 193, 7, 0.08) 50%,
+    rgba(255, 215, 0, 0.05) 100%
+  );
+  border-radius: $radius-lg;
+  animation: containerPulse 3s ease-in-out infinite;
+
+  // Animated background gradient
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 193, 7, 0.1) 30%, transparent 70%);
+    animation: gradientRotate 8s linear infinite;
+    pointer-events: none;
+  }
+
+  // Shimmer effect
+  &::after {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+    animation: shimmer 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+@keyframes containerPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(255, 215, 0, 0.2),
+      0 0 40px rgba(255, 193, 7, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(255, 215, 0, 0.4),
+      0 0 80px rgba(255, 193, 7, 0.2);
+  }
+}
+
+@keyframes gradientRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
 }
 
 .lockedCountdown {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 16px;
-  margin-top: $spacing-md;
+  width: 100%;
   flex-wrap: wrap;
+  flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .lockedTimeUnit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px 20px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 12px;
-  min-width: 80px;
+  justify-content: center;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.35) 0%, rgba(255, 193, 7, 0.4) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 16px;
+  min-width: 100px;
+  flex: 1;
+  max-width: 150px;
+  position: relative;
+  overflow: hidden;
+  animation: timeUnitFloat 3s ease-in-out infinite;
+  box-shadow:
+    0 4px 20px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+
+  // Stagger animation delays for each unit
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.9s;
+  }
+
+  // Glow effect
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+    animation: glowPulse 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Shine effect
+  &::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+    animation: shineRotate 3s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow:
+      0 8px 30px rgba(255, 215, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 215, 0, 0.8);
+  }
+
+  > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@keyframes timeUnitFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes shineRotate {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
 }
 
 .lockedValue {
-  font-size: 36px;
+  font-size: 56px;
   font-weight: 700;
-  color: #ffd700;
+  color: #b8860b;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 215, 0, 0.6),
+    0 0 20px rgba(255, 193, 7, 0.4);
+  animation: valueGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes valueGlow {
+  0%,
+  100% {
+    text-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      0 0 10px rgba(255, 215, 0, 0.6),
+      0 0 20px rgba(255, 193, 7, 0.4);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+  50% {
+    text-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(255, 215, 0, 0.8),
+      0 0 30px rgba(255, 193, 7, 0.6);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
 }
 
 .lockedLabel {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.6);
+  color: #5a4a00;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 4px;
+  letter-spacing: 2px;
+  margin-top: 8px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .syncSection {

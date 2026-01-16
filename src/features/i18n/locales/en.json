@@ -220,7 +220,7 @@
       "description": "Each week you meet the eligibility criteria, you earn 1 lottery ticket. The more tickets you have, the better your chances in the weekly lottery!"
     },
     "lottery": {
-      "title": "Your Lottery Tickets",
+      "title": "Weekly Lottery",
       "totalTickets": "You have {{count}} lottery ticket",
       "totalTickets_plural": "You have {{count}} lottery tickets",
       "totalTicketsLabel": "tickets",

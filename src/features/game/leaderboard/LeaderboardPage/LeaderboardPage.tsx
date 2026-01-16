@@ -164,35 +164,54 @@ export const LeaderboardPage = () => {
                         textAlign: "center",
                       }}
                     >
-                      {entry.avatarImageUrl ? (
-                        <img
-                          src={entry.avatarImageUrl}
-                          alt={`${entry.name} avatar`}
-                          style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "50%",
-                            backgroundColor: "var(--color-border-light)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--color-dark-fill)",
-                            fontSize: "1.2rem",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {entry.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      {(() => {
+                        // Extract initials from name (first letter of first name and first letter of last name)
+                        const getInitials = (name: string): string => {
+                          const parts = name.trim().split(/\s+/);
+                          if (parts.length === 0) return "";
+                          if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+                          return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
+                        };
+
+                        // Show placeholder if no avatar URL or if URL contains "imagekit"
+                        const shouldShowPlaceholder =
+                          !entry.avatarImageUrl ||
+                          (entry.avatarImageUrl && entry.avatarImageUrl.toLowerCase().includes("imagekit"));
+
+                        if (shouldShowPlaceholder) {
+                          return (
+                            <div
+                              className={styles.avatarPlaceholder}
+                              style={{
+                                width: "48px",
+                                height: "48px",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "var(--color-dark-fill)",
+                                fontSize: "0.875rem",
+                                fontWeight: 600,
+                              }}
+                            >
+                              {getInitials(entry.name)}
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <img
+                            src={entry.avatarImageUrl || ""}
+                            alt={`${entry.name} avatar`}
+                            style={{
+                              width: "48px",
+                              height: "48px",
+                              borderRadius: "50%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        );
+                      })()}
                     </td>
                     <td
                       style={{

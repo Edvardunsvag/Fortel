@@ -30,8 +30,7 @@ import { StartGameButton } from "./StartGameButton";
 
 import { GuessList } from "./GuessList/GuessList";
 import { GameNavigationChips } from "./GameNavigationChips";
-import { useLeaderboard } from "../leaderboard/queries";
-import { useSubmitScore } from "../leaderboard/queries";
+import { useLeaderboard, useSubmitScore } from "../leaderboard/queries";
 import { toSubmitScoreRequest } from "../leaderboard/toDto";
 
 export const Game = () => {
@@ -67,17 +66,21 @@ export const Game = () => {
   // Show status message and trigger confetti when game is won
   useEffect(() => {
     if (gameStatus === "won" && guesses.length > 0) {
-      // Wait for last box animation to finish (3100ms total)
-      const animationDelay = 3100;
+      // Check if the last guess is correct
+      const lastGuess = guesses[guesses.length - 1];
+      if (lastGuess?.isCorrect) {
+        // Wait for last box animation to finish (3100ms total)
+        const animationDelay = 3100;
 
-      const animationTimer = setTimeout(() => {
-        setShowStatusMessage(true);
-        triggerConfetti();
-      }, animationDelay);
+        const animationTimer = setTimeout(() => {
+          setShowStatusMessage(true);
+          triggerConfetti();
+        }, animationDelay);
 
-      return () => clearTimeout(animationTimer);
+        return () => clearTimeout(animationTimer);
+      }
     }
-  }, [gameStatus, guesses.length]);
+  }, [gameStatus, guesses]);
 
   const handleGuess = async (employeeId: string) => {
     if (!canGuess || !employeeOfTheDayId) {
@@ -123,9 +126,9 @@ export const Game = () => {
           const userHasAttempted = leaderboard?.leaderboard.find((entry) => entry.name === account.name);
 
           if (!userHasAttempted) {
-            // Calculate score: current guesses + 1 (for this correct guess) + funfact cost if revealed
+            // Calculate score: use round.guesses.length (which includes the new correct guess) + funfact cost if revealed
             const funfactRevealed = round.funfactRevealed;
-            const score = guesses.length + 1 + (funfactRevealed ? funfactRevealCost : 0);
+            const score = round.guesses.length + (funfactRevealed ? funfactRevealCost : 0);
 
             // Find the user's employee record to get their avatar
             const userEmployee = findMatchingEmployee(account.name, employees);
@@ -179,27 +182,29 @@ export const Game = () => {
       <div className={styles.container}>
         <GameNavigationChips />
         <GameHeader />
-        <FunfactReveal employees={employees} />
+        {gameStatus === "won" && showStatusMessage && (
+          <GameStatus status={gameStatus} guesses={guesses} visible={true} />
+        )}
+        {gameStatus !== "won" && <FunfactReveal employees={employees} />}
+
+        {!employeeOfTheDayId && userId && !attemptedByUserId && (
+          <StartGameButton onStartGame={handleStartGame} isStartingGame={isStartingGame} employees={employees} />
+        )}
       </div>
-      <div className={styles.gameLayout}>
-        <div className={styles.gameContent}>
-          {gameStatus === "won" && showStatusMessage && (
-            <GameStatus status={gameStatus} guesses={guesses} visible={true} />
-          )}
-          {!employeeOfTheDayId && userId && !attemptedByUserId && (
-            <StartGameButton onStartGame={handleStartGame} isStartingGame={isStartingGame} employees={employees} />
-          )}
+      {employeeOfTheDayId && (
+        <div className={styles.gameLayout}>
+          <div className={styles.gameContent}>
+            <GameInputRow
+              inputValue={inputValue}
+              onInputChange={setInputValue}
+              onGuess={handleGuess}
+              employees={employees}
+            />
 
-          <GameInputRow
-            inputValue={inputValue}
-            onInputChange={setInputValue}
-            onGuess={handleGuess}
-            employees={employees}
-          />
-
-          <GuessList guesses={guesses} />
+            <GuessList guesses={guesses} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

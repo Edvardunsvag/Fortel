@@ -214,6 +214,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setShowingWinner(null);
     dispatch(advanceSpinIndex());
 
+    // Reset wheel rotation after segment changes to ensure proper alignment
+    wheelRef.current?.reset();
+
     // Check if all winners have been revealed
     if (currentSpinIndex + 1 >= winnerCount) {
       dispatch(setSpinPhase("complete"));

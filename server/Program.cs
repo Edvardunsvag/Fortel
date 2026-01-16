@@ -178,15 +178,11 @@ app.UseCors();
 // Explicit routing
 app.UseRouting();
 
-// Hangfire Dashboard (optional - can be restricted in production)
+// Hangfire Dashboard - enabled in both Development and Production (matching Swagger behavior)
 var dashboardOptions = new DashboardOptions();
-if (app.Environment.IsDevelopment())
-{
-    // Allow all requests in development - use empty array to disable authorization
-    dashboardOptions.Authorization = Array.Empty<IDashboardAuthorizationFilter>();
-}
-// In production, you may want to add proper authorization
-// dashboardOptions.Authorization = new[] { new LocalRequestsOnlyAuthorizationFilter() };
+// Allow all requests - use empty array to disable authorization
+// Note: In production, you may want to add proper authorization for security
+dashboardOptions.Authorization = Array.Empty<IDashboardAuthorizationFilter>();
 app.UseHangfireDashboard("/hangfire", dashboardOptions);
 
 // Enable Swagger in both Development and Production

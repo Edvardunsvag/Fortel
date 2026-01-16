@@ -203,7 +203,7 @@
     "ticketsSaved": "{{count}} lodd",
     "ticketsSaved_plural": "{{count}} lodd",
     "navigation": {
-      "timeEntries": "Dine timer",
+      "timeEntries": "Dine lodd",
       "rules": "Regler",
       "employees": "Ansatte",
       "luckyWheel": "Grand Finale",
@@ -329,7 +329,7 @@
     "hourSuffix": "t",
     "weekPrefix": "Uke",
     "navigation": {
-      "data": "Dine timer",
+      "data": "Dine lodd",
       "rules": "Regler"
     },
     "fagtimer": {

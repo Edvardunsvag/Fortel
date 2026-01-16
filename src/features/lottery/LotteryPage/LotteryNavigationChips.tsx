@@ -15,8 +15,8 @@ const subTabToTranslationKey: Record<LotterySubTab, string> = {
 const subTabToIcon: Record<LotterySubTab, string> = {
   [LotterySubTab.TimeEntries]: "⏱️",
   [LotterySubTab.Rules]: "📖",
-  [LotterySubTab.Lottery]: "🎫",
   [LotterySubTab.Employees]: "👥",
+  [LotterySubTab.Lottery]: "🎫",
   [LotterySubTab.LuckyWheel]: "🎡",
 };
 
@@ -42,8 +42,8 @@ export const LotteryNavigationChips = () => {
   const subTabs: LotterySubTab[] = [
     LotterySubTab.TimeEntries,
     LotterySubTab.Rules,
-    LotterySubTab.Lottery,
     LotterySubTab.Employees,
+    LotterySubTab.Lottery,
     LotterySubTab.LuckyWheel,
   ];
 

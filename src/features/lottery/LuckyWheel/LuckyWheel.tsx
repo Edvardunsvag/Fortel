@@ -93,18 +93,16 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   } | null>(null);
 
   // Derived values - memoize interleaved segments to prevent recalculation
-  const segments = useMemo(
-    () => interleaveSegments(wheelData?.segments || []),
-    [wheelData?.segments]
-  );
+  const segments = useMemo(() => interleaveSegments(wheelData?.segments || []), [wheelData?.segments]);
   const participants = wheelData?.participants || [];
   const totalTickets = wheelData?.totalTickets || 0;
   const monthlyWinners = monthlyWinnersData?.winners || [];
   const month = monthlyWinnersData?.month || "";
   const winnerCount = config?.monthlyWinnerCount || 3;
-  const nextDrawDate = config?.nextMonthlyDrawDate
-    ? new Date(config.nextMonthlyDrawDate)
-    : null;
+  // Memoize nextDrawDate to prevent infinite loops in useEffect
+  const nextDrawDate = useMemo(() => {
+    return config?.nextMonthlyDrawDate ? new Date(config.nextMonthlyDrawDate) : null;
+  }, [config?.nextMonthlyDrawDate]);
 
   // Filter out revealed winners' segments from the wheel display
   const displaySegments = useMemo(() => {
@@ -121,10 +119,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   // Show locked state when no winners have been drawn yet
   const isLocked = !isDrawReady && timeRemaining !== null;
   const canSpin =
-    !isDrawComplete &&
-    spinPhase === "idle" &&
-    currentSpinIndex < monthlyWinners.length &&
-    displaySegments.length > 0;
+    !isDrawComplete && spinPhase === "idle" && currentSpinIndex < monthlyWinners.length && displaySegments.length > 0;
 
   // Initialize revealed winners from fetched data on mount
   useEffect(() => {
@@ -333,7 +328,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
         // Refetch data
         await refetchWheel();
         await refetchWinners();
-        setAdminStatus(`✅ Reset complete! ${data.ticketsReset} tickets restored, ${data.winnersDeleted} winners cleared`);
+        setAdminStatus(
+          `✅ Reset complete! ${data.ticketsReset} tickets restored, ${data.winnersDeleted} winners cleared`
+        );
       } else {
         setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
       }
@@ -360,12 +357,8 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>
-          {t("lottery.luckyWheel.title", "Grand Finale")}
-        </h2>
-        <p className={styles.subtitle}>
-          {t("lottery.luckyWheel.subtitle", "Monthly Lucky Wheel Draw")}
-        </p>
+        <h2 className={styles.title}>{t("lottery.luckyWheel.title", "Grand Finale")}</h2>
+        <p className={styles.subtitle}>{t("lottery.luckyWheel.subtitle", "Monthly Lucky Wheel Draw")}</p>
       </div>
 
       {isLoading ? (
@@ -380,38 +373,31 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
             <div className={styles.lockedOverlay}>
               <div className={styles.lockedContent}>
                 <div className={styles.lockedIcon}>🎡</div>
-                <h3 className={styles.lockedTitle}>
-                  {t("lottery.luckyWheel.nextDraw", "Next Draw")}
-                </h3>
+                <h3 className={styles.lockedTitle}>{t("lottery.luckyWheel.nextDraw", "Next Draw")}</h3>
                 <p className={styles.lockedDate}>{formatDrawDate(nextDrawDate)}</p>
                 <div className={styles.lockedCountdown}>
                   <div className={styles.lockedTimeUnit}>
                     <span className={styles.lockedValue}>{timeRemaining.days}</span>
-                    <span className={styles.lockedLabel}>
-                      {t("lottery.luckyWheel.days", "days")}
-                    </span>
+                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.days", "days")}</span>
                   </div>
                   <div className={styles.lockedTimeUnit}>
                     <span className={styles.lockedValue}>{String(timeRemaining.hours).padStart(2, "0")}</span>
-                    <span className={styles.lockedLabel}>
-                      {t("lottery.luckyWheel.hours", "hrs")}
-                    </span>
+                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.hours", "hrs")}</span>
                   </div>
                   <div className={styles.lockedTimeUnit}>
                     <span className={styles.lockedValue}>{String(timeRemaining.minutes).padStart(2, "0")}</span>
-                    <span className={styles.lockedLabel}>
-                      {t("lottery.luckyWheel.minutes", "min")}
-                    </span>
+                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.minutes", "min")}</span>
                   </div>
                   <div className={styles.lockedTimeUnit}>
                     <span className={styles.lockedValue}>{String(timeRemaining.seconds).padStart(2, "0")}</span>
-                    <span className={styles.lockedLabel}>
-                      {t("lottery.luckyWheel.seconds", "sec")}
-                    </span>
+                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.seconds", "sec")}</span>
                   </div>
                 </div>
                 <p className={styles.lockedDescription}>
-                  {t("lottery.luckyWheel.lockedDescription", "The wheel will be available when the monthly draw is ready")}
+                  {t(
+                    "lottery.luckyWheel.lockedDescription",
+                    "The wheel will be available when the monthly draw is ready"
+                  )}
                 </p>
               </div>
             </div>
@@ -419,76 +405,61 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
 
           <div className={`${styles.content} ${isLocked ? styles.blurred : ""}`}>
             <div className={styles.leftPanel}>
-              <ParticipantsList
-                participants={participants}
-                totalTickets={totalTickets}
-              />
+              <ParticipantsList participants={participants} totalTickets={totalTickets} />
               {nextDrawDate && timeRemaining && !isLocked && (
                 <div className={styles.countdown}>
-                  <h4 className={styles.countdownTitle}>
-                    {t("lottery.luckyWheel.nextDraw", "Next Draw")}
-                  </h4>
+                  <h4 className={styles.countdownTitle}>{t("lottery.luckyWheel.nextDraw", "Next Draw")}</h4>
                   <p className={styles.countdownDate}>{formatDrawDate(nextDrawDate)}</p>
                   <div className={styles.countdownTimer}>
                     <div className={styles.timeUnit}>
                       <span className={styles.value}>{timeRemaining.days}</span>
-                      <span className={styles.label}>
-                        {t("lottery.luckyWheel.days", "days")}
-                      </span>
+                      <span className={styles.label}>{t("lottery.luckyWheel.days", "days")}</span>
                     </div>
                     <div className={styles.timeUnit}>
                       <span className={styles.value}>{timeRemaining.hours}</span>
-                      <span className={styles.label}>
-                        {t("lottery.luckyWheel.hours", "hrs")}
-                      </span>
+                      <span className={styles.label}>{t("lottery.luckyWheel.hours", "hrs")}</span>
                     </div>
                     <div className={styles.timeUnit}>
                       <span className={styles.value}>{timeRemaining.minutes}</span>
-                      <span className={styles.label}>
-                        {t("lottery.luckyWheel.minutes", "min")}
-                      </span>
+                      <span className={styles.label}>{t("lottery.luckyWheel.minutes", "min")}</span>
                     </div>
                     <div className={styles.timeUnit}>
                       <span className={styles.value}>{timeRemaining.seconds}</span>
-                      <span className={styles.label}>
-                        {t("lottery.luckyWheel.seconds", "sec")}
-                      </span>
+                      <span className={styles.label}>{t("lottery.luckyWheel.seconds", "sec")}</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-          <div className={styles.centerPanel}>
-            <div className={styles.wheelWrapper}>
-              <SpinningWheel
-                ref={wheelRef}
-                segments={displaySegments}
-                onSpinComplete={handleSpinComplete}
-                size={380}
+            <div className={styles.centerPanel}>
+              <div className={styles.wheelWrapper}>
+                <SpinningWheel
+                  ref={wheelRef}
+                  segments={displaySegments}
+                  onSpinComplete={handleSpinComplete}
+                  size={380}
+                />
+              </div>
+              <SpinControls
+                currentSpin={currentSpinIndex}
+                totalSpins={winnerCount}
+                spinPhase={spinPhase}
+                canSpin={canSpin}
+                onSpin={handleSpin}
+                onReset={handleReset}
               />
             </div>
-            <SpinControls
-              currentSpin={currentSpinIndex}
-              totalSpins={winnerCount}
-              spinPhase={spinPhase}
-              canSpin={canSpin}
-              onSpin={handleSpin}
-              onReset={handleReset}
-            />
-          </div>
 
-          <div className={styles.rightPanel}>
-            <WinnersBoard winners={revealedWinners} month={month} />
-          </div>
+            <div className={styles.rightPanel}>
+              <WinnersBoard winners={revealedWinners} month={month} />
+            </div>
           </div>
         </div>
       )}
 
       {/* Winner reveal overlay */}
-      {showingWinner && (
-        <WinnerRevealCard winner={showingWinner} onClose={handleWinnerRevealClose} />
-      )}
+      {showingWinner && <WinnerRevealCard winner={showingWinner} onClose={handleWinnerRevealClose} />}
 
       {/* Admin Panel Toggle Button */}
       <button
@@ -509,18 +480,10 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
           <div className={styles.adminContent}>
             <div className={styles.adminSection}>
               <h5>Data</h5>
-              <button
-                onClick={handleAdminSeedData}
-                disabled={isAdminLoading}
-                className={styles.adminButton}
-              >
+              <button onClick={handleAdminSeedData} disabled={isAdminLoading} className={styles.adminButton}>
                 🌱 Seed Test Data
               </button>
-              <button
-                onClick={handleAdminTriggerDraw}
-                disabled={isAdminLoading}
-                className={styles.adminButton}
-              >
+              <button onClick={handleAdminTriggerDraw} disabled={isAdminLoading} className={styles.adminButton}>
                 🎲 Trigger Monthly Draw
               </button>
             </div>
@@ -528,7 +491,12 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
               <h5>Wheel</h5>
               <button
                 onClick={handleAdminForceSpin}
-                disabled={isAdminLoading || spinPhase === "spinning" || displaySegments.length === 0 || currentSpinIndex >= monthlyWinners.length}
+                disabled={
+                  isAdminLoading ||
+                  spinPhase === "spinning" ||
+                  displaySegments.length === 0 ||
+                  currentSpinIndex >= monthlyWinners.length
+                }
                 className={styles.adminButton}
               >
                 🎰 Spin to Winner {currentSpinIndex + 1}
@@ -540,18 +508,14 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
               >
                 ⏭️ Skip to Next Spin
               </button>
-              <button
-                onClick={handleAdminFullReset}
-                disabled={isAdminLoading}
-                className={styles.adminButton}
-              >
+              <button onClick={handleAdminFullReset} disabled={isAdminLoading} className={styles.adminButton}>
                 🔄 Reset Wheel State
               </button>
               <button
                 onClick={handleAdminNewMonth}
                 disabled={isAdminLoading}
                 className={styles.adminButton}
-                style={{ backgroundColor: '#e74c3c' }}
+                style={{ backgroundColor: "#e74c3c" }}
               >
                 🗑️ Reset as New Month
               </button>
@@ -559,20 +523,33 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
             <div className={styles.adminSection}>
               <h5>Debug Info</h5>
               <div className={styles.adminDebug}>
-                <p>Phase: <code>{spinPhase}</code></p>
-                <p>Spin Index: <code>{currentSpinIndex}/{winnerCount}</code></p>
-                <p>Segments (total): <code>{segments.length}</code></p>
-                <p>Segments (display): <code>{displaySegments.length}</code></p>
-                <p>Participants: <code>{participants.length}</code></p>
-                <p>Winners Revealed: <code>{revealedWinners.length}</code></p>
-                <p>Draw Complete: <code>{String(isDrawComplete)}</code></p>
+                <p>
+                  Phase: <code>{spinPhase}</code>
+                </p>
+                <p>
+                  Spin Index:{" "}
+                  <code>
+                    {currentSpinIndex}/{winnerCount}
+                  </code>
+                </p>
+                <p>
+                  Segments (total): <code>{segments.length}</code>
+                </p>
+                <p>
+                  Segments (display): <code>{displaySegments.length}</code>
+                </p>
+                <p>
+                  Participants: <code>{participants.length}</code>
+                </p>
+                <p>
+                  Winners Revealed: <code>{revealedWinners.length}</code>
+                </p>
+                <p>
+                  Draw Complete: <code>{String(isDrawComplete)}</code>
+                </p>
               </div>
             </div>
-            {adminStatus && (
-              <div className={styles.adminStatus}>
-                {adminStatus}
-              </div>
-            )}
+            {adminStatus && <div className={styles.adminStatus}>{adminStatus}</div>}
           </div>
         </div>
       )}

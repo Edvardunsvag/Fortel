@@ -23,7 +23,8 @@ export const Lotteri = () => {
     return winnersData.weeklyWinners.some((weekGroup) => weekGroup.winners.some((winner) => winner.userId === userId));
   }, [userId, winnersData]);
 
-  const targetDateTime = getNextFridayAt15();
+  // Memoize target date to prevent infinite loops in useEffect
+  const targetDateTime = useMemo(() => getNextFridayAt15(), []);
 
   // Countdown state
   const [timeRemaining, setTimeRemaining] = useState<{
@@ -74,30 +75,22 @@ export const Lotteri = () => {
                   date: formatDateReadable(getNextLotteryDate(), false),
                 })}
               </p>
-              <div className={styles.countdown}>
-                <div className={styles.countdownItem}>
-                  <span className={styles.countdownValue}>{timeRemaining.days}</span>
-                  <span className={styles.countdownLabel}>
-                    {t("lottery.lottery.countdown.days", { count: timeRemaining.days })}
-                  </span>
+              <div className={styles.lockedCountdown}>
+                <div className={styles.lockedTimeUnit}>
+                  <span className={styles.lockedValue}>{timeRemaining.days}</span>
+                  <span className={styles.lockedLabel}>{t("lottery.luckyWheel.days", "dager")}</span>
                 </div>
-                <div className={styles.countdownItem}>
-                  <span className={styles.countdownValue}>{String(timeRemaining.hours).padStart(2, "0")}</span>
-                  <span className={styles.countdownLabel}>
-                    {t("lottery.lottery.countdown.hours", { count: timeRemaining.hours })}
-                  </span>
+                <div className={styles.lockedTimeUnit}>
+                  <span className={styles.lockedValue}>{String(timeRemaining.hours).padStart(2, "0")}</span>
+                  <span className={styles.lockedLabel}>{t("lottery.luckyWheel.hours", "timer")}</span>
                 </div>
-                <div className={styles.countdownItem}>
-                  <span className={styles.countdownValue}>{String(timeRemaining.minutes).padStart(2, "0")}</span>
-                  <span className={styles.countdownLabel}>
-                    {t("lottery.lottery.countdown.minutes", { count: timeRemaining.minutes })}
-                  </span>
+                <div className={styles.lockedTimeUnit}>
+                  <span className={styles.lockedValue}>{String(timeRemaining.minutes).padStart(2, "0")}</span>
+                  <span className={styles.lockedLabel}>{t("lottery.luckyWheel.minutes", "min")}</span>
                 </div>
-                <div className={styles.countdownItem}>
-                  <span className={styles.countdownValue}>{String(timeRemaining.seconds).padStart(2, "0")}</span>
-                  <span className={styles.countdownLabel}>
-                    {t("lottery.lottery.countdown.seconds", { count: timeRemaining.seconds })}
-                  </span>
+                <div className={styles.lockedTimeUnit}>
+                  <span className={styles.lockedValue}>{String(timeRemaining.seconds).padStart(2, "0")}</span>
+                  <span className={styles.lockedLabel}>{t("lottery.luckyWheel.seconds", "sek")}</span>
                 </div>
               </div>
             </div>

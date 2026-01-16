@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLotteryTimeEntries } from "../queries";
+import { useLotteryTimeEntries, useLotteryUser, useLotteryTickets } from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { formatDateDDMM, formatHours } from "@/shared/utils/dateUtils";
 import styles from "./YourHours.module.scss";
@@ -21,6 +21,11 @@ export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
     TO_DATE,
     isAuthenticated && !!FROM_DATE && !!TO_DATE
   );
+
+  const { data: user } = useLotteryUser(isAuthenticated);
+  const userId = user?.id.toString() || null;
+  const { data: syncedTickets = [] } = useLotteryTickets(userId, isAuthenticated && !!userId);
+  const syncedTicketsCount = syncedTickets.length;
 
   const displayError = error || entriesError?.message;
 
@@ -48,12 +53,28 @@ export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
 
   return (
     <div className={styles.dataSection}>
-      <h3>{t("lottery.fetchEntries")}</h3>
       {displayError && <div className={styles.error}>{displayError}</div>}
+
+      {/* Dine lodd section */}
+      {syncedTicketsCount > 0 && (
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>{t("lottery.lottery.title")}</h3>
+          <div className={styles.totalTicketsBadge}>
+            <span className={styles.totalTicketsText}>
+              {t("lottery.lottery.totalTickets", { count: syncedTicketsCount })}
+            </span>
+            <span className={styles.ticketIconLarge}>🎫</span>
+          </div>
+        </div>
+      )}
+
+      {/* Dine uker section */}
       {timeEntries.length > 0 && (
-        <div className={styles.results}>
-          <div className={styles.weeksList}>
-            {weeklyData.map((week) => {
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>{t("lottery.fetchEntries")}</h3>
+          <div className={styles.results}>
+            <div className={styles.weeksList}>
+              {weeklyData.map((week) => {
               const isOpen = openWeeks.has(week.weekStart);
               return (
                 <div key={week.weekStart} className={styles.week}>
@@ -139,7 +160,8 @@ export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
                   </div>
                 </div>
               );
-            })}
+              })}
+            </div>
           </div>
         </div>
       )}

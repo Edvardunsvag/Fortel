@@ -120,7 +120,7 @@ export const LotteryPage = () => {
 
         {activeSubTab === LotterySubTab.Rules && <Regler />}
 
-        {activeSubTab === LotterySubTab.Lottery && <Lotteri isAuthenticated={isAuthenticated} />}
+        {activeSubTab === LotterySubTab.Lottery && <Lotteri />}
 
         {activeSubTab === LotterySubTab.Employees && <EmployeeStatistics />}
 

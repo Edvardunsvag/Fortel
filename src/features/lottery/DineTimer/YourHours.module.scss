@@ -2,6 +2,64 @@
 
 .dataSection {
   margin-top: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+}
+
+.totalTicketsBadge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin: 0 0 $spacing-xl 0;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba($color-overlay-beige, 0.3) 0%, rgba($color-overlay-beige, 0.1) 100%);
+  border-radius: $radius-md;
+  border: 1px solid rgba($color-border-medium, 0.5);
+}
+
+.totalTicketsText {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $color-dark-accent;
+  line-height: 1.2;
+}
+
+.ticketIconLarge {
+  font-size: 5rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  animation: ticketFloat 3s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes ticketFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg) scale(1);
+  }
+  25% {
+    transform: translateY(-6px) rotate(2deg) scale(1.05);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-2deg) scale(1.08);
+  }
+  75% {
+    transform: translateY(-6px) rotate(2deg) scale(1.05);
+  }
 }
 
 .error {

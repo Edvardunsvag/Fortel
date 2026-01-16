@@ -205,27 +205,27 @@
     "navigation": {
       "timeEntries": "Dine timer",
       "rules": "Regler",
-      "lottery": "Lotteri",
       "employees": "Ansatte",
-      "luckyWheel": "Grand Finale"
+      "luckyWheel": "Grand Finale",
+      "lottery": "Ukeslotteri"
     },
     "rules": {
-      "title": "Lotteriregler",
+      "title": "Ukeslotteriregler",
       "eligibility": "Kvalifikasjonskriterier",
       "rule1": "Må ha minst 8 timer registrert for hver dag mandag-fredag",
       "rule2": "Alle tidsregistreringer for uken må være opprettet OG oppdatert før fredag 15:00",
       "monthChange": "Månedsskifte",
       "rule3": "Hvis man er for sen med timer over månedsskifte, mister man alle oppsparte lodd den måneden",
       "howItWorks": "Hvordan det fungerer",
-      "description": "Hver uke du oppfyller kvalifikasjonskriteriene, tjener du 1 lodd. Jo flere lodd du har, jo bedre er sjansene dine i lotteriet!"
+      "description": "Hver uke du oppfyller kvalifikasjonskriteriene, tjener du 1 lodd. Jo flere lodd du har, jo bedre er sjansene dine i ukeslotteriet!"
     },
     "lottery": {
       "title": "Dine lodd",
       "totalTickets": "Du har {{count}} lodd",
       "totalTickets_plural": "Du har {{count}} lodd",
       "totalTicketsLabel": "lodd",
-      "nextLottery": "Neste lotteri",
-      "nextLotteryDate": "Neste lotteri blir holdt {{date}} klokken 15:00",
+      "nextLottery": "Neste ukeslotteri",
+      "nextLotteryDate": "Neste ukeslotteri blir holdt {{date}} klokken 15:00",
       "eligibleWeeks": "Kvalifiserte uker",
       "countdown": {
         "days": "{{count}} dag",

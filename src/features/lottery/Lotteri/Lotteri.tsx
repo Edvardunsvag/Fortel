@@ -1,80 +1,29 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  useLotteryTimeEntries,
-  useLotteryUser,
-  useSyncLotteryTickets,
-  useLotteryTickets,
-  useAllWinners,
-  lotteryKeys,
-} from "../queries";
-import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
-import { getNextLotteryDate, getNextLotteryDateTime, getNextFridayAt15 } from "../lotteryUtils";
-import { formatDateDDMM, formatDateReadable, formatHours } from "@/shared/utils/dateUtils";
+import { useAllWinners, useLotteryUser } from "../queries";
+import { getNextLotteryDate, getNextFridayAt15 } from "../lotteryUtils";
+import { formatDateReadable } from "@/shared/utils/dateUtils";
 import { WinnersReveal } from "./WinnersReveal";
-import { triggerRainbowCelebration } from "@/shared/animations";
 import styles from "./Lotteri.module.scss";
-import { FROM_DATE, TO_DATE } from "../consts";
 
-interface LotteriProps {
-  isAuthenticated: boolean;
-}
+export const Lotteri = () => {
+  const { t } = useTranslation();
 
-export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
-  const { t, i18n } = useTranslation();
-  const hourUnit = i18n.language === "nb" ? "t" : "h";
-
-  const { data: timeEntries = [] } = useLotteryTimeEntries(
-    FROM_DATE,
-    TO_DATE,
-    isAuthenticated && !!FROM_DATE && !!TO_DATE
-  );
-
-  const { data: user } = useLotteryUser(isAuthenticated);
-
-  // Group time entries by week using the shared hook
-  const weeklyData = useGroupEntriesByWeek(timeEntries);
-  const eligibleWeeks = weeklyData.filter((week) => week.isLotteryEligible).map((week) => week.weekKey);
-  const nextLotteryDate = getNextLotteryDate();
-
-  const syncTicketsMutation = useSyncLotteryTickets();
-  const queryClient = useQueryClient();
-  const hasSyncedRef = useRef(false);
-  const isAutoSyncingRef = useRef(false);
-
-  // Get synced tickets count
-  const userId = user?.id.toString() || null;
-  const { data: syncedTickets = [] } = useLotteryTickets(userId, isAuthenticated && !!userId);
-  const syncedTicketsCount = syncedTickets.length;
-
-  // Check for winners
+  // Fetch winners
   const { data: winnersData } = useAllWinners();
+  const { data: user } = useLotteryUser(true);
+  const userId = user?.id.toString() || null;
+
+  // Check if there are winners
   const hasWinners = (winnersData?.weeklyWinners || []).length > 0;
 
   // Check if the logged-in user is a winner
   const isUserWinner = useMemo(() => {
     if (!userId || !winnersData?.weeklyWinners) return false;
-    return winnersData.weeklyWinners.some((weekGroup) =>
-      weekGroup.winners.some((winner) => winner.userId === userId)
-    );
+    return winnersData.weeklyWinners.some((weekGroup) => weekGroup.winners.some((winner) => winner.userId === userId));
   }, [userId, winnersData]);
 
-  // Trigger confetti when user becomes a winner (only once per win state)
-  const previousWinnerStateRef = useRef<boolean | null>(null);
-  useEffect(() => {
-    // Only trigger confetti when transitioning from not winner to winner
-    if (isUserWinner && previousWinnerStateRef.current === false) {
-      triggerRainbowCelebration();
-    }
-    // Update the previous state
-    previousWinnerStateRef.current = isUserWinner;
-  }, [isUserWinner]);
-
-  // Use next Friday at 15:00 when no winners, otherwise use next lottery date
-  const targetDateTime = useMemo(() => {
-    return hasWinners ? getNextLotteryDateTime() : getNextFridayAt15();
-  }, [hasWinners]);
+  const targetDateTime = getNextFridayAt15();
 
   // Countdown state
   const [timeRemaining, setTimeRemaining] = useState<{
@@ -109,190 +58,51 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
     return () => clearInterval(interval);
   }, [targetDateTime]);
 
-  // Auto-sync tickets on mount when user and eligibleWeeks are available
-  useEffect(() => {
-    const autoSync = async () => {
-      if (!user || eligibleWeeks.length === 0 || hasSyncedRef.current || syncTicketsMutation.isPending) {
-        return;
-      }
-
-      const userName = `${user.first_name} ${user.last_name}`.trim();
-      const userIdStr = user.id.toString();
-
-      try {
-        hasSyncedRef.current = true;
-        isAutoSyncingRef.current = true;
-        await syncTicketsMutation.mutateAsync({
-          userId: userIdStr,
-          name: userName,
-          image: null, // Harvest API doesn't provide user image
-          eligibleWeeks,
-        });
-        // Invalidate tickets query to refetch updated count
-        queryClient.invalidateQueries({ queryKey: lotteryKeys.tickets(userIdStr) });
-      } catch (error) {
-        // Error is handled by the mutation
-        console.error("Failed to sync lottery tickets:", error);
-        hasSyncedRef.current = false; // Allow retry on error
-      } finally {
-        isAutoSyncingRef.current = false;
-      }
-    };
-
-    autoSync();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, eligibleWeeks.length]);
-
-  const handleSyncTickets = async () => {
-    if (!user || eligibleWeeks.length === 0) {
-      return;
-    }
-
-    const userName = `${user.first_name} ${user.last_name}`.trim();
-    const userIdStr = user.id.toString();
-
-    try {
-      isAutoSyncingRef.current = false; // Mark as manual sync
-      await syncTicketsMutation.mutateAsync({
-        userId: userIdStr,
-        name: userName,
-        image: null, // Harvest API doesn't provide user image
-        eligibleWeeks,
-      });
-      // Invalidate tickets query to refetch updated count
-      queryClient.invalidateQueries({ queryKey: lotteryKeys.tickets(userIdStr) });
-    } catch (error) {
-      // Error is handled by the mutation
-      console.error("Failed to sync lottery tickets:", error);
-    }
-  };
-
-  const handleSyncKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleSyncTickets();
-    }
-  };
-
   return (
     <div className={styles.dataSection}>
       <h3>{t("lottery.lottery.title")}</h3>
       <div className={styles.lotteryContent}>
-        {/* Show winners at the top if they exist */}
-        {hasWinners && <WinnersReveal isUserWinner={isUserWinner} />}
-
-        <div className={styles.totalTicketsBadge}>
-          <span className={styles.totalTicketsText}>
-            {t("lottery.lottery.totalTickets", { count: syncedTicketsCount })}
-          </span>
-          <span className={styles.ticketIconLarge}>🎫</span>
-        </div>
-
-        {/* Show sync status only if there's an error or manual sync was just performed */}
-        {eligibleWeeks.length > 0 && user && (
-          <div className={styles.syncSection}>
-            {syncTicketsMutation.isError ? (
-              <div className={styles.syncStatus}>
-                <p className={styles.error} role="alert">
-                  {syncTicketsMutation.error instanceof Error
-                    ? syncTicketsMutation.error.message
-                    : t("lottery.lottery.syncError")}
-                </p>
-                <button
-                  type="button"
-                  onClick={handleSyncTickets}
-                  onKeyDown={handleSyncKeyDown}
-                  className={styles.syncButton}
-                  aria-label={t("lottery.lottery.syncTickets")}
-                >
-                  {t("lottery.lottery.syncTickets")}
-                </button>
-              </div>
-            ) : syncTicketsMutation.isSuccess && syncTicketsMutation.data && !isAutoSyncingRef.current ? (
-              <div className={styles.syncStatus}>
-                <p className={styles.success} role="status">
-                  {t("lottery.lottery.syncSuccess", {
-                    synced: syncTicketsMutation.data.syncedCount,
-                    skipped: syncTicketsMutation.data.skippedCount,
-                  })}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        )}
-
-        {/* Show countdown to next Friday 15:00 when no winners are selected yet */}
-        {!hasWinners && timeRemaining && (
-          <div className={styles.nextLottery}>
-            <h4>{t("lottery.lottery.nextLottery")}</h4>
-            <p>
-              {t("lottery.lottery.nextLotteryDate", {
-                date: formatDateReadable(getNextLotteryDate(), false),
-              })}
-            </p>
-            <div className={styles.countdown}>
-              <div className={styles.countdownItem}>
-                <span className={styles.countdownValue}>{timeRemaining.days}</span>
-                <span className={styles.countdownLabel}>
-                  {t("lottery.lottery.countdown.days", { count: timeRemaining.days })}
-                </span>
-              </div>
-              <div className={styles.countdownItem}>
-                <span className={styles.countdownValue}>{String(timeRemaining.hours).padStart(2, "0")}</span>
-                <span className={styles.countdownLabel}>
-                  {t("lottery.lottery.countdown.hours", { count: timeRemaining.hours })}
-                </span>
-              </div>
-              <div className={styles.countdownItem}>
-                <span className={styles.countdownValue}>{String(timeRemaining.minutes).padStart(2, "0")}</span>
-                <span className={styles.countdownLabel}>
-                  {t("lottery.lottery.countdown.minutes", { count: timeRemaining.minutes })}
-                </span>
-              </div>
-              <div className={styles.countdownItem}>
-                <span className={styles.countdownValue}>{String(timeRemaining.seconds).padStart(2, "0")}</span>
-                <span className={styles.countdownLabel}>
-                  {t("lottery.lottery.countdown.seconds", { count: timeRemaining.seconds })}
-                </span>
+        {/* Show winners if they exist, otherwise show countdown */}
+        {hasWinners ? (
+          <WinnersReveal isUserWinner={isUserWinner} />
+        ) : (
+          timeRemaining && (
+            <div className={styles.nextLottery}>
+              <h4>{t("lottery.lottery.nextLottery")}</h4>
+              <p>
+                {t("lottery.lottery.nextLotteryDate", {
+                  date: formatDateReadable(getNextLotteryDate(), false),
+                })}
+              </p>
+              <div className={styles.countdown}>
+                <div className={styles.countdownItem}>
+                  <span className={styles.countdownValue}>{timeRemaining.days}</span>
+                  <span className={styles.countdownLabel}>
+                    {t("lottery.lottery.countdown.days", { count: timeRemaining.days })}
+                  </span>
+                </div>
+                <div className={styles.countdownItem}>
+                  <span className={styles.countdownValue}>{String(timeRemaining.hours).padStart(2, "0")}</span>
+                  <span className={styles.countdownLabel}>
+                    {t("lottery.lottery.countdown.hours", { count: timeRemaining.hours })}
+                  </span>
+                </div>
+                <div className={styles.countdownItem}>
+                  <span className={styles.countdownValue}>{String(timeRemaining.minutes).padStart(2, "0")}</span>
+                  <span className={styles.countdownLabel}>
+                    {t("lottery.lottery.countdown.minutes", { count: timeRemaining.minutes })}
+                  </span>
+                </div>
+                <div className={styles.countdownItem}>
+                  <span className={styles.countdownValue}>{String(timeRemaining.seconds).padStart(2, "0")}</span>
+                  <span className={styles.countdownLabel}>
+                    {t("lottery.lottery.countdown.seconds", { count: timeRemaining.seconds })}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )
         )}
-
-        {/* Show next lottery info when winners exist (without countdown) */}
-        {hasWinners && (
-          <div className={styles.nextLottery}>
-            <h4>{t("lottery.lottery.nextLottery")}</h4>
-            <p>
-              {t("lottery.lottery.nextLotteryDate", {
-                date: formatDateReadable(nextLotteryDate, false),
-              })}
-            </p>
-          </div>
-        )}
-
-        {weeklyData.length > 0 && (
-          <div className={styles.eligibleWeeks}>
-            <h4>{t("lottery.lottery.eligibleWeeks")}</h4>
-            <ul>
-              {weeklyData
-                .filter((week) => week.isLotteryEligible)
-                .map((week) => {
-                  const weekNumber = parseInt(week.weekKey.split("-W")[1], 10);
-                  return (
-                    <li key={week.weekStart}>
-                      {t("lottery.week")} {weekNumber}: {formatDateDDMM(week.weekStart)} -{" "}
-                      {formatDateDDMM(week.weekEnd)} ({formatHours(week.hours)}
-                      {hourUnit})
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-        )}
-
-        {/* Show winners at the bottom if they don't exist (for the reveal button) */}
-        {!hasWinners && <WinnersReveal />}
       </div>
     </div>
   );

@@ -205,27 +205,27 @@
     "navigation": {
       "timeEntries": "Your Hours",
       "rules": "Rules",
-      "lottery": "Lottery",
-      "employees": "Employees",
-      "luckyWheel": "Grand Finale"
+      "luckyWheel": "Grand Finale",
+      "lottery": "Weekly Lottery",
+      "employees": "Employees"
     },
     "rules": {
-      "title": "Lottery Rules",
+      "title": "Weekly Lottery Rules",
       "eligibility": "Eligibility Criteria",
       "rule1": "Must have at least 8 hours logged for each day Monday-Friday",
       "rule2": "All time entries for the week must be created AND updated before Friday 15:00",
       "monthChange": "Month Change",
       "rule3": "If you are late with time entries across month change, you lose all saved tickets for that month",
       "howItWorks": "How It Works",
-      "description": "Each week you meet the eligibility criteria, you earn 1 lottery ticket. The more tickets you have, the better your chances in the lottery!"
+      "description": "Each week you meet the eligibility criteria, you earn 1 lottery ticket. The more tickets you have, the better your chances in the weekly lottery!"
     },
     "lottery": {
       "title": "Your Lottery Tickets",
       "totalTickets": "You have {{count}} lottery ticket",
       "totalTickets_plural": "You have {{count}} lottery tickets",
       "totalTicketsLabel": "tickets",
-      "nextLottery": "Next Lottery",
-      "nextLotteryDate": "The next lottery will be held on {{date}} at 15:00",
+      "nextLottery": "Next Weekly Lottery",
+      "nextLotteryDate": "The next weekly lottery will be held on {{date}} at 15:00",
       "eligibleWeeks": "Eligible Weeks",
       "countdown": {
         "days": "{{count}} day",

@@ -6,10 +6,20 @@
     "employees": "Ansatte",
     "lottery": "Timelotteriet",
     "sync": "Synkroniser",
-    "timebank": "Timebank"
+    "timebank": "Timebank",
+    "admin": "Admin"
   },
   "admin": {
-    "changeEmployee": "Bytt dagens ansatt"
+    "changeEmployee": "Bytt dagens ansatt",
+    "title": "Admin - Dagens vinner",
+    "todaysWinner": "Dagens vinner",
+    "originalId": "Original ID",
+    "obfuscatedId": "Obfuskert ID (Dagens ansatt)",
+    "copyId": "Kopier ID",
+    "date": "Dato",
+    "department": "Avdeling",
+    "office": "Kontor",
+    "noEmployees": "Ingen ansatte funnet."
   },
   "game": {
     "title": "Fortedle",

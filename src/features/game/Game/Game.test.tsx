@@ -53,7 +53,7 @@ describe("Game - Input Field Visibility", () => {
   ];
 
   const testDate = "2024-01-01";
-  const hashedEmployeeId = hashEmployeeId(mockEmployees[0].id, testDate);
+  const hashedEmployeeId = hashEmployeeId(mockEmployees[0].id);
 
   const createMockState = (overrides?: Partial<RootState>): RootState =>
     ({

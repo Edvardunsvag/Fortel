@@ -158,8 +158,8 @@ const gameSlice = createSlice({
         state.status = "playing";
       }
 
-      // Store hashed employee ID
-      const hashedId = hashEmployeeId(action.payload, today);
+      // Store obfuscated employee ID
+      const hashedId = hashEmployeeId(action.payload);
       state.employeeOfTheDayId = hashedId;
     },
     revealFunfact: (state) => {
@@ -187,6 +187,8 @@ export const selectEmployeeOfTheDayId = (state: RootState): string | null => sta
 export const selectFunfactRevealed = (state: RootState): boolean => state.game.funfactRevealed;
 
 export const selectAttemptedByUserId = (state: RootState): string | null => state.game.attemptedByUserId;
+
+export const selectAttemptDate = (state: RootState): string | null => state.game.attemptDate;
 
 export const selectGuesses = (state: RootState): Guess[] => state.game.guesses;
 

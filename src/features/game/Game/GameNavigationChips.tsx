@@ -13,7 +13,8 @@ const subTabToRoute: Record<GameSubTab, string> = {
   [GameSubTab.Leaderboard]: routes.leaderboard,
   [GameSubTab.Rules]: routes.rules,
   [GameSubTab.Employees]: routes.employees,
-  [GameSubTab.Sync]: routes.sync,
+  [GameSubTab.Sync]: routes.admin, // Redirect sync to admin
+  [GameSubTab.Admin]: routes.admin,
 };
 
 const subTabToTranslationKey: Record<GameSubTab, string> = {
@@ -21,7 +22,8 @@ const subTabToTranslationKey: Record<GameSubTab, string> = {
   [GameSubTab.Leaderboard]: "sidebar.leaderboard",
   [GameSubTab.Rules]: "sidebar.rules",
   [GameSubTab.Employees]: "sidebar.employees",
-  [GameSubTab.Sync]: "sidebar.sync",
+  [GameSubTab.Sync]: "sidebar.admin", // Sync is now part of admin
+  [GameSubTab.Admin]: "sidebar.admin",
 };
 
 const subTabToIcon: Record<GameSubTab, string> = {
@@ -29,7 +31,8 @@ const subTabToIcon: Record<GameSubTab, string> = {
   [GameSubTab.Leaderboard]: "🏆",
   [GameSubTab.Rules]: "📖",
   [GameSubTab.Employees]: "👥",
-  [GameSubTab.Sync]: "🔄",
+  [GameSubTab.Sync]: "🔐", // Sync is now part of admin
+  [GameSubTab.Admin]: "🔐",
 };
 
 export const GameNavigationChips = () => {
@@ -63,7 +66,7 @@ export const GameNavigationChips = () => {
     GameSubTab.Leaderboard,
     GameSubTab.Rules,
     GameSubTab.Employees,
-    ...(isAdmin ? [GameSubTab.Sync] : []),
+    ...(isAdmin ? [GameSubTab.Admin] : []),
   ];
 
   // Update slider position when active tab changes

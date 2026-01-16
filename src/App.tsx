@@ -18,7 +18,7 @@ import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
 import { LeaderboardPage } from "./features/game/leaderboard/LeaderboardPage/LeaderboardPage";
 import { EmployeesPage } from "./features/game/employees/EmployeesPage/EmployeesPage";
-import { SyncPage } from "./features/game/employees/SyncPage/SyncPage";
+import { AdminPage } from "./features/game/AdminPage/AdminPage";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -36,8 +36,8 @@ export const App = () => {
     const tab = routeToTab[path];
     if (tab) {
       // Set ActiveTab for sidebar navigation
-      // All game-related routes (play, leaderboard, rules, employees, sync) should show Play as active
-      if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees" || tab === "sync") {
+      // All game-related routes (play, leaderboard, rules, employees, admin) should show Play as active
+      if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees" || tab === "admin") {
         dispatch(setActiveTab(ActiveTab.Play));
       } else if (tab === "lottery") {
         dispatch(setActiveTab(ActiveTab.Lottery));
@@ -51,7 +51,7 @@ export const App = () => {
         [routes.leaderboard]: GameSubTab.Leaderboard,
         [routes.rules]: GameSubTab.Rules,
         [routes.employees]: GameSubTab.Employees,
-        [routes.sync]: GameSubTab.Sync,
+        [routes.admin]: GameSubTab.Admin,
       };
 
       const gameSubTab = gameSubTabMap[path];
@@ -76,7 +76,8 @@ export const App = () => {
         <Route path={routes.employees} element={<EmployeesPage />} />
         <Route path={routes.lottery} element={<LotteryPage />} />
         <Route path={routes.timebank} element={<TimeBankPage />} />
-        <Route path={routes.sync} element={isAdmin ? <SyncPage /> : <Navigate to={routes.play} replace />} />
+        <Route path={routes.sync} element={isAdmin ? <Navigate to={routes.admin} replace /> : <Navigate to={routes.play} replace />} />
+        <Route path={routes.admin} element={isAdmin ? <AdminPage /> : <Navigate to={routes.play} replace />} />
         <Route path="*" element={<Navigate to={routes.play} replace />} />
       </Routes>
     </div>

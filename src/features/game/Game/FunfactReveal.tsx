@@ -10,7 +10,6 @@ import {
 import { useRevealFunfact } from "@/features/game/queries";
 import { toRevealFunfactRequest } from "@/features/game/toDto";
 import { findEmployeeByHash } from "@/shared/utils/hashUtils";
-import { getTodayDateString } from "@/shared/utils/dateUtils";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./Game.module.scss";
@@ -29,8 +28,7 @@ export const FunfactReveal = ({ employees }: FunfactRevealProps) => {
   const revealFunfactMutation = useRevealFunfact();
 
   // Calculate hasFunfactOrInterests - must be done before any early returns
-  const today = getTodayDateString();
-  const targetEmployee = employeeOfTheDayId ? findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today) : null;
+  const targetEmployee = employeeOfTheDayId ? findEmployeeByHash<Employee>(employees, employeeOfTheDayId) : null;
 
   const hasFunfactOrInterests = targetEmployee
     ? !(!targetEmployee.funfact && (!targetEmployee.interests || targetEmployee.interests.length === 0))

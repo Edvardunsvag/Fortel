@@ -6,10 +6,20 @@
     "employees": "Employees",
     "lottery": "Time Lottery",
     "sync": "Sync",
-    "timebank": "Time Bank"
+    "timebank": "Time Bank",
+    "admin": "Admin"
   },
   "admin": {
-    "changeEmployee": "Change today's employee"
+    "changeEmployee": "Change today's employee",
+    "title": "Admin - Today's Winner",
+    "todaysWinner": "Today's Winner",
+    "originalId": "Original ID",
+    "obfuscatedId": "Obfuscated ID (Employee of the Day)",
+    "copyId": "Copy ID",
+    "date": "Date",
+    "department": "Department",
+    "office": "Office",
+    "noEmployees": "No employees found."
   },
   "game": {
     "title": "Fortedle",

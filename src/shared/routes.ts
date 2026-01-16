@@ -9,6 +9,7 @@ export const routes = {
   lottery: "/time-lottery",
   sync: "/sync",
   timebank: "/timebank",
+  admin: "/admin",
 } as const;
 
 /**
@@ -22,6 +23,7 @@ export const tabToRoute: Record<string, string> = {
   lottery: routes.lottery,
   sync: routes.sync,
   timebank: routes.timebank,
+  admin: routes.admin,
 };
 
 /**
@@ -35,4 +37,5 @@ export const routeToTab: Record<string, string> = {
   [routes.lottery]: "lottery",
   [routes.sync]: "sync",
   [routes.timebank]: "timebank",
+  [routes.admin]: "admin",
 };

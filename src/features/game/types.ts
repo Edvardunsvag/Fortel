@@ -36,6 +36,7 @@ export enum GameSubTab {
   Rules = "rules",
   Employees = "employees",
   Sync = "sync",
+  Admin = "admin",
 }
 
 export interface GameState {

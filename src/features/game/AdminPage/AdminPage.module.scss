@@ -1,0 +1,268 @@
+@use "../../../shared/styles/variables.scss" as *;
+@use "sass:color";
+
+.page {
+  min-height: 100vh;
+  padding-left: 16rem; // Account for sidebar width
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  padding-right: $spacing-xl;
+
+  @media (max-width: 768px) {
+    padding-left: 4rem;
+    padding-right: $spacing-md;
+  }
+}
+
+.container {
+  max-width: 56rem;
+  margin: 0 auto;
+  background-color: $color-primary-beige;
+  border-radius: $radius-lg;
+  padding: $spacing-xxl;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0 0 $spacing-sm 0;
+  color: $color-dark-accent;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+}
+
+.content {
+  margin-top: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxl;
+}
+
+.section {
+  margin-bottom: $spacing-xxl;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  margin: 0 0 $spacing-md 0;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: $color-light-grey-text;
+  margin: 0 0 $spacing-lg 0;
+}
+
+.winnerCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto $spacing-md;
+  display: block;
+  border: 3px solid $color-link-blue;
+}
+
+.winnerName {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: $spacing-xl;
+  color: $color-dark-fill;
+}
+
+.idSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
+  padding: $spacing-lg;
+  background: $color-light-grey;
+  border-radius: $radius-md;
+}
+
+.idRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.idLabel {
+  font-weight: 600;
+  color: $color-dark-fill;
+  min-width: 120px;
+}
+
+.idValue {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  background: $color-white;
+  border-radius: $radius-sm;
+  font-family: monospace;
+  font-size: 0.875rem;
+  word-break: break-all;
+  color: $color-dark-fill;
+  border: 1px solid $color-border-light;
+}
+
+.copyButton {
+  background-color: $color-link-blue;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: color.adjust($color-link-blue, $lightness: -10%);
+  }
+
+  &:active {
+    background-color: color.adjust($color-link-blue, $lightness: -15%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $color-border-light;
+}
+
+.infoText {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $color-dark-fill;
+
+  strong {
+    color: $color-dark-fill;
+    margin-right: $spacing-sm;
+  }
+}
+
+.message {
+  color: $color-dark-fill;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.syncForm {
+  margin-top: $spacing-lg;
+}
+
+.tokenLabel {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  margin-bottom: $spacing-sm;
+}
+
+.tokenInput {
+  width: 100%;
+  padding: $spacing-md;
+  border: 1px solid $color-border-light;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 6rem;
+  background-color: $color-white;
+  color: $color-dark-fill;
+
+  &:focus {
+    outline: none;
+    border-color: $color-link-blue;
+    box-shadow: 0 0 0 3px rgba($color-link-blue, 0.1);
+  }
+
+  &:disabled {
+    background-color: $color-light-grey;
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  color: $color-error;
+  font-size: 0.875rem;
+  margin-top: $spacing-sm;
+}
+
+.success {
+  color: $color-success;
+  font-size: 0.875rem;
+  margin-top: $spacing-sm;
+}
+
+.tokenActions {
+  margin-top: $spacing-md;
+}
+
+.submitButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-link-blue;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: color.adjust($color-link-blue, $lightness: -10%);
+  }
+
+  &:disabled {
+    background-color: $color-light-grey;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.instructions {
+  margin-top: $spacing-lg;
+  font-size: 0.875rem;
+  color: $color-light-grey-text;
+  line-height: 1.6;
+
+  code {
+    background-color: $color-light-grey;
+    padding: 0.125rem 0.25rem;
+    border-radius: $radius-sm;
+    font-family: "Courier New", monospace;
+    font-size: 0.875em;
+  }
+}

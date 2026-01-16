@@ -93,16 +93,18 @@ export const Game = () => {
       return;
     }
 
-    // Find target employee by comparing hashed IDs
-    const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId, today);
+    // Find target employee by comparing obfuscated IDs
+    const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId);
 
     if (!targetEmployee) {
       console.error("Target employee not found for hash:", employeeOfTheDayId);
       return;
     }
 
-    // Calculate if this is correct by comparing hashed IDs (same logic as makeGuess reducer)
-    const guessedHashedId = hashEmployeeId(guessedEmployee.id, today);
+    // Calculate if this is correct by comparing obfuscated IDs
+    // When starting a round, we store hashEmployeeId(selectedEmployee.id)
+    // So we compare hashEmployeeId(guessedEmployee.id) === employeeOfTheDayId
+    const guessedHashedId = hashEmployeeId(guessedEmployee.id);
     const isCorrect = guessedHashedId === employeeOfTheDayId;
 
     // Save to server if user is logged in - always save every guess
@@ -167,7 +169,9 @@ export const Game = () => {
       return;
     }
 
-    const hashedId = hashEmployeeId(selectedEmployee.id, today);
+    // Obfuscate the employee ID before storing
+    // This same obfuscated ID will be used for comparison when checking guesses
+    const hashedId = hashEmployeeId(selectedEmployee.id);
     const request = toStartRoundRequest(userId, today, hashedId);
 
     try {

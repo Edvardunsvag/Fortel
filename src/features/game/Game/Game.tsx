@@ -1,13 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { selectAccount } from "@/features/auth/authSlice";
-
 import { useEmployees } from "@/features/game/employees";
 import type { Employee } from "@/features/game/employees/types";
 import {
   calculateHintsForGuess,
   loadRoundFromState,
   selectAttemptedByUserId,
-  selectCanGuess,
   selectEmployeeOfTheDayId,
   selectGameStatus,
   selectGuesses,
@@ -39,7 +37,6 @@ export const Game = () => {
   const employeeOfTheDayId = useAppSelector(selectEmployeeOfTheDayId);
   const guesses = useAppSelector(selectGuesses);
   const gameStatus = useAppSelector(selectGameStatus);
-  const canGuess = useAppSelector(selectCanGuess);
   const funfactRevealCost = useAppSelector(selectFunfactRevealCost);
   const account = useAppSelector(selectAccount);
   const userId = account?.localAccountId || account?.username || null;
@@ -83,8 +80,9 @@ export const Game = () => {
   }, [gameStatus, guesses]);
 
   const handleGuess = async (employeeId: string) => {
-    if (!canGuess || !employeeOfTheDayId) {
-      console.warn("Cannot guess:", { canGuess, employeeOfTheDayId });
+    // Check if we can make a guess - must be playing and have employeeOfTheDayId
+    if (gameStatus !== "playing" || !employeeOfTheDayId) {
+      console.warn("Cannot guess:", { gameStatus, employeeOfTheDayId });
       return;
     }
 
@@ -103,10 +101,13 @@ export const Game = () => {
       return;
     }
 
-    // Save to server if user is logged in
+    // Calculate if this is correct by comparing hashed IDs (same logic as makeGuess reducer)
+    const guessedHashedId = hashEmployeeId(guessedEmployee.id, today);
+    const isCorrect = guessedHashedId === employeeOfTheDayId;
+
+    // Save to server if user is logged in - always save every guess
     if (userId) {
       const hints = calculateHintsForGuess(guessedEmployee, targetEmployee);
-      const isCorrect = guessedEmployee.id === targetEmployee.id;
       const guess: Guess = {
         employeeId: guessedEmployee.id,
         employeeName: guessedEmployee.name,
@@ -118,6 +119,7 @@ export const Game = () => {
       const request = toSaveGuessRequest(userId, today, guess);
       try {
         const round = await saveGuessMutation.mutateAsync(request);
+        // Update state with the round from server - this will set status to "won" if correct
         dispatch(loadRoundFromState({ round }));
 
         // Submit score to leaderboard if guess is correct and user is not already on leaderboard

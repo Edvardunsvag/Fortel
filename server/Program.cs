@@ -115,6 +115,8 @@ builder.Services.AddScoped<ISyncService, SyncService>();
 builder.Services.AddScoped<IRoundService, RoundService>();
 builder.Services.AddScoped<ILotteryTicketService, LotteryTicketService>();
 builder.Services.AddScoped<ILotteryDrawingService, LotteryDrawingService>();
+builder.Services.AddScoped<IMonthlyLotteryDrawingService, MonthlyLotteryDrawingService>();
+builder.Services.AddScoped<IWheelDataService, WheelDataService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient();

@@ -12,15 +12,21 @@ namespace Fortedle.Server.Controllers;
 public class LotteryTicketsController : ControllerBase
 {
     private readonly ILotteryTicketService _lotteryTicketService;
+    private readonly IWheelDataService _wheelDataService;
+    private readonly IMonthlyLotteryDrawingService _monthlyDrawingService;
     private readonly AppDbContext _context;
     private readonly ILogger<LotteryTicketsController> _logger;
 
     public LotteryTicketsController(
         ILotteryTicketService lotteryTicketService,
+        IWheelDataService wheelDataService,
+        IMonthlyLotteryDrawingService monthlyDrawingService,
         AppDbContext context,
         ILogger<LotteryTicketsController> logger)
     {
         _lotteryTicketService = lotteryTicketService;
+        _wheelDataService = wheelDataService;
+        _monthlyDrawingService = monthlyDrawingService;
         _context = context;
         _logger = logger;
     }
@@ -374,6 +380,182 @@ public class LotteryTicketsController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error seeding test lottery tickets");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("wheel")]
+    public async Task<ActionResult<WheelDataResponse>> GetWheelData()
+    {
+        try
+        {
+            var wheelData = await _wheelDataService.GetWheelDataAsync();
+            return Ok(wheelData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching wheel data");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("monthly-winners")]
+    public async Task<ActionResult<MonthlyWinnersResponse>> GetMonthlyWinners([FromQuery] string? month = null)
+    {
+        try
+        {
+            var winners = await _wheelDataService.GetMonthlyWinnersAsync(month);
+            return Ok(winners);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching monthly winners");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("monthly-winners/latest")]
+    public async Task<ActionResult<MonthlyWinnersResponse>> GetLatestMonthlyWinners()
+    {
+        try
+        {
+            var winners = await _wheelDataService.GetLatestMonthlyWinnersAsync();
+            return Ok(winners);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching latest monthly winners");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("config")]
+    public async Task<ActionResult<LotteryConfigDto>> GetLotteryConfig()
+    {
+        try
+        {
+            var config = await _wheelDataService.GetLotteryConfigAsync();
+            return Ok(config);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching lottery config");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("monthly-draw")]
+    public async Task<ActionResult<object>> TriggerMonthlyDraw()
+    {
+        try
+        {
+            await _monthlyDrawingService.DrawMonthlyWinnersAsync();
+            var winners = await _wheelDataService.GetMonthlyWinnersAsync();
+            return Ok(new
+            {
+                message = "Monthly draw completed successfully",
+                winners = winners.Winners
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error triggering monthly draw");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("consume-winner/{month}/{position:int}")]
+    public async Task<ActionResult<object>> ConsumeWinnerTickets(string month, int position)
+    {
+        try
+        {
+            // Find the winning ticket for this position
+            var winner = await _context.MonthlyWinningTickets
+                .FirstOrDefaultAsync(w => w.Month == month && w.Position == position);
+
+            if (winner == null)
+            {
+                return NotFound(new { error = $"Winner not found for month {month} position {position}" });
+            }
+
+            // Mark all of this user's tickets as used
+            var ticketsToConsume = await _context.LotteryTickets
+                .Where(t => t.UserId == winner.UserId && !t.IsUsed)
+                .ToListAsync();
+
+            foreach (var ticket in ticketsToConsume)
+            {
+                ticket.IsUsed = true;
+                ticket.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Consumed {Count} tickets for winner {UserId} (position {Position}, month {Month})",
+                ticketsToConsume.Count, winner.UserId, position, month);
+
+            return Ok(new
+            {
+                message = "Winner tickets consumed successfully",
+                ticketsConsumed = ticketsToConsume.Count,
+                userId = winner.UserId
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error consuming winner tickets");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("reset-month")]
+    public async Task<ActionResult<object>> ResetMonth([FromQuery] string? month = null)
+    {
+        try
+        {
+            var targetMonth = month ?? $"{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month:D2}";
+
+            // Get winners for this month to restore their tickets
+            var winners = await _context.MonthlyWinningTickets
+                .Where(w => w.Month == targetMonth)
+                .ToListAsync();
+
+            // Restore tickets for all winners
+            var ticketsRestored = 0;
+            foreach (var winner in winners)
+            {
+                var tickets = await _context.LotteryTickets
+                    .Where(t => t.UserId == winner.UserId && t.IsUsed)
+                    .ToListAsync();
+
+                foreach (var ticket in tickets)
+                {
+                    ticket.IsUsed = false;
+                    ticket.UpdatedAt = DateTime.UtcNow;
+                    ticketsRestored++;
+                }
+            }
+
+            // Delete the monthly winners
+            _context.MonthlyWinningTickets.RemoveRange(winners);
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Reset month {Month}: removed {WinnerCount} winners, restored {TicketCount} tickets",
+                targetMonth, winners.Count, ticketsRestored);
+
+            return Ok(new
+            {
+                message = $"Month {targetMonth} reset successfully",
+                winnersRemoved = winners.Count,
+                ticketsRestored
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resetting month");
             return StatusCode(500, new { error = ex.Message });
         }
     }

@@ -74,6 +74,11 @@ export interface FortedleServerModelsLeaderboardEntryDto {
     'avatarImageUrl'?: string | null;
     'submittedAt'?: string;
 }
+export interface FortedleServerModelsLotteryConfigDto {
+    'monthlyWinnerCount'?: number;
+    'nextMonthlyDrawDate'?: string;
+    'currentMonth'?: string | null;
+}
 export interface FortedleServerModelsLotteryTicketDto {
     'id'?: number;
     'userId'?: string | null;
@@ -83,6 +88,21 @@ export interface FortedleServerModelsLotteryTicketDto {
     'isUsed'?: boolean;
     'createdAt'?: string;
     'updatedAt'?: string;
+}
+export interface FortedleServerModelsMonthlyWinnerDto {
+    'userId'?: string | null;
+    'name'?: string | null;
+    'image'?: string | null;
+    'color'?: string | null;
+    'month'?: string | null;
+    'position'?: number;
+    'ticketsConsumed'?: number;
+    'createdAt'?: string;
+}
+export interface FortedleServerModelsMonthlyWinnersResponse {
+    'month'?: string | null;
+    'winners'?: Array<FortedleServerModelsMonthlyWinnerDto> | null;
+    'isDrawComplete'?: boolean;
 }
 export interface FortedleServerModelsRevealFunfactRequest {
     'roundId'?: number;
@@ -139,6 +159,25 @@ export interface FortedleServerModelsSyncResponse {
 export interface FortedleServerModelsWeeklyWinnersDto {
     'week'?: string | null;
     'winners'?: Array<FortedleServerModelsWinnerDto> | null;
+}
+export interface FortedleServerModelsWheelDataResponse {
+    'segments'?: Array<FortedleServerModelsWheelSegmentDto> | null;
+    'participants'?: Array<FortedleServerModelsWheelParticipantDto> | null;
+    'totalTickets'?: number;
+}
+export interface FortedleServerModelsWheelParticipantDto {
+    'userId'?: string | null;
+    'name'?: string | null;
+    'image'?: string | null;
+    'color'?: string | null;
+    'ticketCount'?: number;
+}
+export interface FortedleServerModelsWheelSegmentDto {
+    'userId'?: string | null;
+    'name'?: string | null;
+    'image'?: string | null;
+    'color'?: string | null;
+    'ticketId'?: number;
 }
 export interface FortedleServerModelsWinnerDto {
     'userId'?: string | null;
@@ -543,6 +582,71 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsConfigGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/config`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} month 
+         * @param {number} position 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsConsumeWinnerMonthPositionPost: async (month: string, position: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'month' is not null or undefined
+            assertParamExists('apiLotteryTicketsConsumeWinnerMonthPositionPost', 'month', month)
+            // verify required parameter 'position' is not null or undefined
+            assertParamExists('apiLotteryTicketsConsumeWinnerMonthPositionPost', 'position', position)
+            const localVarPath = `/api/LotteryTickets/consume-winner/{month}/{position}`
+                .replace(`{${"month"}}`, encodeURIComponent(String(month)))
+                .replace(`{${"position"}}`, encodeURIComponent(String(position)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} [userId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -565,6 +669,130 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             }
 
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsMonthlyDrawPost: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/monthly-draw`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [month] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsMonthlyWinnersGet: async (month?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/monthly-winners`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (month !== undefined) {
+                localVarQueryParameter['month'] = month;
+            }
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsMonthlyWinnersLatestGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/monthly-winners/latest`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [month] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsResetMonthPost: async (month?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/reset-month`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (month !== undefined) {
+                localVarQueryParameter['month'] = month;
+            }
+
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -669,6 +897,35 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        apiLotteryTicketsWheelGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LotteryTickets/wheel`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         apiLotteryTicketsWinnersGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/LotteryTickets/winners`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -704,6 +961,30 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsLotteryConfigDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsConfigGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsConfigGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} month 
+         * @param {number} position 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsConsumeWinnerMonthPositionPost(month: string, position: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsConsumeWinnerMonthPositionPost(month, position, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsConsumeWinnerMonthPositionPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} [userId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -712,6 +993,52 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsGet(userId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsMonthlyDrawPost(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsMonthlyDrawPost(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsMonthlyDrawPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [month] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsMonthlyWinnersGet(month, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsMonthlyWinnersGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsMonthlyWinnersLatestGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsMonthlyWinnersLatestGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [month] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiLotteryTicketsResetMonthPost(month?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsResetMonthPost(month, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsResetMonthPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -753,6 +1080,17 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsWheelDataResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsWheelGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsWheelGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsAllWinnersResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsWinnersGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -770,12 +1108,64 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsLotteryConfigDto> {
+            return localVarFp.apiLotteryTicketsConfigGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} month 
+         * @param {number} position 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsConsumeWinnerMonthPositionPost(month: string, position: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiLotteryTicketsConsumeWinnerMonthPositionPost(month, position, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} [userId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsLotteryTicketDto>> {
             return localVarFp.apiLotteryTicketsGet(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsMonthlyDrawPost(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiLotteryTicketsMonthlyDrawPost(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [month] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse> {
+            return localVarFp.apiLotteryTicketsMonthlyWinnersGet(month, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse> {
+            return localVarFp.apiLotteryTicketsMonthlyWinnersLatestGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [month] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiLotteryTicketsResetMonthPost(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiLotteryTicketsResetMonthPost(month, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -807,6 +1197,14 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsWheelDataResponse> {
+            return localVarFp.apiLotteryTicketsWheelGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsAllWinnersResponse> {
             return localVarFp.apiLotteryTicketsWinnersGet(options).then((request) => request(axios, basePath));
         },
@@ -819,11 +1217,57 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
 export interface LotteryTicketsApiInterface {
     /**
      * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsLotteryConfigDto>;
+
+    /**
+     * 
+     * @param {string} month 
+     * @param {number} position 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsConsumeWinnerMonthPositionPost(month: string, position: number, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
      * @param {string} [userId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsLotteryTicketDto>>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsMonthlyDrawPost(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @param {string} [month] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>;
+
+    /**
+     * 
+     * @param {string} [month] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsResetMonthPost(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -852,6 +1296,13 @@ export interface LotteryTicketsApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
+    apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsWheelDataResponse>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
     apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsAllWinnersResponse>;
 
 }
@@ -862,12 +1313,70 @@ export interface LotteryTicketsApiInterface {
 export class LotteryTicketsApi extends BaseAPI implements LotteryTicketsApiInterface {
     /**
      * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsConfigGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} month 
+     * @param {number} position 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsConsumeWinnerMonthPositionPost(month: string, position: number, options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsConsumeWinnerMonthPositionPost(month, position, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {string} [userId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     public apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig) {
         return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsGet(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsMonthlyDrawPost(options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsMonthlyDrawPost(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [month] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsMonthlyWinnersGet(month, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsMonthlyWinnersLatestGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [month] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsResetMonthPost(month?: string, options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsResetMonthPost(month, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -896,6 +1405,15 @@ export class LotteryTicketsApi extends BaseAPI implements LotteryTicketsApiInter
      */
     public apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig) {
         return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsWheelGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

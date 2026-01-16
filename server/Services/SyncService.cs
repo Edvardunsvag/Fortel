@@ -85,6 +85,8 @@ public class SyncService : ISyncService
                         existingEmployee.Teams = employee.Teams;
                         existingEmployee.Age = employee.Age;
                         existingEmployee.Supervisor = employee.Supervisor;
+                        existingEmployee.SupervisorLastname = employee.SupervisorLastname;
+                        existingEmployee.Stillingstittel = employee.Stillingstittel;
                         existingEmployee.Funfact = employee.Funfact;
                         existingEmployee.Interests = employee.Interests;
                         existingEmployee.UpdatedAt = DateTime.UtcNow;
@@ -325,6 +327,7 @@ public class SyncService : ISyncService
 
         // Supervisor
         var supervisor = "-";
+        var supervisorLastname = (string?)null;
         if (user.TryGetProperty("supervisor", out var supervisorData))
         {
             var supervisorObj = GetObjectValue(supervisorData);
@@ -337,7 +340,38 @@ public class SyncService : ISyncService
                 supervisor = supervisorPreferredName ?? $"{supervisorGivenName} {supervisorFamilyName}".Trim();
                 if (string.IsNullOrEmpty(supervisor))
                     supervisor = "-";
+                
+                // Set supervisor lastname from familyName
+                supervisorLastname = supervisorFamilyName;
             }
+        }
+
+        // Stillingstittel (Job Title/Position Title)
+        var stillingstittel = (string?)null;
+        // Try common field names for job title
+        if (user.TryGetProperty("stillingstittel", out var stillingstittelField))
+        {
+            stillingstittel = GetStringValue(stillingstittelField);
+        }
+        else if (user.TryGetProperty("jobTitle", out var jobTitleField))
+        {
+            stillingstittel = GetStringValue(jobTitleField);
+        }
+        else if (user.TryGetProperty("job_title", out var jobTitleUnderscoreField))
+        {
+            stillingstittel = GetStringValue(jobTitleUnderscoreField);
+        }
+        else if (user.TryGetProperty("position", out var positionField))
+        {
+            stillingstittel = GetStringValue(positionField);
+        }
+        else if (user.TryGetProperty("positionTitle", out var positionTitleField))
+        {
+            stillingstittel = GetStringValue(positionTitleField);
+        }
+        else if (user.TryGetProperty("title", out var titleField))
+        {
+            stillingstittel = GetStringValue(titleField);
         }
 
         // Funfact
@@ -370,6 +404,8 @@ public class SyncService : ISyncService
             Teams = teamsArray,
             Age = age,
             Supervisor = supervisor,
+            SupervisorLastname = supervisorLastname,
+            Stillingstittel = stillingstittel,
             Funfact = funfact,
             Interests = interestsArray,
             CreatedAt = DateTime.UtcNow,

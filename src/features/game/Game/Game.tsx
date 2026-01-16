@@ -103,12 +103,7 @@ export const Game = () => {
 
     // Calculate if this is correct by comparing hashed IDs (same logic as makeGuess reducer)
     const guessedHashedId = hashEmployeeId(guessedEmployee.id, today);
-    console.log("guessedHashedId", guessedHashedId);
-    console.log("employeeOfTheDayId", employeeOfTheDayId);
-
     const isCorrect = guessedHashedId === employeeOfTheDayId;
-
-    console.log("isCorrect", isCorrect);
 
     // Save to server if user is logged in - always save every guess
     if (userId) {
@@ -118,7 +113,7 @@ export const Game = () => {
         employeeName: guessedEmployee.name,
         avatarImageUrl: guessedEmployee.avatarImageUrl,
         hints,
-        isCorrect,
+        isCorrect: isCorrect,
       };
 
       const request = toSaveGuessRequest(userId, today, guess);

@@ -13,6 +13,8 @@ public class EmployeeDto
     public List<string> Teams { get; set; } = new();
     public int? Age { get; set; }
     public string Supervisor { get; set; } = "-";
+    public string? SupervisorLastname { get; set; }
+    public string? Stillingstittel { get; set; }
     public string? Funfact { get; set; }
     public List<string> Interests { get; set; } = new();
 }

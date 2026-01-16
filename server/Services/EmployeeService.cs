@@ -38,6 +38,8 @@ public class EmployeeService : IEmployeeService
             Teams = e.Teams ?? new List<string>(),
             Age = e.Age,
             Supervisor = e.Supervisor ?? "-",
+            SupervisorLastname = e.SupervisorLastname,
+            Stillingstittel = e.Stillingstittel,
             Funfact = e.Funfact,
             Interests = e.Interests ?? new List<string>(),
         }).ToList();

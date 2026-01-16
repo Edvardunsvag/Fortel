@@ -3,12 +3,15 @@ export interface Employee {
   name: string;
   firstName: string;
   surname: string;
+  email?: string;
   avatarImageUrl?: string;
   department: string;
   office: string;
   teams: string[];
   age: number | string; // Age or '-' if unknown
   supervisor?: string; // Supervisor name or '-' if unknown
+  supervisorLastname?: string; // Supervisor lastname
+  stillingstittel?: string; // Job title/position title
   funfact?: string | null; // Fun fact about the employee
   interests?: string[]; // Array of interests
 }

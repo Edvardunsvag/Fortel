@@ -54,6 +54,14 @@ public class Employee
     [MaxLength(255)]
     public string? Supervisor { get; set; }
 
+    [Column("supervisor_lastname")]
+    [MaxLength(255)]
+    public string? SupervisorLastname { get; set; }
+
+    [Column("stillingstittel")]
+    [MaxLength(255)]
+    public string? Stillingstittel { get; set; }
+
     [Column("funfact")]
     public string? Funfact { get; set; }
 

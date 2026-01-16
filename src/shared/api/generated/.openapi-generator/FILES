@@ -7,8 +7,6 @@ configuration.ts
 docs/EmployeesApi.md
 docs/FortedleServerModelsAllWinnersResponse.md
 docs/FortedleServerModelsEmployeeDto.md
-docs/FortedleServerModelsEmployeeStatisticsDto.md
-docs/FortedleServerModelsEmployeeStatisticsResponse.md
 docs/FortedleServerModelsGuessDto.md
 docs/FortedleServerModelsGuessHintDto.md
 docs/FortedleServerModelsLeaderboardDto.md

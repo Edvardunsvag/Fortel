@@ -220,7 +220,7 @@
       "description": "Hver uke du oppfyller kvalifikasjonskriteriene, tjener du 1 lodd. Jo flere lodd du har, jo bedre er sjansene dine i ukeslotteriet!"
     },
     "lottery": {
-      "title": "Dine lodd",
+      "title": "Ukeslotteri",
       "totalTickets": "Du har {{count}} lodd",
       "totalTickets_plural": "Du har {{count}} lodd",
       "totalTicketsLabel": "lodd",

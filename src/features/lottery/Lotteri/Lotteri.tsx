@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAllWinners, useLotteryUser } from "../queries";
-import { getNextLotteryDate, getNextFridayAt15 } from "../lotteryUtils";
-import { formatDateReadable } from "@/shared/utils/dateUtils";
+import { getNextFridayAt15 } from "../lotteryUtils";
 import { WinnersReveal } from "./WinnersReveal";
 import styles from "./Lotteri.module.scss";
 
@@ -69,12 +68,6 @@ export const Lotteri = () => {
         ) : (
           timeRemaining && (
             <div className={styles.nextLottery}>
-              <h4>{t("lottery.lottery.nextLottery")}</h4>
-              <p>
-                {t("lottery.lottery.nextLotteryDate", {
-                  date: formatDateReadable(getNextLotteryDate(), false),
-                })}
-              </p>
               <div className={styles.lockedCountdown}>
                 <div className={styles.lockedTimeUnit}>
                   <span className={styles.lockedValue}>{timeRemaining.days}</span>

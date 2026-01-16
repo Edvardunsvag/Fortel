@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
-import { fetchEmployees } from "@/features/game/employees/api";
+import { useEmployees } from "@/features/game/employees/queries";
 import type { TimeBalance } from "../types";
 import type { FagtimerBalance } from "../timebankUtils";
 import styles from "./TimeBankPage.module.scss";
 
 const EDDI_EMAIL = "edvard.unsvag@fortedigital.com";
+const EDDI_FIRST_NAME = "Edvard";
+const EDDI_SURNAME = "Unsvåg";
 
 interface AiEncouragementProps {
   timeBalance: TimeBalance;
@@ -28,13 +29,11 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
 
   const isNorwegian = i18n.language === "nb" || i18n.language === "no";
 
-  const { data: employees } = useQuery({
-    queryKey: ["employees"],
-    queryFn: fetchEmployees,
-    staleTime: Infinity,
-  });
+  const { data: employees = [] } = useEmployees();
 
-  const eddiAvatar = employees?.find((e) => e.email?.toLowerCase() === EDDI_EMAIL)?.avatarImageUrl;
+  const eddiAvatar =
+    employees.find((e) => e.email?.toLowerCase() === EDDI_EMAIL)?.avatarImageUrl ||
+    employees.find((e) => e.firstName === EDDI_FIRST_NAME && e.surname === EDDI_SURNAME)?.avatarImageUrl;
 
   // Fetch AI comment once when data is available
   useEffect(() => {

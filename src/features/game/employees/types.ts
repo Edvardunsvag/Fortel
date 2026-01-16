@@ -3,6 +3,7 @@ export interface Employee {
   name: string;
   firstName: string;
   surname: string;
+  email?: string;
   avatarImageUrl?: string;
   department: string;
   office: string;

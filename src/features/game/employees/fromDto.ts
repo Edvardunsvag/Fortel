@@ -17,6 +17,7 @@ export const employeeFromDto = (dto: FortedleServerModelsEmployeeDto): Employee 
     name: dto.name ?? "",
     firstName: dto.firstName ?? "",
     surname: dto.surname ?? "",
+    email: dto.email ?? undefined,
     avatarImageUrl: dto.avatarImageUrl ?? undefined,
     department: dto.department ?? "",
     office: dto.office ?? "",

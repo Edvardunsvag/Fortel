@@ -16,6 +16,8 @@ Name | Type | Description | Notes
 **teams** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
 **age** | **number** |  | [optional] [default to undefined]
 **supervisor** | **string** |  | [optional] [default to undefined]
+**supervisorLastname** | **string** |  | [optional] [default to undefined]
+**stillingstittel** | **string** |  | [optional] [default to undefined]
 **funfact** | **string** |  | [optional] [default to undefined]
 **interests** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
 
@@ -36,6 +38,8 @@ const instance: FortedleServerModelsEmployeeDto = {
     teams,
     age,
     supervisor,
+    supervisorLastname,
+    stillingstittel,
     funfact,
     interests,
 };

@@ -13,6 +13,7 @@ import {
   setRevealedWinners,
 } from "../lotterySlice";
 import type { WheelSegment, MonthlyWinner } from "../api";
+import { lotteryTicketsApi } from "@/shared/api/client";
 import { SpinningWheel, type SpinningWheelHandle } from "./SpinningWheel";
 import { WinnerRevealCard } from "./WinnerRevealCard/WinnerRevealCard";
 import { ParticipantsList } from "./ParticipantsList/ParticipantsList";
@@ -198,10 +199,10 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     if (showingWinner) {
       // Consume the winner's tickets in the backend
       try {
-        await fetch(`/api/lotterytickets/consume-winner/${showingWinner.month}/${showingWinner.position}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
+        await lotteryTicketsApi.apiLotteryTicketsConsumeWinnerMonthPositionPost(
+          showingWinner.month,
+          showingWinner.position
+        );
         // Refetch wheel data to update segments
         await refetchWheel();
       } catch (err) {
@@ -238,21 +239,13 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
-      const response = await fetch("/api/lotterytickets/monthly-draw", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setAdminStatus(`✅ Draw complete! ${data.winnersCount} winners selected for ${data.month}`);
-        // Reset wheel state and refetch data
-        dispatch(resetWheel());
-        wheelRef.current?.reset();
-        await refetchWheel();
-        await refetchWinners();
-      } else {
-        setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
-      }
+      await lotteryTicketsApi.apiLotteryTicketsMonthlyDrawPost();
+      setAdminStatus(`✅ Draw complete!`);
+      // Reset wheel state and refetch data
+      dispatch(resetWheel());
+      wheelRef.current?.reset();
+      await refetchWheel();
+      await refetchWinners();
     } catch (err) {
       setAdminStatus(`❌ Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
@@ -265,17 +258,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
-      const response = await fetch("/api/lotterytickets/seed-test-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setAdminStatus(`✅ Seeded ${data.ticketsCreated} tickets (${data.ticketsSkipped} skipped)`);
-        await refetchWheel();
-      } else {
-        setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
-      }
+      await lotteryTicketsApi.apiLotteryTicketsSeedTestDataPost();
+      setAdminStatus(`✅ Test data seeded successfully`);
+      await refetchWheel();
     } catch (err) {
       setAdminStatus(`❌ Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
@@ -319,24 +304,14 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
-      const response = await fetch("/api/lotterytickets/reset-month", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // Reset local wheel state
-        dispatch(resetWheel());
-        wheelRef.current?.reset();
-        // Refetch data
-        await refetchWheel();
-        await refetchWinners();
-        setAdminStatus(
-          `✅ Reset complete! ${data.ticketsReset} tickets restored, ${data.winnersDeleted} winners cleared`
-        );
-      } else {
-        setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
-      }
+      await lotteryTicketsApi.apiLotteryTicketsResetMonthPost();
+      // Reset local wheel state
+      dispatch(resetWheel());
+      wheelRef.current?.reset();
+      // Refetch data
+      await refetchWheel();
+      await refetchWinners();
+      setAdminStatus(`✅ Reset complete!`);
     } catch (err) {
       setAdminStatus(`❌ Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {

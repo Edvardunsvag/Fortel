@@ -329,7 +329,7 @@
     "hourSuffix": "t",
     "weekPrefix": "Uke",
     "navigation": {
-      "data": "Dine lodd",
+      "data": "Dine timer",
       "rules": "Regler"
     },
     "fagtimer": {

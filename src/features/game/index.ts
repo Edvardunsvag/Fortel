@@ -1,4 +1,4 @@
-export { gameReducer, initializeGame, revealFunfact, makeGuess, FUNFACT_REVEAL_COST } from "./gameSlice";
+export { gameReducer, initializeGame, revealFunfact, FUNFACT_REVEAL_COST } from "./gameSlice";
 export {
   selectEmployeeOfTheDayId,
   selectFunfactRevealed,

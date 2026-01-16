@@ -37,7 +37,6 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 - SCSS Modules preferred (`Component.module.scss`) unless global styles are explicitly requested
 - Add dependencies only when required for the request
 
-## State management architecture
 
 ### Redux Toolkit (client state)
 - Use Redux Toolkit for client-side state: UI state, auth tokens, user preferences, etc.

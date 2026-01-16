@@ -10,6 +10,7 @@ import {
   syncLotteryTickets,
   fetchLotteryTickets,
   fetchAllWinners,
+  fetchEmployeeStatistics,
 } from "./api";
 import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
@@ -28,6 +29,7 @@ export const lotteryKeys = {
   timeEntries: (from: string, to: string) => [...lotteryKeys.all, "timeEntries", from, to] as const,
   tickets: (userId: string) => [...lotteryKeys.all, "tickets", userId] as const,
   winners: () => [...lotteryKeys.all, "winners"] as const,
+  statistics: () => [...lotteryKeys.all, "statistics"] as const,
 };
 
 /**
@@ -367,6 +369,25 @@ export const useAllWinners = () => {
     queryKey: lotteryKeys.winners(),
     queryFn: async () => {
       return fetchAllWinners();
+    },
+    retry: (failureCount, error) => {
+      // Don't retry on 400/404 errors
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Query hook for fetching employee lottery statistics
+ */
+export const useEmployeeStatistics = () => {
+  return useQuery({
+    queryKey: lotteryKeys.statistics(),
+    queryFn: async () => {
+      return fetchEmployeeStatistics();
     },
     retry: (failureCount, error) => {
       // Don't retry on 400/404 errors

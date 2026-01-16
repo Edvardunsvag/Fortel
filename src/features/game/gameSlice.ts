@@ -172,40 +172,6 @@ const gameSlice = createSlice({
     setHasFunfactOrInterests: (state, action: PayloadAction<boolean>) => {
       state.hasFunfactOrInterests = action.payload;
     },
-    makeGuess: (state, action: PayloadAction<{ guessed: Employee; target: Employee; userId?: string | null }>) => {
-      if (state.status !== "playing") {
-        return;
-      }
-
-      const { guessed, target, userId } = action.payload;
-
-      // Verify guess against employeeOfTheDayId (hashed ID) - this is the source of truth
-      const today = getTodayDateString();
-      const guessedHashedId = hashEmployeeId(guessed.id, today);
-      const isCorrect = guessedHashedId === state.employeeOfTheDayId;
-
-      const hints = calculateHints(guessed, target);
-
-      const guess: Guess = {
-        employeeId: guessed.id,
-        employeeName: guessed.name,
-        avatarImageUrl: guessed.avatarImageUrl,
-        hints,
-        isCorrect,
-      };
-
-      state.guesses.push(guess);
-
-      // Track attempt for logged-in users
-      if (userId) {
-        state.attemptedByUserId = userId;
-        state.attemptDate = today;
-      }
-
-      if (isCorrect) {
-        state.status = "won";
-      }
-    },
     setActiveSubTab: (state, action: PayloadAction<GameSubTab>) => {
       state.activeSubTab = action.payload;
     },
@@ -213,14 +179,8 @@ const gameSlice = createSlice({
 });
 
 export { GameSubTab } from "./types";
-export const {
-  initializeGame,
-  revealFunfact,
-  makeGuess,
-  loadRoundFromState,
-  setActiveSubTab,
-  setHasFunfactOrInterests,
-} = gameSlice.actions;
+export const { initializeGame, revealFunfact, loadRoundFromState, setActiveSubTab, setHasFunfactOrInterests } =
+  gameSlice.actions;
 
 export const selectEmployeeOfTheDayId = (state: RootState): string | null => state.game.employeeOfTheDayId;
 

@@ -18,8 +18,12 @@ $color-border-medium: rgba($color-dark-accent, 0.3);
 
 // Semantic Colors (mapped to palette)
 $color-success: #4caf50; // Keep green for success states
+$color-success-light: rgba(76, 175, 80, 0.15); // Light green for success backgrounds
 $color-warning: #ff9800; // Orange for warnings
 $color-error: #d13d3d; // Red for errors
+
+// Light fill colors for backgrounds
+$color-light-fill: #f5f5f5; // Light grey for table headers, hover states, etc.
 
 // Overlay and Transparency
 $color-overlay-dark: rgba(0, 0, 0, 0.5);

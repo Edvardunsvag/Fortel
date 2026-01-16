@@ -19,6 +19,7 @@ import { ConnectToHarvest } from "./ConnectToHarvest";
 import { YourHours } from "../DineTimer/YourHours";
 import { Regler } from "../Regler/Regler";
 import { Lotteri } from "../Lotteri/Lotteri";
+import { EmployeeStatistics } from "./EmployeeStatistics";
 import styles from "./LotteryPage.module.scss";
 import { FROM_DATE, TO_DATE } from "../consts";
 
@@ -119,6 +120,8 @@ export const LotteryPage = () => {
         {activeSubTab === LotterySubTab.Rules && <Regler />}
 
         {activeSubTab === LotterySubTab.Lottery && <Lotteri isAuthenticated={isAuthenticated} />}
+
+        {activeSubTab === LotterySubTab.Employees && <EmployeeStatistics />}
       </div>
     </div>
   );

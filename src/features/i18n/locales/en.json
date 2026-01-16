@@ -195,7 +195,8 @@
     "navigation": {
       "timeEntries": "Your Hours",
       "rules": "Rules",
-      "lottery": "Lottery"
+      "lottery": "Lottery",
+      "employees": "Employees"
     },
     "rules": {
       "title": "Lottery Rules",
@@ -236,12 +237,23 @@
         "title": "Winners",
         "week": "Week",
         "noWinners": "No winners yet.",
-        "error": "Failed to load winners."
+        "error": "Failed to load winners.",
+        "congratulations": "Congratulations, you won!",
+        "keepUpGoodWork": "Good luck next week, keep up the good work!"
       }
     },
     "eligibility": {
       "missingHours": "Missing 8 hours on: {{dates}}",
       "entriesUpdatedAfterDeadline": "Some entries were updated after Friday 15:00. Latest update: {{timestamp}}"
+    },
+    "employees": {
+      "title": "Employee Statistics",
+      "rank": "Rank",
+      "employee": "Employee",
+      "tickets": "Tickets",
+      "wins": "Wins",
+      "noEmployees": "No employees with lottery tickets found.",
+      "error": "Failed to load employee statistics."
     }
   },
   "timebank": {

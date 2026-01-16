@@ -22,7 +22,7 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const cachedAudioRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFetchingRef = useRef(false);
   const hasStartedRef = useRef(false);
 
@@ -83,7 +83,10 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
       method: "POST",
       headers: { "Content-Type": "application/json", "api-key": apiKey },
       body: JSON.stringify({
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
         model: deployment,
         max_completion_tokens: 150,
         temperature: 1,
@@ -111,9 +114,11 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
                   setMessage(fullMessage);
 
                   // Add small delay to make streaming slower and more visible
-                  await new Promise(resolve => setTimeout(resolve, 50));
+                  await new Promise((resolve) => setTimeout(resolve, 50));
                 }
-              } catch { /* skip */ }
+              } catch {
+                /* skip */
+              }
             }
           }
         }
@@ -154,14 +159,20 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
           const blob = await response.blob();
           cachedAudioRef.current = URL.createObjectURL(blob);
         }
-      } catch { /* ignore */ }
-      finally { setIsTtsLoading(false); }
+      } catch {
+        /* ignore */
+      } finally {
+        setIsTtsLoading(false);
+      }
     }
 
     function getFallback(type: string) {
       const sign = timeBalance.balance >= 0 ? "+" : "";
       const bal = timeBalance.balance.toFixed(1);
-      if (type === "timeout") return isNorwegian ? `${sign}${bal}t - Eddi tenker på et svar... 🤔` : `${sign}${bal}h - Eddi is thinking for a response... 🤔`;
+      if (type === "timeout")
+        return isNorwegian
+          ? `${sign}${bal}t - Eddi tenker på et svar... 🤔`
+          : `${sign}${bal}h - Eddi is thinking for a response... 🤔`;
       if (type === "no-config") return isNorwegian ? `${sign}${bal}t 💪` : `${sign}${bal}h 💪`;
       return isNorwegian ? `${sign}${bal}t på bok 💸` : `${sign}${bal}h in the bank 💸`;
     }
@@ -248,7 +259,12 @@ export const AiEncouragement = ({ timeBalance, fagtimerBalance }: AiEncouragemen
         )}
         <span className={styles.aiEncouragementTitle}>Eddi</span>
         {message && !isLoading && (
-          <button className={styles.aiEncouragementPlayButton} onClick={handlePlayClick} aria-label={isPlaying ? "Pause" : "Play"} disabled={isTtsLoading}>
+          <button
+            className={styles.aiEncouragementPlayButton}
+            onClick={handlePlayClick}
+            aria-label={isPlaying ? "Pause" : "Play"}
+            disabled={isTtsLoading}
+          >
             {isTtsLoading ? "⏳" : isPlaying ? "⏸️" : "🔊"}
           </button>
         )}

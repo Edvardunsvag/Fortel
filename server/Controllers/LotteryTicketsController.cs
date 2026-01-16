@@ -238,6 +238,64 @@ public class LotteryTicketsController : ControllerBase
         }
     }
 
+    [HttpGet("statistics")]
+    public async Task<ActionResult<EmployeeStatisticsResponse>> GetEmployeeStatistics()
+    {
+        try
+        {
+            // Get all unique users with lottery tickets
+            var usersWithTickets = await _context.LotteryTickets
+                .GroupBy(t => new { t.UserId, t.Name, t.Image })
+                .Select(g => new
+                {
+                    g.Key.UserId,
+                    g.Key.Name,
+                    g.Key.Image,
+                    TicketCount = g.Count()
+                })
+                .ToListAsync();
+
+            // Get win counts per user
+            var winCounts = await _context.WinningTickets
+                .GroupBy(wt => wt.UserId)
+                .Select(g => new
+                {
+                    UserId = g.Key,
+                    WinCount = g.Count()
+                })
+                .ToListAsync();
+
+            // Create a dictionary for quick lookup of win counts
+            var winCountDict = winCounts.ToDictionary(w => w.UserId, w => w.WinCount);
+
+            // Map to DTOs
+            var employeeStats = usersWithTickets.Select(u => new EmployeeStatisticsDto
+            {
+                UserId = u.UserId,
+                Name = u.Name,
+                Image = u.Image,
+                TicketCount = u.TicketCount,
+                WinCount = winCountDict.GetValueOrDefault(u.UserId, 0)
+            })
+            .OrderByDescending(e => e.TicketCount)
+            .ThenByDescending(e => e.WinCount)
+            .ThenBy(e => e.Name)
+            .ToList();
+
+            var response = new EmployeeStatisticsResponse
+            {
+                Employees = employeeStats
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching employee statistics");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
     [HttpPost("seed-test-data")]
     public async Task<ActionResult<object>> SeedTestData()
     {

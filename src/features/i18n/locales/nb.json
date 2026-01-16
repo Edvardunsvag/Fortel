@@ -195,7 +195,8 @@
     "navigation": {
       "timeEntries": "Dine timer",
       "rules": "Regler",
-      "lottery": "Lotteri"
+      "lottery": "Lotteri",
+      "employees": "Ansatte"
     },
     "rules": {
       "title": "Lotteriregler",
@@ -236,12 +237,23 @@
         "title": "Vinnere",
         "week": "Uke",
         "noWinners": "Ingen vinnere ennå.",
-        "error": "Kunne ikke laste vinnere."
+        "error": "Kunne ikke laste vinnere.",
+        "congratulations": "Gratulerer, du har vunnet!",
+        "keepUpGoodWork": "Lykke til neste uke, fortsett med det gode arbeidet!"
       }
     },
     "eligibility": {
       "missingHours": "Mangler 8 timer på: {{dates}}",
       "entriesUpdatedAfterDeadline": "Noen registreringer ble oppdatert etter fredag 15:00. Siste oppdatering: {{timestamp}}"
+    },
+    "employees": {
+      "title": "Ansattstatistikk",
+      "rank": "Rang",
+      "employee": "Ansatt",
+      "tickets": "Lodd",
+      "wins": "Gevinster",
+      "noEmployees": "Ingen ansatte med lodd funnet.",
+      "error": "Kunne ikke laste ansattstatistikk."
     }
   },
   "timebank": {

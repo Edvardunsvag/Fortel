@@ -297,3 +297,40 @@ export const getNextLotteryDateTime = (): Date => {
 
   return friday;
 };
+
+/**
+ * Get the next Friday at 15:00 (not necessarily the lottery date)
+ * If today is Friday and it's before 15:00, returns today at 15:00
+ * Otherwise, returns the next Friday at 15:00
+ * @returns Date object for the next Friday at 15:00
+ */
+export const getNextFridayAt15 = (): Date => {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 5 = Friday
+  const currentHour = today.getHours();
+
+  // Calculate days until next Friday
+  let daysToFriday: number;
+  if (dayOfWeek < 5) {
+    // Sunday-Thursday: calculate days to Friday
+    daysToFriday = 5 - dayOfWeek;
+  } else if (dayOfWeek === 5) {
+    // Today is Friday
+    if (currentHour < 15) {
+      // Before 15:00, return today at 15:00
+      daysToFriday = 0;
+    } else {
+      // At or after 15:00, return next Friday
+      daysToFriday = 7;
+    }
+  } else {
+    // Saturday: next Friday is 6 days away
+    daysToFriday = 6;
+  }
+
+  const nextFriday = new Date(today);
+  nextFriday.setDate(today.getDate() + daysToFriday);
+  nextFriday.setHours(15, 0, 0, 0);
+
+  return nextFriday;
+};

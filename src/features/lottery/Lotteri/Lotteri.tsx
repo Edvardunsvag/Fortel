@@ -10,9 +10,10 @@ import {
   lotteryKeys,
 } from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
-import { getNextLotteryDate, getNextLotteryDateTime } from "../lotteryUtils";
+import { getNextLotteryDate, getNextLotteryDateTime, getNextFridayAt15 } from "../lotteryUtils";
 import { formatDateDDMM, formatDateReadable, formatHours } from "@/shared/utils/dateUtils";
 import { WinnersReveal } from "./WinnersReveal";
+import { triggerRainbowCelebration } from "@/shared/animations";
 import styles from "./Lotteri.module.scss";
 import { FROM_DATE, TO_DATE } from "../consts";
 
@@ -51,8 +52,29 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
   const { data: winnersData } = useAllWinners();
   const hasWinners = (winnersData?.weeklyWinners || []).length > 0;
 
-  // Memoize the lottery date time to prevent infinite loops
-  const nextLotteryDateTime = useMemo(() => getNextLotteryDateTime(), []);
+  // Check if the logged-in user is a winner
+  const isUserWinner = useMemo(() => {
+    if (!userId || !winnersData?.weeklyWinners) return false;
+    return winnersData.weeklyWinners.some((weekGroup) =>
+      weekGroup.winners.some((winner) => winner.userId === userId)
+    );
+  }, [userId, winnersData]);
+
+  // Trigger confetti when user becomes a winner (only once per win state)
+  const previousWinnerStateRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    // Only trigger confetti when transitioning from not winner to winner
+    if (isUserWinner && previousWinnerStateRef.current === false) {
+      triggerRainbowCelebration();
+    }
+    // Update the previous state
+    previousWinnerStateRef.current = isUserWinner;
+  }, [isUserWinner]);
+
+  // Use next Friday at 15:00 when no winners, otherwise use next lottery date
+  const targetDateTime = useMemo(() => {
+    return hasWinners ? getNextLotteryDateTime() : getNextFridayAt15();
+  }, [hasWinners]);
 
   // Countdown state
   const [timeRemaining, setTimeRemaining] = useState<{
@@ -66,7 +88,7 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
   useEffect(() => {
     const updateCountdown = () => {
       const now = new Date();
-      const diff = nextLotteryDateTime.getTime() - now.getTime();
+      const diff = targetDateTime.getTime() - now.getTime();
 
       if (diff <= 0) {
         setTimeRemaining(null);
@@ -85,7 +107,7 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [nextLotteryDateTime]);
+  }, [targetDateTime]);
 
   // Auto-sync tickets on mount when user and eligibleWeeks are available
   useEffect(() => {
@@ -157,7 +179,7 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
       <h3>{t("lottery.lottery.title")}</h3>
       <div className={styles.lotteryContent}>
         {/* Show winners at the top if they exist */}
-        {hasWinners && <WinnersReveal />}
+        {hasWinners && <WinnersReveal isUserWinner={isUserWinner} />}
 
         <div className={styles.totalTicketsBadge}>
           <span className={styles.totalTicketsText}>
@@ -199,14 +221,15 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
           </div>
         )}
 
-        <div className={styles.nextLottery}>
-          <h4>{t("lottery.lottery.nextLottery")}</h4>
-          <p>
-            {t("lottery.lottery.nextLotteryDate", {
-              date: formatDateReadable(nextLotteryDate, false),
-            })}
-          </p>
-          {timeRemaining && (
+        {/* Show countdown to next Friday 15:00 when no winners are selected yet */}
+        {!hasWinners && timeRemaining && (
+          <div className={styles.nextLottery}>
+            <h4>{t("lottery.lottery.nextLottery")}</h4>
+            <p>
+              {t("lottery.lottery.nextLotteryDate", {
+                date: formatDateReadable(getNextLotteryDate(), false),
+              })}
+            </p>
             <div className={styles.countdown}>
               <div className={styles.countdownItem}>
                 <span className={styles.countdownValue}>{timeRemaining.days}</span>
@@ -233,8 +256,20 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
                 </span>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Show next lottery info when winners exist (without countdown) */}
+        {hasWinners && (
+          <div className={styles.nextLottery}>
+            <h4>{t("lottery.lottery.nextLottery")}</h4>
+            <p>
+              {t("lottery.lottery.nextLotteryDate", {
+                date: formatDateReadable(nextLotteryDate, false),
+              })}
+            </p>
+          </div>
+        )}
 
         {weeklyData.length > 0 && (
           <div className={styles.eligibleWeeks}>

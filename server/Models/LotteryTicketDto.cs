@@ -46,3 +46,17 @@ public class AllWinnersResponse
 {
     public List<WeeklyWinnersDto> WeeklyWinners { get; set; } = new();
 }
+
+public class EmployeeStatisticsDto
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Image { get; set; }
+    public int TicketCount { get; set; }
+    public int WinCount { get; set; }
+}
+
+public class EmployeeStatisticsResponse
+{
+    public List<EmployeeStatisticsDto> Employees { get; set; } = new();
+}

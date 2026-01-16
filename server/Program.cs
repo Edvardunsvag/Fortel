@@ -447,7 +447,7 @@ logger.LogInformation("Allowed CORS origins: {Origins}", string.Join(", ", allow
 // Set up Hangfire recurring job for lottery drawing (every Friday at 15:00)
 RecurringJob.AddOrUpdate<ILotteryDrawingService>(
     "lottery-drawing-friday-15-00",
-    service => service.DrawWinningTicketsAsync(),
+    service => service.DrawWeekWinner(),
     "0 15 * * 5", // Cron expression: Every Friday at 15:00 (UTC)
     new RecurringJobOptions
     {

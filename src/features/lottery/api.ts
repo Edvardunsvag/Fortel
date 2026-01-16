@@ -322,3 +322,35 @@ export const fetchAllWinners = async (): Promise<{
     throw new Error(error instanceof Error ? error.message : "Failed to fetch winners");
   }
 };
+
+/**
+ * Fetches employee lottery statistics (tickets count and wins count)
+ *
+ * @returns Employee statistics with ticket counts and win counts
+ */
+export const fetchEmployeeStatistics = async (): Promise<{
+  employees: Array<{
+    userId: string;
+    name: string;
+    image: string | null;
+    ticketCount: number;
+    winCount: number;
+  }>;
+}> => {
+  try {
+    // Method will be available after regenerating API client: npm run generate:api
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const api = lotteryTicketsApi as any;
+    const response = await api.apiLotteryTicketsStatisticsGet();
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch employee statistics: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch employee statistics");
+  }
+};

@@ -6,12 +6,12 @@ namespace Fortedle.Server.Services;
 
 public interface ILotteryDrawingService
 {
-    Task DrawWinningTicketsAsync();
+    Task DrawWeekWinner();
 }
 
 public class LotteryDrawingService : ILotteryDrawingService
 {
-    private const int WinnersPerWeek = 3;
+    private const int WinnersPerWeek = 1;
 
     private readonly AppDbContext _context;
     private readonly ILogger<LotteryDrawingService> _logger;
@@ -22,7 +22,7 @@ public class LotteryDrawingService : ILotteryDrawingService
         _logger = logger;
     }
 
-    public async Task DrawWinningTicketsAsync()
+    public async Task DrawWeekWinner()
     {
         try
         {

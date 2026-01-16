@@ -1,0 +1,164 @@
+@use "shared/styles/variables.scss" as *;
+
+.dataSection {
+  margin-top: $spacing-xl;
+}
+
+.loading,
+.error,
+.empty {
+  background-color: $color-white;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  border: 1px solid $color-border-medium;
+  text-align: center;
+  color: $color-dark-fill;
+}
+
+.error {
+  color: $color-error;
+}
+
+.tableContainer {
+  background-color: $color-white;
+  border-radius: $radius-md;
+  border: 1px solid $color-border-medium;
+  overflow-x: auto;
+  margin-top: $spacing-md;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+
+  thead {
+    background-color: $color-light-fill;
+    border-bottom: 2px solid $color-border-medium;
+
+    th {
+      padding: $spacing-md $spacing-lg;
+      text-align: left;
+      font-weight: 600;
+      color: $color-dark-accent;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $color-border-light;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: $color-light-fill;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: $spacing-md $spacing-lg;
+      color: $color-dark-fill;
+    }
+  }
+}
+
+.rankColumn {
+  width: 60px;
+  text-align: center;
+}
+
+.rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: $color-light-fill;
+  color: $color-dark-accent;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.employeeColumn {
+  min-width: 200px;
+}
+
+.employeeInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid $color-border-light;
+  flex-shrink: 0;
+}
+
+.name {
+  font-weight: 500;
+  color: $color-dark-accent;
+}
+
+.ticketsColumn,
+.winsColumn {
+  text-align: center;
+  width: 100px;
+}
+
+.count {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  background-color: $color-light-fill;
+  color: $color-dark-accent;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+
+  &.winner {
+    background-color: $color-success-light;
+    color: $color-success;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .table {
+    min-width: 100%;
+
+    thead th,
+    tbody td {
+      padding: $spacing-sm $spacing-md;
+      font-size: 0.875rem;
+    }
+
+    .rankColumn {
+      width: 50px;
+    }
+
+    .ticketsColumn,
+    .winsColumn {
+      width: 80px;
+    }
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .name {
+    font-size: 0.875rem;
+  }
+}

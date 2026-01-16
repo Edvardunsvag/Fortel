@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 # Check if backend is running
 if ! curl -f http://localhost:8080/swagger/v1/swagger.json > /dev/null 2>&1; then

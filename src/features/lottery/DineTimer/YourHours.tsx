@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLotteryTimeEntries } from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
-import { formatDateReadable } from "@/shared/utils/dateUtils";
+import { formatDateDDMM, formatHours } from "@/shared/utils/dateUtils";
 import styles from "./YourHours.module.scss";
 import { FROM_DATE, TO_DATE } from "../consts";
 
@@ -12,8 +12,9 @@ interface YourHoursProps {
 }
 
 export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [openWeeks, setOpenWeeks] = useState<Set<string>>(new Set());
+  const hourUnit = i18n.language === "nb" ? "t" : "h";
 
   const { data: timeEntries = [], error: entriesError } = useLotteryTimeEntries(
     FROM_DATE,
@@ -69,7 +70,8 @@ export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
                       <div className={styles.weekTitleContainer}>
                         <div className={styles.weekTitleWrapper}>
                           <h5 className={styles.weekTitle}>
-                            {t("lottery.week")}: {week.weekStart} - {week.weekEnd}
+                            {t("lottery.week")} {parseInt(week.weekKey.split("-W")[1], 10)}:{" "}
+                            {formatDateDDMM(week.weekStart)} - {formatDateDDMM(week.weekEnd)}
                           </h5>
                           {week.isLotteryEligible && (
                             <span
@@ -85,18 +87,21 @@ export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
                           <p className={styles.lotteryReason} aria-live="polite">
                             {week.lotteryReasonKey === "missingHours" && week.lotteryReasonData?.missingDays
                               ? t("lottery.eligibility.missingHours", {
-                                  dates: week.lotteryReasonData.missingDays.join(", "),
+                                  dates: week.lotteryReasonData.missingDays.map(formatDateDDMM).join(", "),
                                 })
                               : week.lotteryReasonKey === "entriesUpdatedAfterDeadline" &&
                                 week.lotteryReasonData?.latestUpdate &&
                                 t("lottery.eligibility.entriesUpdatedAfterDeadline", {
-                                  timestamp: formatDateReadable(week.lotteryReasonData.latestUpdate, true),
+                                  timestamp: formatDateDDMM(week.lotteryReasonData.latestUpdate),
                                 })}
                           </p>
                         )}
                       </div>
                       <span className={styles.weekHours}>
-                        <strong>{week.hours.toFixed(2)}h</strong>
+                        <strong>
+                          {formatHours(week.hours)}
+                          {hourUnit}
+                        </strong>
                       </span>
                     </div>
                     <span
@@ -115,8 +120,11 @@ export const YourHours = ({ isAuthenticated, error }: YourHoursProps) => {
                         {week.entries.map((entry) => (
                           <div key={entry.id} className={styles.entry}>
                             <div className={styles.entryHeader}>
-                              <span className={styles.entryDate}>{entry.spent_date}</span>
-                              <span className={styles.entryHours}>{entry.hours}h</span>
+                              <span className={styles.entryDate}>{formatDateDDMM(entry.spent_date)}</span>
+                              <span className={styles.entryHours}>
+                                {formatHours(entry.hours)}
+                                {hourUnit}
+                              </span>
                             </div>
                             <div className={styles.entryDetails}>
                               {entry.project && <span className={styles.entryProject}>{entry.project.name}</span>}

@@ -101,22 +101,24 @@ export const LotteryPage = () => {
           <ConnectToHarvest error={error} isLoading={isLoading} onLogin={handleLogin} onTestApi={handleTestApi} />
         ) : (
           <div className={styles.authenticated}>
-            <LotteryNavigationChips />
             <UserInfo
               user={user}
               weeklyDataLength={weeklyData.length}
               totalLotteryTickets={totalLotteryTickets}
               onLogout={handleLogout}
             />
-            {activeSubTab === LotterySubTab.TimeEntries && (
-              <YourHours isAuthenticated={isAuthenticated} error={error} />
-            )}
-
-            {activeSubTab === LotterySubTab.Rules && <Regler />}
-
-            {activeSubTab === LotterySubTab.Lottery && <Lotteri isAuthenticated={isAuthenticated} />}
           </div>
         )}
+      </div>
+
+      <div className={styles.container}>
+        <LotteryNavigationChips />
+
+        {activeSubTab === LotterySubTab.TimeEntries && <YourHours isAuthenticated={isAuthenticated} error={error} />}
+
+        {activeSubTab === LotterySubTab.Rules && <Regler />}
+
+        {activeSubTab === LotterySubTab.Lottery && <Lotteri isAuthenticated={isAuthenticated} />}
       </div>
     </div>
   );

@@ -20,6 +20,10 @@
   border-radius: $radius-lg;
   padding: $spacing-xxl;
   box-shadow: 0 2px 8px $color-shadow-light;
+  margin-bottom: $spacing-xl;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .title {
@@ -70,6 +74,12 @@
 
 .authenticated {
   margin-top: $spacing-lg;
+}
+
+.contentSection {
+  margin-top: $spacing-xl;
+  padding-top: $spacing-xl;
+  border-top: 1px solid $color-border-medium;
 }
 
 .dataSection {

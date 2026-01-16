@@ -65,3 +65,25 @@ export const formatDateReadable = (dateString: string, includeTime = false): str
     day: "numeric",
   });
 };
+
+/**
+ * Formats a date string (YYYY-MM-DD) or ISO string to DD.MM format (day.month, no year)
+ * @param dateString - Date string in YYYY-MM-DD format or ISO string
+ * @returns Formatted date string in DD.MM format
+ */
+export const formatDateDDMM = (dateString: string): string => {
+  // Extract date part if ISO string
+  const dateOnly = dateString.includes("T") ? dateString.split("T")[0] : dateString;
+  const parts = dateOnly.split("-");
+  return `${parts[2]}.${parts[1]}`;
+};
+
+/**
+ * Formats hours, removing ".00" decimal when present
+ * @param hours - Number of hours
+ * @returns Formatted hours string (e.g., "40" for 40.00, "40.50" for 40.50)
+ */
+export const formatHours = (hours: number): string => {
+  const formatted = hours.toFixed(2);
+  return formatted.endsWith(".00") ? formatted.slice(0, -3) : formatted;
+};

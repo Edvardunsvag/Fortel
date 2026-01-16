@@ -1,10 +1,17 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useLotteryTimeEntries, useLotteryUser, useSyncLotteryTickets, useLotteryTickets, useAllWinners, lotteryKeys } from "../queries";
+import {
+  useLotteryTimeEntries,
+  useLotteryUser,
+  useSyncLotteryTickets,
+  useLotteryTickets,
+  useAllWinners,
+  lotteryKeys,
+} from "../queries";
 import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
 import { getNextLotteryDate, getNextLotteryDateTime } from "../lotteryUtils";
-import { formatDateReadable } from "@/shared/utils/dateUtils";
+import { formatDateDDMM, formatDateReadable, formatHours } from "@/shared/utils/dateUtils";
 import { WinnersReveal } from "./WinnersReveal";
 import styles from "./Lotteri.module.scss";
 import { FROM_DATE, TO_DATE } from "../consts";
@@ -14,7 +21,8 @@ interface LotteriProps {
 }
 
 export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const hourUnit = i18n.language === "nb" ? "t" : "h";
 
   const { data: timeEntries = [] } = useLotteryTimeEntries(
     FROM_DATE,
@@ -36,10 +44,7 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
 
   // Get synced tickets count
   const userId = user?.id.toString() || null;
-  const { data: syncedTickets = [] } = useLotteryTickets(
-    userId,
-    isAuthenticated && !!userId
-  );
+  const { data: syncedTickets = [] } = useLotteryTickets(userId, isAuthenticated && !!userId);
   const syncedTicketsCount = syncedTickets.length;
 
   // Check for winners
@@ -237,11 +242,16 @@ export const Lotteri = ({ isAuthenticated }: LotteriProps) => {
             <ul>
               {weeklyData
                 .filter((week) => week.isLotteryEligible)
-                .map((week) => (
-                  <li key={week.weekStart}>
-                    {t("lottery.week")}: {week.weekStart} - {week.weekEnd} ({week.hours.toFixed(2)}h)
-                  </li>
-                ))}
+                .map((week) => {
+                  const weekNumber = parseInt(week.weekKey.split("-W")[1], 10);
+                  return (
+                    <li key={week.weekStart}>
+                      {t("lottery.week")} {weekNumber}: {formatDateDDMM(week.weekStart)} -{" "}
+                      {formatDateDDMM(week.weekEnd)} ({formatHours(week.hours)}
+                      {hourUnit})
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         )}

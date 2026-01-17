@@ -471,6 +471,14 @@
   opacity: 0.7;
 }
 
+.availableForBillingTotal {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $color-border-light;
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+}
+
 // Weekly Breakdown - Similar to weeksList in Lottery
 .weeklyBreakdown {
   margin-top: $spacing-xl;

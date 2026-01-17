@@ -328,6 +328,7 @@
     "noEntries": "Ingen oppføringer denne uken",
     "hourSuffix": "t",
     "weekPrefix": "Uke",
+    "possibleOvertime": "Ledig for fakturering",
     "navigation": {
       "data": "Dine timer",
       "rules": "Regler"

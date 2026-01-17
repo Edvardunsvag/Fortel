@@ -67,9 +67,6 @@ export const WeeklyBreakdown = ({ weeks }: WeeklyBreakdownProps) => {
                     <span className={`${styles.weekBalance} ${getBalanceColorClass(week.balance)}`}>
                       {formatBalance(week.balance, t("timebank.hourSuffix"))}
                     </span>
-                    <span className={styles.weekCumulative}>
-                      ({formatBalance(week.cumulativeBalance, t("timebank.hourSuffix"))})
-                    </span>
                   </div>
                 </div>
                 <span className={`${styles.weekChevron} ${isExpanded ? styles.weekChevronOpen : ""}`}>
@@ -121,7 +118,7 @@ export const WeeklyBreakdown = ({ weeks }: WeeklyBreakdownProps) => {
                         ))}
                         {week.entries.length === 0 && (
                           <tr>
-                            <td colSpan={9} className={styles.noEntries}>
+                            <td colSpan={weekDates.length + 2} className={styles.noEntries}>
                               {t("timebank.noEntries")}
                             </td>
                           </tr>

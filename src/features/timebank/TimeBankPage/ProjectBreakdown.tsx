@@ -21,7 +21,7 @@ interface ProjectSummary {
   tasks: TaskSummary[];
 }
 
-// Colors for the project bars
+// Colors for the project bars (expanded palette)
 const PROJECT_COLORS = [
   "#6b4c35", // Primary brown
   "#8b6b4f", // Light brown
@@ -31,7 +31,36 @@ const PROJECT_COLORS = [
   "#7a6b5a", // Gray brown
   "#6b8e7a", // Sage
   "#8b7355", // Khaki
+  "#7b5e57", // Dusty rose
+  "#5c7a6a", // Muted teal
+  "#8a7b6b", // Taupe
+  "#6a7b8a", // Steel blue
+  "#7c6b5b", // Warm gray
+  "#5b6b7c", // Slate
+  "#6b7c5b", // Olive
+  "#8b6b8a", // Mauve
 ];
+
+/**
+ * Generate a color using the golden angle for even distribution
+ * Falls back to this when we run out of predefined colors
+ */
+const generateColor = (index: number): string => {
+  // Use golden angle (137.5°) for even hue distribution
+  const hue = (index * 137.5) % 360;
+  // Keep saturation and lightness muted for professional look
+  return `hsl(${hue}, 35%, 45%)`;
+};
+
+/**
+ * Get color for a project by index
+ */
+const getProjectColor = (index: number): string => {
+  if (index < PROJECT_COLORS.length) {
+    return PROJECT_COLORS[index];
+  }
+  return generateColor(index);
+};
 
 export const ProjectBreakdown = ({ weeks }: ProjectBreakdownProps) => {
   const { t } = useTranslation();
@@ -77,7 +106,7 @@ export const ProjectBreakdown = ({ weeks }: ProjectBreakdownProps) => {
           name,
           hours: data.totalHours,
           percentage: totalHours > 0 ? (data.totalHours / totalHours) * 100 : 0,
-          color: PROJECT_COLORS[index % PROJECT_COLORS.length],
+          color: getProjectColor(index),
           tasks,
         };
       })

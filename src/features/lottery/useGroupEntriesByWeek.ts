@@ -10,7 +10,7 @@ export interface WeeklyData {
   entries: HarvestTimeEntry[];
   hours: number;
   billableHours: number; // Hours at client (entries with client !== null)
-  possibleOvertimeHours: number; // weeklyTarget - billableHours (min 0)
+  availableForBilling: number; // weeklyTarget - billableHours (hours available to bill)
   weeklyTarget: 37.5 | 40; // Target hours based on detected pattern
   isLotteryEligible: boolean;
   lotteryReason?: string;
@@ -73,8 +73,8 @@ export const useGroupEntriesByWeek = (timeEntries: HarvestTimeEntry[]): WeeklyDa
           .filter((entry) => entry.client !== null)
           .reduce((sum, entry) => sum + entry.hours, 0);
 
-        // Calculate possible overtime hours (weeklyTarget - billableHours, min 0)
-        const possibleOvertimeHours = Math.max(0, weeklyTarget - billableHours);
+        // Calculate available for billing hours (weeklyTarget - billableHours, min 0)
+        const availableForBilling = Math.max(0, weeklyTarget - billableHours);
 
         // Check lottery eligibility
         const lotteryCheck = checkLotteryEligibility(entries, weekEnd);
@@ -86,7 +86,7 @@ export const useGroupEntriesByWeek = (timeEntries: HarvestTimeEntry[]): WeeklyDa
           entries,
           hours: weekHours,
           billableHours,
-          possibleOvertimeHours,
+          availableForBilling,
           weeklyTarget,
           isLotteryEligible: lotteryCheck.isEligible,
           lotteryReason: lotteryCheck.reason,

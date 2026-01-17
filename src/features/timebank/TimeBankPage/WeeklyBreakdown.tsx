@@ -118,7 +118,7 @@ export const WeeklyBreakdown = ({ weeks }: WeeklyBreakdownProps) => {
                         ))}
                         {week.entries.length === 0 && (
                           <tr>
-                            <td colSpan={9} className={styles.noEntries}>
+                            <td colSpan={weekDates.length + 2} className={styles.noEntries}>
                               {t("timebank.noEntries")}
                             </td>
                           </tr>

@@ -15,11 +15,11 @@ export const TimeBalanceCard = ({ balance }: TimeBalanceCardProps) => {
   const hasTriggeredRef = useRef(false);
   const [shouldShake, setShouldShake] = useState(false);
 
-  // Calculate total possible overtime hours across all weeks
+  // Calculate total available for billing hours across all weeks
   // Sum all differences (positive and negative), then take max with 0
-  const totalPossibleOvertime = Math.max(
+  const totalAvailableForBilling = Math.max(
     0,
-    balance.weeklyBreakdown.reduce((sum, week) => sum + week.possibleOvertimeHours, 0)
+    balance.weeklyBreakdown.reduce((sum, week) => sum + week.availableForBilling, 0)
   );
 
   // Trigger confetti for positive balance or shake for negative
@@ -62,9 +62,9 @@ export const TimeBalanceCard = ({ balance }: TimeBalanceCardProps) => {
           <div className={styles.balanceDetailLabel}>{t("timebank.expected")}</div>
         </div>
       </div>
-      {totalPossibleOvertime > 0 && (
-        <div className={styles.possibleOvertimeTotal}>
-          {t("timebank.possibleOvertime")}: {totalPossibleOvertime.toFixed(1)}{t("timebank.hourSuffix")}
+      {totalAvailableForBilling > 0 && (
+        <div className={styles.availableForBillingTotal}>
+          {t("timebank.availableForBilling")}: {totalAvailableForBilling.toFixed(1)}{t("timebank.hourSuffix")}
         </div>
       )}
     </div>

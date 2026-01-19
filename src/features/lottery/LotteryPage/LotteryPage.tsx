@@ -8,8 +8,7 @@ import {
   selectActiveLotterySubTab,
   LotterySubTab,
 } from "../lotterySlice";
-import { useLotteryUser, useLotteryTimeEntries, useAuthenticateLottery, useTestLotteryApi } from "../queries";
-import { useGroupEntriesByWeek } from "../useGroupEntriesByWeek";
+import { useLotteryUser, useEmployeeWeeks, useAuthenticateLottery, useTestLotteryApi } from "../queries";
 import { getHarvestAuthUrl, generateState } from "@/shared/config/harvestConfig";
 import { routes } from "@/shared/routes";
 import { useTranslation } from "react-i18next";
@@ -22,7 +21,6 @@ import { Lotteri } from "../Lotteri/Lotteri";
 import { EmployeeStatistics } from "./EmployeeStatistics";
 import { LuckyWheel } from "../LuckyWheel";
 import styles from "./LotteryPage.module.scss";
-import { FROM_DATE, TO_DATE } from "../consts";
 
 export const LotteryPage = () => {
   const { t } = useTranslation();
@@ -35,23 +33,24 @@ export const LotteryPage = () => {
   const authenticateMutation = useAuthenticateLottery();
   const testApiMutation = useTestLotteryApi();
   const { data: user, isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
+  const userId = user?.id.toString() || null;
 
   const {
-    data: timeEntries = [],
-    isLoading: isLoadingEntries,
-    error: entriesError,
-  } = useLotteryTimeEntries(FROM_DATE, TO_DATE, isAuthenticated && !!FROM_DATE && !!TO_DATE);
+    data: weeksData,
+    isLoading: isLoadingWeeks,
+    error: weeksError,
+  } = useEmployeeWeeks(userId, isAuthenticated && !!userId);
 
-  const isLoading = isLoadingUser || isLoadingEntries || authenticateMutation.isPending || testApiMutation.isPending;
+  const isLoading = isLoadingUser || isLoadingWeeks || authenticateMutation.isPending || testApiMutation.isPending;
   const error =
     userError?.message ||
-    entriesError?.message ||
+    weeksError?.message ||
     authenticateMutation.error?.message ||
     testApiMutation.error?.message;
 
-  // Group time entries by week using the shared hook
-  const weeklyData = useGroupEntriesByWeek(timeEntries);
-  const totalLotteryTickets = weeklyData.filter((week) => week.isLotteryEligible).length;
+  // Calculate stats from employee weeks (synced from backend)
+  const weeklyData = weeksData?.weeks || [];
+  const totalLotteryTickets = weeklyData.filter((week) => week.hasTicket).length;
 
   // Handle OAuth callback
   useEffect(() => {

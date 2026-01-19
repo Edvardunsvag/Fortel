@@ -4,11 +4,14 @@ api.ts
 base.ts
 common.ts
 configuration.ts
+docs/EmployeeWeeksApi.md
 docs/EmployeesApi.md
 docs/FortedleServerModelsDTOsAllWinnersResponse.md
 docs/FortedleServerModelsDTOsEmployeeDto.md
 docs/FortedleServerModelsDTOsEmployeeStatisticsDto.md
 docs/FortedleServerModelsDTOsEmployeeStatisticsResponse.md
+docs/FortedleServerModelsDTOsEmployeeWeekDto.md
+docs/FortedleServerModelsDTOsEmployeeWeeksResponse.md
 docs/FortedleServerModelsDTOsGuessDto.md
 docs/FortedleServerModelsDTOsGuessHintDto.md
 docs/FortedleServerModelsDTOsLeaderboardDto.md
@@ -23,6 +26,8 @@ docs/FortedleServerModelsDTOsSaveGuessRequest.md
 docs/FortedleServerModelsDTOsStartRoundRequest.md
 docs/FortedleServerModelsDTOsSubmitScoreRequest.md
 docs/FortedleServerModelsDTOsSubmitScoreResponse.md
+docs/FortedleServerModelsDTOsSyncHarvestRequest.md
+docs/FortedleServerModelsDTOsSyncHarvestResponse.md
 docs/FortedleServerModelsDTOsSyncLotteryTicketsRequest.md
 docs/FortedleServerModelsDTOsSyncLotteryTicketsResponse.md
 docs/FortedleServerModelsDTOsSyncRequest.md

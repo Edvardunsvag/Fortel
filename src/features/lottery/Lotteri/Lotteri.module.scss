@@ -884,3 +884,285 @@
   z-index: 1;
   opacity: 0.9;
 }
+
+// Week list styles (similar to YourHours)
+.weeksList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+  margin-top: $spacing-lg;
+}
+
+.week {
+  background-color: $color-white;
+  border: 1px solid $color-border-medium;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.weekHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 2px solid $color-border-medium;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+  user-select: none;
+
+  &:hover {
+    background-color: $color-overlay-beige;
+  }
+
+  &:focus {
+    outline: 2px solid $color-link-blue;
+    outline-offset: -2px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+.weekHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  gap: $spacing-md;
+}
+
+.weekTitleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.weekTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.weekTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+}
+
+.weekHours {
+  font-size: 1.25rem;
+  color: $color-dark-accent;
+}
+
+.weekChevron {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+  transition: transform 0.3s ease;
+  margin-left: $spacing-md;
+  flex-shrink: 0;
+}
+
+.weekChevronOpen {
+  transform: rotate(180deg);
+}
+
+.weekContent {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.weekContentOpen {
+  grid-template-rows: 1fr;
+}
+
+.weekContentInner {
+  min-height: 0;
+  padding: $spacing-lg;
+}
+
+// Week details styles
+.weekDetails {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.weekDetailsSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.weekDetailsTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+}
+
+.weekDetailsStats {
+  display: flex;
+  gap: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.weekStat {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  background-color: $color-overlay-beige;
+  border-radius: $radius-md;
+  border: 1px solid $color-border-medium;
+}
+
+.weekStatLabel {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+}
+
+.weekStatValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $color-dark-accent;
+}
+
+.weekDetailsStatus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.statusEligible {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.statusNotEligible {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #c62828;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.statusTicket {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #f57c00;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.statusIcon {
+  font-size: 1rem;
+}
+
+.winnerBadge {
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  animation: trophyBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.winnerSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.winnerMessageSuccess {
+  background: linear-gradient(
+    135deg,
+    rgba(76, 175, 80, 0.15) 0%,
+    rgba(56, 142, 60, 0.1) 50%,
+    rgba(76, 175, 80, 0.15) 100%
+  );
+  border: 2px solid rgba(76, 175, 80, 0.3);
+}
+
+.winnerInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.winnerLabel {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+  margin-bottom: $spacing-xs;
+}
+
+.countdownSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.countdown {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(255, 193, 7, 0.08) 50%,
+    rgba(255, 215, 0, 0.1) 100%
+  );
+  border-radius: $radius-md;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.countdownLabel {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+  margin: 0;
+  text-align: center;
+}
+
+.countdownUnits {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.countdownUnit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  min-width: 60px;
+}
+
+.countdownValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #b8860b;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdownText {
+  font-size: 0.9375rem;
+  color: $color-dark-fill;
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}

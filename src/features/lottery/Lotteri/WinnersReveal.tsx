@@ -33,9 +33,9 @@ export const WinnersReveal = ({ isUserWinner = false }: WinnersRevealProps) => {
           onClick={handleRevealWinners}
           onKeyDown={handleRevealKeyDown}
           type="button"
-          aria-label={t("lottery.lottery.revealWinners")}
+          aria-label={t("lottery.revealWinners")}
         >
-          {t("lottery.lottery.revealWinners")}
+          {t("lottery.revealWinners")}
         </button>
       )}
       <div className={`${styles.winnersContainer} ${!winnersRevealed ? styles.blurred : ""}`}>
@@ -43,21 +43,21 @@ export const WinnersReveal = ({ isUserWinner = false }: WinnersRevealProps) => {
           <p className={styles.winnersText}>{t("lottery.loading")}</p>
         ) : error ? (
           <p className={styles.winnersText} role="alert">
-            {error instanceof Error ? error.message : t("lottery.lottery.winners.error")}
+            {error instanceof Error ? error.message : t("lottery.winners.error")}
           </p>
         ) : weeklyWinners.length === 0 ? (
-          <p className={styles.winnersText}>{t("lottery.lottery.winners.noWinners")}</p>
+          <p className={styles.winnersText}>{t("lottery.winners.noWinners")}</p>
         ) : (
           <>
             {/* Show winner message if user won, otherwise show encouragement */}
             <div className={styles.winnerMessage}>
               {isUserWinner ? (
-                <p className={styles.winnerText}>{t("lottery.lottery.winners.congratulations")}</p>
+                <p className={styles.winnerText}>{t("lottery.winners.congratulations")}</p>
               ) : (
-                <p className={styles.encouragementText}>{t("lottery.lottery.winners.keepUpGoodWork")}</p>
+                <p className={styles.encouragementText}>{t("lottery.winners.keepUpGoodWork")}</p>
               )}
             </div>
-            <h3 className={styles.winnersTitle}>{t("lottery.lottery.winners.title")}</h3>
+            <h3 className={styles.winnersTitle}>{t("lottery.winners.title")}</h3>
             {weeklyWinners.map((weekGroup) => {
               return (
                 <div key={weekGroup.week} className={styles.weekGroup}>

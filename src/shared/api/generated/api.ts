@@ -51,6 +51,22 @@ export interface FortedleServerModelsDTOsEmployeeStatisticsDto {
 export interface FortedleServerModelsDTOsEmployeeStatisticsResponse {
     'employees'?: Array<FortedleServerModelsDTOsEmployeeStatisticsDto> | null;
 }
+export interface FortedleServerModelsDTOsEmployeeWeekDto {
+    'weekKey'?: string | null;
+    'weekStart'?: string;
+    'weekEnd'?: string;
+    'hours'?: number;
+    'billableHours'?: number;
+    'isLotteryEligible'?: boolean;
+    'hasTicket'?: boolean;
+    'hasWon'?: boolean;
+    'winnerDrawn'?: boolean;
+    'countdownTarget'?: string | null;
+    'winner'?: FortedleServerModelsDTOsWinnerDto;
+}
+export interface FortedleServerModelsDTOsEmployeeWeeksResponse {
+    'weeks'?: Array<FortedleServerModelsDTOsEmployeeWeekDto> | null;
+}
 export interface FortedleServerModelsDTOsGuessDto {
     'employeeId'?: string | null;
     'employeeName'?: string | null;
@@ -137,6 +153,19 @@ export interface FortedleServerModelsDTOsSubmitScoreResponse {
     'success'?: boolean;
     'result'?: FortedleServerModelsDTOsLeaderboardEntryDto;
 }
+export interface FortedleServerModelsDTOsSyncHarvestRequest {
+    'accessToken'?: string | null;
+    'refreshToken'?: string | null;
+    'expiresAt'?: string;
+    'accountId'?: string | null;
+}
+export interface FortedleServerModelsDTOsSyncHarvestResponse {
+    'weeksSynced'?: number;
+    'weeksUpdated'?: number;
+    'ticketsSynced'?: number;
+    'userId'?: string | null;
+    'userName'?: string | null;
+}
 export interface FortedleServerModelsDTOsSyncLotteryTicketsRequest {
     'userId'?: string | null;
     'name'?: string | null;
@@ -186,6 +215,189 @@ export interface FortedleServerModelsDTOsWinnerDto {
     'week'?: string | null;
     'createdAt'?: string;
 }
+
+/**
+ * EmployeeWeeksApi - axios parameter creator
+ */
+export const EmployeeWeeksApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} [userId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiEmployeeWeeksGet: async (userId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/EmployeeWeeks`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiEmployeeWeeksSyncPost: async (fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/EmployeeWeeks/sync`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSyncHarvestRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * EmployeeWeeksApi - functional programming interface
+ */
+export const EmployeeWeeksApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = EmployeeWeeksApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} [userId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiEmployeeWeeksGet(userId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsEmployeeWeeksResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiEmployeeWeeksGet(userId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EmployeeWeeksApi.apiEmployeeWeeksGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EmployeeWeeksApi.apiEmployeeWeeksSyncPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * EmployeeWeeksApi - factory interface
+ */
+export const EmployeeWeeksApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = EmployeeWeeksApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} [userId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiEmployeeWeeksGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsEmployeeWeeksResponse> {
+            return localVarFp.apiEmployeeWeeksGet(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse> {
+            return localVarFp.apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * EmployeeWeeksApi - interface
+ */
+export interface EmployeeWeeksApiInterface {
+    /**
+     * 
+     * @param {string} [userId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiEmployeeWeeksGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsEmployeeWeeksResponse>;
+
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse>;
+
+}
+
+/**
+ * EmployeeWeeksApi - object-oriented interface
+ */
+export class EmployeeWeeksApi extends BaseAPI implements EmployeeWeeksApiInterface {
+    /**
+     * 
+     * @param {string} [userId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiEmployeeWeeksGet(userId?: string, options?: RawAxiosRequestConfig) {
+        return EmployeeWeeksApiFp(this.configuration).apiEmployeeWeeksGet(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig) {
+        return EmployeeWeeksApiFp(this.configuration).apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
 
 /**
  * EmployeesApi - axios parameter creator

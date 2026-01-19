@@ -175,7 +175,7 @@ public class HarvestApiService
     public class HarvestTimeEntry
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [JsonPropertyName("spent_date")]
         public string SpentDate { get; set; } = string.Empty;
@@ -188,6 +188,18 @@ public class HarvestApiService
 
         [JsonPropertyName("updated_at")]
         public DateTime UpdatedAt { get; set; }
+
+        [JsonPropertyName("client")]
+        public HarvestClient? Client { get; set; }
+    }
+
+    public class HarvestClient
+    {
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
     }
 
     public class HarvestTimeEntriesResponse
@@ -199,7 +211,7 @@ public class HarvestApiService
     public class HarvestUser
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [JsonPropertyName("first_name")]
         public string FirstName { get; set; } = string.Empty;
@@ -269,7 +281,7 @@ public class HarvestApiService
     /// Fetches time entries for a user from Harvest API
     /// </summary>
     public async Task<List<HarvestTimeEntry>> GetTimeEntriesAsync(
-        int userId,
+        long userId,
         string from,
         string to,
         string? accessToken = null,
@@ -317,10 +329,66 @@ public class HarvestApiService
     }
 
     /// <summary>
+    /// Fetches the current user from Harvest API (/users/me)
+    /// </summary>
+    public async Task<HarvestUser?> GetCurrentUserAsync(
+        string? accessToken = null,
+        string? refreshToken = null,
+        DateTime? tokenExpiresAt = null,
+        string? accountId = null)
+    {
+        // Get valid token (refresh if needed)
+        var (token, account) = await GetValidTokenAsync(accessToken, refreshToken, tokenExpiresAt, accountId);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new InvalidOperationException("Unable to obtain valid access token");
+        }
+
+        var url = "https://api.harvestapp.com/v2/users/me";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("Authorization", $"Bearer {token}");
+        request.Headers.Add("User-Agent", "Fortedle App");
+
+        if (!string.IsNullOrEmpty(account))
+        {
+            request.Headers.Add("Harvest-Account-ID", account);
+        }
+
+        try
+        {
+            var response = await _httpClient.SendAsync(request);
+            
+            // Return null if user not found (404) or other non-success status
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _logger.LogWarning("Harvest current user not found");
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<HarvestUser>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return result;
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Failed to fetch current user from Harvest API");
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Fetches a user by ID from Harvest API
     /// </summary>
     public async Task<HarvestUser?> GetUserByIdAsync(
-        int userId,
+        long userId,
         string? accessToken = null,
         string? refreshToken = null,
         DateTime? tokenExpiresAt = null,

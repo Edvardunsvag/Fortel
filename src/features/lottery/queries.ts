@@ -15,8 +15,14 @@ import {
   fetchMonthlyWinners,
   fetchLatestMonthlyWinners,
   fetchLotteryConfig,
+  syncFromHarvest,
+  fetchEmployeeWeeks,
 } from "./api";
 import type { WheelDataResponse, MonthlyWinnersResponse, LotteryConfig } from "./api";
+import type {
+  FortedleServerModelsDTOsSyncHarvestResponse,
+  FortedleServerModelsDTOsEmployeeWeeksResponse,
+} from "@/shared/api/generated/index";
 import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
   selectLotteryToken,
@@ -35,6 +41,7 @@ export const lotteryKeys = {
   tickets: (userId: string) => [...lotteryKeys.all, "tickets", userId] as const,
   winners: () => [...lotteryKeys.all, "winners"] as const,
   statistics: () => [...lotteryKeys.all, "statistics"] as const,
+  employeeWeeks: (userId: string) => [...lotteryKeys.all, "employeeWeeks", userId] as const,
   // Grand Finale Lucky Wheel keys
   wheelData: () => [...lotteryKeys.all, "wheelData"] as const,
   monthlyWinners: (month?: string) => [...lotteryKeys.all, "monthlyWinners", month] as const,
@@ -228,6 +235,15 @@ export const useAuthenticateLottery = () => {
 
       // Set token in Redux
       dispatch(setTokenFromAuth(token));
+
+      // After OAuth, sync from Harvest to populate employee weeks
+      try {
+        await syncFromHarvest(token.accessToken, token.refreshToken, token.expiresAt, token.accountId);
+        console.log("Successfully synced from Harvest after OAuth");
+      } catch (syncError) {
+        // Log but don't fail the authentication if sync fails
+        console.warn("Failed to sync from Harvest after OAuth:", syncError);
+      }
 
       return { token };
     },
@@ -468,6 +484,61 @@ export const useLotteryConfig = () => {
     queryKey: lotteryKeys.lotteryConfig(),
     queryFn: fetchLotteryConfig,
     retry: (failureCount, error) => {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Mutation hook for syncing from Harvest
+ * Sends OAuth tokens to backend, which fetches time entries and calculates weekly summaries
+ */
+export const useSyncFromHarvest = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    FortedleServerModelsDTOsSyncHarvestResponse,
+    Error,
+    { accessToken: string; refreshToken: string; expiresAt: number; accountId: string }
+  >({
+    mutationFn: async ({ accessToken, refreshToken, expiresAt, accountId }) => {
+      return syncFromHarvest(accessToken, refreshToken, expiresAt, accountId);
+    },
+    onSuccess: (data) => {
+      console.log("Harvest sync successful:", data);
+      // Invalidate employee weeks query for this user
+      if (data.userId) {
+        queryClient.invalidateQueries({ queryKey: lotteryKeys.employeeWeeks(data.userId) });
+        // Also invalidate lottery tickets as they are synced
+        queryClient.invalidateQueries({ queryKey: lotteryKeys.tickets(data.userId) });
+      }
+      // Also invalidate all lottery queries to refresh other data
+      queryClient.invalidateQueries({ queryKey: lotteryKeys.all });
+    },
+    onError: (error) => {
+      console.error("Harvest sync failed:", error);
+    },
+  });
+};
+
+/**
+ * Query hook for fetching employee weeks
+ */
+export const useEmployeeWeeks = (userId: string | null, enabled = true) => {
+  return useQuery<FortedleServerModelsDTOsEmployeeWeeksResponse>({
+    queryKey: lotteryKeys.employeeWeeks(userId || ""),
+    queryFn: async () => {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+      return fetchEmployeeWeeks(userId);
+    },
+    enabled: enabled && userId !== null && userId !== "",
+    retry: (failureCount, error) => {
+      // Don't retry on 400/404 errors (invalid userId)
       if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
         return false;
       }

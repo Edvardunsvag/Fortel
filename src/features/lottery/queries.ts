@@ -4,7 +4,6 @@ import type { AppDispatch } from "@/app/store";
 import {
   fetchHarvestUser,
   fetchHarvestTimeEntries,
-  fetchHarvestProjectAssignments,
   exchangeCodeForToken,
   refreshAccessToken,
   fetchHarvestAccounts,
@@ -18,7 +17,7 @@ import {
   fetchLotteryConfig,
 } from "./api";
 import type { WheelDataResponse, MonthlyWinnersResponse, LotteryConfig } from "./api";
-import type { HarvestUser, HarvestTimeEntry, HarvestProjectAssignmentsResponse } from "./types";
+import type { HarvestUser, HarvestTimeEntry } from "./types";
 import {
   selectLotteryToken,
   setTokenFromAuth,
@@ -32,7 +31,6 @@ import {
 export const lotteryKeys = {
   all: ["lottery"] as const,
   user: () => [...lotteryKeys.all, "user"] as const,
-  projectAssignments: () => [...lotteryKeys.all, "projectAssignments"] as const,
   timeEntries: (from: string, to: string) => [...lotteryKeys.all, "timeEntries", from, to] as const,
   tickets: (userId: string) => [...lotteryKeys.all, "tickets", userId] as const,
   winners: () => [...lotteryKeys.all, "winners"] as const,
@@ -96,32 +94,6 @@ export const useLotteryUser = (enabled = true) => {
       return fetchHarvestUser(validToken.accessToken, validToken.accountId);
     },
     enabled: enabled && token !== null,
-    retry: (failureCount, error) => {
-      // Don't retry on 401 errors (auth issues)
-      if (error instanceof Error && error.message.includes("401")) {
-        return false;
-      }
-      return failureCount < 2;
-    },
-  });
-};
-
-/**
- * Query hook for fetching Harvest project assignments
- * Used to determine if user has billable projects
- */
-export const useLotteryProjectAssignments = (enabled = true) => {
-  const dispatch = useAppDispatch();
-  const token = useAppSelector(selectLotteryToken);
-
-  return useQuery<HarvestProjectAssignmentsResponse>({
-    queryKey: lotteryKeys.projectAssignments(),
-    queryFn: async () => {
-      const validToken = await getValidToken(token, dispatch);
-      return fetchHarvestProjectAssignments(validToken.accessToken, validToken.accountId);
-    },
-    enabled: enabled && token !== null,
-    staleTime: 5 * 60 * 1000, // 5 minutes - project assignments don't change often
     retry: (failureCount, error) => {
       // Don't retry on 401 errors (auth issues)
       if (error instanceof Error && error.message.includes("401")) {

@@ -1,6 +1,5 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.Database;
+using Fortedle.Server.Repositories;
 
 namespace Fortedle.Server.Services;
 
@@ -24,19 +23,26 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
         "#9370DB", "#20B2AA", "#FFD700", "#FF6347", "#00FA9A"
     };
 
-    private readonly AppDbContext _context;
+    private readonly ILotteryTicketRepository _lotteryTicketRepository;
+    private readonly IMonthlyWinningTicketRepository _monthlyWinningTicketRepository;
+    private readonly ILotteryConfigRepository _lotteryConfigRepository;
     private readonly ILogger<MonthlyLotteryDrawingService> _logger;
 
-    public MonthlyLotteryDrawingService(AppDbContext context, ILogger<MonthlyLotteryDrawingService> logger)
+    public MonthlyLotteryDrawingService(
+        ILotteryTicketRepository lotteryTicketRepository,
+        IMonthlyWinningTicketRepository monthlyWinningTicketRepository,
+        ILotteryConfigRepository lotteryConfigRepository,
+        ILogger<MonthlyLotteryDrawingService> logger)
     {
-        _context = context;
+        _lotteryTicketRepository = lotteryTicketRepository;
+        _monthlyWinningTicketRepository = monthlyWinningTicketRepository;
+        _lotteryConfigRepository = lotteryConfigRepository;
         _logger = logger;
     }
 
     public async Task<int> GetMonthlyWinnerCountAsync()
     {
-        var config = await _context.LotteryConfigs
-            .FirstOrDefaultAsync(c => c.Key == MonthlyWinnerCountKey);
+        var config = await _lotteryConfigRepository.GetByKeyAsync(MonthlyWinnerCountKey);
 
         if (config == null || !int.TryParse(config.Value, out var count))
         {
@@ -61,9 +67,7 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
             _logger.LogInformation("Drawing {Count} winners for month {Month}", winnerCount, month);
 
             // Check if we've already drawn winners for this month
-            var existingWinnersCount = await _context.MonthlyWinningTickets
-                .Where(w => w.Month == month)
-                .CountAsync();
+            var existingWinnersCount = await _monthlyWinningTicketRepository.GetCountByMonthAsync(month);
 
             if (existingWinnersCount >= winnerCount)
             {
@@ -72,8 +76,8 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
             }
 
             // Get all unused lottery tickets grouped by user
-            var ticketsByUser = await _context.LotteryTickets
-                .Where(t => !t.IsUsed)
+            var allTickets = await _lotteryTicketRepository.GetUnusedAsync();
+            var ticketsByUser = allTickets
                 .GroupBy(t => t.UserId)
                 .Select(g => new
                 {
@@ -82,7 +86,7 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
                     Image = g.First().Image,
                     Tickets = g.ToList()
                 })
-                .ToListAsync();
+                .ToList();
 
             if (ticketsByUser.Count == 0)
             {
@@ -153,7 +157,7 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
                     Color = winner.Color,
                     CreatedAt = DateTime.UtcNow
                 };
-                _context.MonthlyWinningTickets.Add(winningTicket);
+                await _monthlyWinningTicketRepository.AddAsync(winningTicket);
 
                 // NOTE: Tickets are NOT marked as used here anymore.
                 // They will be consumed via the consume-winner endpoint after the UI reveals them.
@@ -164,8 +168,6 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
 
                 position_++;
             }
-
-            await _context.SaveChangesAsync();
 
             _logger.LogInformation(
                 "Successfully drew {Count} monthly winners for {Month}. Winners: {Winners}",

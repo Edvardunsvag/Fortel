@@ -1,4 +1,5 @@
 using Fortedle.Server.Data;
+using Fortedle.Server.Repositories;
 using Fortedle.Server.Services;
 using Hangfire;
 using Hangfire.Dashboard;
@@ -108,7 +109,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     });
 });
 
-// Register services
+// Register repositories first
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IRoundRepository, RoundRepository>();
+builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
+builder.Services.AddScoped<ILotteryTicketRepository, LotteryTicketRepository>();
+builder.Services.AddScoped<IWinningTicketRepository, WinningTicketRepository>();
+builder.Services.AddScoped<IMonthlyWinningTicketRepository, MonthlyWinningTicketRepository>();
+builder.Services.AddScoped<ILotteryConfigRepository, LotteryConfigRepository>();
+
+// Register services (which depend on repositories)
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<ISyncService, SyncService>();

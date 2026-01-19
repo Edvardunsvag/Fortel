@@ -1,4 +1,4 @@
-namespace Fortedle.Server.Models;
+namespace Fortedle.Server.Models.DTOs;
 
 public class LeaderboardDto
 {
@@ -27,4 +27,3 @@ public class SubmitScoreResponse
     public bool Success { get; set; }
     public LeaderboardEntryDto Result { get; set; } = new();
 }
-

@@ -8,7 +8,7 @@ All URIs are relative to *http://localhost:8080*
 |[**apiLeaderboardSubmitScorePost**](#apileaderboardsubmitscorepost) | **POST** /api/Leaderboard/submit-score | |
 
 # **apiLeaderboardGet**
-> FortedleServerModelsLeaderboardDto apiLeaderboardGet()
+> FortedleServerModelsDTOsLeaderboardDto apiLeaderboardGet()
 
 
 ### Example
@@ -38,7 +38,7 @@ const { status, data } = await apiInstance.apiLeaderboardGet(
 
 ### Return type
 
-**FortedleServerModelsLeaderboardDto**
+**FortedleServerModelsDTOsLeaderboardDto**
 
 ### Authorization
 
@@ -58,7 +58,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLeaderboardSubmitScorePost**
-> FortedleServerModelsSubmitScoreResponse apiLeaderboardSubmitScorePost()
+> FortedleServerModelsDTOsSubmitScoreResponse apiLeaderboardSubmitScorePost()
 
 
 ### Example
@@ -67,16 +67,16 @@ No authorization required
 import {
     LeaderboardApi,
     Configuration,
-    FortedleServerModelsSubmitScoreRequest
+    FortedleServerModelsDTOsSubmitScoreRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new LeaderboardApi(configuration);
 
-let fortedleServerModelsSubmitScoreRequest: FortedleServerModelsSubmitScoreRequest; // (optional)
+let fortedleServerModelsDTOsSubmitScoreRequest: FortedleServerModelsDTOsSubmitScoreRequest; // (optional)
 
 const { status, data } = await apiInstance.apiLeaderboardSubmitScorePost(
-    fortedleServerModelsSubmitScoreRequest
+    fortedleServerModelsDTOsSubmitScoreRequest
 );
 ```
 
@@ -84,12 +84,12 @@ const { status, data } = await apiInstance.apiLeaderboardSubmitScorePost(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsSubmitScoreRequest** | **FortedleServerModelsSubmitScoreRequest**|  | |
+| **fortedleServerModelsDTOsSubmitScoreRequest** | **FortedleServerModelsDTOsSubmitScoreRequest**|  | |
 
 
 ### Return type
 
-**FortedleServerModelsSubmitScoreResponse**
+**FortedleServerModelsDTOsSubmitScoreResponse**
 
 ### Authorization
 

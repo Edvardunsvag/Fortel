@@ -7,7 +7,7 @@ All URIs are relative to *http://localhost:8080*
 |[**apiSyncPost**](#apisyncpost) | **POST** /api/Sync | |
 
 # **apiSyncPost**
-> FortedleServerModelsSyncResponse apiSyncPost()
+> FortedleServerModelsDTOsSyncResponse apiSyncPost()
 
 
 ### Example
@@ -16,16 +16,16 @@ All URIs are relative to *http://localhost:8080*
 import {
     SyncApi,
     Configuration,
-    FortedleServerModelsSyncRequest
+    FortedleServerModelsDTOsSyncRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new SyncApi(configuration);
 
-let fortedleServerModelsSyncRequest: FortedleServerModelsSyncRequest; // (optional)
+let fortedleServerModelsDTOsSyncRequest: FortedleServerModelsDTOsSyncRequest; // (optional)
 
 const { status, data } = await apiInstance.apiSyncPost(
-    fortedleServerModelsSyncRequest
+    fortedleServerModelsDTOsSyncRequest
 );
 ```
 
@@ -33,12 +33,12 @@ const { status, data } = await apiInstance.apiSyncPost(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsSyncRequest** | **FortedleServerModelsSyncRequest**|  | |
+| **fortedleServerModelsDTOsSyncRequest** | **FortedleServerModelsDTOsSyncRequest**|  | |
 
 
 ### Return type
 
-**FortedleServerModelsSyncResponse**
+**FortedleServerModelsDTOsSyncResponse**
 
 ### Authorization
 

@@ -1,4 +1,4 @@
-using Fortedle.Server.Models;
+using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 

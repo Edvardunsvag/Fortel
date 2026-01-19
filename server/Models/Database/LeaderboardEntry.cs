@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Fortedle.Server.Data.Entities;
+namespace Fortedle.Server.Models.Database;
 
 [Table("leaderboard")]
 public class LeaderboardEntry
@@ -31,4 +31,3 @@ public class LeaderboardEntry
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
-

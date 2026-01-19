@@ -1,12 +1,12 @@
 import { roundsApi } from "@/shared/api/client";
 import type {
-  FortedleServerModelsRoundDto,
-  FortedleServerModelsRevealFunfactRequest,
-  FortedleServerModelsSaveGuessRequest,
-  FortedleServerModelsStartRoundRequest,
+  FortedleServerModelsDTOsRoundDto,
+  FortedleServerModelsDTOsRevealFunfactRequest,
+  FortedleServerModelsDTOsSaveGuessRequest,
+  FortedleServerModelsDTOsStartRoundRequest,
 } from "@/shared/api/generated/index";
 
-export const getCurrentRound = async (userId: string, date?: string): Promise<FortedleServerModelsRoundDto | null> => {
+export const getCurrentRound = async (userId: string, date?: string): Promise<FortedleServerModelsDTOsRoundDto | null> => {
   try {
     const response = await roundsApi.apiRoundsCurrentGet(userId, date);
     return response.data;
@@ -23,8 +23,8 @@ export const getCurrentRound = async (userId: string, date?: string): Promise<Fo
 };
 
 export const startRound = async (
-  request: FortedleServerModelsStartRoundRequest
-): Promise<FortedleServerModelsRoundDto> => {
+  request: FortedleServerModelsDTOsStartRoundRequest
+): Promise<FortedleServerModelsDTOsRoundDto> => {
   try {
     const response = await roundsApi.apiRoundsStartPost(request);
     return response.data;
@@ -38,8 +38,8 @@ export const startRound = async (
 };
 
 export const saveGuess = async (
-  request: FortedleServerModelsSaveGuessRequest
-): Promise<FortedleServerModelsRoundDto> => {
+  request: FortedleServerModelsDTOsSaveGuessRequest
+): Promise<FortedleServerModelsDTOsRoundDto> => {
   try {
     const response = await roundsApi.apiRoundsGuessPost(request);
     return response.data;
@@ -53,8 +53,8 @@ export const saveGuess = async (
 };
 
 export const revealFunfact = async (
-  request: FortedleServerModelsRevealFunfactRequest
-): Promise<FortedleServerModelsRoundDto> => {
+  request: FortedleServerModelsDTOsRevealFunfactRequest
+): Promise<FortedleServerModelsDTOsRoundDto> => {
   try {
     const response = await roundsApi.apiRoundsRevealFunfactPost(request);
     return response.data;

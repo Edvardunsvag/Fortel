@@ -1,7 +1,7 @@
 import type {
-  FortedleServerModelsGuessDto,
-  FortedleServerModelsGuessHintDto,
-  FortedleServerModelsRoundDto,
+  FortedleServerModelsDTOsGuessDto,
+  FortedleServerModelsDTOsGuessHintDto,
+  FortedleServerModelsDTOsRoundDto,
 } from "@/shared/api/generated/index";
 import type { Guess, GuessHint, HintResult, HintType } from "./types";
 
@@ -20,13 +20,13 @@ export interface RoundDto {
 /**
  * Maps the generated GuessDto to the application Guess type
  */
-export const guessFromDto = (dto: FortedleServerModelsGuessDto): Guess => {
+export const guessFromDto = (dto: FortedleServerModelsDTOsGuessDto): Guess => {
   return {
     employeeId: dto.employeeId ?? "",
     employeeName: dto.employeeName ?? "",
     avatarImageUrl: dto.avatarImageUrl ?? undefined,
     hints: (dto.hints ?? []).map(
-      (hint: FortedleServerModelsGuessHintDto): GuessHint => ({
+      (hint: FortedleServerModelsDTOsGuessHintDto): GuessHint => ({
         type: hint.type as HintType,
         result: hint.result as HintResult,
         message: hint.message ?? "",
@@ -39,7 +39,7 @@ export const guessFromDto = (dto: FortedleServerModelsGuessDto): Guess => {
 /**
  * Maps the generated RoundDto to the application RoundDto type
  */
-export const roundFromDto = (dto: FortedleServerModelsRoundDto): RoundDto => {
+export const roundFromDto = (dto: FortedleServerModelsDTOsRoundDto): RoundDto => {
   return {
     id: dto.id ?? 0,
     userId: dto.userId ?? "",

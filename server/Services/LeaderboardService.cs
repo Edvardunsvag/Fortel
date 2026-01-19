@@ -1,7 +1,5 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Fortedle.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.DTOs;
+using Fortedle.Server.Repositories;
 
 namespace Fortedle.Server.Services;
 
@@ -13,11 +11,15 @@ public interface ILeaderboardService
 
 public class LeaderboardService : ILeaderboardService
 {
-    private readonly AppDbContext _context;
+    private readonly ILeaderboardRepository _leaderboardRepository;
+    private readonly ILogger<LeaderboardService> _logger;
 
-    public LeaderboardService(AppDbContext context)
+    public LeaderboardService(
+        ILeaderboardRepository leaderboardRepository,
+        ILogger<LeaderboardService> logger)
     {
-        _context = context;
+        _leaderboardRepository = leaderboardRepository;
+        _logger = logger;
     }
 
     public async Task<LeaderboardDto> GetLeaderboardAsync(string? date = null)
@@ -26,21 +28,9 @@ public class LeaderboardService : ILeaderboardService
             ? DateOnly.Parse(date) 
             : DateOnly.FromDateTime(DateTime.UtcNow);
 
-        var entries = await _context.LeaderboardEntries
-            .Where(e => e.Date == targetDate)
-            .OrderBy(e => e.Score)
-            .ThenBy(e => e.CreatedAt)
-            .Take(100)
-            .ToListAsync();
+        var entries = await _leaderboardRepository.GetByDateAsync(targetDate);
 
-        var leaderboard = entries.Select((entry, index) => new LeaderboardEntryDto
-        {
-            Rank = index + 1,
-            Name = entry.PlayerName,
-            Score = entry.Score,
-            AvatarImageUrl = entry.AvatarImageUrl,
-            SubmittedAt = entry.CreatedAt,
-        }).ToList();
+        var leaderboard = entries.Select((entry, index) => entry.ToDto(index + 1)).ToList();
 
         return new LeaderboardDto
         {
@@ -55,8 +45,7 @@ public class LeaderboardService : ILeaderboardService
         var playerName = request.Name.Trim();
 
         // Check if entry already exists
-        var existingEntry = await _context.LeaderboardEntries
-            .FirstOrDefaultAsync(e => e.PlayerName == playerName && e.Date == date);
+        var existingEntry = await _leaderboardRepository.GetByPlayerNameAndDateAsync(playerName, date);
 
         if (existingEntry != null)
         {
@@ -73,23 +62,17 @@ public class LeaderboardService : ILeaderboardService
                 existingEntry.AvatarImageUrl = request.AvatarImageUrl ?? existingEntry.AvatarImageUrl;
             }
 
-            await _context.SaveChangesAsync();
+            await _leaderboardRepository.UpdateAsync(existingEntry);
 
             return new SubmitScoreResponse
             {
                 Success = true,
-                Result = new LeaderboardEntryDto
-                {
-                    Name = existingEntry.PlayerName,
-                    Score = existingEntry.Score,
-                    AvatarImageUrl = existingEntry.AvatarImageUrl,
-                    SubmittedAt = existingEntry.CreatedAt,
-                },
+                Result = existingEntry.ToDto(0), // Rank will be recalculated on next fetch
             };
         }
 
         // Create new entry
-        var newEntry = new LeaderboardEntry
+        var newEntry = new Models.Database.LeaderboardEntry
         {
             PlayerName = playerName,
             Score = request.Score,
@@ -98,20 +81,12 @@ public class LeaderboardService : ILeaderboardService
             CreatedAt = DateTime.UtcNow,
         };
 
-        _context.LeaderboardEntries.Add(newEntry);
-        await _context.SaveChangesAsync();
+        var createdEntry = await _leaderboardRepository.AddAsync(newEntry);
 
         return new SubmitScoreResponse
         {
             Success = true,
-            Result = new LeaderboardEntryDto
-            {
-                Name = newEntry.PlayerName,
-                Score = newEntry.Score,
-                AvatarImageUrl = newEntry.AvatarImageUrl,
-                SubmittedAt = newEntry.CreatedAt,
-            },
+            Result = createdEntry.ToDto(0), // Rank will be recalculated on next fetch
         };
     }
 }
-

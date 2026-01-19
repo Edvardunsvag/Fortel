@@ -1,7 +1,5 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Fortedle.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.DTOs;
+using Fortedle.Server.Repositories;
 
 namespace Fortedle.Server.Services;
 
@@ -12,35 +10,20 @@ public interface IEmployeeService
 
 public class EmployeeService : IEmployeeService
 {
-    private readonly AppDbContext _context;
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly ILogger<EmployeeService> _logger;
 
-    public EmployeeService(AppDbContext context)
+    public EmployeeService(
+        IEmployeeRepository employeeRepository,
+        ILogger<EmployeeService> logger)
     {
-        _context = context;
+        _employeeRepository = employeeRepository;
+        _logger = logger;
     }
 
     public async Task<List<EmployeeDto>> GetEmployeesAsync()
     {
-        var employees = await _context.Employees
-            .OrderBy(e => e.Name)
-            .ToListAsync();
-
-        return employees.Select(e => new EmployeeDto
-        {
-            Id = e.Id,
-            Name = e.Name,
-            FirstName = e.FirstName,
-            Surname = e.Surname,
-            Email = e.Email ?? string.Empty,
-            AvatarImageUrl = e.AvatarImageUrl,
-            Department = e.Department,
-            Office = e.Office,
-            Teams = e.Teams ?? new List<string>(),
-            Age = e.Age,
-            Supervisor = e.Supervisor ?? "-",
-            Funfact = e.Funfact,
-            Interests = e.Interests ?? new List<string>(),
-        }).ToList();
+        var employees = await _employeeRepository.GetAllAsync();
+        return employees.Select(e => e.ToDto()).ToList();
     }
 }
-

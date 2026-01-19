@@ -1,6 +1,5 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.DTOs;
+using Fortedle.Server.Repositories;
 
 namespace Fortedle.Server.Services;
 
@@ -26,16 +25,19 @@ public class WheelDataService : IWheelDataService
         "#9370DB", "#20B2AA", "#FFD700", "#FF6347", "#00FA9A"
     };
 
-    private readonly AppDbContext _context;
+    private readonly ILotteryTicketRepository _lotteryTicketRepository;
+    private readonly IMonthlyWinningTicketRepository _monthlyWinningTicketRepository;
     private readonly IMonthlyLotteryDrawingService _monthlyDrawingService;
     private readonly ILogger<WheelDataService> _logger;
 
     public WheelDataService(
-        AppDbContext context,
+        ILotteryTicketRepository lotteryTicketRepository,
+        IMonthlyWinningTicketRepository monthlyWinningTicketRepository,
         IMonthlyLotteryDrawingService monthlyDrawingService,
         ILogger<WheelDataService> logger)
     {
-        _context = context;
+        _lotteryTicketRepository = lotteryTicketRepository;
+        _monthlyWinningTicketRepository = monthlyWinningTicketRepository;
         _monthlyDrawingService = monthlyDrawingService;
         _logger = logger;
     }
@@ -43,10 +45,7 @@ public class WheelDataService : IWheelDataService
     public async Task<WheelDataResponse> GetWheelDataAsync()
     {
         // Get ALL lottery tickets to build the complete participants list
-        var allTickets = await _context.LotteryTickets
-            .OrderBy(t => t.UserId)
-            .ThenBy(t => t.CreatedAt)
-            .ToListAsync();
+        var allTickets = await _lotteryTicketRepository.GetAllAsync();
 
         if (allTickets.Count == 0)
         {
@@ -105,28 +104,16 @@ public class WheelDataService : IWheelDataService
     {
         var targetMonth = month ?? GetCurrentMonthString();
 
-        var winners = await _context.MonthlyWinningTickets
-            .Where(w => w.Month == targetMonth)
-            .OrderBy(w => w.Position)
-            .Select(w => new MonthlyWinnerDto
-            {
-                UserId = w.UserId,
-                Name = w.Name,
-                Image = w.Image,
-                Color = w.Color,
-                Month = w.Month,
-                Position = w.Position,
-                TicketsConsumed = w.TicketsConsumed,
-                CreatedAt = w.CreatedAt
-            })
-            .ToListAsync();
+        var winners = await _monthlyWinningTicketRepository.GetByMonthAsync(targetMonth);
+
+        var winnerDtos = winners.Select(w => w.ToDto()).ToList();
 
         var winnerCount = await _monthlyDrawingService.GetMonthlyWinnerCountAsync();
 
         return new MonthlyWinnersResponse
         {
             Month = targetMonth,
-            Winners = winners,
+            Winners = winnerDtos,
             IsDrawComplete = winners.Count >= winnerCount
         };
     }
@@ -134,10 +121,7 @@ public class WheelDataService : IWheelDataService
     public async Task<MonthlyWinnersResponse> GetLatestMonthlyWinnersAsync()
     {
         // Find the most recent month with winners
-        var latestMonth = await _context.MonthlyWinningTickets
-            .OrderByDescending(w => w.Month)
-            .Select(w => w.Month)
-            .FirstOrDefaultAsync();
+        var latestMonth = await _monthlyWinningTicketRepository.GetLatestMonthAsync();
 
         if (string.IsNullOrEmpty(latestMonth))
         {

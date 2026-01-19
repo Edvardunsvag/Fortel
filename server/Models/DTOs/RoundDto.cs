@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Fortedle.Server.Models;
+namespace Fortedle.Server.Models.DTOs;
 
 public class RoundDto
 {

@@ -1,4 +1,4 @@
-namespace Fortedle.Server.Models;
+namespace Fortedle.Server.Models.DTOs;
 
 public class EmployeeDto
 {
@@ -16,4 +16,3 @@ public class EmployeeDto
     public string? Funfact { get; set; }
     public List<string> Interests { get; set; } = new();
 }
-

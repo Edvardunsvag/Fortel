@@ -1,10 +1,10 @@
 import { leaderboardApi } from "@/shared/api/client";
 import type {
-  FortedleServerModelsLeaderboardDto,
-  FortedleServerModelsSubmitScoreRequest,
+  FortedleServerModelsDTOsLeaderboardDto,
+  FortedleServerModelsDTOsSubmitScoreRequest,
 } from "@/shared/api/generated/index";
 
-export const fetchLeaderboard = async (date?: string): Promise<FortedleServerModelsLeaderboardDto> => {
+export const fetchLeaderboard = async (date?: string): Promise<FortedleServerModelsDTOsLeaderboardDto> => {
   try {
     const response = await leaderboardApi.apiLeaderboardGet(date);
     return response.data;
@@ -18,8 +18,8 @@ export const fetchLeaderboard = async (date?: string): Promise<FortedleServerMod
 };
 
 export const submitScore = async (
-  request: FortedleServerModelsSubmitScoreRequest
-): Promise<FortedleServerModelsLeaderboardDto> => {
+  request: FortedleServerModelsDTOsSubmitScoreRequest
+): Promise<FortedleServerModelsDTOsLeaderboardDto> => {
   try {
     await leaderboardApi.apiLeaderboardSubmitScorePost(request);
 

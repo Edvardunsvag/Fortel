@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchLeaderboard, submitScore } from "./api";
 import { leaderboardFromDto } from "./fromDto";
 import type { LeaderboardData } from "./types";
-import type { FortedleServerModelsSubmitScoreRequest } from "@/shared/api/generated/index";
+import type { FortedleServerModelsDTOsSubmitScoreRequest } from "@/shared/api/generated/index";
 
 // Query keys
 export const leaderboardKeys = {
@@ -30,7 +30,7 @@ export const useLeaderboard = (date?: string) => {
 export const useSubmitScore = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<LeaderboardData, Error, FortedleServerModelsSubmitScoreRequest>({
+  return useMutation<LeaderboardData, Error, FortedleServerModelsDTOsSubmitScoreRequest>({
     mutationFn: async (request) => {
       const apiLeaderboard = await submitScore(request);
       return leaderboardFromDto(apiLeaderboard);

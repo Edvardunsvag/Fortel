@@ -1,11 +1,11 @@
 import { employeesApi, syncApi } from "@/shared/api/client";
 import type {
-  FortedleServerModelsEmployeeDto,
-  FortedleServerModelsSyncRequest,
-  FortedleServerModelsSyncResponse,
+  FortedleServerModelsDTOsEmployeeDto,
+  FortedleServerModelsDTOsSyncRequest,
+  FortedleServerModelsDTOsSyncResponse,
 } from "@/shared/api/generated/index";
 
-export const fetchEmployees = async (): Promise<FortedleServerModelsEmployeeDto[]> => {
+export const fetchEmployees = async (): Promise<FortedleServerModelsDTOsEmployeeDto[]> => {
   try {
     const response = await employeesApi.apiEmployeesGet();
     console.log(`Successfully loaded ${response.data.length} employees from database`);
@@ -23,8 +23,8 @@ export const fetchEmployees = async (): Promise<FortedleServerModelsEmployeeDto[
 };
 
 export const syncEmployees = async (
-  request: FortedleServerModelsSyncRequest
-): Promise<FortedleServerModelsSyncResponse> => {
+  request: FortedleServerModelsDTOsSyncRequest
+): Promise<FortedleServerModelsDTOsSyncResponse> => {
   try {
     const response = await syncApi.apiSyncPost(request);
     return response.data;

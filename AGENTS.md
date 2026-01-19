@@ -1,5 +1,7 @@
 # AGENTS.md
 
+😊 **VALIDATION MARKER**: This smiley confirms the frontend rules file is loaded in context.
+
 This file provides guidance to AI coding assistants when working with code in this repository.
 
 ## Project Overview

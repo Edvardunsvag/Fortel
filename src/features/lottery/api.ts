@@ -2,8 +2,8 @@ import type { HarvestUser, HarvestTimeEntriesResponse, HarvestAccountsResponse }
 import { harvestConfig } from "@/shared/config/harvestConfig";
 import { lotteryTicketsApi } from "@/shared/api/client";
 import type {
-  FortedleServerModelsSyncLotteryTicketsRequest,
-  FortedleServerModelsSyncLotteryTicketsResponse,
+  FortedleServerModelsDTOsSyncLotteryTicketsRequest,
+  FortedleServerModelsDTOsSyncLotteryTicketsResponse,
 } from "@/shared/api/generated/index";
 
 /**
@@ -265,9 +265,9 @@ export const syncLotteryTickets = async (
   name: string,
   image: string | null | undefined,
   eligibleWeeks: string[]
-): Promise<FortedleServerModelsSyncLotteryTicketsResponse> => {
+): Promise<FortedleServerModelsDTOsSyncLotteryTicketsResponse> => {
   try {
-    const request: FortedleServerModelsSyncLotteryTicketsRequest = {
+    const request: FortedleServerModelsDTOsSyncLotteryTicketsRequest = {
       userId,
       name,
       image: image || null,

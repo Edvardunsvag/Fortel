@@ -18,7 +18,7 @@ All URIs are relative to *http://localhost:8080*
 |[**apiLotteryTicketsWinnersGet**](#apilotteryticketswinnersget) | **GET** /api/LotteryTickets/winners | |
 
 # **apiLotteryTicketsConfigGet**
-> FortedleServerModelsLotteryConfigDto apiLotteryTicketsConfigGet()
+> FortedleServerModelsDTOsLotteryConfigDto apiLotteryTicketsConfigGet()
 
 
 ### Example
@@ -41,7 +41,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**FortedleServerModelsLotteryConfigDto**
+**FortedleServerModelsDTOsLotteryConfigDto**
 
 ### Authorization
 
@@ -114,7 +114,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsGet**
-> Array<FortedleServerModelsLotteryTicketDto> apiLotteryTicketsGet()
+> Array<FortedleServerModelsDTOsLotteryTicketDto> apiLotteryTicketsGet()
 
 
 ### Example
@@ -144,7 +144,7 @@ const { status, data } = await apiInstance.apiLotteryTicketsGet(
 
 ### Return type
 
-**Array<FortedleServerModelsLotteryTicketDto>**
+**Array<FortedleServerModelsDTOsLotteryTicketDto>**
 
 ### Authorization
 
@@ -207,7 +207,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsMonthlyWinnersGet**
-> FortedleServerModelsMonthlyWinnersResponse apiLotteryTicketsMonthlyWinnersGet()
+> FortedleServerModelsDTOsMonthlyWinnersResponse apiLotteryTicketsMonthlyWinnersGet()
 
 
 ### Example
@@ -237,7 +237,7 @@ const { status, data } = await apiInstance.apiLotteryTicketsMonthlyWinnersGet(
 
 ### Return type
 
-**FortedleServerModelsMonthlyWinnersResponse**
+**FortedleServerModelsDTOsMonthlyWinnersResponse**
 
 ### Authorization
 
@@ -257,7 +257,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsMonthlyWinnersLatestGet**
-> FortedleServerModelsMonthlyWinnersResponse apiLotteryTicketsMonthlyWinnersLatestGet()
+> FortedleServerModelsDTOsMonthlyWinnersResponse apiLotteryTicketsMonthlyWinnersLatestGet()
 
 
 ### Example
@@ -280,7 +280,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**FortedleServerModelsMonthlyWinnersResponse**
+**FortedleServerModelsDTOsMonthlyWinnersResponse**
 
 ### Authorization
 
@@ -393,7 +393,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsStatisticsGet**
-> FortedleServerModelsEmployeeStatisticsResponse apiLotteryTicketsStatisticsGet()
+> FortedleServerModelsDTOsEmployeeStatisticsResponse apiLotteryTicketsStatisticsGet()
 
 
 ### Example
@@ -416,7 +416,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**FortedleServerModelsEmployeeStatisticsResponse**
+**FortedleServerModelsDTOsEmployeeStatisticsResponse**
 
 ### Authorization
 
@@ -436,7 +436,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsSyncPost**
-> FortedleServerModelsSyncLotteryTicketsResponse apiLotteryTicketsSyncPost()
+> FortedleServerModelsDTOsSyncLotteryTicketsResponse apiLotteryTicketsSyncPost()
 
 
 ### Example
@@ -445,16 +445,16 @@ No authorization required
 import {
     LotteryTicketsApi,
     Configuration,
-    FortedleServerModelsSyncLotteryTicketsRequest
+    FortedleServerModelsDTOsSyncLotteryTicketsRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new LotteryTicketsApi(configuration);
 
-let fortedleServerModelsSyncLotteryTicketsRequest: FortedleServerModelsSyncLotteryTicketsRequest; // (optional)
+let fortedleServerModelsDTOsSyncLotteryTicketsRequest: FortedleServerModelsDTOsSyncLotteryTicketsRequest; // (optional)
 
 const { status, data } = await apiInstance.apiLotteryTicketsSyncPost(
-    fortedleServerModelsSyncLotteryTicketsRequest
+    fortedleServerModelsDTOsSyncLotteryTicketsRequest
 );
 ```
 
@@ -462,12 +462,12 @@ const { status, data } = await apiInstance.apiLotteryTicketsSyncPost(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsSyncLotteryTicketsRequest** | **FortedleServerModelsSyncLotteryTicketsRequest**|  | |
+| **fortedleServerModelsDTOsSyncLotteryTicketsRequest** | **FortedleServerModelsDTOsSyncLotteryTicketsRequest**|  | |
 
 
 ### Return type
 
-**FortedleServerModelsSyncLotteryTicketsResponse**
+**FortedleServerModelsDTOsSyncLotteryTicketsResponse**
 
 ### Authorization
 
@@ -487,7 +487,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsWheelGet**
-> FortedleServerModelsWheelDataResponse apiLotteryTicketsWheelGet()
+> FortedleServerModelsDTOsWheelDataResponse apiLotteryTicketsWheelGet()
 
 
 ### Example
@@ -510,7 +510,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**FortedleServerModelsWheelDataResponse**
+**FortedleServerModelsDTOsWheelDataResponse**
 
 ### Authorization
 
@@ -530,7 +530,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiLotteryTicketsWinnersGet**
-> FortedleServerModelsAllWinnersResponse apiLotteryTicketsWinnersGet()
+> FortedleServerModelsDTOsAllWinnersResponse apiLotteryTicketsWinnersGet()
 
 
 ### Example
@@ -553,7 +553,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**FortedleServerModelsAllWinnersResponse**
+**FortedleServerModelsDTOsAllWinnersResponse**
 
 ### Authorization
 

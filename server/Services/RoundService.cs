@@ -1,7 +1,6 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Fortedle.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.Database;
+using Fortedle.Server.Models.DTOs;
+using Fortedle.Server.Repositories;
 using System.Text.Json;
 
 namespace Fortedle.Server.Services;
@@ -16,12 +15,14 @@ public interface IRoundService
 
 public class RoundService : IRoundService
 {
-    private readonly AppDbContext _context;
+    private readonly IRoundRepository _roundRepository;
     private readonly ILogger<RoundService> _logger;
 
-    public RoundService(AppDbContext context, ILogger<RoundService> logger)
+    public RoundService(
+        IRoundRepository roundRepository,
+        ILogger<RoundService> logger)
     {
-        _context = context;
+        _roundRepository = roundRepository;
         _logger = logger;
     }
 
@@ -31,15 +32,14 @@ public class RoundService : IRoundService
             ? DateOnly.Parse(date)
             : DateOnly.FromDateTime(DateTime.UtcNow);
 
-        var round = await _context.Rounds
-            .FirstOrDefaultAsync(r => r.UserId == userId && r.Date == targetDate);
+        var round = await _roundRepository.GetByUserIdAndDateAsync(userId, targetDate);
 
         if (round == null)
         {
             return null;
         }
 
-        return MapToDto(round);
+        return round.ToDto();
     }
 
     public async Task<RoundDto> StartRoundAsync(StartRoundRequest request)
@@ -49,13 +49,12 @@ public class RoundService : IRoundService
             : DateOnly.FromDateTime(DateTime.UtcNow);
 
         // Check if round already exists
-        var existingRound = await _context.Rounds
-            .FirstOrDefaultAsync(r => r.UserId == request.UserId && r.Date == date);
+        var existingRound = await _roundRepository.GetByUserIdAndDateAsync(request.UserId, date);
 
         if (existingRound != null)
         {
             // Return existing round instead of creating new one
-            return MapToDto(existingRound);
+            return existingRound.ToDto();
         }
 
         var round = new Round
@@ -71,10 +70,8 @@ public class RoundService : IRoundService
             UpdatedAt = DateTime.UtcNow,
         };
 
-        _context.Rounds.Add(round);
-        await _context.SaveChangesAsync();
-
-        return MapToDto(round);
+        var createdRound = await _roundRepository.AddAsync(round);
+        return createdRound.ToDto();
     }
 
     public async Task<RoundDto> SaveGuessAsync(SaveGuessRequest request)
@@ -83,8 +80,7 @@ public class RoundService : IRoundService
             ? DateOnly.Parse(request.Date)
             : DateOnly.FromDateTime(DateTime.UtcNow);
 
-        var round = await _context.Rounds
-            .FirstOrDefaultAsync(r => r.UserId == request.UserId && r.Date == date);
+        var round = await _roundRepository.GetByUserIdAndDateAsync(request.UserId, date);
 
         if (round == null)
         {
@@ -108,15 +104,14 @@ public class RoundService : IRoundService
         }
 
         round.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
+        await _roundRepository.UpdateAsync(round);
 
-        return MapToDto(round);
+        return round.ToDto();
     }
 
     public async Task<RoundDto> RevealFunfactAsync(RevealFunfactRequest request)
     {
-        var round = await _context.Rounds
-            .FirstOrDefaultAsync(r => r.Id == request.RoundId);
+        var round = await _roundRepository.GetByIdAsync(request.RoundId);
 
         if (round == null)
         {
@@ -126,27 +121,8 @@ public class RoundService : IRoundService
         // Update only the FunfactRevealed flag
         round.FunfactRevealed = true;
         round.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
+        await _roundRepository.UpdateAsync(round);
 
-        return MapToDto(round);
-    }
-
-    private static RoundDto MapToDto(Round round)
-    {
-        var guesses = JsonSerializer.Deserialize<List<GuessDto>>(round.GuessesJson) ?? new List<GuessDto>();
-
-        return new RoundDto
-        {
-            Id = round.Id,
-            UserId = round.UserId,
-            Date = round.Date.ToString("yyyy-MM-dd"),
-            Status = round.Status,
-            EmployeeOfTheDayId = round.EmployeeOfTheDayId,
-            Guesses = guesses,
-            FunfactRevealed = round.FunfactRevealed,
-            StartedAt = round.StartedAt,
-            FinishedAt = round.FinishedAt,
-        };
+        return round.ToDto();
     }
 }
-

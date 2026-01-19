@@ -1,7 +1,6 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Fortedle.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.Database;
+using Fortedle.Server.Models.DTOs;
+using Fortedle.Server.Repositories;
 
 namespace Fortedle.Server.Services;
 
@@ -13,12 +12,14 @@ public interface ILotteryTicketService
 
 public class LotteryTicketService : ILotteryTicketService
 {
-    private readonly AppDbContext _context;
+    private readonly ILotteryTicketRepository _lotteryTicketRepository;
     private readonly ILogger<LotteryTicketService> _logger;
 
-    public LotteryTicketService(AppDbContext context, ILogger<LotteryTicketService> logger)
+    public LotteryTicketService(
+        ILotteryTicketRepository lotteryTicketRepository,
+        ILogger<LotteryTicketService> logger)
     {
-        _context = context;
+        _lotteryTicketRepository = lotteryTicketRepository;
         _logger = logger;
     }
 
@@ -55,8 +56,7 @@ public class LotteryTicketService : ILotteryTicketService
             }
 
             // Check if ticket already exists for this user and week
-            var existingTicket = await _context.LotteryTickets
-                .FirstOrDefaultAsync(t => t.UserId == request.UserId && t.EligibleWeek == eligibleWeek);
+            var existingTicket = await _lotteryTicketRepository.GetByUserIdAndWeekAsync(request.UserId, eligibleWeek);
 
             if (existingTicket != null)
             {
@@ -77,11 +77,9 @@ public class LotteryTicketService : ILotteryTicketService
                 UpdatedAt = DateTime.UtcNow,
             };
 
-            _context.LotteryTickets.Add(ticket);
+            await _lotteryTicketRepository.AddAsync(ticket);
             syncedCount++;
         }
-
-        await _context.SaveChangesAsync();
 
         _logger.LogInformation(
             "Synced lottery tickets for user {UserId}: {SyncedCount} new, {SkippedCount} skipped",
@@ -104,21 +102,8 @@ public class LotteryTicketService : ILotteryTicketService
             throw new ArgumentException("UserId is required", nameof(userId));
         }
 
-        var tickets = await _context.LotteryTickets
-            .Where(t => t.UserId == userId)
-            .OrderByDescending(t => t.CreatedAt)
-            .ToListAsync();
+        var tickets = await _lotteryTicketRepository.GetByUserIdAsync(userId);
 
-        return tickets.Select(t => new LotteryTicketDto
-        {
-            Id = t.Id,
-            UserId = t.UserId,
-            Name = t.Name,
-            Image = t.Image,
-            EligibleWeek = t.EligibleWeek,
-            IsUsed = t.IsUsed,
-            CreatedAt = t.CreatedAt,
-            UpdatedAt = t.UpdatedAt,
-        }).ToList();
+        return tickets.Select(t => t.ToDto()).ToList();
     }
 }

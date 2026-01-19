@@ -7,7 +7,7 @@ All URIs are relative to *http://localhost:8080*
 |[**apiEmployeesGet**](#apiemployeesget) | **GET** /api/Employees | |
 
 # **apiEmployeesGet**
-> Array<FortedleServerModelsEmployeeDto> apiEmployeesGet()
+> Array<FortedleServerModelsDTOsEmployeeDto> apiEmployeesGet()
 
 
 ### Example
@@ -30,7 +30,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**Array<FortedleServerModelsEmployeeDto>**
+**Array<FortedleServerModelsDTOsEmployeeDto>**
 
 ### Authorization
 

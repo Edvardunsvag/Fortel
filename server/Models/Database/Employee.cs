@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Fortedle.Server.Data.Entities;
+namespace Fortedle.Server.Models.Database;
 
 [Table("employees")]
 public class Employee
@@ -66,4 +66,3 @@ public class Employee
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
-

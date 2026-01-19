@@ -10,7 +10,7 @@ All URIs are relative to *http://localhost:8080*
 |[**apiRoundsStartPost**](#apiroundsstartpost) | **POST** /api/Rounds/start | |
 
 # **apiRoundsCurrentGet**
-> FortedleServerModelsRoundDto apiRoundsCurrentGet()
+> FortedleServerModelsDTOsRoundDto apiRoundsCurrentGet()
 
 
 ### Example
@@ -43,7 +43,7 @@ const { status, data } = await apiInstance.apiRoundsCurrentGet(
 
 ### Return type
 
-**FortedleServerModelsRoundDto**
+**FortedleServerModelsDTOsRoundDto**
 
 ### Authorization
 
@@ -63,7 +63,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiRoundsGuessPost**
-> FortedleServerModelsRoundDto apiRoundsGuessPost()
+> FortedleServerModelsDTOsRoundDto apiRoundsGuessPost()
 
 
 ### Example
@@ -72,16 +72,16 @@ No authorization required
 import {
     RoundsApi,
     Configuration,
-    FortedleServerModelsSaveGuessRequest
+    FortedleServerModelsDTOsSaveGuessRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new RoundsApi(configuration);
 
-let fortedleServerModelsSaveGuessRequest: FortedleServerModelsSaveGuessRequest; // (optional)
+let fortedleServerModelsDTOsSaveGuessRequest: FortedleServerModelsDTOsSaveGuessRequest; // (optional)
 
 const { status, data } = await apiInstance.apiRoundsGuessPost(
-    fortedleServerModelsSaveGuessRequest
+    fortedleServerModelsDTOsSaveGuessRequest
 );
 ```
 
@@ -89,12 +89,12 @@ const { status, data } = await apiInstance.apiRoundsGuessPost(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsSaveGuessRequest** | **FortedleServerModelsSaveGuessRequest**|  | |
+| **fortedleServerModelsDTOsSaveGuessRequest** | **FortedleServerModelsDTOsSaveGuessRequest**|  | |
 
 
 ### Return type
 
-**FortedleServerModelsRoundDto**
+**FortedleServerModelsDTOsRoundDto**
 
 ### Authorization
 
@@ -114,7 +114,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiRoundsRevealFunfactPost**
-> FortedleServerModelsRoundDto apiRoundsRevealFunfactPost()
+> FortedleServerModelsDTOsRoundDto apiRoundsRevealFunfactPost()
 
 
 ### Example
@@ -123,16 +123,16 @@ No authorization required
 import {
     RoundsApi,
     Configuration,
-    FortedleServerModelsRevealFunfactRequest
+    FortedleServerModelsDTOsRevealFunfactRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new RoundsApi(configuration);
 
-let fortedleServerModelsRevealFunfactRequest: FortedleServerModelsRevealFunfactRequest; // (optional)
+let fortedleServerModelsDTOsRevealFunfactRequest: FortedleServerModelsDTOsRevealFunfactRequest; // (optional)
 
 const { status, data } = await apiInstance.apiRoundsRevealFunfactPost(
-    fortedleServerModelsRevealFunfactRequest
+    fortedleServerModelsDTOsRevealFunfactRequest
 );
 ```
 
@@ -140,12 +140,12 @@ const { status, data } = await apiInstance.apiRoundsRevealFunfactPost(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsRevealFunfactRequest** | **FortedleServerModelsRevealFunfactRequest**|  | |
+| **fortedleServerModelsDTOsRevealFunfactRequest** | **FortedleServerModelsDTOsRevealFunfactRequest**|  | |
 
 
 ### Return type
 
-**FortedleServerModelsRoundDto**
+**FortedleServerModelsDTOsRoundDto**
 
 ### Authorization
 
@@ -165,7 +165,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiRoundsStartPost**
-> FortedleServerModelsRoundDto apiRoundsStartPost()
+> FortedleServerModelsDTOsRoundDto apiRoundsStartPost()
 
 
 ### Example
@@ -174,16 +174,16 @@ No authorization required
 import {
     RoundsApi,
     Configuration,
-    FortedleServerModelsStartRoundRequest
+    FortedleServerModelsDTOsStartRoundRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new RoundsApi(configuration);
 
-let fortedleServerModelsStartRoundRequest: FortedleServerModelsStartRoundRequest; // (optional)
+let fortedleServerModelsDTOsStartRoundRequest: FortedleServerModelsDTOsStartRoundRequest; // (optional)
 
 const { status, data } = await apiInstance.apiRoundsStartPost(
-    fortedleServerModelsStartRoundRequest
+    fortedleServerModelsDTOsStartRoundRequest
 );
 ```
 
@@ -191,12 +191,12 @@ const { status, data } = await apiInstance.apiRoundsStartPost(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsStartRoundRequest** | **FortedleServerModelsStartRoundRequest**|  | |
+| **fortedleServerModelsDTOsStartRoundRequest** | **FortedleServerModelsDTOsStartRoundRequest**|  | |
 
 
 ### Return type
 
-**FortedleServerModelsRoundDto**
+**FortedleServerModelsDTOsRoundDto**
 
 ### Authorization
 

@@ -23,10 +23,10 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
-export interface FortedleServerModelsAllWinnersResponse {
-    'weeklyWinners'?: Array<FortedleServerModelsWeeklyWinnersDto> | null;
+export interface FortedleServerModelsDTOsAllWinnersResponse {
+    'weeklyWinners'?: Array<FortedleServerModelsDTOsWeeklyWinnersDto> | null;
 }
-export interface FortedleServerModelsEmployeeDto {
+export interface FortedleServerModelsDTOsEmployeeDto {
     'id'?: string | null;
     'name'?: string | null;
     'firstName'?: string | null;
@@ -41,45 +41,45 @@ export interface FortedleServerModelsEmployeeDto {
     'funfact'?: string | null;
     'interests'?: Array<string> | null;
 }
-export interface FortedleServerModelsEmployeeStatisticsDto {
+export interface FortedleServerModelsDTOsEmployeeStatisticsDto {
     'userId'?: string | null;
     'name'?: string | null;
     'image'?: string | null;
     'ticketCount'?: number;
     'winCount'?: number;
 }
-export interface FortedleServerModelsEmployeeStatisticsResponse {
-    'employees'?: Array<FortedleServerModelsEmployeeStatisticsDto> | null;
+export interface FortedleServerModelsDTOsEmployeeStatisticsResponse {
+    'employees'?: Array<FortedleServerModelsDTOsEmployeeStatisticsDto> | null;
 }
-export interface FortedleServerModelsGuessDto {
+export interface FortedleServerModelsDTOsGuessDto {
     'employeeId'?: string | null;
     'employeeName'?: string | null;
     'avatarImageUrl'?: string | null;
-    'hints'?: Array<FortedleServerModelsGuessHintDto> | null;
+    'hints'?: Array<FortedleServerModelsDTOsGuessHintDto> | null;
     'isCorrect'?: boolean;
 }
-export interface FortedleServerModelsGuessHintDto {
+export interface FortedleServerModelsDTOsGuessHintDto {
     'type'?: string | null;
     'result'?: string | null;
     'message'?: string | null;
 }
-export interface FortedleServerModelsLeaderboardDto {
+export interface FortedleServerModelsDTOsLeaderboardDto {
     'date'?: string | null;
-    'leaderboard'?: Array<FortedleServerModelsLeaderboardEntryDto> | null;
+    'leaderboard'?: Array<FortedleServerModelsDTOsLeaderboardEntryDto> | null;
 }
-export interface FortedleServerModelsLeaderboardEntryDto {
+export interface FortedleServerModelsDTOsLeaderboardEntryDto {
     'rank'?: number;
     'name'?: string | null;
     'score'?: number;
     'avatarImageUrl'?: string | null;
     'submittedAt'?: string;
 }
-export interface FortedleServerModelsLotteryConfigDto {
+export interface FortedleServerModelsDTOsLotteryConfigDto {
     'monthlyWinnerCount'?: number;
     'nextMonthlyDrawDate'?: string;
     'currentMonth'?: string | null;
 }
-export interface FortedleServerModelsLotteryTicketDto {
+export interface FortedleServerModelsDTOsLotteryTicketDto {
     'id'?: number;
     'userId'?: string | null;
     'name'?: string | null;
@@ -89,7 +89,7 @@ export interface FortedleServerModelsLotteryTicketDto {
     'createdAt'?: string;
     'updatedAt'?: string;
 }
-export interface FortedleServerModelsMonthlyWinnerDto {
+export interface FortedleServerModelsDTOsMonthlyWinnerDto {
     'userId'?: string | null;
     'name'?: string | null;
     'image'?: string | null;
@@ -99,87 +99,87 @@ export interface FortedleServerModelsMonthlyWinnerDto {
     'ticketsConsumed'?: number;
     'createdAt'?: string;
 }
-export interface FortedleServerModelsMonthlyWinnersResponse {
+export interface FortedleServerModelsDTOsMonthlyWinnersResponse {
     'month'?: string | null;
-    'winners'?: Array<FortedleServerModelsMonthlyWinnerDto> | null;
+    'winners'?: Array<FortedleServerModelsDTOsMonthlyWinnerDto> | null;
     'isDrawComplete'?: boolean;
 }
-export interface FortedleServerModelsRevealFunfactRequest {
+export interface FortedleServerModelsDTOsRevealFunfactRequest {
     'roundId'?: number;
 }
-export interface FortedleServerModelsRoundDto {
+export interface FortedleServerModelsDTOsRoundDto {
     'id'?: number;
     'userId'?: string | null;
     'date'?: string | null;
     'status'?: string | null;
     'employeeOfTheDayId'?: string | null;
-    'guesses'?: Array<FortedleServerModelsGuessDto> | null;
+    'guesses'?: Array<FortedleServerModelsDTOsGuessDto> | null;
     'funfactRevealed'?: boolean;
     'startedAt'?: string;
     'finishedAt'?: string | null;
 }
-export interface FortedleServerModelsSaveGuessRequest {
+export interface FortedleServerModelsDTOsSaveGuessRequest {
     'userId'?: string | null;
     'date'?: string | null;
-    'guess': FortedleServerModelsGuessDto;
+    'guess': FortedleServerModelsDTOsGuessDto;
 }
-export interface FortedleServerModelsStartRoundRequest {
+export interface FortedleServerModelsDTOsStartRoundRequest {
     'userId'?: string | null;
     'date'?: string | null;
     'employeeOfTheDayId'?: string | null;
 }
-export interface FortedleServerModelsSubmitScoreRequest {
+export interface FortedleServerModelsDTOsSubmitScoreRequest {
     'name'?: string | null;
     'score'?: number;
     'avatarImageUrl'?: string | null;
 }
-export interface FortedleServerModelsSubmitScoreResponse {
+export interface FortedleServerModelsDTOsSubmitScoreResponse {
     'success'?: boolean;
-    'result'?: FortedleServerModelsLeaderboardEntryDto;
+    'result'?: FortedleServerModelsDTOsLeaderboardEntryDto;
 }
-export interface FortedleServerModelsSyncLotteryTicketsRequest {
+export interface FortedleServerModelsDTOsSyncLotteryTicketsRequest {
     'userId'?: string | null;
     'name'?: string | null;
     'image'?: string | null;
     'eligibleWeeks'?: Array<string> | null;
 }
-export interface FortedleServerModelsSyncLotteryTicketsResponse {
+export interface FortedleServerModelsDTOsSyncLotteryTicketsResponse {
     'syncedCount'?: number;
     'skippedCount'?: number;
     'totalCount'?: number;
 }
-export interface FortedleServerModelsSyncRequest {
+export interface FortedleServerModelsDTOsSyncRequest {
     'accessToken'?: string | null;
 }
-export interface FortedleServerModelsSyncResponse {
+export interface FortedleServerModelsDTOsSyncResponse {
     'success'?: boolean;
     'message'?: string | null;
     'count'?: number;
 }
-export interface FortedleServerModelsWeeklyWinnersDto {
+export interface FortedleServerModelsDTOsWeeklyWinnersDto {
     'week'?: string | null;
-    'winners'?: Array<FortedleServerModelsWinnerDto> | null;
+    'winners'?: Array<FortedleServerModelsDTOsWinnerDto> | null;
 }
-export interface FortedleServerModelsWheelDataResponse {
-    'segments'?: Array<FortedleServerModelsWheelSegmentDto> | null;
-    'participants'?: Array<FortedleServerModelsWheelParticipantDto> | null;
+export interface FortedleServerModelsDTOsWheelDataResponse {
+    'segments'?: Array<FortedleServerModelsDTOsWheelSegmentDto> | null;
+    'participants'?: Array<FortedleServerModelsDTOsWheelParticipantDto> | null;
     'totalTickets'?: number;
 }
-export interface FortedleServerModelsWheelParticipantDto {
+export interface FortedleServerModelsDTOsWheelParticipantDto {
     'userId'?: string | null;
     'name'?: string | null;
     'image'?: string | null;
     'color'?: string | null;
     'ticketCount'?: number;
 }
-export interface FortedleServerModelsWheelSegmentDto {
+export interface FortedleServerModelsDTOsWheelSegmentDto {
     'userId'?: string | null;
     'name'?: string | null;
     'image'?: string | null;
     'color'?: string | null;
     'ticketId'?: number;
 }
-export interface FortedleServerModelsWinnerDto {
+export interface FortedleServerModelsDTOsWinnerDto {
     'userId'?: string | null;
     'name'?: string | null;
     'image'?: string | null;
@@ -235,7 +235,7 @@ export const EmployeesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiEmployeesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FortedleServerModelsEmployeeDto>>> {
+        async apiEmployeesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FortedleServerModelsDTOsEmployeeDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiEmployeesGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EmployeesApi.apiEmployeesGet']?.[localVarOperationServerIndex]?.url;
@@ -255,7 +255,7 @@ export const EmployeesApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiEmployeesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsEmployeeDto>> {
+        apiEmployeesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsEmployeeDto>> {
             return localVarFp.apiEmployeesGet(options).then((request) => request(axios, basePath));
         },
     };
@@ -270,7 +270,7 @@ export interface EmployeesApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiEmployeesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsEmployeeDto>>;
+    apiEmployeesGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsEmployeeDto>>;
 
 }
 
@@ -433,11 +433,11 @@ export const LeaderboardApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * 
-         * @param {FortedleServerModelsSubmitScoreRequest} [fortedleServerModelsSubmitScoreRequest] 
+         * @param {FortedleServerModelsDTOsSubmitScoreRequest} [fortedleServerModelsDTOsSubmitScoreRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLeaderboardSubmitScorePost: async (fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiLeaderboardSubmitScorePost: async (fortedleServerModelsDTOsSubmitScoreRequest?: FortedleServerModelsDTOsSubmitScoreRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Leaderboard/submit-score`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -456,7 +456,7 @@ export const LeaderboardApiAxiosParamCreator = function (configuration?: Configu
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsSubmitScoreRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSubmitScoreRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -478,7 +478,7 @@ export const LeaderboardApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLeaderboardGet(date?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsLeaderboardDto>> {
+        async apiLeaderboardGet(date?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsLeaderboardDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLeaderboardGet(date, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LeaderboardApi.apiLeaderboardGet']?.[localVarOperationServerIndex]?.url;
@@ -486,12 +486,12 @@ export const LeaderboardApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {FortedleServerModelsSubmitScoreRequest} [fortedleServerModelsSubmitScoreRequest] 
+         * @param {FortedleServerModelsDTOsSubmitScoreRequest} [fortedleServerModelsDTOsSubmitScoreRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsSubmitScoreResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options);
+        async apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest?: FortedleServerModelsDTOsSubmitScoreRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSubmitScoreResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LeaderboardApi.apiLeaderboardSubmitScorePost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -511,17 +511,17 @@ export const LeaderboardApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLeaderboardGet(date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsLeaderboardDto> {
+        apiLeaderboardGet(date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsLeaderboardDto> {
             return localVarFp.apiLeaderboardGet(date, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {FortedleServerModelsSubmitScoreRequest} [fortedleServerModelsSubmitScoreRequest] 
+         * @param {FortedleServerModelsDTOsSubmitScoreRequest} [fortedleServerModelsDTOsSubmitScoreRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSubmitScoreResponse> {
-            return localVarFp.apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(axios, basePath));
+        apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest?: FortedleServerModelsDTOsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSubmitScoreResponse> {
+            return localVarFp.apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -536,15 +536,15 @@ export interface LeaderboardApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLeaderboardGet(date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsLeaderboardDto>;
+    apiLeaderboardGet(date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsLeaderboardDto>;
 
     /**
      * 
-     * @param {FortedleServerModelsSubmitScoreRequest} [fortedleServerModelsSubmitScoreRequest] 
+     * @param {FortedleServerModelsDTOsSubmitScoreRequest} [fortedleServerModelsDTOsSubmitScoreRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSubmitScoreResponse>;
+    apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest?: FortedleServerModelsDTOsSubmitScoreRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSubmitScoreResponse>;
 
 }
 
@@ -564,12 +564,12 @@ export class LeaderboardApi extends BaseAPI implements LeaderboardApiInterface {
 
     /**
      * 
-     * @param {FortedleServerModelsSubmitScoreRequest} [fortedleServerModelsSubmitScoreRequest] 
+     * @param {FortedleServerModelsDTOsSubmitScoreRequest} [fortedleServerModelsDTOsSubmitScoreRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest?: FortedleServerModelsSubmitScoreRequest, options?: RawAxiosRequestConfig) {
-        return LeaderboardApiFp(this.configuration).apiLeaderboardSubmitScorePost(fortedleServerModelsSubmitScoreRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest?: FortedleServerModelsDTOsSubmitScoreRequest, options?: RawAxiosRequestConfig) {
+        return LeaderboardApiFp(this.configuration).apiLeaderboardSubmitScorePost(fortedleServerModelsDTOsSubmitScoreRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -862,11 +862,11 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+         * @param {FortedleServerModelsDTOsSyncLotteryTicketsRequest} [fortedleServerModelsDTOsSyncLotteryTicketsRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsSyncPost: async (fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiLotteryTicketsSyncPost: async (fortedleServerModelsDTOsSyncLotteryTicketsRequest?: FortedleServerModelsDTOsSyncLotteryTicketsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/LotteryTickets/sync`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -885,7 +885,7 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsSyncLotteryTicketsRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSyncLotteryTicketsRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -964,7 +964,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsLotteryConfigDto>> {
+        async apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsLotteryConfigDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsConfigGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsConfigGet']?.[localVarOperationServerIndex]?.url;
@@ -989,7 +989,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FortedleServerModelsLotteryTicketDto>>> {
+        async apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FortedleServerModelsDTOsLotteryTicketDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsGet(userId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsGet']?.[localVarOperationServerIndex]?.url;
@@ -1012,7 +1012,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>> {
+        async apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsMonthlyWinnersResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsMonthlyWinnersGet(month, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsMonthlyWinnersGet']?.[localVarOperationServerIndex]?.url;
@@ -1023,7 +1023,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>> {
+        async apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsMonthlyWinnersResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsMonthlyWinnersLatestGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsMonthlyWinnersLatestGet']?.[localVarOperationServerIndex]?.url;
@@ -1057,7 +1057,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsStatisticsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsEmployeeStatisticsResponse>> {
+        async apiLotteryTicketsStatisticsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsEmployeeStatisticsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsStatisticsGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsStatisticsGet']?.[localVarOperationServerIndex]?.url;
@@ -1065,12 +1065,12 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+         * @param {FortedleServerModelsDTOsSyncLotteryTicketsRequest} [fortedleServerModelsDTOsSyncLotteryTicketsRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsSyncLotteryTicketsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options);
+        async apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest?: FortedleServerModelsDTOsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSyncLotteryTicketsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsSyncPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1080,7 +1080,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsWheelDataResponse>> {
+        async apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsWheelDataResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsWheelGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsWheelGet']?.[localVarOperationServerIndex]?.url;
@@ -1091,7 +1091,7 @@ export const LotteryTicketsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsAllWinnersResponse>> {
+        async apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsAllWinnersResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiLotteryTicketsWinnersGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['LotteryTicketsApi.apiLotteryTicketsWinnersGet']?.[localVarOperationServerIndex]?.url;
@@ -1111,7 +1111,7 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsLotteryConfigDto> {
+        apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsLotteryConfigDto> {
             return localVarFp.apiLotteryTicketsConfigGet(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1130,7 +1130,7 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsLotteryTicketDto>> {
+        apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsLotteryTicketDto>> {
             return localVarFp.apiLotteryTicketsGet(userId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1147,7 +1147,7 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse> {
+        apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsMonthlyWinnersResponse> {
             return localVarFp.apiLotteryTicketsMonthlyWinnersGet(month, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1155,7 +1155,7 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse> {
+        apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsMonthlyWinnersResponse> {
             return localVarFp.apiLotteryTicketsMonthlyWinnersLatestGet(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1180,24 +1180,24 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsStatisticsGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsEmployeeStatisticsResponse> {
+        apiLotteryTicketsStatisticsGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsEmployeeStatisticsResponse> {
             return localVarFp.apiLotteryTicketsStatisticsGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+         * @param {FortedleServerModelsDTOsSyncLotteryTicketsRequest} [fortedleServerModelsDTOsSyncLotteryTicketsRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSyncLotteryTicketsResponse> {
-            return localVarFp.apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options).then((request) => request(axios, basePath));
+        apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest?: FortedleServerModelsDTOsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncLotteryTicketsResponse> {
+            return localVarFp.apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsWheelDataResponse> {
+        apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsWheelDataResponse> {
             return localVarFp.apiLotteryTicketsWheelGet(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1205,7 +1205,7 @@ export const LotteryTicketsApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsAllWinnersResponse> {
+        apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsAllWinnersResponse> {
             return localVarFp.apiLotteryTicketsWinnersGet(options).then((request) => request(axios, basePath));
         },
     };
@@ -1220,7 +1220,7 @@ export interface LotteryTicketsApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsLotteryConfigDto>;
+    apiLotteryTicketsConfigGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsLotteryConfigDto>;
 
     /**
      * 
@@ -1237,7 +1237,7 @@ export interface LotteryTicketsApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsLotteryTicketDto>>;
+    apiLotteryTicketsGet(userId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsLotteryTicketDto>>;
 
     /**
      * 
@@ -1252,14 +1252,14 @@ export interface LotteryTicketsApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>;
+    apiLotteryTicketsMonthlyWinnersGet(month?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsMonthlyWinnersResponse>;
 
     /**
      * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsMonthlyWinnersResponse>;
+    apiLotteryTicketsMonthlyWinnersLatestGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsMonthlyWinnersResponse>;
 
     /**
      * 
@@ -1281,29 +1281,29 @@ export interface LotteryTicketsApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsStatisticsGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsEmployeeStatisticsResponse>;
+    apiLotteryTicketsStatisticsGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsEmployeeStatisticsResponse>;
 
     /**
      * 
-     * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+     * @param {FortedleServerModelsDTOsSyncLotteryTicketsRequest} [fortedleServerModelsDTOsSyncLotteryTicketsRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSyncLotteryTicketsResponse>;
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsWheelDataResponse>;
+    apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest?: FortedleServerModelsDTOsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncLotteryTicketsResponse>;
 
     /**
      * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsAllWinnersResponse>;
+    apiLotteryTicketsWheelGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsWheelDataResponse>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiLotteryTicketsWinnersGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsAllWinnersResponse>;
 
 }
 
@@ -1399,12 +1399,12 @@ export class LotteryTicketsApi extends BaseAPI implements LotteryTicketsApiInter
 
     /**
      * 
-     * @param {FortedleServerModelsSyncLotteryTicketsRequest} [fortedleServerModelsSyncLotteryTicketsRequest] 
+     * @param {FortedleServerModelsDTOsSyncLotteryTicketsRequest} [fortedleServerModelsDTOsSyncLotteryTicketsRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest?: FortedleServerModelsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig) {
-        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsSyncPost(fortedleServerModelsSyncLotteryTicketsRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest?: FortedleServerModelsDTOsSyncLotteryTicketsRequest, options?: RawAxiosRequestConfig) {
+        return LotteryTicketsApiFp(this.configuration).apiLotteryTicketsSyncPost(fortedleServerModelsDTOsSyncLotteryTicketsRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1474,11 +1474,11 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
+         * @param {FortedleServerModelsDTOsSaveGuessRequest} [fortedleServerModelsDTOsSaveGuessRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsGuessPost: async (fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiRoundsGuessPost: async (fortedleServerModelsDTOsSaveGuessRequest?: FortedleServerModelsDTOsSaveGuessRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Rounds/guess`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1497,7 +1497,7 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsSaveGuessRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSaveGuessRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1506,11 +1506,11 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+         * @param {FortedleServerModelsDTOsRevealFunfactRequest} [fortedleServerModelsDTOsRevealFunfactRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsRevealFunfactPost: async (fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiRoundsRevealFunfactPost: async (fortedleServerModelsDTOsRevealFunfactRequest?: FortedleServerModelsDTOsRevealFunfactRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Rounds/reveal-funfact`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1529,7 +1529,7 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsRevealFunfactRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsRevealFunfactRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1538,11 +1538,11 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
+         * @param {FortedleServerModelsDTOsStartRoundRequest} [fortedleServerModelsDTOsStartRoundRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsStartPost: async (fortedleServerModelsStartRoundRequest?: FortedleServerModelsStartRoundRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiRoundsStartPost: async (fortedleServerModelsDTOsStartRoundRequest?: FortedleServerModelsDTOsStartRoundRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Rounds/start`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1561,7 +1561,7 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsStartRoundRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsStartRoundRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1584,7 +1584,7 @@ export const RoundsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsRoundDto>> {
+        async apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRoundDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsCurrentGet(userId, date, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsCurrentGet']?.[localVarOperationServerIndex]?.url;
@@ -1592,36 +1592,36 @@ export const RoundsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
+         * @param {FortedleServerModelsDTOsSaveGuessRequest} [fortedleServerModelsDTOsSaveGuessRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsRoundDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest, options);
+        async apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest?: FortedleServerModelsDTOsSaveGuessRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRoundDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsGuessPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+         * @param {FortedleServerModelsDTOsRevealFunfactRequest} [fortedleServerModelsDTOsRevealFunfactRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsRoundDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest, options);
+        async apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest?: FortedleServerModelsDTOsRevealFunfactRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRoundDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsRevealFunfactPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
+         * @param {FortedleServerModelsDTOsStartRoundRequest} [fortedleServerModelsDTOsStartRoundRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiRoundsStartPost(fortedleServerModelsStartRoundRequest?: FortedleServerModelsStartRoundRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsRoundDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsStartPost(fortedleServerModelsStartRoundRequest, options);
+        async apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest?: FortedleServerModelsDTOsStartRoundRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRoundDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsStartPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1642,35 +1642,35 @@ export const RoundsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto> {
+        apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto> {
             return localVarFp.apiRoundsCurrentGet(userId, date, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
+         * @param {FortedleServerModelsDTOsSaveGuessRequest} [fortedleServerModelsDTOsSaveGuessRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto> {
-            return localVarFp.apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest, options).then((request) => request(axios, basePath));
+        apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest?: FortedleServerModelsDTOsSaveGuessRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto> {
+            return localVarFp.apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+         * @param {FortedleServerModelsDTOsRevealFunfactRequest} [fortedleServerModelsDTOsRevealFunfactRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto> {
-            return localVarFp.apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest, options).then((request) => request(axios, basePath));
+        apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest?: FortedleServerModelsDTOsRevealFunfactRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto> {
+            return localVarFp.apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
+         * @param {FortedleServerModelsDTOsStartRoundRequest} [fortedleServerModelsDTOsStartRoundRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsStartPost(fortedleServerModelsStartRoundRequest?: FortedleServerModelsStartRoundRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto> {
-            return localVarFp.apiRoundsStartPost(fortedleServerModelsStartRoundRequest, options).then((request) => request(axios, basePath));
+        apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest?: FortedleServerModelsDTOsStartRoundRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto> {
+            return localVarFp.apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1686,31 +1686,31 @@ export interface RoundsApiInterface {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
+    apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto>;
 
     /**
      * 
-     * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
+     * @param {FortedleServerModelsDTOsSaveGuessRequest} [fortedleServerModelsDTOsSaveGuessRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
+    apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest?: FortedleServerModelsDTOsSaveGuessRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto>;
 
     /**
      * 
-     * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+     * @param {FortedleServerModelsDTOsRevealFunfactRequest} [fortedleServerModelsDTOsRevealFunfactRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
+    apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest?: FortedleServerModelsDTOsRevealFunfactRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto>;
 
     /**
      * 
-     * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
+     * @param {FortedleServerModelsDTOsStartRoundRequest} [fortedleServerModelsDTOsStartRoundRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiRoundsStartPost(fortedleServerModelsStartRoundRequest?: FortedleServerModelsStartRoundRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsRoundDto>;
+    apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest?: FortedleServerModelsDTOsStartRoundRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto>;
 
 }
 
@@ -1731,32 +1731,32 @@ export class RoundsApi extends BaseAPI implements RoundsApiInterface {
 
     /**
      * 
-     * @param {FortedleServerModelsSaveGuessRequest} [fortedleServerModelsSaveGuessRequest] 
+     * @param {FortedleServerModelsDTOsSaveGuessRequest} [fortedleServerModelsDTOsSaveGuessRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest?: FortedleServerModelsSaveGuessRequest, options?: RawAxiosRequestConfig) {
-        return RoundsApiFp(this.configuration).apiRoundsGuessPost(fortedleServerModelsSaveGuessRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest?: FortedleServerModelsDTOsSaveGuessRequest, options?: RawAxiosRequestConfig) {
+        return RoundsApiFp(this.configuration).apiRoundsGuessPost(fortedleServerModelsDTOsSaveGuessRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {FortedleServerModelsRevealFunfactRequest} [fortedleServerModelsRevealFunfactRequest] 
+     * @param {FortedleServerModelsDTOsRevealFunfactRequest} [fortedleServerModelsDTOsRevealFunfactRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest?: FortedleServerModelsRevealFunfactRequest, options?: RawAxiosRequestConfig) {
-        return RoundsApiFp(this.configuration).apiRoundsRevealFunfactPost(fortedleServerModelsRevealFunfactRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest?: FortedleServerModelsDTOsRevealFunfactRequest, options?: RawAxiosRequestConfig) {
+        return RoundsApiFp(this.configuration).apiRoundsRevealFunfactPost(fortedleServerModelsDTOsRevealFunfactRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {FortedleServerModelsStartRoundRequest} [fortedleServerModelsStartRoundRequest] 
+     * @param {FortedleServerModelsDTOsStartRoundRequest} [fortedleServerModelsDTOsStartRoundRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiRoundsStartPost(fortedleServerModelsStartRoundRequest?: FortedleServerModelsStartRoundRequest, options?: RawAxiosRequestConfig) {
-        return RoundsApiFp(this.configuration).apiRoundsStartPost(fortedleServerModelsStartRoundRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest?: FortedleServerModelsDTOsStartRoundRequest, options?: RawAxiosRequestConfig) {
+        return RoundsApiFp(this.configuration).apiRoundsStartPost(fortedleServerModelsDTOsStartRoundRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1769,11 +1769,11 @@ export const SyncApiAxiosParamCreator = function (configuration?: Configuration)
     return {
         /**
          * 
-         * @param {FortedleServerModelsSyncRequest} [fortedleServerModelsSyncRequest] 
+         * @param {FortedleServerModelsDTOsSyncRequest} [fortedleServerModelsDTOsSyncRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiSyncPost: async (fortedleServerModelsSyncRequest?: FortedleServerModelsSyncRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiSyncPost: async (fortedleServerModelsDTOsSyncRequest?: FortedleServerModelsDTOsSyncRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Sync`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1792,7 +1792,7 @@ export const SyncApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsSyncRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSyncRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1810,12 +1810,12 @@ export const SyncApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {FortedleServerModelsSyncRequest} [fortedleServerModelsSyncRequest] 
+         * @param {FortedleServerModelsDTOsSyncRequest} [fortedleServerModelsDTOsSyncRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiSyncPost(fortedleServerModelsSyncRequest?: FortedleServerModelsSyncRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsSyncResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiSyncPost(fortedleServerModelsSyncRequest, options);
+        async apiSyncPost(fortedleServerModelsDTOsSyncRequest?: FortedleServerModelsDTOsSyncRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSyncResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiSyncPost(fortedleServerModelsDTOsSyncRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['SyncApi.apiSyncPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1831,12 +1831,12 @@ export const SyncApiFactory = function (configuration?: Configuration, basePath?
     return {
         /**
          * 
-         * @param {FortedleServerModelsSyncRequest} [fortedleServerModelsSyncRequest] 
+         * @param {FortedleServerModelsDTOsSyncRequest} [fortedleServerModelsDTOsSyncRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiSyncPost(fortedleServerModelsSyncRequest?: FortedleServerModelsSyncRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSyncResponse> {
-            return localVarFp.apiSyncPost(fortedleServerModelsSyncRequest, options).then((request) => request(axios, basePath));
+        apiSyncPost(fortedleServerModelsDTOsSyncRequest?: FortedleServerModelsDTOsSyncRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncResponse> {
+            return localVarFp.apiSyncPost(fortedleServerModelsDTOsSyncRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1847,11 +1847,11 @@ export const SyncApiFactory = function (configuration?: Configuration, basePath?
 export interface SyncApiInterface {
     /**
      * 
-     * @param {FortedleServerModelsSyncRequest} [fortedleServerModelsSyncRequest] 
+     * @param {FortedleServerModelsDTOsSyncRequest} [fortedleServerModelsDTOsSyncRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiSyncPost(fortedleServerModelsSyncRequest?: FortedleServerModelsSyncRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsSyncResponse>;
+    apiSyncPost(fortedleServerModelsDTOsSyncRequest?: FortedleServerModelsDTOsSyncRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncResponse>;
 
 }
 
@@ -1861,12 +1861,12 @@ export interface SyncApiInterface {
 export class SyncApi extends BaseAPI implements SyncApiInterface {
     /**
      * 
-     * @param {FortedleServerModelsSyncRequest} [fortedleServerModelsSyncRequest] 
+     * @param {FortedleServerModelsDTOsSyncRequest} [fortedleServerModelsDTOsSyncRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiSyncPost(fortedleServerModelsSyncRequest?: FortedleServerModelsSyncRequest, options?: RawAxiosRequestConfig) {
-        return SyncApiFp(this.configuration).apiSyncPost(fortedleServerModelsSyncRequest, options).then((request) => request(this.axios, this.basePath));
+    public apiSyncPost(fortedleServerModelsDTOsSyncRequest?: FortedleServerModelsDTOsSyncRequest, options?: RawAxiosRequestConfig) {
+        return SyncApiFp(this.configuration).apiSyncPost(fortedleServerModelsDTOsSyncRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

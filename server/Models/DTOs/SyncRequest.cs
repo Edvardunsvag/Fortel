@@ -1,4 +1,4 @@
-namespace Fortedle.Server.Models;
+namespace Fortedle.Server.Models.DTOs;
 
 public class SyncRequest
 {
@@ -11,4 +11,3 @@ public class SyncResponse
     public string Message { get; set; } = string.Empty;
     public int Count { get; set; }
 }
-

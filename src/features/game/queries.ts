@@ -3,9 +3,9 @@ import { getCurrentRound, startRound, saveGuess, revealFunfact } from "./api";
 import { roundFromDto } from "./fromDto";
 import type { RoundDto } from "./fromDto";
 import type {
-  FortedleServerModelsStartRoundRequest,
-  FortedleServerModelsSaveGuessRequest,
-  FortedleServerModelsRevealFunfactRequest,
+  FortedleServerModelsDTOsStartRoundRequest,
+  FortedleServerModelsDTOsSaveGuessRequest,
+  FortedleServerModelsDTOsRevealFunfactRequest,
 } from "@/shared/api/generated/index";
 
 // Query keys
@@ -35,7 +35,7 @@ export const useCurrentRound = (userId: string, date?: string, enabled = true) =
  * Mutation hook for starting a round
  */
 export const useStartRound = () => {
-  return useMutation<RoundDto, Error, FortedleServerModelsStartRoundRequest>({
+  return useMutation<RoundDto, Error, FortedleServerModelsDTOsStartRoundRequest>({
     mutationFn: async (request) => {
       const apiRound = await startRound(request);
       return roundFromDto(apiRound);
@@ -47,7 +47,7 @@ export const useStartRound = () => {
  * Mutation hook for saving a guess
  */
 export const useSaveGuess = () => {
-  return useMutation<RoundDto, Error, FortedleServerModelsSaveGuessRequest>({
+  return useMutation<RoundDto, Error, FortedleServerModelsDTOsSaveGuessRequest>({
     mutationFn: async (request) => {
       const apiRound = await saveGuess(request);
       return roundFromDto(apiRound);
@@ -59,7 +59,7 @@ export const useSaveGuess = () => {
  * Mutation hook for revealing funfact
  */
 export const useRevealFunfact = () => {
-  return useMutation<RoundDto, Error, FortedleServerModelsRevealFunfactRequest>({
+  return useMutation<RoundDto, Error, FortedleServerModelsDTOsRevealFunfactRequest>({
     mutationFn: async (request) => {
       const apiRound = await revealFunfact(request);
       return roundFromDto(apiRound);

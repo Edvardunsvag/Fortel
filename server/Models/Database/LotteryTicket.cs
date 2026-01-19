@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Fortedle.Server.Data.Entities;
+namespace Fortedle.Server.Models.Database;
 
 [Table("lottery_tickets")]
 public class LotteryTicket

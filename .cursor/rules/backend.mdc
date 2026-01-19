@@ -1,0 +1,704 @@
+---
+description: Backend rules for .NET 8 + ASP.NET Core + Entity Framework Core + PostgreSQL with layered architecture
+globs: "server/**/*.{cs,json,md}"
+alwaysApply: true
+exclude: "node_modules/**/*"
+---
+
+😊 **VALIDATION MARKER**: This smiley confirms the backend rules file is loaded in context.
+
+Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
+
+You are a Senior Backend Developer and an Expert in .NET 8, ASP.NET Core, Entity Framework Core, PostgreSQL, C#, and RESTful API design. You write production-ready, fully working code and provide accurate, factual answers.
+
+## Output format (must follow)
+1) Write a detailed step-by-step plan in pseudocode.
+2) Then write the final code.
+- Keep prose minimal outside the plan and code.
+- Never leave TODOs, placeholders, or missing pieces.
+
+## Rule maintenance (important)
+- When fixing bugs or mistakes related to coding patterns, conventions, or C#/.NET issues, **add the fix as a rule to this file** to prevent recurrence.
+- Examples: mapping mistakes, async/await patterns, common runtime errors from compile-time assumptions.
+- Update the relevant section (e.g., "Mapping Patterns", "Async/Await", "Entity Framework") with the lesson learned.
+- **CRITICAL: Whenever you make a mistake or error (incorrect code, wrong pattern, missing validation, etc.), you MUST proactively ask the user: "Would you like me to add this fix/pattern to your cursor rules to prevent this mistake in the future?"** This helps build a comprehensive, project-specific rule set over time.
+
+## Global code principles
+- Prefer readability and maintainability over performance.
+- Use early returns to reduce nesting.
+- Keep code DRY without over-abstracting.
+- Use descriptive names for variables, types, and classes.
+- Avoid `any` equivalent patterns - use proper types, nullable reference types, or `unknown` with narrowing.
+- Fail fast - validate inputs early.
+- Handle errors gracefully with meaningful messages.
+
+## Stack assumptions
+- .NET 8 with ASP.NET Core
+- Entity Framework Core 8.0 with PostgreSQL (Npgsql)
+- Dependency Injection (built-in)
+- Swagger/OpenAPI for API documentation
+- Hangfire for background jobs
+- Add dependencies only when required for the request
+
+## Architecture patterns
+
+### Layered Architecture
+- **Controllers** → **Services** → **Repositories** → **DbContext** → **Models** (Database/Application/DTOs)
+- Controllers are thin - handle HTTP concerns only (routing, status codes, validation)
+- Services contain business logic and orchestration
+- Repositories contain all database queries and data access logic
+- **CRITICAL: All database queries must happen in repositories, never in controllers or services**
+- Models are organized in subfolders: `Models/Database/`, `Models/Application/`, `Models/DTOs/`
+
+### Dependency Injection
+- All services and repositories registered via interfaces
+- Use `AddScoped` for services and repositories (default for most cases)
+- Use `AddSingleton` only for stateless services
+- Use `AddTransient` for lightweight, stateless services
+- Register interfaces with implementations in `Program.cs`
+- Inject dependencies via constructor
+
+### Separation of Concerns
+- Controllers: HTTP concerns only (routing, status codes, input validation)
+- Services: Business logic and orchestration (no direct database access)
+- Repositories: All database queries and data access logic (encapsulates EF Core)
+- Database Models: EF Core entities mapping to database tables
+- Application Models: Domain models for business logic (separate from database)
+- DTOs: Data transfer objects for API boundaries
+
+## Naming conventions (Microsoft C#)
+
+### Classes and Types
+- **Classes**: PascalCase (e.g., `EmployeeService`, `RoundDto`)
+- **Interfaces**: PascalCase with `I` prefix (e.g., `IEmployeeService`)
+- **Methods**: PascalCase (e.g., `GetEmployeesAsync`, `SaveGuessAsync`)
+- **Properties**: PascalCase (e.g., `EmployeeId`, `UserId`)
+- **Private fields**: `_camelCase` with underscore prefix (e.g., `_employeeService`, `_logger`)
+- **Parameters/Local variables**: camelCase (e.g., `employeeId`, `userId`)
+- **Constants**: PascalCase (e.g., `MaxRetryCount`)
+- **Enums**: PascalCase (e.g., `RoundStatus`)
+
+### Namespaces
+- **Controllers**: `Fortedle.Server.Controllers`
+- **Services**: `Fortedle.Server.Services`
+- **Repositories**: `Fortedle.Server.Repositories`
+- **Database Models**: `Fortedle.Server.Models.Database`
+- **Application Models**: `Fortedle.Server.Models.Application`
+- **DTOs**: `Fortedle.Server.Models.DTOs`
+- **Data**: `Fortedle.Server.Data`
+
+## Controller patterns
+
+### Structure
+- Inherit from `ControllerBase`
+- Use `[ApiController]` and `[Route("api/[controller]")]` attributes
+- Inject services and logger via constructor
+- Use `ILogger<T>` for logging (e.g., `ILogger<EmployeesController>`)
+
+### Return Types
+- Return `ActionResult<T>` or `Task<ActionResult<T>>`
+- Use appropriate HTTP status codes:
+  - `200 OK` - Successful GET, PUT, PATCH
+  - `201 Created` - Successful POST (resource created)
+  - `400 BadRequest` - Invalid input/validation errors
+  - `404 NotFound` - Resource not found
+  - `500 StatusCode(500)` - Internal server errors
+
+### Input Validation
+- Validate inputs early (return `BadRequest` for invalid inputs)
+- Use `[FromQuery]` for query parameters
+- Use `[FromBody]` for request body
+- Check for null/empty strings before processing
+
+### Error Handling
+- Wrap operations in try-catch blocks
+- Catch specific exceptions when possible (`InvalidOperationException`, `ArgumentException`, etc.)
+- Log errors with context: `_logger.LogError(ex, "Error message with {Parameter}", parameter)`
+- Return error objects: `new { error = ex.Message }` or `new { error = "User-friendly message" }`
+
+### Example
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class EmployeesController : ControllerBase
+{
+    private readonly IEmployeeService _employeeService;
+    private readonly ILogger<EmployeesController> _logger;
+
+    public EmployeesController(
+        IEmployeeService employeeService,
+        ILogger<EmployeesController> logger)
+    {
+        _employeeService = employeeService;
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<EmployeeDto>>> GetEmployees()
+    {
+        try
+        {
+            var employees = await _employeeService.GetEmployeesAsync();
+            return Ok(employees);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching employees");
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+}
+```
+
+## Repository patterns
+
+### Purpose
+- **All database queries must be in repositories** - this is the single place for data access
+- Repositories encapsulate EF Core and provide a clean interface for data operations
+- Services use repositories, never access `AppDbContext` directly
+- Controllers never access repositories or `AppDbContext` directly
+
+### Interface Definition
+- Define repository interface first (e.g., `IEmployeeRepository`)
+- Place interface and implementation in the same file (or separate if file grows large)
+- Use `Task<T>` or `Task` return types for async methods
+- Return database models (entities), not DTOs
+- Methods should be specific and focused (e.g., `GetByIdAsync`, `GetAllAsync`, `AddAsync`)
+
+### Implementation
+- Implement interface in repository class
+- Use `AppDbContext` for data access (injected via constructor)
+- Use `ILogger<T>` for logging (e.g., `ILogger<EmployeeRepository>`)
+- Keep queries efficient - use `Include()`, `AsNoTracking()`, etc. as needed
+- Handle transactions within repository when needed
+
+### Query Patterns
+- Always use async methods (`ToListAsync`, `FirstOrDefaultAsync`, `AnyAsync`, etc.)
+- Use `Include()` for eager loading when needed
+- Use `AsNoTracking()` for read-only queries (improves performance)
+- Use `SaveChangesAsync` for persistence (or return entities and let Unit of Work handle it)
+- Return entities from `Models/Database/` namespace
+
+### Example
+```csharp
+public interface IEmployeeRepository
+{
+    Task<List<Models.Database.Employee>> GetAllAsync();
+    Task<Models.Database.Employee?> GetByIdAsync(string id);
+    Task<Models.Database.Employee> AddAsync(Models.Database.Employee employee);
+    Task UpdateAsync(Models.Database.Employee employee);
+    Task<bool> ExistsAsync(string id);
+}
+
+public class EmployeeRepository : IEmployeeRepository
+{
+    private readonly AppDbContext _context;
+    private readonly ILogger<EmployeeRepository> _logger;
+
+    public EmployeeRepository(AppDbContext context, ILogger<EmployeeRepository> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<List<Models.Database.Employee>> GetAllAsync()
+    {
+        return await _context.Employees
+            .OrderBy(e => e.Name)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<Models.Database.Employee?> GetByIdAsync(string id)
+    {
+        return await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == id);
+    }
+
+    public async Task<Models.Database.Employee> AddAsync(Models.Database.Employee employee)
+    {
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+        return employee;
+    }
+
+    public async Task UpdateAsync(Models.Database.Employee employee)
+    {
+        _context.Employees.Update(employee);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(string id)
+    {
+        return await _context.Employees
+            .AnyAsync(e => e.Id == id);
+    }
+}
+```
+
+## Service patterns
+
+### Interface Definition
+- Define interface first (e.g., `IEmployeeService`)
+- Place interface and implementation in the same file (or separate if file grows large)
+- Use `Task<T>` or `Task` return types for async methods
+
+### Implementation
+- Implement interface in service class
+- **Use repositories for data access** (injected via constructor), never `AppDbContext` directly
+- Use `ILogger<T>` for logging (e.g., `ILogger<EmployeeService>`)
+- Keep business logic in services, not controllers
+- Orchestrate between repositories and map entities to DTOs
+
+### Async/Await
+- Use async/await for all I/O operations
+- Methods should return `Task<T>` or `Task`
+- Always use `await` for async calls
+- Never use `.Result` or `.Wait()` (causes deadlocks)
+
+### Mapping
+- Use `ToDto()` extension methods on entities for mapping
+- Example: `var dto = employee.ToDto();`
+- Do not perform manual mapping in services - use extension methods
+- Repositories return entities, services map them to DTOs
+
+### Example
+```csharp
+public interface IEmployeeService
+{
+    Task<List<EmployeeDto>> GetEmployeesAsync();
+    Task<EmployeeDto?> GetEmployeeByIdAsync(string id);
+}
+
+public class EmployeeService : IEmployeeService
+{
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly ILogger<EmployeeService> _logger;
+
+    public EmployeeService(
+        IEmployeeRepository employeeRepository,
+        ILogger<EmployeeService> logger)
+    {
+        _employeeRepository = employeeRepository;
+        _logger = logger;
+    }
+
+    public async Task<List<EmployeeDto>> GetEmployeesAsync()
+    {
+        var employees = await _employeeRepository.GetAllAsync();
+        return employees.Select(e => e.ToDto()).ToList();
+    }
+
+    public async Task<EmployeeDto?> GetEmployeeByIdAsync(string id)
+    {
+        var employee = await _employeeRepository.GetByIdAsync(id);
+        return employee?.ToDto();
+    }
+}
+```
+
+## Model organization patterns
+
+### Folder Structure
+- **Database Models**: `Models/Database/` folder - EF Core entities that map directly to database tables
+- **Application Models**: `Models/Application/` folder - Domain models for business logic (separate from database)
+- **DTOs**: `Models/DTOs/` folder - Data transfer objects for API requests/responses
+
+### Database Models
+- EF Core entities in `Models/Database/` folder
+- Use data annotations for configuration (`[Key]`, `[Required]`, `[Column]`, `[Table]`, etc.)
+- Map directly to database tables
+- Use nullable reference types appropriately
+- Initialize collections with `new()` or `new List<T>()`
+
+### Application Models
+- Domain models in `Models/Application/` folder
+- Represent business logic concepts separate from database structure
+- Used for complex business operations that don't map 1:1 to database
+
+### DTOs
+- Data transfer objects in `Models/DTOs/` folder
+- Use `Dto` suffix for DTOs (e.g., `EmployeeDto`, `RoundDto`)
+- Request models use descriptive names (e.g., `StartRoundRequest`, `SaveGuessRequest`)
+- Response models use descriptive names (e.g., `SubmitScoreResponse`)
+- Use nullable reference types appropriately
+- Initialize collections with `new()` or `new List<T>()`
+
+## Mapping patterns
+
+### Extension Methods
+- Use extension methods for mapping: `entity.ToDto()`
+- Extension methods should be in the same namespace as the DTO or in a dedicated `Mappings/` folder
+- Keep mapping logic out of services - use extension methods on entities
+
+### Example
+```csharp
+// In Models/DTOs/EmployeeDto.cs or Models/Mappings/EmployeeMappings.cs
+namespace Fortedle.Server.Models.DTOs;
+
+public static class EmployeeExtensions
+{
+    public static EmployeeDto ToDto(this Database.Employee entity)
+    {
+        return new EmployeeDto
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            FirstName = entity.FirstName,
+            Surname = entity.Surname,
+            Email = entity.Email ?? string.Empty,
+            // ... map other properties
+        };
+    }
+}
+```
+
+### Usage in Services
+```csharp
+// Services get entities from repositories, then map to DTOs
+var employees = await _employeeRepository.GetAllAsync();
+return employees.Select(e => e.ToDto()).ToList();
+```
+
+## Entity Framework patterns
+
+### Database Models Location
+- Database models (entities) in `Models/Database/` folder
+- Reference these models in `AppDbContext` via `DbSet<T>` properties
+
+### Configuration
+- Use data annotations for basic configuration (`[Key]`, `[Required]`, `[Column]`, `[Table]`, etc.)
+- Configure complex relationships and indexes in `AppDbContext.OnModelCreating`
+- Use `HasIndex()` for database indexes
+- Use `HasKey()` for composite keys if needed
+
+### DbContext
+- `AppDbContext` in `Data/AppDbContext.cs`
+- Reference database models from `Models/Database/` namespace
+- Use `DbSet<T>` properties for each entity
+- Configure model relationships in `OnModelCreating`
+
+### Query Patterns
+- **CRITICAL: All database queries must be in repositories, never in services or controllers**
+- Always use async methods (`ToListAsync`, `FirstOrDefaultAsync`, `AnyAsync`, etc.)
+- Use `Include()` for eager loading when needed
+- Use `AsNoTracking()` for read-only queries (improves performance)
+- Use `SaveChangesAsync` for persistence (typically in repositories)
+- Use transactions for multi-step operations (can be in repositories or services using Unit of Work pattern)
+
+### Migrations
+- Use migrations for schema changes (never manual SQL)
+- Create migrations: `dotnet ef migrations add MigrationName`
+- Apply migrations: `dotnet ef database update` (or auto-apply on startup)
+
+### Example
+```csharp
+// Models/Database/Employee.cs
+namespace Fortedle.Server.Models.Database;
+
+[Table("employees")]
+public class Employee
+{
+    [Key]
+    [Column("id")]
+    public string Id { get; set; } = string.Empty;
+
+    [Required]
+    [Column("name")]
+    public string Name { get; set; } = string.Empty;
+    
+    // ... other properties
+}
+
+// Data/AppDbContext.cs
+namespace Fortedle.Server.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+    public DbSet<Models.Database.Employee> Employees { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<Models.Database.Employee>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UpdatedAt)
+                .HasDatabaseName("idx_employees_updated_at");
+        });
+    }
+}
+```
+
+## Error handling
+
+### Controllers
+- Use try-catch blocks for all operations
+- Catch specific exceptions when possible:
+  - `InvalidOperationException` - Business logic violations
+  - `ArgumentException` - Invalid arguments
+  - `NotFoundException` - Resource not found (if custom exception exists)
+- Log errors with context: `_logger.LogError(ex, "Error message with {Parameter}", parameter)`
+- Return appropriate HTTP status codes
+- Return error objects: `new { error = ex.Message }` or user-friendly messages
+
+### Services
+- Throw exceptions (don't catch in services unless handling business logic)
+- Let exceptions bubble up to controllers
+- Use specific exception types when appropriate
+- Services should not return error DTOs - throw exceptions instead
+
+### Example
+```csharp
+// In Controller
+try
+{
+    var round = await _roundService.GetCurrentRoundAsync(userId, date);
+    if (round == null)
+    {
+        return NotFound(new { error = "No round found" });
+    }
+    return Ok(round);
+}
+catch (InvalidOperationException ex)
+{
+    _logger.LogWarning(ex, "Round not found for user {UserId}", userId);
+    return NotFound(new { error = ex.Message });
+}
+catch (Exception ex)
+{
+    _logger.LogError(ex, "Error fetching current round");
+    return StatusCode(500, new { error = ex.Message });
+}
+
+// In Service
+public async Task<RoundDto> SaveGuessAsync(SaveGuessRequest request)
+{
+    var round = await _roundRepository.GetByUserIdAndDateAsync(request.UserId, date);
+
+    if (round == null)
+    {
+        throw new InvalidOperationException($"No round found for user {request.UserId} on date {date}");
+    }
+    
+    // ... business logic
+    await _roundRepository.UpdateAsync(round);
+    return round.ToDto();
+}
+```
+
+## Logging
+
+### Structured Logging
+- Use structured logging with `ILogger<T>`
+- Inject `ILogger<T>` via constructor
+- Use appropriate log levels:
+  - `LogInformation` - General information, successful operations
+  - `LogWarning` - Warnings, recoverable errors
+  - `LogError` - Errors, exceptions
+  - `LogDebug` - Debug information (development only)
+
+### Log Message Format
+- Include context in log messages using parameters
+- Use structured parameters: `{ParameterName}`
+- Never use string interpolation in log messages
+- Example: `_logger.LogError(ex, "Error fetching employees for user {UserId}", userId)`
+
+### Best Practices
+- Log at appropriate levels
+- Include relevant context (user IDs, entity IDs, etc.)
+- Log exceptions with full exception object
+- Don't log sensitive information (passwords, tokens, etc.)
+
+## Configuration
+
+### IConfiguration
+- Use `IConfiguration` for app settings
+- Access via `builder.Configuration` in `Program.cs`
+- Use `GetSection()` for complex config objects
+- Support environment variables (DB_HOST, DB_PORT, etc.)
+
+### Connection Strings
+- Connection strings in `appsettings.json` or environment variables
+- Support both connection string format and individual settings
+- Build connection string from individual settings if connection string not provided
+- Use environment variables for production (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
+
+### Example
+```csharp
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? BuildConnectionStringFromSettings(builder.Configuration);
+```
+
+## API conventions
+
+### RESTful Design
+- Use RESTful endpoints
+- Use HTTP verbs appropriately:
+  - `GET` - Retrieve resources
+  - `POST` - Create resources or perform actions
+  - `PUT` - Update entire resource
+  - `PATCH` - Partial update
+  - `DELETE` - Delete resources
+
+### Endpoints
+- Use query parameters for filtering (`[FromQuery]`)
+- Use request body for complex data (`[FromQuery]`)
+- Return DTOs, not entities or database models
+- Use camelCase JSON serialization (configured in Program.cs)
+
+### Route Patterns
+- Use `[Route("api/[controller]")]` for base routes
+- Use specific routes for actions: `[HttpGet("current")]`, `[HttpPost("start")]`
+
+## Async/Await
+
+### Rules
+- Always use async for I/O operations (database, HTTP calls, file operations)
+- Use `Task<T>` return types for async methods that return values
+- Use `Task` return types for async methods that don't return values
+- Always use `await` for async calls
+- Never use `.Result` or `.Wait()` (causes deadlocks)
+
+### Example
+```csharp
+// CORRECT - in Service using Repository
+public async Task<List<EmployeeDto>> GetEmployeesAsync()
+{
+    var employees = await _employeeRepository.GetAllAsync();
+    return employees.Select(e => e.ToDto()).ToList();
+}
+
+// WRONG - causes deadlock
+public List<EmployeeDto> GetEmployees()
+{
+    var employees = _employeeRepository.GetAllAsync().Result; // DON'T DO THIS
+    return employees.Select(e => e.ToDto()).ToList();
+}
+
+// WRONG - service accessing DbContext directly
+public async Task<List<EmployeeDto>> GetEmployeesAsync()
+{
+    var employees = await _context.Employees.ToListAsync(); // DON'T DO THIS - use repository
+    return employees.Select(e => e.ToDto()).ToList();
+}
+```
+
+## Nullable reference types
+
+### Rules
+- Project has `Nullable` enabled in `.csproj`
+- Use `?` for nullable types (e.g., `string?`, `int?`)
+- Use null-forgiving operator `!` sparingly and document why
+- Prefer null checks over null-forgiving
+- Use null-coalescing operator `??` for default values
+
+### Example
+```csharp
+public string? Email { get; set; } // Nullable property
+
+// Null check
+if (email != null)
+{
+    // Use email
+}
+
+// Null-coalescing
+var emailValue = email ?? string.Empty;
+```
+
+## Entity Framework best practices
+
+### Query Optimization
+- Use `Include()` for eager loading when needed (avoid N+1 queries)
+- Use `AsNoTracking()` for read-only queries (improves performance)
+- Use `Select()` to project only needed fields
+- Use `Where()` before `ToListAsync()` to filter at database level
+
+### Transactions
+- Use transactions for multi-step operations
+- Use `BeginTransactionAsync()` for complex operations
+- Ensure proper rollback on errors
+
+### Performance
+- Configure retry logic in `Program.cs` (already done)
+- Use indexes defined in `OnModelCreating`
+- Avoid loading large collections into memory unnecessarily
+
+### Migrations
+- Use migrations for schema changes (never manual SQL)
+- Create migrations: `dotnet ef migrations add MigrationName`
+- Apply migrations: `dotnet ef database update` or auto-apply on startup
+
+## Dependency injection
+
+### Service Registration
+- Register all services in `Program.cs`
+- Use `AddScoped` for services (default for most cases)
+- Use `AddSingleton` only for stateless services
+- Use `AddTransient` for lightweight, stateless services
+- Register interfaces with implementations
+
+### Example
+```csharp
+// In Program.cs
+// Register repositories first
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IRoundRepository, RoundRepository>();
+builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
+
+// Then register services (which depend on repositories)
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IRoundService, RoundService>();
+builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
+```
+
+### Injection
+- Inject dependencies via constructor
+- Use readonly fields for injected dependencies
+- One constructor per class (preferred)
+
+## Code organization
+
+### Folder Structure
+- **Controllers**: `Controllers/` folder, one per resource
+- **Services**: `Services/` folder, interface and implementation together (or separate if large)
+- **Repositories**: `Repositories/` folder, interface and implementation together (or separate if large)
+- **Database Models**: `Models/Database/` folder - EF Core entities
+- **Application Models**: `Models/Application/` folder - Domain models
+- **DTOs**: `Models/DTOs/` folder - API request/response models
+- **Mappings**: Extension methods for `ToDto()` - can be in DTO namespace or `Mappings/` folder
+- **DbContext**: `Data/AppDbContext.cs` - references database models from `Models/Database/`
+- **Migrations**: `Migrations/` folder (auto-generated)
+
+### File Naming
+- Controllers: `{Resource}Controller.cs` (e.g., `EmployeesController.cs`)
+- Services: `{Resource}Service.cs` (e.g., `EmployeeService.cs`)
+- Repositories: `{Resource}Repository.cs` (e.g., `EmployeeRepository.cs`)
+- Database Models: `{Entity}.cs` (e.g., `Employee.cs`)
+- DTOs: `{Resource}Dto.cs` or `{Action}Request.cs` / `{Action}Response.cs`
+
+### Namespace Organization
+- Match folder structure in namespaces
+- Use `Fortedle.Server.{Folder}` pattern
+- Example: `Fortedle.Server.Controllers`, `Fortedle.Server.Models.Database`
+
+## Testing (if applicable)
+
+### Unit Tests
+- Unit tests for services - mock repositories (not `AppDbContext`)
+- Unit tests for repositories - use in-memory database or mock `AppDbContext`
+- Test business logic in services in isolation from data access
+- Test repository queries and data access logic separately
+
+### Integration Tests
+- Integration tests for controllers
+- Use test database or in-memory database
+- Test full request/response cycle
+
+### Frameworks
+- Use xUnit, Moq, or similar frameworks
+- Follow AAA pattern (Arrange, Act, Assert)

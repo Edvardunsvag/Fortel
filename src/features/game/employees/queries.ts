@@ -3,7 +3,7 @@ import { fetchEmployees, syncEmployees } from "./api";
 import { employeeFromDto, syncResultFromDto } from "./fromDto";
 import type { Employee } from "./types";
 import type { SyncResult } from "./fromDto";
-import type { FortedleServerModelsSyncRequest } from "@/shared/api/generated/index";
+import type { FortedleServerModelsDTOsSyncRequest } from "@/shared/api/generated/index";
 
 // Query keys
 export const employeeKeys = {
@@ -30,7 +30,7 @@ export const useEmployees = () => {
 export const useSyncEmployees = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<SyncResult, Error, FortedleServerModelsSyncRequest>({
+  return useMutation<SyncResult, Error, FortedleServerModelsDTOsSyncRequest>({
     mutationFn: async (request) => {
       const apiResult = await syncEmployees(request);
       return syncResultFromDto(apiResult);

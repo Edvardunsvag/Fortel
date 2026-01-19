@@ -1,6 +1,5 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+using Fortedle.Server.Models.Database;
+using Fortedle.Server.Repositories;
 
 namespace Fortedle.Server.Services;
 
@@ -13,12 +12,17 @@ public class LotteryDrawingService : ILotteryDrawingService
 {
     private const int WinnersPerWeek = 1;
 
-    private readonly AppDbContext _context;
+    private readonly ILotteryTicketRepository _lotteryTicketRepository;
+    private readonly IWinningTicketRepository _winningTicketRepository;
     private readonly ILogger<LotteryDrawingService> _logger;
 
-    public LotteryDrawingService(AppDbContext context, ILogger<LotteryDrawingService> logger)
+    public LotteryDrawingService(
+        ILotteryTicketRepository lotteryTicketRepository,
+        IWinningTicketRepository winningTicketRepository,
+        ILogger<LotteryDrawingService> logger)
     {
-        _context = context;
+        _lotteryTicketRepository = lotteryTicketRepository;
+        _winningTicketRepository = winningTicketRepository;
         _logger = logger;
     }
 
@@ -33,9 +37,7 @@ public class LotteryDrawingService : ILotteryDrawingService
             var week = GetWeekString(now);
 
             // Check if we've already drawn the required number of winners for this week
-            var existingWinnersCount = await _context.WinningTickets
-                .Where(w => w.Week == week)
-                .CountAsync();
+            var existingWinnersCount = await _winningTicketRepository.GetCountByWeekAsync(week);
 
             if (existingWinnersCount >= WinnersPerWeek)
             {
@@ -44,9 +46,7 @@ public class LotteryDrawingService : ILotteryDrawingService
             }
 
             // Get all lottery tickets that are not used
-            var availableTickets = await _context.LotteryTickets
-                .Where(t => !t.IsUsed)
-                .ToListAsync();
+            var availableTickets = await _lotteryTicketRepository.GetUnusedAsync();
 
             if (availableTickets.Count == 0)
             {
@@ -74,6 +74,8 @@ public class LotteryDrawingService : ILotteryDrawingService
                 ticket.UpdatedAt = DateTime.UtcNow;
             }
 
+            await _lotteryTicketRepository.UpdateRangeAsync(winningTickets);
+
             // Create WinningTicket records
             var winningTicketEntities = winningTickets.Select(ticket => new WinningTicket
             {
@@ -83,8 +85,7 @@ public class LotteryDrawingService : ILotteryDrawingService
                 CreatedAt = DateTime.UtcNow
             }).ToList();
 
-            _context.WinningTickets.AddRange(winningTicketEntities);
-            await _context.SaveChangesAsync();
+            await _winningTicketRepository.AddRangeAsync(winningTicketEntities);
 
             _logger.LogInformation(
                 "Successfully drew {Count} winning tickets for week {Week}. Winners: {Winners}",

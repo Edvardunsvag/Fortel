@@ -1,4 +1,4 @@
-using Fortedle.Server.Data.Entities;
+using Fortedle.Server.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fortedle.Server.Data;
@@ -23,7 +23,7 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Configure Employee entity
-        modelBuilder.Entity<Employee>(entity =>
+        modelBuilder.Entity<Models.Database.Employee>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Teams)
@@ -37,7 +37,7 @@ public class AppDbContext : DbContext
         });
 
         // Configure LeaderboardEntry entity
-        modelBuilder.Entity<LeaderboardEntry>(entity =>
+        modelBuilder.Entity<Models.Database.LeaderboardEntry>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.PlayerName, e.Date })
@@ -49,7 +49,7 @@ public class AppDbContext : DbContext
         });
 
         // Configure Round entity
-        modelBuilder.Entity<Round>(entity =>
+        modelBuilder.Entity<Models.Database.Round>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.UserId, e.Date })
@@ -62,7 +62,7 @@ public class AppDbContext : DbContext
         });
 
         // Configure LotteryTicket entity
-        modelBuilder.Entity<LotteryTicket>(entity =>
+        modelBuilder.Entity<Models.Database.LotteryTicket>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.UserId, e.EligibleWeek })
@@ -77,7 +77,7 @@ public class AppDbContext : DbContext
         });
 
         // Configure WinningTicket entity
-        modelBuilder.Entity<WinningTicket>(entity =>
+        modelBuilder.Entity<Models.Database.WinningTicket>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.UserId)
@@ -91,7 +91,7 @@ public class AppDbContext : DbContext
         });
 
         // Configure MonthlyWinningTicket entity
-        modelBuilder.Entity<MonthlyWinningTicket>(entity =>
+        modelBuilder.Entity<Models.Database.MonthlyWinningTicket>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.Month)
@@ -104,7 +104,7 @@ public class AppDbContext : DbContext
         });
 
         // Configure LotteryConfig entity
-        modelBuilder.Entity<LotteryConfig>(entity =>
+        modelBuilder.Entity<Models.Database.LotteryConfig>(entity =>
         {
             entity.HasKey(e => e.Key);
         });

@@ -1,6 +1,6 @@
 using Fortedle.Server.Data;
-using Fortedle.Server.Data.Entities;
-using Fortedle.Server.Models;
+using Fortedle.Server.Models.Database;
+using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

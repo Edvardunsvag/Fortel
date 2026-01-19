@@ -1,22 +1,22 @@
 import type {
-  FortedleServerModelsGuessDto,
-  FortedleServerModelsGuessHintDto,
-  FortedleServerModelsRevealFunfactRequest,
-  FortedleServerModelsSaveGuessRequest,
-  FortedleServerModelsStartRoundRequest,
+  FortedleServerModelsDTOsGuessDto,
+  FortedleServerModelsDTOsGuessHintDto,
+  FortedleServerModelsDTOsRevealFunfactRequest,
+  FortedleServerModelsDTOsSaveGuessRequest,
+  FortedleServerModelsDTOsStartRoundRequest,
 } from "@/shared/api/generated/index";
 import type { Guess } from "./types";
 
 /**
  * Maps the application Guess type to the generated GuessDto
  */
-export const guessToDto = (guess: Guess): FortedleServerModelsGuessDto => {
+export const guessToDto = (guess: Guess): FortedleServerModelsDTOsGuessDto => {
   return {
     employeeId: guess.employeeId,
     employeeName: guess.employeeName,
     avatarImageUrl: guess.avatarImageUrl ?? undefined,
     hints: guess.hints.map(
-      (hint): FortedleServerModelsGuessHintDto => ({
+      (hint): FortedleServerModelsDTOsGuessHintDto => ({
         type: hint.type,
         result: hint.result,
         message: hint.message,
@@ -33,7 +33,7 @@ export const toSaveGuessRequest = (
   userId: string,
   date: string | undefined,
   guess: Guess
-): FortedleServerModelsSaveGuessRequest => {
+): FortedleServerModelsDTOsSaveGuessRequest => {
   return {
     userId,
     date: date ?? undefined,
@@ -44,7 +44,7 @@ export const toSaveGuessRequest = (
 /**
  * Maps application types to RevealFunfactRequest
  */
-export const toRevealFunfactRequest = (roundId: number): FortedleServerModelsRevealFunfactRequest => {
+export const toRevealFunfactRequest = (roundId: number): FortedleServerModelsDTOsRevealFunfactRequest => {
   return {
     roundId,
   };
@@ -57,7 +57,7 @@ export const toStartRoundRequest = (
   userId: string,
   date: string | undefined,
   employeeOfTheDayId: string | undefined
-): FortedleServerModelsStartRoundRequest => {
+): FortedleServerModelsDTOsStartRoundRequest => {
   return {
     userId,
     date: date ?? undefined,

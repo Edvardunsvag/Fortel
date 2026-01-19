@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<WinningTicket> WinningTickets { get; set; }
     public DbSet<MonthlyWinningTicket> MonthlyWinningTickets { get; set; }
     public DbSet<LotteryConfig> LotteryConfigs { get; set; }
+    public DbSet<EmployeeWeek> EmployeeWeeks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -107,6 +108,21 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Models.Database.LotteryConfig>(entity =>
         {
             entity.HasKey(e => e.Key);
+        });
+
+        // Configure EmployeeWeek entity
+        modelBuilder.Entity<Models.Database.EmployeeWeek>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.WeekKey })
+                .IsUnique()
+                .HasDatabaseName("idx_employee_weeks_user_week");
+            entity.HasIndex(e => e.UserId)
+                .HasDatabaseName("idx_employee_weeks_user_id");
+            entity.HasIndex(e => e.WeekKey)
+                .HasDatabaseName("idx_employee_weeks_week_key");
+            entity.HasIndex(e => e.WeekStart)
+                .HasDatabaseName("idx_employee_weeks_week_start");
         });
     }
 }

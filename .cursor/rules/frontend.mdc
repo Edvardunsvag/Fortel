@@ -14,6 +14,7 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 2) Then write the final code.
 - Keep prose minimal outside the plan and code.
 - Never leave TODOs, placeholders, or missing pieces.
+- **CRITICAL: After completing implementation, run `npm run build` and ensure it succeeds before considering the task complete.**
 
 ## Rule maintenance (important)
 - When fixing bugs or mistakes related to coding patterns, conventions, or TypeScript/import issues, **add the fix as a rule to this file** to prevent recurrence.
@@ -82,6 +83,7 @@ Each feature lives in `src/features/<feature>/`:
 - `index.ts` (barrel exports)
 
 ### API Client Usage (required)
+- **CRITICAL: Always run `npm run generate:api` before implementing any types for API endpoints. All API types must come from the generated API client.**
 - **CRITICAL: Never add any API code to the frontend without running `npm run generate:api` first.**
 - All API endpoints must be accessed through the generated clients from `src/shared/api/client.ts`.
 - The generated API clients are created from the backend Swagger/OpenAPI spec.
@@ -91,6 +93,7 @@ Each feature lives in `src/features/<feature>/`:
   3. Then add frontend code that uses the newly generated client methods
 - Do not use direct `fetch` calls or create manual API functions. Always use the generated client methods.
 - Do not add type assertions or workarounds for missing API methods. Generate the client first.
+- Do not manually define types for API endpoints - all types must come from the generated API client.
 
 ## Enums and types
 - Create enums when they improve clarity and reduce magic strings (e.g. FeatureKey, AsyncStatus).

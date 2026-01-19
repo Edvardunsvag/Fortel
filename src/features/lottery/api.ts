@@ -1,9 +1,16 @@
-import type { HarvestUser, HarvestTimeEntriesResponse, HarvestAccountsResponse } from "./types";
+import type {
+  HarvestUser,
+  HarvestTimeEntriesResponse,
+  HarvestAccountsResponse,
+} from "./types";
 import { harvestConfig } from "@/shared/config/harvestConfig";
-import { lotteryTicketsApi } from "@/shared/api/client";
+import { lotteryTicketsApi, employeeWeeksApi } from "@/shared/api/client";
 import type {
   FortedleServerModelsDTOsSyncLotteryTicketsRequest,
   FortedleServerModelsDTOsSyncLotteryTicketsResponse,
+  FortedleServerModelsDTOsSyncHarvestRequest,
+  FortedleServerModelsDTOsSyncHarvestResponse,
+  FortedleServerModelsDTOsEmployeeWeeksResponse,
 } from "@/shared/api/generated/index";
 
 /**
@@ -476,5 +483,60 @@ export const fetchLotteryConfig = async (): Promise<LotteryConfig> => {
       throw new Error(errorMessage);
     }
     throw new Error(error instanceof Error ? error.message : "Failed to fetch lottery config");
+  }
+};
+
+/**
+ * Syncs employee weeks from Harvest
+ * Sends OAuth tokens to backend, which fetches time entries and calculates weekly summaries
+ *
+ * @param request - OAuth token data
+ */
+export const syncFromHarvest = async (
+  accessToken: string,
+  refreshToken: string,
+  expiresAt: number,
+  accountId: string
+): Promise<FortedleServerModelsDTOsSyncHarvestResponse> => {
+  try {
+    const request: FortedleServerModelsDTOsSyncHarvestRequest = {
+      accessToken,
+      refreshToken,
+      expiresAt: new Date(expiresAt).toISOString(),
+      accountId,
+    };
+
+    const response = await employeeWeeksApi.apiEmployeeWeeksSyncPost(request);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to sync from Harvest: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to sync from Harvest");
+  }
+};
+
+/**
+ * Fetches all employee weeks for a user
+ *
+ * @param userId - User ID (from Harvest user)
+ */
+export const fetchEmployeeWeeks = async (userId: string): Promise<FortedleServerModelsDTOsEmployeeWeeksResponse> => {
+  try {
+    const response = await employeeWeeksApi.apiEmployeeWeeksGet(userId);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch employee weeks: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch employee weeks");
   }
 };

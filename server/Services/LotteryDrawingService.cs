@@ -45,18 +45,21 @@ public class LotteryDrawingService : ILotteryDrawingService
                 return;
             }
 
-            // Get all lottery tickets that are not used
-            var availableTickets = await _lotteryTicketRepository.GetUnusedAsync();
+            // Get all lottery tickets that are not used and eligible for this week
+            var allUnusedTickets = await _lotteryTicketRepository.GetUnusedAsync();
+            var availableTickets = allUnusedTickets
+                .Where(t => t.EligibleWeek == week)
+                .ToList();
 
             if (availableTickets.Count == 0)
             {
-                _logger.LogWarning("No available lottery tickets found. Skipping drawing.");
+                _logger.LogWarning("No available lottery tickets found for week {Week}. Skipping drawing.", week);
                 return;
             }
 
             if (availableTickets.Count < WinnersPerWeek)
             {
-                _logger.LogWarning("Only {Count} available tickets found. Drawing all available tickets.", availableTickets.Count);
+                _logger.LogWarning("Only {Count} available tickets found for week {Week}. Drawing all available tickets.", availableTickets.Count, week);
             }
 
             // Pick random tickets (or fewer if less than WinnersPerWeek available)

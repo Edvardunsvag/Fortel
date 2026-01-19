@@ -75,3 +75,11 @@ export interface HarvestAccountsResponse {
   };
   accounts: HarvestAccount[];
 }
+
+// EmployeeWeek, EmployeeWeeksResponse, SyncHarvestRequest, and SyncHarvestResponse
+// are now imported from the generated API client types:
+// - FortedleServerModelsDTOsEmployeeWeekDto
+// - FortedleServerModelsDTOsEmployeeWeeksResponse
+// - FortedleServerModelsDTOsSyncHarvestRequest
+// - FortedleServerModelsDTOsSyncHarvestResponse
+// Import them from "@/shared/api/generated/index" when needed

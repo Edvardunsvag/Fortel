@@ -82,8 +82,11 @@ export const WeekDetails = ({ week }: WeekDetailsProps) => {
         {week.winnerDrawn ? (
           <div className={styles.winnerSection}>
             {week.hasWon ? (
-              <div className={styles.winnerMessage + " " + styles.winnerMessageSuccess}>
-                <p className={styles.winnerText}>{t("lottery.weekDetails.youWon")}</p>
+              <div className={`${styles.winnerMessage} ${styles.winnerMessageSuccess} ${styles.winnerMessageFestive}`}>
+                <p className={styles.winnerText}>
+                  🎉 {t("lottery.weekDetails.youWon")} 🎉
+                </p>
+                <p className={styles.winnerSubtext}>Gratulerer med seieren! 🏆✨</p>
                 {week.winner && (
                   <div className={styles.winnerInfo}>
                     {week.winner.image ? (

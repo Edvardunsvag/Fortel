@@ -988,7 +988,11 @@
   border-radius: $radius-md;
   overflow: hidden;
   position: relative;
-  transition: filter $transition-normal, transform $transition-normal;
+  transition: filter $transition-normal, transform $transition-normal, opacity $transition-normal;
+}
+
+.weekPrevious {
+  opacity: 0.6;
 }
 
 .weekBlurred {
@@ -1175,6 +1179,32 @@
 .weekHours {
   font-size: 1.25rem;
   color: $color-dark-accent;
+}
+
+.countdownChip {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.15) 0%,
+    rgba(255, 193, 7, 0.12) 50%,
+    rgba(255, 215, 0, 0.15) 100%
+  );
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: $radius-sm;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #b8860b;
+  margin-right: $spacing-sm;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdownChipPart {
+  display: inline-block;
 }
 
 .weekChevron {

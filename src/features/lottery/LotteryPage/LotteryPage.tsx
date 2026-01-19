@@ -2,20 +2,17 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
-  clearLottery,
   loadTokenFromStorage,
   selectIsLotteryAuthenticated,
   selectActiveLotterySubTab,
   LotterySubTab,
 } from "../lotterySlice";
-import { useLotteryUser, useEmployeeWeeks, useAuthenticateLottery, useTestLotteryApi } from "../queries";
+import { useLotteryUser, useAuthenticateLottery } from "../queries";
 import { getHarvestAuthUrl, generateState } from "@/shared/config/harvestConfig";
 import { routes } from "@/shared/routes";
 import { useTranslation } from "react-i18next";
 import { LotteryNavigationChips } from "./LotteryNavigationChips";
-import { UserInfo } from "./UserInfo";
-import { ConnectToHarvest } from "./ConnectToHarvest";
-import { YourHours } from "../DineTimer/YourHours";
+import { YourTickets } from "../YourTickets/YourTickets";
 import { Regler } from "../Regler/Regler";
 import { Lotteri } from "../Lotteri/Lotteri";
 import { EmployeeStatistics } from "./EmployeeStatistics";
@@ -31,26 +28,10 @@ export const LotteryPage = () => {
 
   // TanStack Query hooks
   const authenticateMutation = useAuthenticateLottery();
-  const testApiMutation = useTestLotteryApi();
-  const { data: user, isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
-  const userId = user?.id.toString() || null;
+  const { isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
 
-  const {
-    data: weeksData,
-    isLoading: isLoadingWeeks,
-    error: weeksError,
-  } = useEmployeeWeeks(userId, isAuthenticated && !!userId);
-
-  const isLoading = isLoadingUser || isLoadingWeeks || authenticateMutation.isPending || testApiMutation.isPending;
-  const error =
-    userError?.message ||
-    weeksError?.message ||
-    authenticateMutation.error?.message ||
-    testApiMutation.error?.message;
-
-  // Calculate stats from employee weeks (synced from backend)
-  const weeklyData = weeksData?.weeks || [];
-  const totalLotteryTickets = weeklyData.filter((week) => week.hasTicket).length;
+  const isLoading = isLoadingUser || authenticateMutation.isPending;
+  const error = userError?.message || authenticateMutation.error?.message;
 
   // Handle OAuth callback
   useEffect(() => {
@@ -86,36 +67,20 @@ export const LotteryPage = () => {
     window.location.href = getHarvestAuthUrl(state);
   };
 
-  const handleLogout = () => {
-    dispatch(clearLottery());
-  };
-
-  const handleTestApi = () => {
-    testApiMutation.mutate();
-  };
-
   return (
     <div className={styles.page}>
       <div className={styles.container}>
         <h1 className={styles.title}>{t("lottery.title")}</h1>
-        {!isAuthenticated ? (
-          <ConnectToHarvest error={error} isLoading={isLoading} onLogin={handleLogin} onTestApi={handleTestApi} />
-        ) : (
-          <div className={styles.authenticated}>
-            <UserInfo
-              user={user}
-              weeklyDataLength={weeklyData.length}
-              totalLotteryTickets={totalLotteryTickets}
-              onLogout={handleLogout}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className={styles.container}>
         <LotteryNavigationChips />
 
-        {activeSubTab === LotterySubTab.TimeEntries && <YourHours isAuthenticated={isAuthenticated} error={error} />}
+        {activeSubTab === LotterySubTab.TimeEntries && (
+          <YourTickets
+            isAuthenticated={isAuthenticated}
+            error={error}
+            isLoading={isLoading}
+            onLogin={handleLogin}
+          />
+        )}
 
         {activeSubTab === LotterySubTab.Rules && <Regler />}
 

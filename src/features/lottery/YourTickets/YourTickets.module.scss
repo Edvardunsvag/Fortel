@@ -23,12 +23,18 @@
 .totalTicketsBadge {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: $spacing-lg;
-  margin: 0 0 $spacing-xl 0;
-  padding: $spacing-lg;
   background: linear-gradient(135deg, rgba($color-overlay-beige, 0.3) 0%, rgba($color-overlay-beige, 0.1) 100%);
   border-radius: $radius-md;
-  border: 1px solid rgba($color-border-medium, 0.5);
+  flex-wrap: wrap;
+}
+
+.totalTicketsContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-left: auto;
 }
 
 .totalTicketsText {
@@ -174,6 +180,17 @@
   }
 }
 
+.noTicket {
+  font-size: 1.75rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  color: #c62828;
+  font-weight: 700;
+  filter: drop-shadow(0 2px 4px rgba(198, 40, 40, 0.3));
+  cursor: help;
+}
+
 .weekHours {
   font-size: 1.25rem;
   color: $color-dark-accent;
@@ -261,4 +278,209 @@
   color: $color-dark-fill;
   font-size: 0.9rem;
   font-style: italic;
+}
+
+.weekSummary {
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.summaryLabel {
+  font-size: 0.875rem;
+  color: $color-dark-fill;
+  font-weight: 500;
+}
+
+.summaryValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  text-align: right;
+}
+
+.weekDetailsStatus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.statusEligible {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.statusNotEligible {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #c62828;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.statusTicket {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #f57c00;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.statusIcon {
+  font-size: 1rem;
+}
+
+.eligibilityError {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background-color: rgba(244, 67, 54, 0.05);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  border-radius: $radius-md;
+}
+
+.eligibilityErrorText {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #c62828;
+  line-height: 1.5;
+}
+
+.syncButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  min-width: 200px;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.eligibilityButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: transparent;
+  color: $color-dark-accent;
+  border: 1px solid $color-dark-accent;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  min-width: 200px;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background-color: $color-overlay-beige;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.syncSuccess {
+  margin: $spacing-sm 0 0 0;
+  color: #2e7d32;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.syncError {
+  margin: $spacing-sm 0 0 0;
+  color: #c62828;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.connectSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-lg;
+  padding-top: $spacing-lg;
+  padding-right: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  padding-left: 0;
+  background: linear-gradient(135deg, rgba($color-overlay-beige, 0.3) 0%, rgba($color-overlay-beige, 0.1) 100%);
+  border-radius: $radius-md;
+}
+
+.connectDescription {
+  color: $color-dark-fill;
+  margin: 0;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.connectButton {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-dark-accent;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($color-dark-accent, 0.9);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
 }

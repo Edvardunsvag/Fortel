@@ -40,6 +40,7 @@ interface LotteryState {
   token: HarvestToken | null;
   activeSubTab: LotterySubTab;
   wheel: WheelState;
+  autoOpenWeekKey: string | null;
 }
 
 const initialWheelState: WheelState = {
@@ -53,6 +54,7 @@ const initialState: LotteryState = {
   token: null,
   activeSubTab: LotterySubTab.TimeEntries,
   wheel: initialWheelState,
+  autoOpenWeekKey: null,
 };
 
 const lotterySlice = createSlice({
@@ -117,6 +119,9 @@ const lotterySlice = createSlice({
     setRevealedWinners: (state, action: PayloadAction<MonthlyWinner[]>) => {
       state.wheel.revealedWinners = action.payload;
     },
+    setAutoOpenWeekKey: (state, action: PayloadAction<string | null>) => {
+      state.autoOpenWeekKey = action.payload;
+    },
   },
 });
 
@@ -132,11 +137,13 @@ export const {
   addRevealedWinner,
   resetWheel,
   setRevealedWinners,
+  setAutoOpenWeekKey,
 } = lotterySlice.actions;
 
 export const selectLotteryToken = (state: RootState) => state.lottery.token;
 export const selectIsLotteryAuthenticated = (state: RootState) => state.lottery.token !== null;
 export const selectActiveLotterySubTab = (state: RootState) => state.lottery.activeSubTab;
+export const selectAutoOpenWeekKey = (state: RootState) => state.lottery.autoOpenWeekKey;
 
 // Wheel selectors
 export const selectWheelState = (state: RootState) => state.lottery.wheel;

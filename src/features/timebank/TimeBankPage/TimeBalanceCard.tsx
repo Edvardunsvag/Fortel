@@ -64,7 +64,7 @@ export const TimeBalanceCard = ({ balance }: TimeBalanceCardProps) => {
       </div>
       {totalAvailableForBilling > 0 && (
         <div className={styles.availableForBillingTotal}>
-          {t("timebank.availableForBilling")}: {totalAvailableForBilling.toFixed(1)}{t("timebank.hourSuffix")}
+          {t("timebank.possibleOvertime")}: {totalAvailableForBilling.toFixed(1)}{t("timebank.hourSuffix")}
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import { useEmployeeWeeks, useLotteryUser } from "../queries";
 import { selectAutoOpenWeekKey, setAutoOpenWeekKey } from "../lotterySlice";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { WeekDetails } from "./WeekDetails";
+import { CountdownChip } from "./CountdownChip";
 import { formatDateDDMM } from "@/shared/utils/dateUtils";
 import { createWeekKey } from "@/features/timebank/calculations/weekUtils";
 import { triggerConfetti } from "@/features/game/utils";
@@ -124,11 +125,12 @@ export const Lotteri = () => {
                 const isCurrentWeek = weekKey === currentWeekKey;
                 const isWinnerDrawn = week.winnerDrawn === true;
                 const shouldBlur = isCurrentWeek && isWinnerDrawn && !isOpen;
+                const isPreviousWeek = !isCurrentWeek;
 
                 return (
                   <div
                     key={weekKey}
-                    className={`${styles.week} ${shouldBlur ? styles.weekBlurred : ""}`}
+                    className={`${styles.week} ${shouldBlur ? styles.weekBlurred : ""} ${isPreviousWeek ? styles.weekPrevious : ""}`}
                   >
                     {shouldBlur && (
                       <button
@@ -184,6 +186,9 @@ export const Lotteri = () => {
                           </div>
                         </div>
                       </div>
+                      {isCurrentWeek && !isOpen && !isWinnerDrawn && (
+                        <CountdownChip countdownTarget={week.countdownTarget} isActive={!week.winnerDrawn} />
+                      )}
                       <span
                         className={`${styles.weekChevron} ${isOpen ? styles.weekChevronOpen : ""}`}
                         aria-hidden="true"

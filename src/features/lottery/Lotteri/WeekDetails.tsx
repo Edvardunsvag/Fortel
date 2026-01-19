@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { FortedleServerModelsDTOsEmployeeWeekDto } from "@/shared/api/generated/index";
+import { useCountdown } from "../hooks/useCountdown";
 import styles from "./Lotteri.module.scss";
 
 interface WeekDetailsProps {
@@ -9,47 +9,7 @@ interface WeekDetailsProps {
 
 export const WeekDetails = ({ week }: WeekDetailsProps) => {
   const { t } = useTranslation();
-
-  // Memoize countdown target to prevent infinite re-renders
-  const countdownTarget = useMemo(() => {
-    return week.countdownTarget ? new Date(week.countdownTarget) : null;
-  }, [week.countdownTarget]);
-
-  const [timeRemaining, setTimeRemaining] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!countdownTarget || week.winnerDrawn) {
-      setTimeRemaining(null);
-      return;
-    }
-
-    const updateCountdown = () => {
-      const now = new Date();
-      const diff = countdownTarget.getTime() - now.getTime();
-
-      if (diff <= 0) {
-        setTimeRemaining(null);
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setTimeRemaining({ days, hours, minutes, seconds });
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-
-    return () => clearInterval(interval);
-  }, [countdownTarget, week.winnerDrawn]);
+  const timeRemaining = useCountdown(week.countdownTarget, !week.winnerDrawn);
 
   return (
     <div className={styles.weekDetails}>

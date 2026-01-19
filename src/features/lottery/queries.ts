@@ -232,8 +232,9 @@ export const useAuthenticateLottery = () => {
       return { token };
     },
     onSuccess: () => {
-      // Invalidate user query to refetch after authentication
-      queryClient.invalidateQueries({ queryKey: lotteryKeys.user() });
+      // Invalidate all lottery queries to refetch after authentication
+      // This ensures time entries and other data are refreshed immediately
+      queryClient.invalidateQueries({ queryKey: lotteryKeys.all });
     },
   });
 };

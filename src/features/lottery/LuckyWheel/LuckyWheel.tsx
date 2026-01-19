@@ -13,6 +13,7 @@ import {
   setRevealedWinners,
 } from "../lotterySlice";
 import type { WheelSegment, MonthlyWinner } from "../api";
+import { lotteryTicketsApi } from "@/shared/api/client";
 import { SpinningWheel, type SpinningWheelHandle } from "./SpinningWheel";
 import { WinnerRevealCard } from "./WinnerRevealCard/WinnerRevealCard";
 import { ParticipantsList } from "./ParticipantsList/ParticipantsList";
@@ -65,6 +66,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const wheelRef = useRef<SpinningWheelHandle>(null);
+
+  // Flag to skip auto-population after manually triggering a draw
+  const skipAutoPopulateRef = useRef(false);
 
   // Redux state
   const spinPhase = useAppSelector(selectSpinPhase);
@@ -122,14 +126,17 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     !isDrawComplete && spinPhase === "idle" && currentSpinIndex < monthlyWinners.length && displaySegments.length > 0;
 
   // Initialize revealed winners from fetched data on mount
+  // Skip if we just triggered a manual draw (to let the user spin through winners)
   useEffect(() => {
-    if (monthlyWinners.length > 0 && revealedWinners.length === 0) {
+    if (monthlyWinners.length > 0 && revealedWinners.length === 0 && !skipAutoPopulateRef.current) {
       // Pre-populate revealed winners if draw is already done
       dispatch(setRevealedWinners(monthlyWinners));
       if (monthlyWinners.length >= winnerCount) {
         dispatch(setSpinPhase("complete"));
       }
     }
+    // Reset the flag after checking
+    skipAutoPopulateRef.current = false;
   }, [monthlyWinners, revealedWinners.length, winnerCount, dispatch]);
 
   // Update countdown
@@ -198,10 +205,10 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     if (showingWinner) {
       // Consume the winner's tickets in the backend
       try {
-        await fetch(`/api/lotterytickets/consume-winner/${showingWinner.month}/${showingWinner.position}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
+        await lotteryTicketsApi.apiLotteryTicketsConsumeWinnerMonthPositionPost(
+          showingWinner.month,
+          showingWinner.position
+        );
         // Refetch wheel data to update segments
         await refetchWheel();
       } catch (err) {
@@ -238,21 +245,15 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
-      const response = await fetch("/api/lotterytickets/monthly-draw", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setAdminStatus(`✅ Draw complete! ${data.winnersCount} winners selected for ${data.month}`);
-        // Reset wheel state and refetch data
-        dispatch(resetWheel());
-        wheelRef.current?.reset();
-        await refetchWheel();
-        await refetchWinners();
-      } else {
-        setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
-      }
+      await lotteryTicketsApi.apiLotteryTicketsMonthlyDrawPost();
+      setAdminStatus(`✅ Draw complete!`);
+      // Skip auto-population so user can spin through winners
+      skipAutoPopulateRef.current = true;
+      // Reset wheel state and refetch data
+      dispatch(resetWheel());
+      wheelRef.current?.reset();
+      await refetchWheel();
+      await refetchWinners();
     } catch (err) {
       setAdminStatus(`❌ Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
@@ -265,17 +266,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
-      const response = await fetch("/api/lotterytickets/seed-test-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setAdminStatus(`✅ Seeded ${data.ticketsCreated} tickets (${data.ticketsSkipped} skipped)`);
-        await refetchWheel();
-      } else {
-        setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
-      }
+      await lotteryTicketsApi.apiLotteryTicketsSeedTestDataPost();
+      setAdminStatus(`✅ Test data seeded successfully`);
+      await refetchWheel();
     } catch (err) {
       setAdminStatus(`❌ Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
@@ -319,24 +312,16 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
-      const response = await fetch("/api/lotterytickets/reset-month", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // Reset local wheel state
-        dispatch(resetWheel());
-        wheelRef.current?.reset();
-        // Refetch data
-        await refetchWheel();
-        await refetchWinners();
-        setAdminStatus(
-          `✅ Reset complete! ${data.ticketsReset} tickets restored, ${data.winnersDeleted} winners cleared`
-        );
-      } else {
-        setAdminStatus(`❌ Error: ${data.error || "Unknown error"}`);
-      }
+      await lotteryTicketsApi.apiLotteryTicketsResetMonthPost();
+      // Skip auto-population after reset
+      skipAutoPopulateRef.current = true;
+      // Reset local wheel state
+      dispatch(resetWheel());
+      wheelRef.current?.reset();
+      // Refetch data
+      await refetchWheel();
+      await refetchWinners();
+      setAdminStatus(`✅ Reset complete!`);
     } catch (err) {
       setAdminStatus(`❌ Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {

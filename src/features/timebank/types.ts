@@ -27,6 +27,8 @@ export interface WeekBalance {
   balance: number; // (logged - avspasering) - expected
   cumulativeBalance: number; // Running total
   avspaseringsHours: number; // Hours taken as time off in lieu (deducted from balance)
+  billableHours: number; // Hours at client (entries with client !== null)
+  availableForBilling: number; // weeklyTarget - billableHours (hours available to bill)
   entries: ProjectEntry[]; // Grouped by project/task for display
 }
 

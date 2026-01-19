@@ -1,50 +1,50 @@
 import {
-  getISOWeek,
-  getISOWeekYear,
-  startOfISOWeek,
   addDays,
   format,
   parseISO,
   startOfMonth,
   startOfYear,
   subMonths,
-  eachDayOfInterval,
-  isWeekend,
   isBefore,
   isAfter,
-  min,
-  max,
 } from "date-fns";
 import type { HarvestTimeEntry } from "@/features/lottery/types";
+import { detectDailyHourPattern } from "@/features/lottery/lotteryUtils";
+import { HARVEST } from "@/shared/constants/harvest";
+import {
+  ABSENCE_PROJECT_PATTERNS,
+  ABSENCE_TASK_PATTERNS,
+  matchesAnyPattern,
+} from "./constants/absencePatterns";
+import {
+  getWeekStartFromKey,
+  generateWeeksInRange,
+  groupEntriesByWeek,
+  countWorkingDays,
+  calculateWeeklyLogged,
+  calculateWeeklyExpected,
+  calculateWeeklyBalance,
+  calculateBillableHours,
+  calculateAvailableForBilling,
+} from "./calculations";
 import { Timeframe } from "./types";
 import type { TimeBalance, WeekBalance, DateRange, ProjectEntry } from "./types";
-
-const HOURS_PER_DAY = 8;
 
 /**
  * Check if a time entry is an absence entry (vacation, time off, etc.)
  * These are highlighted in the UI but still count towards logged hours
  */
 const isAbsenceEntry = (entry: HarvestTimeEntry): boolean => {
-  const projectName = entry.project?.name?.toLowerCase() || "";
-  const taskName = entry.task?.name?.toLowerCase() || "";
+  const projectName = entry.project?.name || "";
+  const taskName = entry.task?.name || "";
 
-  // Exclude entries from Internal Absence projects
-  if (projectName.includes("absence") || projectName.includes("internal absence")) {
+  // Check project name patterns
+  if (matchesAnyPattern(projectName, ABSENCE_PROJECT_PATTERNS)) {
     return true;
   }
 
-  // Exclude specific absence task types
-  const absenceTaskPatterns = [
-    "absence",
-    "avspasering", // Norwegian for time off in lieu
-    "vacation",
-    "ferie", // Norwegian for vacation
-    "sykdom", // Norwegian for sick leave
-    "sick",
-  ];
-
-  return absenceTaskPatterns.some((pattern) => taskName.includes(pattern));
+  // Check task name patterns
+  return matchesAnyPattern(taskName, ABSENCE_TASK_PATTERNS);
 };
 
 /**
@@ -53,7 +53,7 @@ const isAbsenceEntry = (entry: HarvestTimeEntry): boolean => {
  */
 const isAvspaseringsEntry = (entry: HarvestTimeEntry): boolean => {
   const taskName = entry.task?.name?.toLowerCase() || "";
-  return taskName.includes("avspasering");
+  return taskName.includes(HARVEST.TASKS.AVSPASERING);
 };
 
 /**
@@ -92,28 +92,8 @@ export const getDateRangeForTimeframe = (timeframe: Timeframe): DateRange => {
   }
 };
 
-/**
- * Count working days (Mon-Fri) in a date range
- */
-export const countWorkingDays = (from: Date, to: Date): number => {
-  const days = eachDayOfInterval({ start: from, end: to });
-  return days.filter((day) => !isWeekend(day)).length;
-};
-
-/**
- * Count working days in a week, clamped to the given date range
- */
-const countWorkingDaysInWeek = (weekStart: Date, weekEnd: Date, rangeFrom: Date, rangeTo: Date): number => {
-  // Clamp week to the date range
-  const effectiveStart = max([weekStart, rangeFrom]);
-  const effectiveEnd = min([weekEnd, rangeTo]);
-
-  if (isBefore(effectiveEnd, effectiveStart)) {
-    return 0;
-  }
-
-  return countWorkingDays(effectiveStart, effectiveEnd);
-};
+// Re-export countWorkingDays for backward compatibility
+export { countWorkingDays };
 
 /**
  * Group time entries by project/task for display
@@ -153,6 +133,22 @@ const groupEntriesByProject = (entries: HarvestTimeEntry[]): ProjectEntry[] => {
   return Array.from(projectMap.values()).map((p) => p.entry);
 };
 
+export interface TimeBankOptions {
+  /** User's weekly capacity in seconds (from Harvest API). Default: 144000 (40 hours) */
+  weeklyCapacitySeconds?: number;
+  /** Whether the user has billable project assignments. Default: true */
+  hasBillableProjects?: boolean;
+}
+
+/**
+ * Calculate Avspasering hours from entries
+ */
+const calculateAvspaseringsHours = (entries: HarvestTimeEntry[]): number => {
+  return entries
+    .filter(isAvspaseringsEntry)
+    .reduce((sum, entry) => sum + entry.hours, 0);
+};
+
 /**
  * Calculate time balance from Harvest time entries
  * All entries (including absence) count towards logged hours.
@@ -160,42 +156,30 @@ const groupEntriesByProject = (entries: HarvestTimeEntry[]): ProjectEntry[] => {
  */
 export const calculateTimeBalance = (
   timeEntries: HarvestTimeEntry[],
-  dateRange: DateRange
+  dateRange: DateRange,
+  options?: TimeBankOptions
 ): TimeBalance => {
+  // Get weekly capacity in hours (convert from seconds)
+  const weeklyCapacityHours = options?.weeklyCapacitySeconds
+    ? options.weeklyCapacitySeconds / 3600
+    : HARVEST.DEFAULTS.WEEKLY_CAPACITY_HOURS;
+
+  // Daily capacity based on user's weekly capacity (divided by 5 work days)
+  const dailyCapacityHours = weeklyCapacityHours / 5;
+
+  // Determine if user should have billing expectations
+  const hasBillableProjects = options?.hasBillableProjects ?? true;
   const rangeFrom = parseISO(dateRange.from);
   const rangeTo = parseISO(dateRange.to);
 
-  // Group all entries by ISO week
-  const weekMap = new Map<string, HarvestTimeEntry[]>();
+  // Detect daily hour pattern (7.5 or 8 hours per day)
+  const { dailyTarget } = detectDailyHourPattern(timeEntries);
 
-  timeEntries.forEach((entry) => {
-    const entryDate = parseISO(entry.spent_date);
-
-    // Only include entries within the date range
-    if (isBefore(entryDate, rangeFrom) || isAfter(entryDate, rangeTo)) {
-      return;
-    }
-
-    const weekNumber = getISOWeek(entryDate);
-    const weekYear = getISOWeekYear(entryDate);
-    const weekKey = `${weekYear}-W${String(weekNumber).padStart(2, "0")}`;
-
-    if (!weekMap.has(weekKey)) {
-      weekMap.set(weekKey, []);
-    }
-    weekMap.get(weekKey)!.push(entry);
-  });
+  // Group entries by week
+  const weekMap = groupEntriesByWeek(timeEntries, rangeFrom, rangeTo);
 
   // Get all weeks in the date range (even those without entries)
-  const allWeeks = new Set<string>();
-  let currentDate = rangeFrom;
-  while (!isAfter(currentDate, rangeTo)) {
-    const weekNumber = getISOWeek(currentDate);
-    const weekYear = getISOWeekYear(currentDate);
-    const weekKey = `${weekYear}-W${String(weekNumber).padStart(2, "0")}`;
-    allWeeks.add(weekKey);
-    currentDate = addDays(currentDate, 7);
-  }
+  const allWeeks = generateWeeksInRange(rangeFrom, rangeTo);
 
   // Also add any weeks from entries
   weekMap.forEach((_, key) => allWeeks.add(key));
@@ -205,33 +189,28 @@ export const calculateTimeBalance = (
   let cumulativeBalance = 0;
 
   const weeklyBreakdown: WeekBalance[] = sortedWeeks.map((weekKey) => {
-    // Parse week key to get dates
-    const [yearStr, weekStr] = weekKey.split("-W");
-    const year = parseInt(yearStr, 10);
-    const week = parseInt(weekStr, 10);
-
-    // Get Monday of the week
-    const jan4 = new Date(year, 0, 4);
-    const monday = startOfISOWeek(jan4);
-    const weekStart = addDays(monday, (week - 1) * 7);
+    const weekStart = getWeekStartFromKey(weekKey);
     const weekEnd = addDays(weekStart, 4); // Friday
 
-    // Calculate logged hours for this week (ALL entries including absence)
+    // Get entries for this week
     const entries = weekMap.get(weekKey) || [];
-    const logged = entries.reduce((sum, entry) => sum + entry.hours, 0);
 
-    // Calculate Avspasering hours separately (tracked per week, deducted only from total)
-    const avspaseringsHours = entries
-      .filter(isAvspaseringsEntry)
-      .reduce((sum, entry) => sum + entry.hours, 0);
-
-    // Calculate expected hours (working days in this week within range × 8)
-    const workingDays = countWorkingDaysInWeek(weekStart, weekEnd, rangeFrom, rangeTo);
-    const expected = workingDays * HOURS_PER_DAY;
+    // Calculate metrics using extracted functions
+    const logged = calculateWeeklyLogged(entries);
+    const expected = calculateWeeklyExpected(weekStart, rangeFrom, rangeTo, dailyCapacityHours);
+    const billableHours = calculateBillableHours(entries);
+    const avspaseringsHours = calculateAvspaseringsHours(entries);
+    const availableForBilling = calculateAvailableForBilling(
+      weekStart,
+      rangeFrom,
+      rangeTo,
+      dailyTarget,
+      billableHours,
+      hasBillableProjects
+    );
 
     // Weekly balance: logged - expected (no avspasering deduction)
-    // The weekly view should show the correct 40t/40t = 0t balance
-    const balance = logged - expected;
+    const balance = calculateWeeklyBalance(logged, expected);
     cumulativeBalance += balance;
 
     // Group all entries for display (isAbsence flag used for highlighting only)
@@ -246,6 +225,8 @@ export const calculateTimeBalance = (
       balance,
       cumulativeBalance,
       avspaseringsHours,
+      billableHours,
+      availableForBilling,
       entries: groupedEntries,
     };
   });
@@ -316,11 +297,6 @@ export const formatHoursDisplay = (hours: number): string => {
  * Fagtimer (competency hours) calculation
  * Rules: 8 hours per month, except January, December, July, August
  */
-const FAGTIMER_CLIENT = "forte digital internal no";
-const FAGTIMER_TASK = "competency group participant";
-const FAGTIMER_HOURS_PER_MONTH = 8;
-const FAGTIMER_EXCLUDED_MONTHS = [0, 6, 7, 11]; // Jan=0, Jul=6, Aug=7, Dec=11
-
 export interface FagtimerBalance {
   used: number;
   available: number;
@@ -329,13 +305,15 @@ export interface FagtimerBalance {
 
 /**
  * Check if a time entry is a fagtimer entry
- * Checks both client name and task name (project is "Internal Value", client is "Forte Digital Internal NO")
  */
 const isFagtimerEntry = (entry: HarvestTimeEntry): boolean => {
   const clientName = entry.client?.name?.toLowerCase() || "";
   const taskName = entry.task?.name?.toLowerCase() || "";
 
-  return clientName.includes(FAGTIMER_CLIENT) && taskName.includes(FAGTIMER_TASK);
+  return (
+    clientName.includes(HARVEST.FAGTIMER_CLIENT) &&
+    taskName.includes(HARVEST.TASKS.FAGTIMER)
+  );
 };
 
 /**
@@ -348,8 +326,8 @@ const calculateAvailableFagtimer = (fromDate: Date, toDate: Date): number => {
 
   while (currentDate <= endDate) {
     const month = currentDate.getMonth();
-    if (!FAGTIMER_EXCLUDED_MONTHS.includes(month)) {
-      available += FAGTIMER_HOURS_PER_MONTH;
+    if (!(HARVEST.FAGTIMER_EXCLUDED_MONTHS as readonly number[]).includes(month)) {
+      available += HARVEST.DEFAULTS.FAGTIMER_HOURS_PER_MONTH;
     }
     currentDate.setMonth(currentDate.getMonth() + 1);
   }

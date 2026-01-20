@@ -35,8 +35,6 @@ export enum GameSubTab {
   Leaderboard = "leaderboard",
   Rules = "rules",
   Employees = "employees",
-  Sync = "sync",
-  Admin = "admin",
 }
 
 export interface GameState {

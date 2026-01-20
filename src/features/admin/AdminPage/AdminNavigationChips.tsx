@@ -1,64 +1,46 @@
 import { useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import { GameSubTab, setActiveSubTab, selectActiveSubTab } from "@/features/game/gameSlice";
-import { routes } from "@/shared/routes";
-import styles from "./GameNavigationChips.module.scss";
+import { AdminSubTab, setAdminSubTab, selectAdminSubTab } from "../adminSlice";
+import styles from "./AdminNavigationChips.module.scss";
 
-const subTabToRoute: Record<GameSubTab, string> = {
-  [GameSubTab.Play]: routes.play,
-  [GameSubTab.Leaderboard]: routes.leaderboard,
-  [GameSubTab.Rules]: routes.rules,
-  [GameSubTab.Employees]: routes.employees,
+const subTabToTranslationKey: Record<AdminSubTab, string> = {
+  [AdminSubTab.EmployeeOfTheDay]: "admin.navigation.employeeOfTheDay",
+  [AdminSubTab.Logging]: "admin.navigation.logging",
+  [AdminSubTab.Lottery]: "admin.navigation.lottery",
 };
 
-const subTabToTranslationKey: Record<GameSubTab, string> = {
-  [GameSubTab.Play]: "sidebar.fortedle",
-  [GameSubTab.Leaderboard]: "sidebar.leaderboard",
-  [GameSubTab.Rules]: "sidebar.rules",
-  [GameSubTab.Employees]: "sidebar.employees",
+const subTabToIcon: Record<AdminSubTab, string> = {
+  [AdminSubTab.EmployeeOfTheDay]: "🎯",
+  [AdminSubTab.Logging]: "📋",
+  [AdminSubTab.Lottery]: "🎁",
 };
 
-const subTabToIcon: Record<GameSubTab, string> = {
-  [GameSubTab.Play]: "🎮",
-  [GameSubTab.Leaderboard]: "🏆",
-  [GameSubTab.Rules]: "📖",
-  [GameSubTab.Employees]: "👥",
-};
-
-export const GameNavigationChips = () => {
+export const AdminNavigationChips = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const activeSubTab = useAppSelector(selectActiveSubTab);
+  const activeSubTab = useAppSelector(selectAdminSubTab);
   const navRef = useRef<HTMLDivElement>(null);
   const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 });
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const handleChipClick = (subTab: GameSubTab) => {
-    const route = subTabToRoute[subTab];
-    if (route) {
-      dispatch(setActiveSubTab(subTab));
-      navigate(route);
-    }
+  const handleChipClick = (subTab: AdminSubTab) => {
+    dispatch(setAdminSubTab(subTab));
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent, subTab: GameSubTab) => {
+  const handleKeyDown = (event: React.KeyboardEvent, subTab: AdminSubTab) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleChipClick(subTab);
     }
   };
 
-  const subTabs: GameSubTab[] = [
-    GameSubTab.Play,
-    GameSubTab.Leaderboard,
-    GameSubTab.Rules,
-    GameSubTab.Employees,
+  const subTabs: AdminSubTab[] = [
+    AdminSubTab.EmployeeOfTheDay,
+    AdminSubTab.Logging,
+    AdminSubTab.Lottery,
   ];
 
-  // Update slider position when active tab changes
   useEffect(() => {
     if (navRef.current) {
       const activeButton = navRef.current.querySelector(`[data-tab="${activeSubTab}"]`) as HTMLElement;
@@ -67,7 +49,6 @@ export const GameNavigationChips = () => {
           left: activeButton.offsetLeft,
           width: activeButton.offsetWidth,
         });
-        // Enable transitions after initial position is set
         if (!isInitialized) {
           requestAnimationFrame(() => setIsInitialized(true));
         }
@@ -76,7 +57,7 @@ export const GameNavigationChips = () => {
   }, [activeSubTab, isInitialized]);
 
   return (
-    <nav ref={navRef} className={styles.navigationChips} aria-label="Game navigation">
+    <nav ref={navRef} className={styles.navigationChips} aria-label="Admin navigation">
       {sliderStyle.width > 0 && (
         <div
           className={`${styles.slider} ${isInitialized ? styles.animated : ""}`}

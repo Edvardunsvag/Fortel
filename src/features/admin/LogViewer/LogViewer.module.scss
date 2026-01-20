@@ -1,0 +1,44 @@
+@use "shared/styles/variables.scss" as *;
+
+.content {
+  margin-top: $spacing-xl;
+}
+
+.section {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  margin: 0 0 $spacing-md 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: $color-light-grey-text;
+  margin: 0 0 $spacing-lg 0;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl;
+  background-color: $color-light-grey;
+  border-radius: $radius-md;
+  text-align: center;
+}
+
+.placeholderIcon {
+  font-size: 3rem;
+  margin-bottom: $spacing-md;
+}
+
+.placeholderText {
+  font-size: 1rem;
+  color: $color-light-grey-text;
+  margin: 0;
+}

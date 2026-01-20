@@ -10,6 +10,7 @@ import { navigationReducer } from "@/features/sidebar/navigationSlice";
 import { authReducer } from "@/features/auth/authSlice";
 import { i18nReducer } from "@/features/i18n/i18nSlice";
 import { lotteryReducer } from "@/features/lottery/lotterySlice";
+import { adminReducer } from "@/features/admin/adminSlice";
 import type { RootState } from "@/app/store";
 import { queryClient } from "@/app/queryClient";
 import { MsalProvider } from "@azure/msal-react";
@@ -32,6 +33,7 @@ function createTestStore(preloadedState?: Partial<RootState>) {
       [FeatureKey.Auth]: authReducer,
       [FeatureKey.I18n]: i18nReducer,
       [FeatureKey.Lottery]: lotteryReducer,
+      [FeatureKey.Admin]: adminReducer,
     },
     preloadedState: preloadedState as RootState | undefined,
   });

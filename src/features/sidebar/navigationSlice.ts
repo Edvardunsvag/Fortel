@@ -6,6 +6,7 @@ export enum ActiveTab {
   Play = "play",
   Lottery = "lottery",
   TimeBank = "timebank",
+  Admin = "admin",
 }
 
 interface NavigationState {

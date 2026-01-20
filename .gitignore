@@ -15,8 +15,6 @@ node_modules
 dist
 dist-ssr
 *.local
-.cursor/*
-!.cursor/rules/
 # Environment variables
 .env
 .env.local

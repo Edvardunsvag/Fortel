@@ -319,6 +319,45 @@
       }
     }
   },
+  "giftcards": {
+    "title": "Giftcard Transactions",
+    "subtitle": "View and manage Glede giftcard transactions",
+    "loading": "Loading transactions...",
+    "error": "Failed to load transactions",
+    "noTransactions": "No giftcard transactions found",
+    "sendGiftcard": "Send Giftcard",
+    "sending": "Sending...",
+    "cancel": "Cancel",
+    "errors": {
+      "selectEmployee": "Please select an employee",
+      "invalidAmount": "Amount must be between 1 and 10,000 NOK"
+    },
+    "table": {
+      "recipient": "Recipient",
+      "amount": "Amount",
+      "status": "Status",
+      "reason": "Reason",
+      "date": "Date",
+      "orderId": "Order ID"
+    },
+    "status": {
+      "pending": "Pending",
+      "sent": "Sent",
+      "failed": "Failed"
+    },
+    "form": {
+      "selectEmployee": "Select employee",
+      "amount": "Amount (NOK)",
+      "message": "Message (optional)",
+      "reason": "Reason",
+      "submit": "Send Giftcard"
+    },
+    "reasons": {
+      "weekly_lottery_winner": "Weekly Lottery Winner",
+      "monthly_lottery_winner": "Monthly Lottery Winner",
+      "manual": "Manual"
+    }
+  },
   "timebank": {
     "title": "Time Bank",
     "connectDescription": "Connect your Harvest account to view your time balance.",

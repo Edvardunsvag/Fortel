@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<MonthlyWinningTicket> MonthlyWinningTickets { get; set; }
     public DbSet<LotteryConfig> LotteryConfigs { get; set; }
     public DbSet<EmployeeWeek> EmployeeWeeks { get; set; }
+    public DbSet<GiftcardTransaction> GiftcardTransactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -123,6 +124,22 @@ public class AppDbContext : DbContext
                 .HasDatabaseName("idx_employee_weeks_week_key");
             entity.HasIndex(e => e.WeekStart)
                 .HasDatabaseName("idx_employee_weeks_week_start");
+        });
+
+        // Configure GiftcardTransaction entity
+        modelBuilder.Entity<Models.Database.GiftcardTransaction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId)
+                .HasDatabaseName("idx_giftcard_transactions_user_id");
+            entity.HasIndex(e => e.Status)
+                .HasDatabaseName("idx_giftcard_transactions_status");
+            entity.HasIndex(e => e.Reason)
+                .HasDatabaseName("idx_giftcard_transactions_reason");
+            entity.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("idx_giftcard_transactions_created_at");
+            entity.HasIndex(e => e.GledeOrderId)
+                .HasDatabaseName("idx_giftcard_transactions_glede_order_id");
         });
     }
 }

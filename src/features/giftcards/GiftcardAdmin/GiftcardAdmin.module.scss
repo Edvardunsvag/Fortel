@@ -1,0 +1,216 @@
+@use "shared/styles/variables.scss" as *;
+@use "sass:color";
+
+.section {
+  margin-top: $spacing-xxl;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  margin: 0 0 $spacing-sm 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: $color-light-grey-text;
+  margin: 0;
+}
+
+.sendButton {
+  padding: $spacing-sm $spacing-lg;
+  background-color: $color-link-blue;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: color.adjust($color-link-blue, $lightness: -10%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+.form {
+  background: $color-light-grey;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.formGroup {
+  margin-bottom: $spacing-md;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $color-dark-fill;
+  margin-bottom: $spacing-xs;
+}
+
+.select,
+.input,
+.textarea {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $color-border-light;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: $color-white;
+  color: $color-dark-fill;
+
+  &:focus {
+    outline: none;
+    border-color: $color-link-blue;
+    box-shadow: 0 0 0 3px rgba($color-link-blue, 0.1);
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+
+.formError {
+  color: $color-error;
+  font-size: 0.875rem;
+  margin-bottom: $spacing-md;
+}
+
+.submitButton {
+  padding: $spacing-sm $spacing-lg;
+  background-color: $color-success;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover:not(:disabled) {
+    background-color: color.adjust($color-success, $lightness: -10%);
+  }
+
+  &:disabled {
+    background-color: $color-light-grey;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-success;
+    outline-offset: 2px;
+  }
+}
+
+.loading,
+.error,
+.noTransactions {
+  font-size: 1rem;
+  color: $color-dark-fill;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.error {
+  color: $color-error;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: $radius-md;
+  border: 1px solid $color-border-light;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: $spacing-md;
+    text-align: left;
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  th {
+    background-color: $color-light-fill;
+    font-weight: 600;
+    color: $color-dark-fill;
+    white-space: nowrap;
+  }
+
+  tbody tr:hover {
+    background-color: $color-light-fill;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.recipient {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.recipientName {
+  font-weight: 500;
+  color: $color-dark-fill;
+}
+
+.recipientEmail {
+  font-size: 0.75rem;
+  color: $color-light-grey-text;
+}
+
+.status {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusPending {
+  background-color: $color-warning;
+  color: $color-white;
+}
+
+.statusSent {
+  background-color: $color-success;
+  color: $color-white;
+}
+
+.statusFailed {
+  background-color: $color-error;
+  color: $color-white;
+}

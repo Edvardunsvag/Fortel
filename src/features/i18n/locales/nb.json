@@ -322,6 +322,45 @@
       }
     }
   },
+  "giftcards": {
+    "title": "Gavekort-transaksjoner",
+    "subtitle": "Se og administrer Glede gavekort-transaksjoner",
+    "loading": "Laster transaksjoner...",
+    "error": "Kunne ikke laste transaksjoner",
+    "noTransactions": "Ingen gavekort-transaksjoner funnet",
+    "sendGiftcard": "Send gavekort",
+    "sending": "Sender...",
+    "cancel": "Avbryt",
+    "errors": {
+      "selectEmployee": "Vennligst velg en ansatt",
+      "invalidAmount": "Beløpet må være mellom 1 og 10 000 NOK"
+    },
+    "table": {
+      "recipient": "Mottaker",
+      "amount": "Beløp",
+      "status": "Status",
+      "reason": "Grunn",
+      "date": "Dato",
+      "orderId": "Ordre-ID"
+    },
+    "status": {
+      "pending": "Venter",
+      "sent": "Sendt",
+      "failed": "Feilet"
+    },
+    "form": {
+      "selectEmployee": "Velg ansatt",
+      "amount": "Beløp (NOK)",
+      "message": "Melding (valgfritt)",
+      "reason": "Grunn",
+      "submit": "Send gavekort"
+    },
+    "reasons": {
+      "weekly_lottery_winner": "Ukentlig lotterivinner",
+      "monthly_lottery_winner": "Månedlig lotterivinner",
+      "manual": "Manuell"
+    }
+  },
   "timebank": {
     "title": "Timebank",
     "connectDescription": "Koble til din Harvest-konto for å se din timesaldo.",

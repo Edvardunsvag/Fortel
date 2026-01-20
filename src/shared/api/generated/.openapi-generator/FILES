@@ -12,6 +12,7 @@ docs/FortedleServerModelsDTOsEmployeeStatisticsDto.md
 docs/FortedleServerModelsDTOsEmployeeStatisticsResponse.md
 docs/FortedleServerModelsDTOsEmployeeWeekDto.md
 docs/FortedleServerModelsDTOsEmployeeWeeksResponse.md
+docs/FortedleServerModelsDTOsGiftcardTransactionDto.md
 docs/FortedleServerModelsDTOsGuessDto.md
 docs/FortedleServerModelsDTOsGuessHintDto.md
 docs/FortedleServerModelsDTOsLeaderboardDto.md
@@ -23,6 +24,8 @@ docs/FortedleServerModelsDTOsMonthlyWinnersResponse.md
 docs/FortedleServerModelsDTOsRevealFunfactRequest.md
 docs/FortedleServerModelsDTOsRoundDto.md
 docs/FortedleServerModelsDTOsSaveGuessRequest.md
+docs/FortedleServerModelsDTOsSendGiftcardRequest.md
+docs/FortedleServerModelsDTOsSendGiftcardResponse.md
 docs/FortedleServerModelsDTOsStartRoundRequest.md
 docs/FortedleServerModelsDTOsSubmitScoreRequest.md
 docs/FortedleServerModelsDTOsSubmitScoreResponse.md
@@ -37,6 +40,7 @@ docs/FortedleServerModelsDTOsWheelDataResponse.md
 docs/FortedleServerModelsDTOsWheelParticipantDto.md
 docs/FortedleServerModelsDTOsWheelSegmentDto.md
 docs/FortedleServerModelsDTOsWinnerDto.md
+docs/GiftcardsApi.md
 docs/HealthApi.md
 docs/LeaderboardApi.md
 docs/LotteryTicketsApi.md

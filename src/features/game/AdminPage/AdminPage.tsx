@@ -10,6 +10,7 @@ import { Navigate } from "react-router-dom";
 import { routes } from "@/shared/routes";
 import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import { toSyncRequest } from "@/features/game/employees/toDto";
+import { GiftcardAdmin } from "@/features/giftcards";
 import styles from "./AdminPage.module.scss";
 
 export const AdminPage = () => {
@@ -188,6 +189,9 @@ export const AdminPage = () => {
               </form>
             )}
           </div>
+
+          {/* Giftcard Admin Section */}
+          <GiftcardAdmin />
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ export enum FeatureKey {
   Leaderboard = "leaderboard",
   I18n = "i18n",
   Lottery = "lottery",
+  Admin = "admin",
 }
 
 export enum AsyncStatus {

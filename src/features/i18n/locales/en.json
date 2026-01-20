@@ -11,7 +11,7 @@
   },
   "admin": {
     "changeEmployee": "Change today's employee",
-    "title": "Admin - Today's Winner",
+    "title": "Admin",
     "todaysWinner": "Today's Winner",
     "originalId": "Original ID",
     "obfuscatedId": "Obfuscated ID (Employee of the Day)",
@@ -19,7 +19,17 @@
     "date": "Date",
     "department": "Department",
     "office": "Office",
-    "noEmployees": "No employees found."
+    "noEmployees": "No employees found.",
+    "navigation": {
+      "employeeOfTheDay": "Employee of the Day",
+      "logging": "Logging",
+      "lottery": "Lottery"
+    },
+    "logging": {
+      "title": "Server Logs",
+      "subtitle": "View server error logs and system events",
+      "comingSoon": "Logging functionality coming soon"
+    }
   },
   "game": {
     "title": "Fortedle",

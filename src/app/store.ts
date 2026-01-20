@@ -5,6 +5,7 @@ import { navigationReducer } from "@/features/sidebar/navigationSlice";
 import { authReducer } from "@/features/auth/authSlice";
 import { i18nReducer } from "@/features/i18n/i18nSlice";
 import { lotteryReducer } from "@/features/lottery/lotterySlice";
+import { adminReducer } from "@/features/admin/adminSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     [FeatureKey.Auth]: authReducer,
     [FeatureKey.I18n]: i18nReducer,
     [FeatureKey.Lottery]: lotteryReducer,
+    [FeatureKey.Admin]: adminReducer,
   },
 });
 

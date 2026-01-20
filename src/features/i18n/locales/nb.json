@@ -11,7 +11,7 @@
   },
   "admin": {
     "changeEmployee": "Bytt dagens ansatt",
-    "title": "Admin - Dagens vinner",
+    "title": "Admin",
     "todaysWinner": "Dagens vinner",
     "originalId": "Original ID",
     "obfuscatedId": "Obfuskert ID (Dagens ansatt)",
@@ -19,7 +19,17 @@
     "date": "Dato",
     "department": "Avdeling",
     "office": "Kontor",
-    "noEmployees": "Ingen ansatte funnet."
+    "noEmployees": "Ingen ansatte funnet.",
+    "navigation": {
+      "employeeOfTheDay": "Dagens ansatt",
+      "logging": "Logger",
+      "lottery": "Lotteri"
+    },
+    "logging": {
+      "title": "Serverlogger",
+      "subtitle": "Se serverlogger og systemhendelser",
+      "comingSoon": "Loggfunksjonalitet kommer snart"
+    }
   },
   "game": {
     "title": "Fortedle",

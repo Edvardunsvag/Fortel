@@ -1,0 +1,34 @@
+@use "shared/styles/variables.scss" as *;
+
+.page {
+  min-height: 100vh;
+  padding-left: 16rem;
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  padding-right: $spacing-xl;
+
+  @media (max-width: 768px) {
+    padding-left: 4rem;
+    padding-right: $spacing-md;
+  }
+}
+
+.container {
+  max-width: 64rem;
+  margin: 0 auto;
+  background-color: $color-primary-beige;
+  border-radius: $radius-lg;
+  padding: $spacing-xxl;
+  box-shadow: 0 2px 8px $color-shadow-light;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 500;
+  margin: 0 0 $spacing-lg 0;
+  color: $color-dark-accent;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}

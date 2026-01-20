@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
 import { selectActiveTab, ActiveTab } from "@/features/sidebar/navigationSlice";
 import { selectAccount } from "@/features/auth/authSlice";
+import { isAdminAccount } from "@/shared/config/adminConfig";
 import { SidebarItem } from "./SidebarItem";
 import { LanguageToggle } from "../LanguageToggle/LanguageToggle";
 import { LoginButton } from "../LoginButton/LoginButton";
-import { AdminButton } from "../AdminButton/AdminButton";
 import { tabToRoute } from "@/shared/routes";
 import styles from "./Sidebar.module.scss";
 
@@ -15,6 +15,7 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const activeTab = useAppSelector(selectActiveTab);
   const account = useAppSelector(selectAccount);
+  const isAdmin = isAdminAccount(account?.username);
 
   const handleTabClick = (tab: ActiveTab) => {
     const route = tabToRoute[tab];
@@ -67,10 +68,17 @@ export const Sidebar = () => {
           onTabClick={handleTabClick}
           onKeyDown={handleKeyDown}
         />
+        {isAdmin && (
+          <SidebarItem
+            tab={ActiveTab.Admin}
+            icon="⚙️"
+            label={t("sidebar.admin")}
+            activeTab={activeTab}
+            onTabClick={handleTabClick}
+            onKeyDown={handleKeyDown}
+          />
+        )}
       </ul>
-      <div className={styles.adminContainer}>
-        <AdminButton />
-      </div>
       <div className={styles.authContainer}>
         <LanguageToggle />
       </div>

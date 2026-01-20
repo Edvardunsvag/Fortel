@@ -18,7 +18,7 @@ import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
 import { LeaderboardPage } from "./features/game/leaderboard/LeaderboardPage/LeaderboardPage";
 import { EmployeesPage } from "./features/game/employees/EmployeesPage/EmployeesPage";
-import { AdminPage } from "./features/game/AdminPage/AdminPage";
+import { AdminPage } from "./features/admin";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -36,13 +36,14 @@ export const App = () => {
     const tab = routeToTab[path];
     if (tab) {
       // Set ActiveTab for sidebar navigation
-      // All game-related routes (play, leaderboard, rules, employees, admin) should show Play as active
-      if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees" || tab === "admin") {
+      if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees") {
         dispatch(setActiveTab(ActiveTab.Play));
       } else if (tab === "lottery") {
         dispatch(setActiveTab(ActiveTab.Lottery));
       } else if (tab === "timebank") {
         dispatch(setActiveTab(ActiveTab.TimeBank));
+      } else if (tab === "admin") {
+        dispatch(setActiveTab(ActiveTab.Admin));
       }
 
       // Sync Game sub-navigation for Fortedle-related routes
@@ -51,7 +52,6 @@ export const App = () => {
         [routes.leaderboard]: GameSubTab.Leaderboard,
         [routes.rules]: GameSubTab.Rules,
         [routes.employees]: GameSubTab.Employees,
-        [routes.admin]: GameSubTab.Admin,
       };
 
       const gameSubTab = gameSubTabMap[path];

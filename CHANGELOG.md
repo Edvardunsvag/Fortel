@@ -8,6 +8,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026-01-20]
 
 ### Added
+- **Glede Giftcard Integration** - Automated giftcard sending for lottery winners ([#19](https://github.com/Edvardunsvag/Fortedle/pull/19))
+  - **Backend Services**:
+    - `GledeApiService` - HTTP client for Glede API integration
+    - `GiftcardService` - Business logic for sending and tracking giftcards
+    - `GiftcardTransactionRepository` - Data access for giftcard transactions
+  - **Database**:
+    - `GiftcardTransaction` entity with full tracking (user, amount, status, Glede order IDs, error handling)
+    - Database migrations for giftcard transactions table with indexed columns
+    - Foreign key relationships to Employee, WinningTicket, and MonthlyWinningTicket entities
+  - **API Endpoints** (`GiftcardsController`):
+    - `POST /api/giftcards/send` - Send giftcard to a user
+    - `GET /api/giftcards` - Get all giftcard transactions
+    - `GET /api/giftcards/user/{userId}` - Get transactions for specific user
+    - `GET /api/giftcards/{id}` - Get specific transaction by ID
+  - **Frontend Admin Panel**:
+    - `GiftcardAdmin` component with transaction list table
+    - Manual giftcard sending form with employee selector
+    - Status badges (pending/sent/failed) and formatted dates
+    - Full i18n support (English and Norwegian)
+  - **Automated Giftcard Sending**:
+    - Weekly lottery winners automatically receive 500 NOK giftcards
+    - Giftcard transactions linked to winning tickets for traceability
+    - Integration with existing `LotteryDrawingService`
+    - Comprehensive error handling and logging for failed sends
+  - **Configuration**:
+    - Glede API settings in `appsettings.json` (ApiKey, BaseUrl, SenderName, amounts)
+    - Support for different amounts based on reason (weekly/monthly/manual)
+    - Configurable sender name and custom messages
+  - **DTOs and Models**:
+    - `GledeCreateOrderRequest/Response` for API communication
+    - `SendGiftcardRequest/Response` for application layer
+    - `GiftcardTransactionDto` with mapping extensions
+    - Full support for Glede API v1 specification
+- **CLAUDE.md** - Agent rules file for Claude Code integration
+  - References Cursor rules files for frontend and backend patterns
+  - Quick reference for commands, directories, and critical patterns
 - Pull request template for standardized PR descriptions ([#18](https://github.com/Edvardunsvag/Fortedle/pull/18))
 
 ### Changed
@@ -17,10 +53,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Command follows Conventional Commits 1.0.0 specification
   - Includes CHANGELOG.md update automation
   - Supports branch creation, commit, and PR creation in one workflow
+- Updated `.gitignore` to allow tracking `CLAUDE.md` for shared agent configuration
+- `LotteryDrawingService` now sends giftcards to winners with winning ticket ID linkage
+- `Program.cs` updated with dependency injection for giftcard services
+- `AppDbContext` includes new `GiftcardTransactions` DbSet with proper indexes
 
-### Changed
-- Updated `.gitignore` to allow tracking `.cursor/` directory
-  - Removed `.cursor/*` exclusion to enable version control for Cursor IDE commands
+### Removed
+- `AGENTS.md` - Replaced by `CLAUDE.md` which references Cursor rules files directly
 
 ## [2026-01-19]
 

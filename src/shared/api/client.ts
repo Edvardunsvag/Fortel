@@ -4,7 +4,7 @@
  * Creates configured instances of the generated API clients
  * using the existing apiConfig for base URL management.
  */
-import { Configuration, EmployeesApi, LeaderboardApi, RoundsApi, SyncApi, LotteryTicketsApi, EmployeeWeeksApi } from "./generated/index";
+import { Configuration, EmployeesApi, LeaderboardApi, RoundsApi, SyncApi, LotteryTicketsApi, EmployeeWeeksApi, GiftcardsApi } from "./generated/index";
 
 const getApiBaseUrl = (): string => {
   // In development, Vite proxy handles /api routes
@@ -44,3 +44,4 @@ export const roundsApi = new RoundsApi(apiConfig);
 export const syncApi = new SyncApi(apiConfig);
 export const lotteryTicketsApi = new LotteryTicketsApi(apiConfig);
 export const employeeWeeksApi = new EmployeeWeeksApi(apiConfig);
+export const giftcardsApi = new GiftcardsApi(apiConfig);

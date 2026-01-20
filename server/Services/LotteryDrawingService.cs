@@ -11,18 +11,22 @@ public interface ILotteryDrawingService
 public class LotteryDrawingService : ILotteryDrawingService
 {
     private const int WinnersPerWeek = 1;
+    private const int WeeklyWinnerGiftcardAmount = 500; // 500 NOK per weekly winner
 
     private readonly ILotteryTicketRepository _lotteryTicketRepository;
     private readonly IWinningTicketRepository _winningTicketRepository;
+    private readonly IGiftcardService _giftcardService;
     private readonly ILogger<LotteryDrawingService> _logger;
 
     public LotteryDrawingService(
         ILotteryTicketRepository lotteryTicketRepository,
         IWinningTicketRepository winningTicketRepository,
+        IGiftcardService giftcardService,
         ILogger<LotteryDrawingService> logger)
     {
         _lotteryTicketRepository = lotteryTicketRepository;
         _winningTicketRepository = winningTicketRepository;
+        _giftcardService = giftcardService;
         _logger = logger;
     }
 
@@ -95,6 +99,45 @@ public class LotteryDrawingService : ILotteryDrawingService
                 winningTicketEntities.Count,
                 week,
                 string.Join(", ", winningTicketEntities.Select(w => $"UserId: {w.UserId}, TicketId: {w.LotteryTicketId}")));
+
+            // Send giftcards to winners
+            foreach (var winner in winningTicketEntities)
+            {
+                try
+                {
+                    _logger.LogInformation("Sending giftcard to weekly winner {UserId}, WinningTicketId: {WinningTicketId}", winner.UserId, winner.Id);
+
+                    var giftcardResult = await _giftcardService.SendGiftcardToWinnerAsync(
+                        winner.UserId,
+                        WeeklyWinnerGiftcardAmount,
+                        "weekly_lottery_winner",
+                        winningTicketId: winner.Id);
+
+                    if (giftcardResult.Success)
+                    {
+                        _logger.LogInformation(
+                            "Giftcard sent successfully to weekly winner {UserId}. Order ID: {OrderId}",
+                            winner.UserId,
+                            giftcardResult.OrderId);
+                    }
+                    else
+                    {
+                        _logger.LogWarning(
+                            "Failed to send giftcard to weekly winner {UserId}: {Error}",
+                            winner.UserId,
+                            giftcardResult.ErrorMessage);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error sending giftcard to weekly winner {UserId}: {Message}",
+                        winner.UserId,
+                        ex.Message);
+                    // Don't throw - we still want the lottery drawing to be considered successful
+                }
+            }
         }
         catch (Exception ex)
         {

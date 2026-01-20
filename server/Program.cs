@@ -118,6 +118,7 @@ builder.Services.AddScoped<IWinningTicketRepository, WinningTicketRepository>();
 builder.Services.AddScoped<IMonthlyWinningTicketRepository, MonthlyWinningTicketRepository>();
 builder.Services.AddScoped<ILotteryConfigRepository, LotteryConfigRepository>();
 builder.Services.AddScoped<IEmployeeWeekRepository, EmployeeWeekRepository>();
+builder.Services.AddScoped<IGiftcardTransactionRepository, GiftcardTransactionRepository>();
 
 // Register services (which depend on repositories)
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
@@ -129,6 +130,8 @@ builder.Services.AddScoped<ILotteryDrawingService, LotteryDrawingService>();
 builder.Services.AddScoped<IMonthlyLotteryDrawingService, MonthlyLotteryDrawingService>();
 builder.Services.AddScoped<IWheelDataService, WheelDataService>();
 builder.Services.AddScoped<IEmployeeWeekService, EmployeeWeekService>();
+builder.Services.AddScoped<IGledeApiService, GledeApiService>();
+builder.Services.AddScoped<IGiftcardService, GiftcardService>();
 
 // Add HttpClient for external API calls
 builder.Services.AddHttpClient();

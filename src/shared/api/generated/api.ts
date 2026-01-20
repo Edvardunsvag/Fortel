@@ -67,6 +67,27 @@ export interface FortedleServerModelsDTOsEmployeeWeekDto {
 export interface FortedleServerModelsDTOsEmployeeWeeksResponse {
     'weeks'?: Array<FortedleServerModelsDTOsEmployeeWeekDto> | null;
 }
+export interface FortedleServerModelsDTOsGiftcardTransactionDto {
+    'id'?: number;
+    'userId'?: string | null;
+    'employeeName'?: string | null;
+    'employeeEmail'?: string | null;
+    'employeePhone'?: string | null;
+    'amount'?: number;
+    'currency'?: string | null;
+    'reason'?: string | null;
+    'status'?: string | null;
+    'gledeOrderId'?: string | null;
+    'gledeGiftId'?: string | null;
+    'gledeGiftLink'?: string | null;
+    'errorMessage'?: string | null;
+    'message'?: string | null;
+    'senderName'?: string | null;
+    'createdAt'?: string;
+    'sentAt'?: string | null;
+    'winningTicketId'?: number | null;
+    'monthlyWinningTicketId'?: number | null;
+}
 export interface FortedleServerModelsDTOsGuessDto {
     'employeeId'?: string | null;
     'employeeName'?: string | null;
@@ -138,6 +159,21 @@ export interface FortedleServerModelsDTOsSaveGuessRequest {
     'userId'?: string | null;
     'date'?: string | null;
     'guess': FortedleServerModelsDTOsGuessDto;
+}
+export interface FortedleServerModelsDTOsSendGiftcardRequest {
+    'userId'?: string | null;
+    'amount'?: number;
+    'message'?: string | null;
+    'reason'?: string | null;
+    'winningTicketId'?: number | null;
+    'monthlyWinningTicketId'?: number | null;
+}
+export interface FortedleServerModelsDTOsSendGiftcardResponse {
+    'success'?: boolean;
+    'orderId'?: string | null;
+    'giftId'?: string | null;
+    'giftLink'?: string | null;
+    'errorMessage'?: string | null;
 }
 export interface FortedleServerModelsDTOsStartRoundRequest {
     'userId'?: string | null;
@@ -497,6 +533,324 @@ export class EmployeesApi extends BaseAPI implements EmployeesApiInterface {
      */
     public apiEmployeesGet(options?: RawAxiosRequestConfig) {
         return EmployeesApiFp(this.configuration).apiEmployeesGet(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * GiftcardsApi - axios parameter creator
+ */
+export const GiftcardsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Giftcards`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsIdGet: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('apiGiftcardsIdGet', 'id', id)
+            const localVarPath = `/api/Giftcards/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsSendGiftcardRequest} [fortedleServerModelsDTOsSendGiftcardRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsSendPost: async (fortedleServerModelsDTOsSendGiftcardRequest?: FortedleServerModelsDTOsSendGiftcardRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Giftcards/send`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSendGiftcardRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsUserUserIdGet: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('apiGiftcardsUserUserIdGet', 'userId', userId)
+            const localVarPath = `/api/Giftcards/user/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * GiftcardsApi - functional programming interface
+ */
+export const GiftcardsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = GiftcardsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiGiftcardsGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FortedleServerModelsDTOsGiftcardTransactionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiGiftcardsGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GiftcardsApi.apiGiftcardsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiGiftcardsIdGet(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsGiftcardTransactionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiGiftcardsIdGet(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GiftcardsApi.apiGiftcardsIdGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsSendGiftcardRequest} [fortedleServerModelsDTOsSendGiftcardRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest?: FortedleServerModelsDTOsSendGiftcardRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSendGiftcardResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GiftcardsApi.apiGiftcardsSendPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiGiftcardsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FortedleServerModelsDTOsGiftcardTransactionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiGiftcardsUserUserIdGet(userId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GiftcardsApi.apiGiftcardsUserUserIdGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * GiftcardsApi - factory interface
+ */
+export const GiftcardsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = GiftcardsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsGiftcardTransactionDto>> {
+            return localVarFp.apiGiftcardsGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsIdGet(id: number, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsGiftcardTransactionDto> {
+            return localVarFp.apiGiftcardsIdGet(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsSendGiftcardRequest} [fortedleServerModelsDTOsSendGiftcardRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest?: FortedleServerModelsDTOsSendGiftcardRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSendGiftcardResponse> {
+            return localVarFp.apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiGiftcardsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsGiftcardTransactionDto>> {
+            return localVarFp.apiGiftcardsUserUserIdGet(userId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * GiftcardsApi - interface
+ */
+export interface GiftcardsApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiGiftcardsGet(options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsGiftcardTransactionDto>>;
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiGiftcardsIdGet(id: number, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsGiftcardTransactionDto>;
+
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsSendGiftcardRequest} [fortedleServerModelsDTOsSendGiftcardRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest?: FortedleServerModelsDTOsSendGiftcardRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSendGiftcardResponse>;
+
+    /**
+     * 
+     * @param {string} userId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiGiftcardsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FortedleServerModelsDTOsGiftcardTransactionDto>>;
+
+}
+
+/**
+ * GiftcardsApi - object-oriented interface
+ */
+export class GiftcardsApi extends BaseAPI implements GiftcardsApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiGiftcardsGet(options?: RawAxiosRequestConfig) {
+        return GiftcardsApiFp(this.configuration).apiGiftcardsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiGiftcardsIdGet(id: number, options?: RawAxiosRequestConfig) {
+        return GiftcardsApiFp(this.configuration).apiGiftcardsIdGet(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsSendGiftcardRequest} [fortedleServerModelsDTOsSendGiftcardRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest?: FortedleServerModelsDTOsSendGiftcardRequest, options?: RawAxiosRequestConfig) {
+        return GiftcardsApiFp(this.configuration).apiGiftcardsSendPost(fortedleServerModelsDTOsSendGiftcardRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} userId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiGiftcardsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig) {
+        return GiftcardsApiFp(this.configuration).apiGiftcardsUserUserIdGet(userId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

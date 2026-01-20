@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Fortedle.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fortedle.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120140548_AddGiftcardTransactions")]
+    partial class AddGiftcardTransactions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,10 +245,6 @@ namespace Fortedle.Server.Migrations
                         .HasColumnType("text")
                         .HasColumnName("message");
 
-                    b.Property<int?>("MonthlyWinningTicketId")
-                        .HasColumnType("integer")
-                        .HasColumnName("monthly_winning_ticket_id");
-
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -273,10 +272,6 @@ namespace Fortedle.Server.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("user_id");
 
-                    b.Property<int?>("WinningTicketId")
-                        .HasColumnType("integer")
-                        .HasColumnName("winning_ticket_id");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt")
@@ -284,8 +279,6 @@ namespace Fortedle.Server.Migrations
 
                     b.HasIndex("GledeOrderId")
                         .HasDatabaseName("idx_giftcard_transactions_glede_order_id");
-
-                    b.HasIndex("MonthlyWinningTicketId");
 
                     b.HasIndex("Reason")
                         .HasDatabaseName("idx_giftcard_transactions_reason");
@@ -295,8 +288,6 @@ namespace Fortedle.Server.Migrations
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("idx_giftcard_transactions_user_id");
-
-                    b.HasIndex("WinningTicketId");
 
                     b.ToTable("giftcard_transactions");
                 });
@@ -612,25 +603,13 @@ namespace Fortedle.Server.Migrations
 
             modelBuilder.Entity("Fortedle.Server.Models.Database.GiftcardTransaction", b =>
                 {
-                    b.HasOne("Fortedle.Server.Models.Database.MonthlyWinningTicket", "MonthlyWinningTicket")
-                        .WithMany()
-                        .HasForeignKey("MonthlyWinningTicketId");
-
                     b.HasOne("Fortedle.Server.Models.Database.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fortedle.Server.Models.Database.WinningTicket", "WinningTicket")
-                        .WithMany()
-                        .HasForeignKey("WinningTicketId");
-
                     b.Navigation("Employee");
-
-                    b.Navigation("MonthlyWinningTicket");
-
-                    b.Navigation("WinningTicket");
                 });
 
             modelBuilder.Entity("Fortedle.Server.Models.Database.WinningTicket", b =>

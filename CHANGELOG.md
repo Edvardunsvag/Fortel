@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026-01-20]
 
 ### Added
-- **Glede Giftcard Integration** - Automated giftcard sending for lottery winners ([#XX](link))
+- **Glede Giftcard Integration** - Automated giftcard sending for lottery winners ([#19](https://github.com/Edvardunsvag/Fortedle/pull/19))
   - **Backend Services**:
     - `GledeApiService` - HTTP client for Glede API integration
     - `GiftcardService` - Business logic for sending and tracking giftcards

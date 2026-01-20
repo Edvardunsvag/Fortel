@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026-01-20]
 
 ### Added
-- **Cursor IDE PR Command** ([#XX](link))
+- **Cursor IDE PR Command** ([#17](https://github.com/Edvardunsvag/Fortedle/pull/17))
   - Added `.cursor/commands/pr-command.md` for automated PR creation workflow
   - Command follows Conventional Commits 1.0.0 specification
   - Includes CHANGELOG.md update automation

@@ -11,4 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pull request template for standardized PR descriptions ([#18](https://github.com/Edvardunsvag/Fortedle/pull/18))
 
 ### Changed
-- Removed cursor command file that was causing merge conflicts
+- Restored cursor PR command file that was accidentally removed

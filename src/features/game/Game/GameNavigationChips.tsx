@@ -1,17 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { GameSubTab, setActiveSubTab, selectActiveSubTab } from "@/features/game/gameSlice";
-import { routes } from "@/shared/routes";
 import styles from "./GameNavigationChips.module.scss";
-
-const subTabToRoute: Record<GameSubTab, string> = {
-  [GameSubTab.Play]: routes.play,
-  [GameSubTab.Leaderboard]: routes.leaderboard,
-  [GameSubTab.Rules]: routes.rules,
-  [GameSubTab.Employees]: routes.employees,
-};
 
 const subTabToTranslationKey: Record<GameSubTab, string> = {
   [GameSubTab.Play]: "sidebar.fortedle",
@@ -29,7 +20,6 @@ const subTabToIcon: Record<GameSubTab, string> = {
 
 export const GameNavigationChips = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const activeSubTab = useAppSelector(selectActiveSubTab);
   const navRef = useRef<HTMLDivElement>(null);
@@ -37,11 +27,7 @@ export const GameNavigationChips = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   const handleChipClick = (subTab: GameSubTab) => {
-    const route = subTabToRoute[subTab];
-    if (route) {
-      dispatch(setActiveSubTab(subTab));
-      navigate(route);
-    }
+    dispatch(setActiveSubTab(subTab));
   };
 
   const handleKeyDown = (event: React.KeyboardEvent, subTab: GameSubTab) => {

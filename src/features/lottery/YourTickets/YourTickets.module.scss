@@ -425,6 +425,33 @@
   }
 }
 
+// Make statusBadge buttons clickable with hover effects
+.statusBadge {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+  }
+}
+
+// Increase height for statusBadge buttons in totalTicketsBadge to match "Kvalifisert" button (42px)
+.totalTicketsBadge .statusBadge {
+  padding-top: 0.65625rem; // ~10.5px
+  padding-bottom: 0.65625rem; // ~10.5px
+}
+
 .syncSuccess {
   margin: $spacing-sm 0 0 0;
   color: #2e7d32;

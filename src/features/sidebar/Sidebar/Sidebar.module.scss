@@ -29,10 +29,32 @@
   padding: $spacing-lg $spacing-lg $spacing-md;
   border-bottom: 1px solid $color-border-light;
   margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.userAvatar,
+.userAvatarPlaceholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: $radius-full;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.userAvatarPlaceholder {
+  background-color: $color-light-grey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-dark-fill;
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
 .userName {
-  display: block;
+  flex: 1;
   font-size: 0.875rem;
   font-weight: 600;
   color: $color-dark-fill;

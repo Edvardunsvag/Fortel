@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { HintResult } from "@/features/game/types";
 import styles from "./FlipBox.module.scss";
 
@@ -9,6 +9,7 @@ interface FlipBoxProps {
   delay?: number;
   showArrow?: boolean;
   arrowDirection?: "up" | "down";
+  icon?: ReactNode;
 }
 
 export const FlipBox = ({
@@ -18,6 +19,7 @@ export const FlipBox = ({
   delay = 0,
   showArrow = false,
   arrowDirection = "up",
+  icon,
 }: FlipBoxProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -61,7 +63,10 @@ export const FlipBox = ({
             <span className={styles.label}>{label}</span>
           </div>
           <div className={styles.flipBack}>
-            <span className={styles.value}>{value}</span>
+            <div className={styles.valueContainer}>
+              <span className={styles.value}>{value}</span>
+              {icon && <span className={styles.icon}>{icon}</span>}
+            </div>
             {showArrow && (
               <span
                 className={`${styles.arrow} ${arrowDirection === "up" ? styles.arrowUp : styles.arrowDown}`}

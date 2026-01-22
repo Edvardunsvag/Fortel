@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAllWinners } from "../queries";
+import { getInitials } from "@/shared/utils/nameMatcher";
 import styles from "./Lotteri.module.scss";
 
 interface WinnersRevealProps {
@@ -67,7 +68,7 @@ export const WinnersReveal = ({ isUserWinner = false }: WinnersRevealProps) => {
                       return (
                         <div key={`${winner.userId}-${index}`} className={styles.winnerItem}>
                           {shouldShowPlaceholder ? (
-                            <div className={styles.winnerAvatarPlaceholder}>{winner.name}</div>
+                            <div className={styles.winnerAvatarPlaceholder}>{getInitials(winner.name)}</div>
                           ) : (
                             <img src={winner.image || ""} alt={winner.name} className={styles.winnerAvatar} />
                           )}

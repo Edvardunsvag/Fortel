@@ -686,6 +686,54 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 - Use `Fortedle.Server.{Folder}` pattern
 - Example: `Fortedle.Server.Controllers`, `Fortedle.Server.Models.Database`
 
+## Azure AD JWT Authentication
+
+### Configuration
+- Configure Azure AD authentication in `Program.cs` using `AddAuthentication` and `AddJwtBearer`
+- Store Azure AD settings in `appsettings.json` under `AzureAd` section:
+  - `Instance`: `https://login.microsoftonline.com/`
+  - `ClientId`: Your Azure AD app registration client ID
+  - `TenantId`: Your Azure AD tenant ID
+  - `Audience`: The Application ID URI (e.g., `api://{client-id}`), **NOT** the full scope URI
+
+### Token Validation
+- **CRITICAL: Accept both v1.0 and v2.0 issuer formats** - Azure AD can return tokens with either format:
+  - v1.0: `https://sts.windows.net/{tenantId}/`
+  - v2.0: `https://login.microsoftonline.com/{tenantId}/v2.0`
+- Use `ValidIssuers` (array) instead of `ValidIssuer` (single) to accept both formats
+- Accept both the custom API scope audience and the client ID as valid audiences
+- The token's `aud` claim will be the Application ID URI (e.g., `api://{client-id}`), not the full scope URI
+
+### Example Configuration
+```csharp
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = $"{instance}{tenantId}/v2.0";
+        options.Audience = audience; // Application ID URI, e.g., api://{client-id}
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            // Accept both the custom API scope audience and the client ID as audience
+            ValidAudiences = new[] { audience, clientId },
+            // Accept both v1.0 and v2.0 issuer formats
+            ValidIssuers = new[]
+            {
+                $"https://sts.windows.net/{tenantId}/",
+                $"{instance}{tenantId}/v2.0"
+            }
+        };
+    });
+```
+
+### Common Issues
+- **Issuer validation fails**: Ensure `ValidIssuers` includes both v1.0 and v2.0 formats
+- **Audience validation fails**: Ensure `Audience` in config is the Application ID URI (not the full scope), and `ValidAudiences` includes both the audience and client ID
+- **Token not received**: Check that the frontend is sending the token with "Bearer " prefix in the Authorization header
+
 ## Testing (if applicable)
 
 ### Unit Tests

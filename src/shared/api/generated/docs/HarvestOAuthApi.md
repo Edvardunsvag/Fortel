@@ -43,7 +43,7 @@ const { status, data } = await apiInstance.apiHarvestOauthExchangePost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -94,7 +94,7 @@ const { status, data } = await apiInstance.apiHarvestOauthRefreshPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

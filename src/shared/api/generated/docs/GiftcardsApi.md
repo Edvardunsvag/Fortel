@@ -37,7 +37,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -87,7 +87,7 @@ const { status, data } = await apiInstance.apiGiftcardsIdGet(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -138,7 +138,7 @@ const { status, data } = await apiInstance.apiGiftcardsSendPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -188,7 +188,7 @@ const { status, data } = await apiInstance.apiGiftcardsUserUserIdGet(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

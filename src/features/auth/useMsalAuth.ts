@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 import { useAppDispatch } from "@/app/hooks";
 import { setAccount, setAccessToken, clearAuth, toSerializableAccount } from "./authSlice";
-import { loginRequest } from "@/shared/config/msalConfig";
+import { loginRequest, msalConfig } from "@/shared/config/msalConfig";
 
 /**
  * Custom hook to manage MSAL authentication state and sync with Redux
@@ -38,10 +38,37 @@ export const useMsalAuth = () => {
   }, [accounts, instance, dispatch]);
 
   const handleLogin = async () => {
+    // Validate that Azure AD is configured
+    if (!msalConfig.auth.clientId || msalConfig.auth.clientId === "") {
+      const errorMessage = "Azure AD Client ID is not configured. Please set VITE_AZURE_CLIENT_ID in your .env file.";
+      console.error(errorMessage);
+      alert(errorMessage);
+      return;
+    }
+
     try {
-      await instance.loginPopup(loginRequest);
+      console.log("Attempting login with MSAL...", { 
+        clientId: msalConfig.auth.clientId,
+        authority: msalConfig.auth.authority,
+        scopes: loginRequest.scopes 
+      });
+      const response = await instance.loginPopup(loginRequest);
+      console.log("Login successful:", response);
     } catch (error) {
       console.error("Login failed:", error);
+      // Log more details about the error
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+        // Show user-friendly error message
+        if (error.message.includes("popup")) {
+          alert("Login popup was blocked. Please allow popups for this site and try again.");
+        } else {
+          alert(`Login failed: ${error.message}`);
+        }
+      } else {
+        alert("Login failed. Please check the console for details.");
+      }
     }
   };
 

@@ -100,7 +100,7 @@ public class GiftcardService : IGiftcardService
             {
                 UserId = request.UserId,
                 EmployeeName = employee.Name,
-                EmployeeEmail = effectiveEmail,
+                EmployeeEmail = effectiveEmail ?? string.Empty,
                 EmployeePhone = effectivePhone,
                 Amount = request.Amount,
                 Currency = "NOK",

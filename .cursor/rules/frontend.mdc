@@ -138,6 +138,74 @@ Each feature lives in `src/features/<feature>/`:
 - **Never import enums with `type` keyword** - enums are runtime values and must be imported as regular imports: `import { EnumName }` not `import type { EnumName }`.
 - Code must compile and run.
 
+## Azure AD JWT Authentication
+
+### MSAL Configuration
+- Configure MSAL in `src/shared/config/msalConfig.ts`
+- Use environment variables:
+  - `VITE_AZURE_CLIENT_ID`: Azure AD app registration client ID
+  - `VITE_AZURE_TENANT_ID`: Azure AD tenant ID
+  - `VITE_AZURE_REDIRECT_URI`: Redirect URI (e.g., `http://localhost:5173` for dev)
+  - `VITE_AZURE_API_SCOPE`: Full API scope URI (e.g., `api://{client-id}/access_as_user`)
+
+### Token Request Scopes
+- **CRITICAL: Request ONLY the API scope for backend authentication** - Do NOT include `User.Read` or other Microsoft Graph scopes
+- When requesting scopes from different resources (Microsoft Graph and custom API), MSAL returns a token for the first resource only
+- To get a token for your API, request ONLY the API scope: `api://{client-id}/access_as_user`
+- If you need Microsoft Graph data, request it separately with a different token acquisition call
+
+### API Client Configuration
+- **CRITICAL: The generated API client uses `setApiKeyToObject` which expects `apiKey`, not `accessToken`**
+- Set both `apiKey` and `accessToken` in the Configuration object
+- **CRITICAL: Include "Bearer " prefix in the `apiKey` value** - The generated code sets the header value directly without adding "Bearer "
+- Format: `apiKey: accessToken ? \`Bearer ${accessToken}\` : undefined`
+
+### Example API Client Configuration
+```typescript
+const createApiConfiguration = (accessToken?: string | null): Configuration => {
+  return new Configuration({
+    basePath: baseUrl || undefined,
+    // The generated API uses setApiKeyToObject which expects apiKey, not accessToken
+    // Since setApiKeyToObject sets the header value directly, we need to include "Bearer " prefix
+    apiKey: accessToken ? `Bearer ${accessToken}` : undefined,
+    accessToken: accessToken || undefined, // Keep this too in case it's used elsewhere
+    baseOptions: {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
+};
+```
+
+### Example MSAL Login Request
+```typescript
+export const loginRequest: PopupRequest = {
+  scopes: (() => {
+    const apiScope = getApiScope();
+    const scopes: string[] = [];
+    
+    // Request only the API scope for backend authentication
+    // Do NOT include User.Read here - it causes MSAL to return a Microsoft Graph token
+    if (apiScope) {
+      scopes.push(apiScope);
+    }
+    
+    return scopes;
+  })(),
+};
+```
+
+### Token Storage
+- Store access tokens in Redux (via `authSlice`)
+- Use `useAppSelector(selectAccessToken)` to get the token in query hooks
+- Pass the token to `createApiClients(accessToken)` when making API calls
+
+### Common Issues
+- **Token has wrong audience**: Ensure login request only includes the API scope, not Microsoft Graph scopes
+- **401 Unauthorized**: Check that the token includes "Bearer " prefix in the Authorization header
+- **Issuer validation fails**: Backend must accept both v1.0 and v2.0 issuer formats (see backend rules)
+
 ## Preferred folder layout
 - `src/app/` for store setup, query client setup, and global hooks
 - `src/features/` for feature slices/components/queries

@@ -82,7 +82,7 @@ export const SpinningWheel = forwardRef<SpinningWheelHandle, SpinningWheelProps>
           ctx.moveTo(centerX, centerY);
           ctx.arc(centerX, centerY, radius, startAngle, endAngle);
           ctx.closePath();
-          ctx.fillStyle = segment.color;
+          ctx.fillStyle = segment.color ?? "#cccccc";
           ctx.fill();
 
           // Draw segment border

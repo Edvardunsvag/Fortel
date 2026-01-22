@@ -59,6 +59,7 @@ export const WinnersReveal = ({ isUserWinner = false }: WinnersRevealProps) => {
             </div>
             <h3 className={styles.winnersTitle}>{t("lottery.winners.title")}</h3>
             {weeklyWinners.map((weekGroup) => {
+              if (!weekGroup.winners) return null;
               return (
                 <div key={weekGroup.week} className={styles.weekGroup}>
                   <div className={styles.winnersList}>
@@ -69,7 +70,7 @@ export const WinnersReveal = ({ isUserWinner = false }: WinnersRevealProps) => {
                           {shouldShowPlaceholder ? (
                             <div className={styles.winnerAvatarPlaceholder}>{winner.name}</div>
                           ) : (
-                            <img src={winner.image || ""} alt={winner.name} className={styles.winnerAvatar} />
+                            <img src={winner.image ?? ""} alt={winner.name ?? ""} className={styles.winnerAvatar} />
                           )}
                           <span className={styles.winnerName}>{winner.name}</span>
                         </div>

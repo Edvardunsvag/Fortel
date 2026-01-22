@@ -57,13 +57,17 @@ public class HarvestApiService
     /// </summary>
     public async Task<TokenResponse> ExchangeCodeForTokenAsync(string code)
     {
-        var clientId = _configuration["Harvest:ClientId"];
-        var clientSecret = _configuration["Harvest:ClientSecret"];
-        var redirectUri = _configuration["Harvest:RedirectUri"];
+        // Try environment variables first, then fall back to configuration
+        var clientId = _configuration["HARVEST_CLIENT_ID"] 
+                      ?? _configuration["Harvest:ClientId"];
+        var clientSecret = _configuration["HARVEST_CLIENT_SECRET"] 
+                          ?? _configuration["Harvest:ClientSecret"];
+        var redirectUri = _configuration["HARVEST_REDIRECT_URI"] 
+                         ?? _configuration["Harvest:RedirectUri"];
 
         if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
         {
-            throw new InvalidOperationException("Harvest ClientId and ClientSecret must be configured in appsettings.json");
+            throw new InvalidOperationException("Harvest ClientId and ClientSecret must be configured in appsettings.json or environment variables (HARVEST_CLIENT_ID, HARVEST_CLIENT_SECRET)");
         }
 
         var tokenEndpoint = "https://id.getharvest.com/api/v2/oauth2/token";
@@ -118,12 +122,15 @@ public class HarvestApiService
     /// </summary>
     public async Task<TokenResponse> RefreshAccessTokenAsync(string refreshToken)
     {
-        var clientId = _configuration["Harvest:ClientId"];
-        var clientSecret = _configuration["Harvest:ClientSecret"];
+        // Try environment variables first, then fall back to configuration
+        var clientId = _configuration["HARVEST_CLIENT_ID"] 
+                      ?? _configuration["Harvest:ClientId"];
+        var clientSecret = _configuration["HARVEST_CLIENT_SECRET"] 
+                          ?? _configuration["Harvest:ClientSecret"];
 
         if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
         {
-            throw new InvalidOperationException("Harvest ClientId and ClientSecret must be configured in appsettings.json");
+            throw new InvalidOperationException("Harvest ClientId and ClientSecret must be configured in appsettings.json or environment variables (HARVEST_CLIENT_ID, HARVEST_CLIENT_SECRET)");
         }
 
         var tokenEndpoint = "https://id.getharvest.com/api/v2/oauth2/token";

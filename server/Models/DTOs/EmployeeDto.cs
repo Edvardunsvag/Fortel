@@ -14,5 +14,6 @@ public class EmployeeDto
     public int? Age { get; set; }
     public string Supervisor { get; set; } = "-";
     public string? Funfact { get; set; }
+    public string? PhoneNumber { get; set; }
     public List<string> Interests { get; set; } = new();
 }

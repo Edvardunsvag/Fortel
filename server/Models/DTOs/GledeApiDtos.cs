@@ -89,6 +89,7 @@ public class SendGiftcardRequest
     public int Amount { get; set; }
     public string? Message { get; set; }
     public string Reason { get; set; } = "manual";
+    public string? Phone { get; set; }
     public int? WinningTicketId { get; set; }
     public int? MonthlyWinningTicketId { get; set; }
 }

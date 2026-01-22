@@ -57,6 +57,10 @@ public class Employee
     [Column("funfact")]
     public string? Funfact { get; set; }
 
+    [Column("phone_number")]
+    [MaxLength(50)]
+    public string? PhoneNumber { get; set; }
+
     [Column("interests")]
     public List<string> Interests { get; set; } = new();
 

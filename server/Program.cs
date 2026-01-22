@@ -395,6 +395,36 @@ _ = Task.Run(async () =>
                             logger.LogWarning("Migration reconciliation failed. Please manually verify migration state.");
                         }
                     }
+                    catch (Exception migrationEx)
+                    {
+                        // Catch-all for all other migration errors (table doesn't exist, syntax errors, constraint violations, etc.)
+                        logger.LogError(migrationEx, 
+                            "Migration failed with error: {Message}. Exception type: {ExceptionType}. " +
+                            "Pending migrations: {PendingMigrations}. " +
+                            "This is a critical error that needs to be resolved before the application can function correctly.",
+                            migrationEx.Message, 
+                            migrationEx.GetType().Name,
+                            string.Join(", ", pendingMigrations));
+                        
+                        // Log inner exception details if available
+                        if (migrationEx.InnerException != null)
+                        {
+                            logger.LogError("Inner exception: {InnerException}", migrationEx.InnerException.Message);
+                        }
+                        
+                        // For PostgresException, log SQL state and detail for better debugging
+                        if (migrationEx is PostgresException pgEx)
+                        {
+                            logger.LogError("PostgreSQL error code: {SqlState}, Detail: {Detail}, Message: {MessageText}", 
+                                pgEx.SqlState, pgEx.Detail ?? "N/A", pgEx.MessageText);
+                        }
+                        
+                        logger.LogError("CRITICAL: Database migrations failed. The application will continue running, but database operations may fail. " +
+                            "Please resolve migration errors by: " +
+                            "1. Checking migration files for errors, " +
+                            "2. Verifying database permissions, " +
+                            "3. Manually applying migrations using: dotnet ef database update --project Fortedle.Server.csproj");
+                    }
                 }
                 else
                 {

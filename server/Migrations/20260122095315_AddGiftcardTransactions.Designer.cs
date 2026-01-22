@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fortedle.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260122084443_AddGiftcardTransactions")]
+    [Migration("20260122095315_AddGiftcardTransactions")]
     partial class AddGiftcardTransactions
     {
         /// <inheritdoc />
@@ -84,6 +84,11 @@ namespace Fortedle.Server.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("office");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("phone_number");
 
                     b.Property<string>("Supervisor")
                         .HasMaxLength(255)

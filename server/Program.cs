@@ -1,5 +1,6 @@
 using Fortedle.Server;
 using Fortedle.Server.Data;
+using Fortedle.Server.Middleware;
 using Fortedle.Server.Repositories;
 using Fortedle.Server.Services;
 using Hangfire;
@@ -272,6 +273,15 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// HTTPS Redirection - must be early in pipeline (production only)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Security Headers - add early in pipeline
+app.UseMiddleware<SecurityHeadersMiddleware>();
 
 // Configure the HTTP request pipeline
 // Log all requests (early in pipeline)

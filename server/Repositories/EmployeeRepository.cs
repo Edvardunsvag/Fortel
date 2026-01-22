@@ -61,6 +61,10 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task DeleteAllAsync()
     {
-        await _context.Database.ExecuteSqlRawAsync("DELETE FROM employees");
+        // Use EF Core's DeleteRange for better safety and consistency
+        // This is safer than raw SQL and maintains consistency with other operations
+        var allEmployees = await _context.Employees.ToListAsync();
+        _context.Employees.RemoveRange(allEmployees);
+        await _context.SaveChangesAsync();
     }
 }

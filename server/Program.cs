@@ -30,17 +30,42 @@ builder.Services.AddControllers()
     });
 
 // Configure CORS
-var defaultOrigins = new[] { "http://localhost:5173", "http://localhost:8080" };
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
-    ?? defaultOrigins;
+List<string> allowedOrigins;
+
+if (builder.Environment.IsDevelopment())
+{
+    // Development: Allow localhost origins
+    allowedOrigins = new List<string> 
+    { 
+        "http://localhost:5173", 
+        "http://localhost:8080"
+    };
+}
+else
+{
+    // Production: Only allow the frontend origin
+    allowedOrigins = new List<string> 
+    { 
+        "https://fortedle.hackathon.forteapps.net"
+    };
+    
+    // Optionally allow additional origins from configuration
+    var additionalOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+    if (additionalOrigins != null && additionalOrigins.Length > 0)
+    {
+        allowedOrigins.AddRange(additionalOrigins);
+    }
+}
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins(allowedOrigins)
-            .AllowAnyMethod()
-            .AllowAnyHeader()
+        policy.WithOrigins(allowedOrigins.ToArray())
+            // Only allow the HTTP methods your API actually uses
+            .WithMethods("GET", "POST", "OPTIONS")
+            // Only allow the headers your API actually needs
+            .WithHeaders("Authorization", "Content-Type", "X-Requested-With")
             .AllowCredentials()
             .WithExposedHeaders("Content-Type")
             .SetPreflightMaxAge(TimeSpan.FromHours(24));

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-22]
+
+### Changed
+- Simplified PR command documentation in `.cursor/commands/pr-command.md` ([#21](https://github.com/Edvardunsvag/Fortedle/pull/21))
+- Consolidated giftcard transaction migrations (removed duplicate migrations, added consolidated migration)
+- Made weekly winner giftcard amount configurable via `Glede:WeeklyWinnerAmount` in appsettings
+
+### Fixed
+- Added validation for minimum giftcard amount (50 NOK) in `GiftcardService`
+- Added validation for required employee name fields (FirstName and Surname) before sending giftcards
+- Improved null handling in giftcard service with proper fallback values
+
+### Added
+- Enhanced logging in `GledeApiService` for API request debugging
+- Enhanced logging in `LotteryDrawingService` for giftcard sending operations
+
 ## [2026-01-20]
 
 ### Added

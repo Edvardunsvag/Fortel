@@ -56,6 +56,11 @@ public class GledeApiService : IGledeApiService
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             });
 
+            _logger.LogInformation(
+                "Sending Glede API request to {Endpoint}. Request payload: {Payload}",
+                endpoint,
+                json);
+
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync(endpoint, content);
 

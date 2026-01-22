@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **age** | **number** |  | [optional] [default to undefined]
 **supervisor** | **string** |  | [optional] [default to undefined]
 **funfact** | **string** |  | [optional] [default to undefined]
+**phoneNumber** | **string** |  | [optional] [default to undefined]
 **interests** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
 
 ## Example
@@ -37,6 +38,7 @@ const instance: FortedleServerModelsDTOsEmployeeDto = {
     age,
     supervisor,
     funfact,
+    phoneNumber,
     interests,
 };
 ```

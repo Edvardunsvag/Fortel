@@ -39,6 +39,7 @@ export interface FortedleServerModelsDTOsEmployeeDto {
     'age'?: number | null;
     'supervisor'?: string | null;
     'funfact'?: string | null;
+    'phoneNumber'?: string | null;
     'interests'?: Array<string> | null;
 }
 export interface FortedleServerModelsDTOsEmployeeStatisticsDto {
@@ -66,6 +67,17 @@ export interface FortedleServerModelsDTOsEmployeeWeekDto {
 }
 export interface FortedleServerModelsDTOsEmployeeWeeksResponse {
     'weeks'?: Array<FortedleServerModelsDTOsEmployeeWeekDto> | null;
+}
+export interface FortedleServerModelsDTOsExchangeTokenRequest {
+    'code'?: string | null;
+    'state'?: string | null;
+}
+export interface FortedleServerModelsDTOsExchangeTokenResponse {
+    'access_token'?: string | null;
+    'token_type'?: string | null;
+    'expires_in'?: number;
+    'refresh_token'?: string | null;
+    'account_id'?: string | null;
 }
 export interface FortedleServerModelsDTOsGiftcardTransactionDto {
     'id'?: number;
@@ -141,6 +153,16 @@ export interface FortedleServerModelsDTOsMonthlyWinnersResponse {
     'winners'?: Array<FortedleServerModelsDTOsMonthlyWinnerDto> | null;
     'isDrawComplete'?: boolean;
 }
+export interface FortedleServerModelsDTOsRefreshTokenRequest {
+    'refresh_token'?: string | null;
+}
+export interface FortedleServerModelsDTOsRefreshTokenResponse {
+    'access_token'?: string | null;
+    'token_type'?: string | null;
+    'expires_in'?: number;
+    'refresh_token'?: string | null;
+    'account_id'?: string | null;
+}
 export interface FortedleServerModelsDTOsRevealFunfactRequest {
     'roundId'?: number;
 }
@@ -165,6 +187,7 @@ export interface FortedleServerModelsDTOsSendGiftcardRequest {
     'amount'?: number;
     'message'?: string | null;
     'reason'?: string | null;
+    'phone'?: string | null;
     'winningTicketId'?: number | null;
     'monthlyWinningTicketId'?: number | null;
 }
@@ -851,6 +874,187 @@ export class GiftcardsApi extends BaseAPI implements GiftcardsApiInterface {
      */
     public apiGiftcardsUserUserIdGet(userId: string, options?: RawAxiosRequestConfig) {
         return GiftcardsApiFp(this.configuration).apiGiftcardsUserUserIdGet(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * HarvestOAuthApi - axios parameter creator
+ */
+export const HarvestOAuthApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsExchangeTokenRequest} [fortedleServerModelsDTOsExchangeTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiHarvestOauthExchangePost: async (fortedleServerModelsDTOsExchangeTokenRequest?: FortedleServerModelsDTOsExchangeTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/harvest-oauth/exchange`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsExchangeTokenRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiHarvestOauthRefreshPost: async (fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/harvest-oauth/refresh`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsRefreshTokenRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * HarvestOAuthApi - functional programming interface
+ */
+export const HarvestOAuthApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = HarvestOAuthApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsExchangeTokenRequest} [fortedleServerModelsDTOsExchangeTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest?: FortedleServerModelsDTOsExchangeTokenRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsExchangeTokenResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthExchangePost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRefreshTokenResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthRefreshPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * HarvestOAuthApi - factory interface
+ */
+export const HarvestOAuthApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = HarvestOAuthApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsExchangeTokenRequest} [fortedleServerModelsDTOsExchangeTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest?: FortedleServerModelsDTOsExchangeTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsExchangeTokenResponse> {
+            return localVarFp.apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRefreshTokenResponse> {
+            return localVarFp.apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * HarvestOAuthApi - interface
+ */
+export interface HarvestOAuthApiInterface {
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsExchangeTokenRequest} [fortedleServerModelsDTOsExchangeTokenRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest?: FortedleServerModelsDTOsExchangeTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsExchangeTokenResponse>;
+
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRefreshTokenResponse>;
+
+}
+
+/**
+ * HarvestOAuthApi - object-oriented interface
+ */
+export class HarvestOAuthApi extends BaseAPI implements HarvestOAuthApiInterface {
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsExchangeTokenRequest} [fortedleServerModelsDTOsExchangeTokenRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest?: FortedleServerModelsDTOsExchangeTokenRequest, options?: RawAxiosRequestConfig) {
+        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthExchangePost(fortedleServerModelsDTOsExchangeTokenRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig) {
+        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

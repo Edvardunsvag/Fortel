@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced logging in `GledeApiService` for API request debugging
 - Enhanced logging in `LotteryDrawingService` for giftcard sending operations
 - Database diagnostic command in `.cursor/commands/db-diagnostic.md` for troubleshooting migration issues
+- Backend OAuth endpoints for Harvest token exchange and refresh - moved client secret handling to backend for security
 
 ## [2026-01-20]
 

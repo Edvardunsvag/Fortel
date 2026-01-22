@@ -9,8 +9,9 @@
  *
  * Required environment variables:
  * - VITE_HARVEST_CLIENT_ID (required)
- * - VITE_HARVEST_CLIENT_SECRET (required)
  * - VITE_HARVEST_REDIRECT_URI (optional, defaults based on environment)
+ *
+ * Note: Client secret is stored securely on the backend and never exposed to the frontend.
  */
 const getRedirectUri = (): string => {
   // Allow override via environment variable
@@ -29,7 +30,6 @@ const getRedirectUri = (): string => {
 };
 
 const clientId = import.meta.env.VITE_HARVEST_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_HARVEST_CLIENT_SECRET;
 
 if (!clientId) {
   console.warn(
@@ -38,19 +38,10 @@ if (!clientId) {
   );
 }
 
-if (!clientSecret) {
-  console.warn(
-    "VITE_HARVEST_CLIENT_SECRET is not set. Harvest OAuth will not work. " +
-      "Please set VITE_HARVEST_CLIENT_SECRET in your .env file or environment variables."
-  );
-}
-
 export const harvestConfig = {
   clientId: clientId || "",
-  clientSecret: clientSecret || "",
   redirectUri: getRedirectUri(),
   authorizationEndpoint: "https://id.getharvest.com/oauth2/authorize",
-  tokenEndpoint: "https://id.getharvest.com/api/v2/oauth2/token",
   apiBase: "https://api.harvestapp.com/v2",
 };
 
@@ -63,6 +54,10 @@ export const generateState = (): string => {
 
 /**
  * Get the OAuth authorization URL
+ * 
+ * Note: Harvest may not support standard OAuth scope parameters.
+ * If the scope parameter causes issues, remove it and verify app permissions
+ * in the Harvest OAuth app settings dashboard.
  */
 export const getHarvestAuthUrl = (state: string): string => {
   const params = new URLSearchParams({
@@ -70,6 +65,8 @@ export const getHarvestAuthUrl = (state: string): string => {
     response_type: "code",
     redirect_uri: harvestConfig.redirectUri,
     state,
+    // Request read-only access (verify scope format with Harvest documentation)
+    scope: "harvest:read",
   });
 
   return `${harvestConfig.authorizationEndpoint}?${params.toString()}`;

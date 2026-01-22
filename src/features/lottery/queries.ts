@@ -206,8 +206,8 @@ export const useAuthenticateLottery = () => {
       }
       sessionStorage.removeItem("harvest_oauth_state");
 
-      // Exchange code for token
-      const tokenResponse = await exchangeCodeForToken(code);
+      // Exchange code for token (state is validated on frontend and backend)
+      const tokenResponse = await exchangeCodeForToken(code, state);
 
       // Fetch accounts to get the correct account ID (not from token extraction)
       let accountId = tokenResponse.account_id;

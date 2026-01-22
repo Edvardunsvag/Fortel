@@ -1,6 +1,7 @@
 using Fortedle.Server.Models.Database;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Repositories;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Fortedle.Server.Services;
 
@@ -19,6 +20,7 @@ public class GiftcardService : IGiftcardService
     private readonly IGiftcardTransactionRepository _giftcardRepository;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _environment;
     private readonly ILogger<GiftcardService> _logger;
 
     public GiftcardService(
@@ -26,12 +28,14 @@ public class GiftcardService : IGiftcardService
         IGiftcardTransactionRepository giftcardRepository,
         IEmployeeRepository employeeRepository,
         IConfiguration configuration,
+        IWebHostEnvironment environment,
         ILogger<GiftcardService> logger)
     {
         _gledeApiService = gledeApiService;
         _giftcardRepository = giftcardRepository;
         _employeeRepository = employeeRepository;
         _configuration = configuration;
+        _environment = environment;
         _logger = logger;
     }
 
@@ -59,16 +63,35 @@ public class GiftcardService : IGiftcardService
 
             // Determine effective phone (request override takes priority)
             var effectivePhone = request.Phone ?? employee.PhoneNumber;
+            // Sanitize phone number for Glede API (remove spaces, ensure E.164 format)
+            var sanitizedPhone = !string.IsNullOrEmpty(effectivePhone) ? SanitizePhoneNumber(effectivePhone) : null;
             var effectiveEmail = employee.Email;
 
-            // Validate employee has at least one contact method (phone or email)
-            if (string.IsNullOrEmpty(effectivePhone) && string.IsNullOrEmpty(effectiveEmail))
+            // Environment-based delivery preference:
+            // - Production: prefer phone (SMS), fallback to email
+            // - Development: prefer email, ignore phone (phone only works in production)
+            bool usePhone = false;
+            if (_environment.IsProduction())
             {
-                _logger.LogWarning("Employee {UserId} has no phone number or email address", request.UserId);
+                // Production: use phone if available, otherwise email
+                usePhone = !string.IsNullOrEmpty(sanitizedPhone);
+            }
+            else
+            {
+                // Development: ignore phone, use email only
+                usePhone = false;
+                sanitizedPhone = null; // Clear phone in dev to ensure email is used
+            }
+
+            // Validate employee has at least one contact method
+            if (!usePhone && string.IsNullOrEmpty(effectiveEmail))
+            {
+                _logger.LogWarning("Employee {UserId} has no email address (phone not used in {Environment})", 
+                    request.UserId, _environment.EnvironmentName);
                 return new SendGiftcardResponse
                 {
                     Success = false,
-                    ErrorMessage = "Employee has no phone number or email address"
+                    ErrorMessage = $"Employee has no email address (phone delivery only works in production)"
                 };
             }
 
@@ -116,14 +139,13 @@ public class GiftcardService : IGiftcardService
             transaction = await _giftcardRepository.AddAsync(transaction);
 
             // Prepare Glede API request
-            // Phone takes priority over email for delivery (SMS preferred)
+            // Environment-based delivery: phone in production, email in development
             var recipient = new GledeRecipient
             {
                 FirstName = employee.FirstName ?? string.Empty,
                 LastName = employee.Surname ?? string.Empty,
-                // If phone available, use SMS delivery; otherwise use email
-                PhoneNumber = !string.IsNullOrEmpty(effectivePhone) ? effectivePhone : null,
-                Email = !string.IsNullOrEmpty(effectivePhone) ? null : effectiveEmail
+                PhoneNumber = usePhone ? sanitizedPhone : null,
+                Email = usePhone ? null : effectiveEmail
             };
 
             var gledeRequest = new GledeCreateOrderRequest
@@ -137,10 +159,11 @@ public class GiftcardService : IGiftcardService
                 Message = request.Message ?? GetDefaultMessage(request.Reason)
             };
 
-            var deliveryMethod = !string.IsNullOrEmpty(effectivePhone) ? "SMS" : "Email";
-            var deliveryTarget = !string.IsNullOrEmpty(effectivePhone) ? effectivePhone : effectiveEmail;
+            var deliveryMethod = usePhone ? "SMS" : "Email";
+            var deliveryTarget = usePhone ? sanitizedPhone : effectiveEmail;
             _logger.LogInformation(
-                "Prepared Glede request: Recipient={FirstName} {LastName}, Delivery={DeliveryMethod} ({DeliveryTarget}), Amount={Amount}, Sender={SenderName}",
+                "Prepared Glede request: Environment={Environment}, Recipient={FirstName} {LastName}, Delivery={DeliveryMethod} ({DeliveryTarget}), Amount={Amount}, Sender={SenderName}",
+                _environment.EnvironmentName,
                 recipient.FirstName,
                 recipient.LastName,
                 deliveryMethod,
@@ -254,5 +277,28 @@ public class GiftcardService : IGiftcardService
             "manual" => "Gratulerer! Her er et gavekort fra Fortel! 🎁",
             _ => "Gratulerer! Her er et gavekort fra Fortel! 🎁"
         };
+    }
+
+    /// <summary>
+    /// Sanitizes phone number for Glede API by removing spaces and formatting characters.
+    /// Ensures E.164 format (e.g., +47479040001 instead of +47 479 04 001).
+    /// </summary>
+    private static string? SanitizePhoneNumber(string? phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            return null;
+
+        // Remove all spaces, dashes, parentheses, and other formatting characters
+        var sanitized = System.Text.RegularExpressions.Regex.Replace(phoneNumber, @"[\s\-\(\)\.]", "");
+
+        // Ensure it starts with + for international format
+        if (!sanitized.StartsWith("+"))
+        {
+            // If it doesn't start with +, try to preserve the original format
+            // but remove spaces and formatting
+            return sanitized;
+        }
+
+        return sanitized;
     }
 }

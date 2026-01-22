@@ -36,10 +36,6 @@
 }
 
 .gameContent {
-  background-color: $color-primary-beige;
-  border-radius: $radius-lg;
-  padding: $spacing-xxl;
-  box-shadow: 0 2px 8px $color-shadow-light;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -106,7 +102,7 @@
 .title {
   font-size: 3rem;
   font-weight: 500;
-  margin: 0;
+  margin: 0 0 $spacing-xl 0;
   color: $color-dark-accent;
   flex: 1;
 }
@@ -141,7 +137,6 @@
   align-items: center;
   justify-content: space-between;
   gap: $spacing-md;
-  margin-bottom: $spacing-md;
   flex-wrap: wrap;
 
   @media (max-width: 768px) {

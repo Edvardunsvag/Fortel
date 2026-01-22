@@ -80,3 +80,15 @@ export const findMatchingEmployee = (userName: string | undefined, employees: Em
 
   return bestMatch.employee;
 };
+
+/**
+ * Extract initials from a name (first letter of first name and first letter of last name)
+ * @param name - Full name string
+ * @returns Initials string (e.g., "John Doe" -> "JD")
+ */
+export const getInitials = (name: string): string => {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
+};

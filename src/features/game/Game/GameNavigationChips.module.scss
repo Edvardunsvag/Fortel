@@ -7,6 +7,7 @@
   flex-wrap: wrap;
   margin-bottom: $spacing-lg;
   padding-bottom: $spacing-md;
+  border-bottom: 2px solid $color-border-medium;
 }
 
 .slider {
@@ -20,7 +21,9 @@
   pointer-events: none;
 
   &.animated {
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { FortedleServerModelsDTOsEmployeeWeekDto } from "@/shared/api/generated/index";
 import { useCountdown } from "../hooks/useCountdown";
+import { getInitials } from "@/shared/utils/nameMatcher";
 import styles from "./Lotteri.module.scss";
 
 interface WeekDetailsProps {
@@ -52,7 +53,7 @@ export const WeekDetails = ({ week }: WeekDetailsProps) => {
                     {week.winner.image ? (
                       <img src={week.winner.image} alt={week.winner.name ?? ""} className={styles.winnerAvatar} />
                     ) : (
-                      <div className={styles.winnerAvatarPlaceholder}>{week.winner.name ?? ""}</div>
+                      <div className={styles.winnerAvatarPlaceholder}>{getInitials(week.winner.name ?? "")}</div>
                     )}
                     <span className={styles.winnerName}>{week.winner.name ?? ""}</span>
                   </div>
@@ -65,7 +66,7 @@ export const WeekDetails = ({ week }: WeekDetailsProps) => {
                   {week.winner.image ? (
                     <img src={week.winner.image} alt={week.winner.name ?? ""} className={styles.winnerAvatar} />
                   ) : (
-                    <div className={styles.winnerAvatarPlaceholder}>{week.winner.name ?? ""}</div>
+                    <div className={styles.winnerAvatarPlaceholder}>{getInitials(week.winner.name ?? "")}</div>
                   )}
                   <span className={styles.winnerName}>{week.winner.name ?? ""}</span>
                 </div>

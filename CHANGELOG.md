@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified PR command documentation in `.cursor/commands/pr-command.md` ([#21](https://github.com/Edvardunsvag/Fortedle/pull/21))
 - Consolidated giftcard transaction migrations (removed duplicate migrations, added consolidated migration)
 - Made weekly winner giftcard amount configurable via `Glede:WeeklyWinnerAmount` in appsettings
+- Refactored game page structure: consolidated navigation and routing into new `GamePage` component
+- Enhanced UI styling across game components (HintCell, FlipBox, Sidebar, navigation chips)
+- Improved game component layout with better header information and guess count display
 
 ### Fixed
 - Added validation for minimum giftcard amount (50 NOK) in `GiftcardService`

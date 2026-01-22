@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./RulesPage.module.scss";
 import { ColorLegend } from "./ColorLegend";
 
@@ -7,11 +6,7 @@ export const RulesPage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
-        <GameNavigationChips />
-        <h1 className={styles.title}>{t("rules.title")}</h1>
-        <div className={styles.content}>
+    <div className={styles.content}>
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>{t("rules.howToPlay")}</h2>
             <p className={styles.text}>{t("rules.howToPlayDescription")}</p>
@@ -54,7 +49,5 @@ export const RulesPage = () => {
             <p className={styles.text}>{t("rules.winningDescription")}</p>
           </section>
         </div>
-      </div>
-    </div>
   );
 };

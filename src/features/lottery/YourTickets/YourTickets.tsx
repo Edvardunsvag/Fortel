@@ -113,11 +113,12 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
               <>
                 {hasCurrentWeekTicket ? (
                   <button
-                    className={styles.eligibilityButton}
+                    className={`${styles.statusBadge} ${styles.statusEligible}`}
                     onClick={handleEligibilityClick}
                     type="button"
                   >
-                    {t("lottery.eligibleForThisWeek")}
+                    <span className={styles.statusIcon}>✓</span>
+                    <span>{t("lottery.eligibleForThisWeek")}</span>
                   </button>
                 ) : (
                   <button

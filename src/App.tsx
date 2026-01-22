@@ -1,9 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import styles from "./App.module.scss";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { Game } from "./features/game/Game/Game";
-import { RulesPage } from "./features/game/RulesPage/RulesPage";
-
+import { GamePage } from "./features/game/GamePage/GamePage";
 import { LotteryPage } from "./features/lottery/LotteryPage/LotteryPage";
 import { TimeBankPage } from "./features/timebank";
 import { LoginScreen } from "./features/auth/LoginScreen/LoginScreen";
@@ -16,8 +14,6 @@ import { isAdminAccount } from "./shared/config/adminConfig";
 import { Sidebar } from "./features/sidebar/Sidebar/Sidebar";
 import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
-import { LeaderboardPage } from "./features/game/leaderboard/LeaderboardPage/LeaderboardPage";
-import { EmployeesPage } from "./features/game/employees/EmployeesPage/EmployeesPage";
 import { AdminPage } from "./features/admin";
 
 export const App = () => {
@@ -70,10 +66,10 @@ export const App = () => {
     <div className={styles.app}>
       <Sidebar />
       <Routes>
-        <Route path={routes.play} element={<Game />} />
-        <Route path={routes.leaderboard} element={<LeaderboardPage />} />
-        <Route path={routes.rules} element={<RulesPage />} />
-        <Route path={routes.employees} element={<EmployeesPage />} />
+        <Route path={routes.play} element={<GamePage />} />
+        <Route path={routes.leaderboard} element={<GamePage />} />
+        <Route path={routes.rules} element={<GamePage />} />
+        <Route path={routes.employees} element={<GamePage />} />
         <Route path={routes.lottery} element={<LotteryPage />} />
         <Route path={routes.timebank} element={<TimeBankPage />} />
         <Route path={routes.sync} element={isAdmin ? <Navigate to={routes.admin} replace /> : <Navigate to={routes.play} replace />} />

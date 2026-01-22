@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./LeaderboardPage.module.scss";
 import { useLeaderboard } from "../queries";
 
@@ -24,42 +23,30 @@ export const LeaderboardPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <GameNavigationChips />
-          <h1 className={styles.title}>{t("leaderboard.title")}</h1>
-          <p className={styles.subtitle}>{t("leaderboard.loading")}</p>
-        </div>
-      </div>
-    );
+    return <p className={styles.subtitle}>{t("leaderboard.loading")}</p>;
   }
 
   if (isError) {
     return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <GameNavigationChips />
-          <h1 className={styles.title}>{t("leaderboard.title")}</h1>
-          <p className={styles.subtitle} style={{ color: "var(--color-error)" }}>
-            {error instanceof Error ? error.message : t("leaderboard.failedToLoad")}
-          </p>
-          <button
-            onClick={handleRefresh}
-            style={{
-              marginTop: "1rem",
-              padding: "0.5rem 1rem",
-              backgroundColor: "var(--color-link-blue)",
-              color: "white",
-              border: "none",
-              borderRadius: "0.5rem",
-              cursor: "pointer",
-            }}
-          >
-            {t("leaderboard.retry")}
-          </button>
-        </div>
-      </div>
+      <>
+        <p className={styles.subtitle} style={{ color: "var(--color-error)" }}>
+          {error instanceof Error ? error.message : t("leaderboard.failedToLoad")}
+        </p>
+        <button
+          onClick={handleRefresh}
+          style={{
+            marginTop: "1rem",
+            padding: "0.5rem 1rem",
+            backgroundColor: "var(--color-link-blue)",
+            color: "white",
+            border: "none",
+            borderRadius: "0.5rem",
+            cursor: "pointer",
+          }}
+        >
+          {t("leaderboard.retry")}
+        </button>
+      </>
     );
   }
 
@@ -68,11 +55,8 @@ export const LeaderboardPage = () => {
     : t("leaderboard.title");
 
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
-        <GameNavigationChips />
-        <h1 className={styles.title}>{t("leaderboard.title")}</h1>
-        <p className={styles.subtitle}>{today}</p>
+    <>
+      <p className={styles.subtitle}>{today}</p>
 
         {leaderboard && leaderboard.leaderboard.length > 0 ? (
           <div className={styles.content}>
@@ -233,7 +217,6 @@ export const LeaderboardPage = () => {
             <p className={styles.text}>{t("leaderboard.noScores")}</p>
           </div>
         )}
-      </div>
-    </div>
+    </>
   );
 };

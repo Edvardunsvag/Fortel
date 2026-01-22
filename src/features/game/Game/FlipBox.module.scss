@@ -61,10 +61,35 @@
   transform: rotateY(180deg);
 }
 
+.valueContainer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  justify-content: center;
+}
+
 .value {
   font-size: 0.75rem;
   word-break: break-word;
   line-height: 1.2;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+  opacity: 0.8;
+  transition: opacity $transition-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
 }
 
 .label {

@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026-01-22]
 
 ### Changed
-- Simplified PR command documentation in `.cursor/commands/pr-command.md`
+- Simplified PR command documentation in `.cursor/commands/pr-command.md` ([#21](https://github.com/Edvardunsvag/Fortedle/pull/21))
 - Consolidated giftcard transaction migrations (removed duplicate migrations, added consolidated migration)
 - Made weekly winner giftcard amount configurable via `Glede:WeeklyWinnerAmount` in appsettings
 

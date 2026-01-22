@@ -11,22 +11,24 @@ public interface ILotteryDrawingService
 public class LotteryDrawingService : ILotteryDrawingService
 {
     private const int WinnersPerWeek = 1;
-    private const int WeeklyWinnerGiftcardAmount = 500; // 500 NOK per weekly winner
 
     private readonly ILotteryTicketRepository _lotteryTicketRepository;
     private readonly IWinningTicketRepository _winningTicketRepository;
     private readonly IGiftcardService _giftcardService;
+    private readonly IConfiguration _configuration;
     private readonly ILogger<LotteryDrawingService> _logger;
 
     public LotteryDrawingService(
         ILotteryTicketRepository lotteryTicketRepository,
         IWinningTicketRepository winningTicketRepository,
         IGiftcardService giftcardService,
+        IConfiguration configuration,
         ILogger<LotteryDrawingService> logger)
     {
         _lotteryTicketRepository = lotteryTicketRepository;
         _winningTicketRepository = winningTicketRepository;
         _giftcardService = giftcardService;
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -101,15 +103,16 @@ public class LotteryDrawingService : ILotteryDrawingService
                 string.Join(", ", winningTicketEntities.Select(w => $"UserId: {w.UserId}, TicketId: {w.LotteryTicketId}")));
 
             // Send giftcards to winners
+            var weeklyWinnerAmount = _configuration.GetValue<int>("Glede:WeeklyWinnerAmount", 1);
             foreach (var winner in winningTicketEntities)
             {
                 try
                 {
-                    _logger.LogInformation("Sending giftcard to weekly winner {UserId}, WinningTicketId: {WinningTicketId}", winner.UserId, winner.Id);
+                    _logger.LogInformation("Sending giftcard to weekly winner {UserId}, WinningTicketId: {WinningTicketId}, Amount: {Amount}", winner.UserId, winner.Id, weeklyWinnerAmount);
 
                     var giftcardResult = await _giftcardService.SendGiftcardToWinnerAsync(
                         winner.UserId,
-                        WeeklyWinnerGiftcardAmount,
+                        weeklyWinnerAmount,
                         "weekly_lottery_winner",
                         winningTicketId: winner.Id);
 

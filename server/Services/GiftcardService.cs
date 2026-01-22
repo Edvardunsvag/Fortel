@@ -68,6 +68,29 @@ public class GiftcardService : IGiftcardService
                 };
             }
 
+            // Validate amount (minimum 50 NOK - typical minimum for gift cards)
+            if (request.Amount < 50)
+            {
+                _logger.LogWarning("Giftcard amount {Amount} is below minimum (50 NOK) for user {UserId}", request.Amount, request.UserId);
+                return new SendGiftcardResponse
+                {
+                    Success = false,
+                    ErrorMessage = $"Giftcard amount must be at least 50 NOK (provided: {request.Amount} NOK)"
+                };
+            }
+
+            // Validate recipient name fields (Glede API requires these)
+            if (string.IsNullOrWhiteSpace(employee.FirstName) || string.IsNullOrWhiteSpace(employee.Surname))
+            {
+                _logger.LogWarning("Employee {UserId} has missing name fields (FirstName: {FirstName}, Surname: {Surname})", 
+                    request.UserId, employee.FirstName ?? "null", employee.Surname ?? "null");
+                return new SendGiftcardResponse
+                {
+                    Success = false,
+                    ErrorMessage = "Employee must have both first name and surname"
+                };
+            }
+
             // Create transaction record as pending
             var transaction = new GiftcardTransaction
             {
@@ -95,8 +118,8 @@ public class GiftcardService : IGiftcardService
                 {
                     new GledeRecipient
                     {
-                        FirstName = employee.FirstName,
-                        LastName = employee.Surname,
+                        FirstName = employee.FirstName ?? string.Empty,
+                        LastName = employee.Surname ?? string.Empty,
                         Email = employee.Email
                     }
                 },
@@ -104,9 +127,17 @@ public class GiftcardService : IGiftcardService
                 {
                     GiftCardAmount = request.Amount
                 },
-                SenderName = transaction.SenderName,
+                SenderName = transaction.SenderName ?? "Fortel",
                 Message = request.Message ?? GetDefaultMessage(request.Reason)
             };
+
+            _logger.LogInformation(
+                "Prepared Glede request: Recipient={FirstName} {LastName} ({Email}), Amount={Amount}, Sender={SenderName}",
+                gledeRequest.Recipients[0].FirstName,
+                gledeRequest.Recipients[0].LastName,
+                gledeRequest.Recipients[0].Email,
+                gledeRequest.Payment.GiftCardAmount,
+                gledeRequest.SenderName);
 
             // Call Glede API
             try

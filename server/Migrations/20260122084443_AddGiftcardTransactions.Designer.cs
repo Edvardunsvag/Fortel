@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fortedle.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260120143921_AddWinningTicketToGiftcardTransaction")]
-    partial class AddWinningTicketToGiftcardTransaction
+    [Migration("20260122084443_AddGiftcardTransactions")]
+    partial class AddGiftcardTransactions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -20,6 +20,7 @@ import {
   fetchLotteryConfig,
   syncFromHarvest,
   fetchEmployeeWeeks,
+  claimWeeklyPrize,
 } from "./api";
 import type { WheelDataResponse, MonthlyWinnersResponse, LotteryConfig } from "./api";
 import type {
@@ -608,6 +609,42 @@ export const useEmployeeWeeks = (userId: string | null, enabled = true) => {
         return false;
       }
       return failureCount < 2;
+    },
+  });
+};
+
+/**
+ * Mutation hook for claiming weekly prize
+ */
+export const useClaimWeeklyPrize = () => {
+  const queryClient = useQueryClient();
+  const accessToken = useAppSelector(selectAccessToken);
+  const { data: user } = useLotteryUser(true);
+  const userId = user?.id.toString() || null;
+
+  return useMutation<
+    import("@/shared/api/generated/index").FortedleServerModelsDTOsSendGiftcardResponse,
+    Error,
+    { winningTicketId: number }
+  >({
+    mutationFn: async ({ winningTicketId }) => {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+      return claimWeeklyPrize(winningTicketId, userId, accessToken);
+    },
+    onSuccess: () => {
+      // Invalidate employee weeks query to refresh prize claim status
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: lotteryKeys.employeeWeeks(userId) });
+      }
+    },
+    retry: (failureCount, error) => {
+      // Don't retry on 400/401 errors (validation/auth issues)
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("401") || error.message.includes("Unauthorized"))) {
+        return false;
+      }
+      return failureCount < 1;
     },
   });
 };

@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2026-01-22]
 
+### Added
+- Weekly prize claiming feature for lottery winners
+- `POST /api/giftcards/claim-weekly-prize` endpoint to claim prizes
+- Prize claim status tracking in `WinnerDto` (`WinningTicketId`, `PrizeClaimed`)
+- Frontend UI for claiming weekly prizes in lottery week details
+
 ### Changed
 - Simplified PR command documentation in `.cursor/commands/pr-command.md` ([#21](https://github.com/Edvardunsvag/Fortedle/pull/21))
 - Consolidated giftcard transaction migrations (removed duplicate migrations, added consolidated migration)

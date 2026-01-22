@@ -13,6 +13,7 @@ public interface IGiftcardTransactionRepository
     Task<List<GiftcardTransaction>> GetByUserIdAsync(string userId);
     Task<List<GiftcardTransaction>> GetByStatusAsync(string status);
     Task<List<GiftcardTransaction>> GetByReasonAsync(string reason);
+    Task<GiftcardTransaction?> GetByWinningTicketIdAsync(int winningTicketId);
 }
 
 public class GiftcardTransactionRepository : IGiftcardTransactionRepository
@@ -87,5 +88,13 @@ public class GiftcardTransactionRepository : IGiftcardTransactionRepository
             .OrderByDescending(g => g.CreatedAt)
             .AsNoTracking()
             .ToListAsync();
+    }
+
+    public async Task<GiftcardTransaction?> GetByWinningTicketIdAsync(int winningTicketId)
+    {
+        return await _context.GiftcardTransactions
+            .Where(g => g.WinningTicketId == winningTicketId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
     }
 }

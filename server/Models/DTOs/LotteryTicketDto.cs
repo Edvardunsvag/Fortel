@@ -34,6 +34,8 @@ public class WinnerDto
     public string? Image { get; set; }
     public string Week { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public int WinningTicketId { get; set; }
+    public bool PrizeClaimed { get; set; }
 }
 
 public class WeeklyWinnersDto

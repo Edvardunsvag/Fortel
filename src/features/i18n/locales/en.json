@@ -278,7 +278,12 @@
       "winner": "Winner",
       "noWinner": "No winner",
       "countdownLabel": "Time until draw",
-      "waitingForDraw": "Waiting for draw..."
+      "waitingForDraw": "Waiting for draw...",
+      "checkWeeklyWinner": "Check weekly winner",
+      "claimPrize": "Claim prize",
+      "prizeClaimed": "Prize claimed",
+      "claimingPrize": "Claiming prize...",
+      "prizeClaimError": "Could not claim prize. Please try again later."
     },
     "eligibility": {
       "missingHours": "Missing 8 hours on: {{dates}}",

@@ -9,6 +9,7 @@ public interface IWinningTicketRepository
     Task<int> GetCountByWeekAsync(string week);
     Task<List<WinningTicket>> GetByWeekAsync(string week);
     Task<List<WinningTicket>> GetAllAsync();
+    Task<WinningTicket?> GetByIdAsync(int id);
     Task<WinningTicket> AddAsync(WinningTicket ticket);
     Task AddRangeAsync(List<WinningTicket> tickets);
 }
@@ -46,6 +47,14 @@ public class WinningTicketRepository : IWinningTicketRepository
             .Include(w => w.LotteryTicket)
             .AsNoTracking()
             .ToListAsync();
+    }
+
+    public async Task<WinningTicket?> GetByIdAsync(int id)
+    {
+        return await _context.WinningTickets
+            .Include(w => w.LotteryTicket)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(w => w.Id == id);
     }
 
     public async Task<WinningTicket> AddAsync(WinningTicket ticket)

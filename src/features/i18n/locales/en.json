@@ -276,6 +276,8 @@
       "winnerStatus": "Winner status",
       "youWon": "You won!",
       "winner": "Winner",
+      "weeklyWinnerLabel": "The winner of the week's lottery:",
+      "loserMessage": "Unfortunately no win for you today, but you take the ticket with you to the Grand Finale",
       "noWinner": "No winner",
       "countdownLabel": "Time until draw",
       "waitingForDraw": "Waiting for draw...",

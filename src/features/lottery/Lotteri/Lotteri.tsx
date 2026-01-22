@@ -21,6 +21,7 @@ export const Lotteri = () => {
 
   const [openWeeks, setOpenWeeks] = useState<Set<string>>(new Set());
   const [confettiTriggered, setConfettiTriggered] = useState<Set<string>>(new Set());
+  const [simulateLoser, setSimulateLoser] = useState(false);
   const autoOpenWeekKey = useAppSelector(selectAutoOpenWeekKey);
   const currentWeekKey = createWeekKey(new Date());
 
@@ -97,9 +98,30 @@ export const Lotteri = () => {
     }
   }, [autoOpenWeekKey, weeks, dispatch]);
 
+  // Modify weeks data to simulate loser if toggle is enabled
+  const modifiedWeeks = simulateLoser
+    ? weeks.map((week) => ({
+        ...week,
+        hasWon: false,
+      }))
+    : weeks;
+
   return (
     <div className={styles.dataSection}>
-      <h3>{t("lottery.title")}</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+        <h3 style={{ margin: 0 }}>{t("lottery.title")}</h3>
+        {import.meta.env.DEV && (
+          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={simulateLoser}
+              onChange={(e) => setSimulateLoser(e.target.checked)}
+              style={{ cursor: "pointer" }}
+            />
+            <span>Simuler taper (dev)</span>
+          </label>
+        )}
+      </div>
         {!userId ? (
           <p className={styles.winnersText}>{t("lottery.notAuthenticated")}</p>
         ) : isLoading ? (
@@ -116,7 +138,7 @@ export const Lotteri = () => {
           </div>
         ) : (
           <div className={styles.weeksList}>
-            {weeks
+            {modifiedWeeks
               ?.filter((week) => week.weekKey != null)
               .map((week) => {
                 const weekKey = week.weekKey!;

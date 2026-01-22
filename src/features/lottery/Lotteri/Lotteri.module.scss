@@ -1415,14 +1415,29 @@
 .winnerInfo {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: $spacing-sm;
   margin-top: $spacing-sm;
 }
 
 .winnerLabel {
-  font-size: 0.875rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-dark-accent;
+  margin: $spacing-md 0 $spacing-sm 0;
+  text-align: center;
+}
+
+.loserMessage {
+  font-size: 1rem;
+  font-weight: 500;
   color: $color-dark-fill;
-  margin-bottom: $spacing-xs;
+  margin: 0 0 $spacing-md 0;
+  text-align: center;
+  line-height: 1.5;
+  padding: $spacing-sm;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: $radius-sm;
 }
 
 .countdownSection {

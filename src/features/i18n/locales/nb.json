@@ -278,6 +278,8 @@
       "winnerStatus": "Vinnerstatus",
       "youWon": "Du vant!",
       "winner": "Vinner",
+      "weeklyWinnerLabel": "Vinneren av ukens lotteri:",
+      "loserMessage": "Dessverre ikke noe seier på deg i dag, men du tar med loddet videre til Grand Finale 🥲",
       "noWinner": "Ingen vinner",
       "countdownLabel": "Tid til trekning",
       "waitingForDraw": "Venter på trekning...",

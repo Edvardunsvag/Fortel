@@ -100,7 +100,8 @@ export const WeekDetails = ({ week }: WeekDetailsProps) => {
               </div>
             ) : week.winner ? (
               <div className={styles.winnerMessage}>
-                <p className={styles.winnerLabel}>{t("lottery.weekDetails.winner")}</p>
+                <p className={styles.loserMessage}>{t("lottery.weekDetails.loserMessage")}</p>
+                <p className={styles.winnerLabel}>{t("lottery.weekDetails.weeklyWinnerLabel")}</p>
                 <div className={styles.winnerInfo}>
                   {week.winner.image ? (
                     <img src={week.winner.image} alt={week.winner.name ?? ""} className={styles.winnerAvatar} />

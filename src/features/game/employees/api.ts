@@ -9,7 +9,6 @@ export const fetchEmployees = async (accessToken: string | null): Promise<Forted
   try {
     const { employeesApi } = createApiClients(accessToken);
     const response = await employeesApi.apiEmployeesGet();
-    console.log(`Successfully loaded ${response.data.length} employees from database`);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {

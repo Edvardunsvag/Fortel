@@ -84,14 +84,12 @@ export const Game = () => {
   const handleGuess = async (employeeId: string) => {
     // Check if we can make a guess - must be playing and have employeeOfTheDayId
     if (gameStatus !== "playing" || !employeeOfTheDayId) {
-      console.warn("Cannot guess:", { gameStatus, employeeOfTheDayId });
       return;
     }
 
     const guessedEmployee = employees.find((emp) => emp.id === employeeId);
 
     if (!guessedEmployee) {
-      console.warn("Employee not found:", employeeId);
       return;
     }
 
@@ -99,7 +97,6 @@ export const Game = () => {
     const targetEmployee = findEmployeeByHash<Employee>(employees, employeeOfTheDayId);
 
     if (!targetEmployee) {
-      console.error("Target employee not found for hash:", employeeOfTheDayId);
       return;
     }
 
@@ -141,15 +138,11 @@ export const Game = () => {
             const avatarImageUrl = userEmployee?.avatarImageUrl;
 
             const scoreRequest = toSubmitScoreRequest(account.name, score, avatarImageUrl);
-            submitScoreMutation.mutate(scoreRequest, {
-              onError: (error) => {
-                console.error("Failed to submit score to leaderboard:", error);
-              },
-            });
+            submitScoreMutation.mutate(scoreRequest);
           }
         }
       } catch (error) {
-        console.error("Failed to save guess to server:", error);
+        // Error handling is done by the mutation
       }
     }
 
@@ -180,7 +173,6 @@ export const Game = () => {
       const round = await startRoundMutation.mutateAsync(request);
       dispatch(loadRoundFromState({ round }));
     } catch (error) {
-      console.error("Failed to start round on server:", error);
       setIsStartingGame(false);
     }
   };

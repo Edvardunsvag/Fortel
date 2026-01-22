@@ -87,7 +87,6 @@ export const TimeBankPage = () => {
     const errorParam = params.get("error");
 
     if (errorParam) {
-      console.error("OAuth error:", errorParam);
       window.history.replaceState({}, "", window.location.pathname);
       return;
     }

@@ -76,7 +76,7 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
       await refetchWeeks();
       await refetchTickets();
     } catch (error) {
-      console.error("Failed to sync from Harvest:", error);
+      // Error handling is done by the mutation
     }
   };
 

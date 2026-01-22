@@ -29,7 +29,7 @@ export const useMsalAuth = () => {
           dispatch(setAccessToken(response.accessToken));
         })
         .catch((error) => {
-          console.error("Failed to acquire token silently:", error);
+          console.error("Error acquiring token silently:", error);
           dispatch(setAccessToken(null));
         });
     } else {
@@ -41,33 +41,22 @@ export const useMsalAuth = () => {
     // Validate that Azure AD is configured
     if (!msalConfig.auth.clientId || msalConfig.auth.clientId === "") {
       const errorMessage = "Azure AD Client ID is not configured. Please set VITE_AZURE_CLIENT_ID in your .env file.";
-      console.error(errorMessage);
       alert(errorMessage);
       return;
     }
 
     try {
-      console.log("Attempting login with MSAL...", { 
-        clientId: msalConfig.auth.clientId,
-        authority: msalConfig.auth.authority,
-        scopes: loginRequest.scopes 
-      });
-      const response = await instance.loginPopup(loginRequest);
-      console.log("Login successful:", response);
+      await instance.loginPopup(loginRequest);
     } catch (error) {
-      console.error("Login failed:", error);
-      // Log more details about the error
+      // Show user-friendly error message
       if (error instanceof Error) {
-        console.error("Error message:", error.message);
-        console.error("Error stack:", error.stack);
-        // Show user-friendly error message
         if (error.message.includes("popup")) {
           alert("Login popup was blocked. Please allow popups for this site and try again.");
         } else {
           alert(`Login failed: ${error.message}`);
         }
       } else {
-        alert("Login failed. Please check the console for details.");
+        alert("Login failed. Please try again.");
       }
     }
   };
@@ -77,7 +66,7 @@ export const useMsalAuth = () => {
       await instance.logoutPopup();
       dispatch(clearAuth());
     } catch (error) {
-      console.error("Logout failed:", error);
+      // Error handling is done silently
     }
   };
 
@@ -94,7 +83,6 @@ export const useMsalAuth = () => {
       });
       return response.accessToken;
     } catch (error) {
-      console.error("Failed to acquire token:", error);
       return null;
     }
   };

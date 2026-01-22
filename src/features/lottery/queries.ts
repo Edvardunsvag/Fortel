@@ -232,7 +232,6 @@ export const useAuthenticateLottery = () => {
         }
       } catch (error) {
         // If accounts fetch fails, fall back to extracted account_id
-        console.warn("Failed to fetch accounts, using extracted account ID:", error);
       }
 
       const token: HarvestToken = {
@@ -255,49 +254,34 @@ export const useAuthenticateLottery = () => {
       // Try to get token dynamically first
       // If accounts aren't available immediately (e.g., after redirect), wait a bit and retry
       if (accounts.length === 0 && msalAccessTokenFromRedux) {
-        console.log("No MSAL accounts available yet, using Redux token as fallback");
         msalAccessToken = msalAccessTokenFromRedux;
       } else {
         try {
           if (accounts.length > 0) {
             const account = accounts[0];
-            console.log("Acquiring MSAL token dynamically for sync...");
             const tokenResponse = await instance.acquireTokenSilent({
               ...loginRequest,
               account,
             });
             msalAccessToken = tokenResponse.accessToken;
-            console.log("Successfully acquired MSAL token dynamically");
           } else {
-            console.warn("No MSAL accounts available, will try Redux fallback");
             // Fall back to Redux token if available
             if (msalAccessTokenFromRedux) {
-              console.log("Using MSAL token from Redux as fallback");
               msalAccessToken = msalAccessTokenFromRedux;
             }
           }
         } catch (tokenError) {
-          console.warn("Failed to acquire MSAL token dynamically:", tokenError);
           // Fall back to Redux token if available
           if (msalAccessTokenFromRedux) {
-            console.log("Using MSAL token from Redux as fallback after error");
             msalAccessToken = msalAccessTokenFromRedux;
-          } else {
-            console.warn("No MSAL token available from Redux either, sync may fail");
           }
         }
       }
 
-      if (!msalAccessToken) {
-        console.error("No MSAL token available for sync request. Backend requires authentication. Sync will fail.");
-      }
-
       try {
         await syncFromHarvest(token.accessToken, token.refreshToken, token.expiresAt, token.accountId, msalAccessToken);
-        console.log("Successfully synced from Harvest after OAuth");
       } catch (syncError) {
-        // Log but don't fail the authentication if sync fails
-        console.warn("Failed to sync from Harvest after OAuth:", syncError);
+        // Sync failed but don't fail the authentication
       }
 
       return { token };
@@ -393,9 +377,6 @@ export const useTestLotteryApi = () => {
     onSuccess: (data) => {
       // Cache user data
       queryClient.setQueryData(lotteryKeys.user(), data.user);
-      // Log accounts to console for debugging
-      console.log("Harvest Accounts:", data.accounts);
-      console.log("Using Account ID:", data.updatedAccountId || token?.accountId);
     },
   });
 };
@@ -594,7 +575,6 @@ export const useSyncFromHarvest = () => {
       return syncFromHarvest(accessToken, refreshToken, expiresAt, accountId, msalAccessToken);
     },
     onSuccess: (data) => {
-      console.log("Harvest sync successful:", data);
       // Invalidate employee weeks query for this user
       if (data.userId) {
         queryClient.invalidateQueries({ queryKey: lotteryKeys.employeeWeeks(data.userId) });
@@ -603,9 +583,6 @@ export const useSyncFromHarvest = () => {
       }
       // Also invalidate all lottery queries to refresh other data
       queryClient.invalidateQueries({ queryKey: lotteryKeys.all });
-    },
-    onError: (error) => {
-      console.error("Harvest sync failed:", error);
     },
   });
 };

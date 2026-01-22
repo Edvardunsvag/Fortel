@@ -256,7 +256,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
         // Refetch wheel data to update segments
         await refetchWheel();
       } catch (err) {
-        console.error("Failed to consume winner tickets:", err);
+        // Error handling is done silently
       }
 
       dispatch(addRevealedWinner(showingWinner));

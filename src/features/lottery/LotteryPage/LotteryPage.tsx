@@ -41,7 +41,6 @@ export const LotteryPage = () => {
     const errorParam = params.get("error");
 
     if (errorParam) {
-      console.error("OAuth error:", errorParam);
       // Clean up URL
       window.history.replaceState({}, "", window.location.pathname);
       return;

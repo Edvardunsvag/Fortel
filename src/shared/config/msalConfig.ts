@@ -13,34 +13,8 @@ import { Configuration, PopupRequest } from "@azure/msal-browser";
  *    - VITE_AZURE_REDIRECT_URI (optional, defaults to current origin)
  */
 const clientId = import.meta.env.VITE_AZURE_CLIENT_ID;
-const tenantId = import.meta.env.VITE_AZURE_TENANT_ID;
-const apiScope = import.meta.env.VITE_AZURE_API_SCOPE;
 
-if (!clientId) {
-  console.error(
-    "❌ VITE_AZURE_CLIENT_ID is not set. Azure AD authentication will not work. " +
-      "Please set VITE_AZURE_CLIENT_ID in your .env file or environment variables."
-  );
-} else {
-  console.log("✅ VITE_AZURE_CLIENT_ID is set:", clientId);
-}
-
-if (!tenantId) {
-  console.warn(
-    "⚠️ VITE_AZURE_TENANT_ID is not set. Using 'common' as default."
-  );
-} else {
-  console.log("✅ VITE_AZURE_TENANT_ID is set:", tenantId);
-}
-
-if (!apiScope) {
-  console.error(
-    "❌ VITE_AZURE_API_SCOPE is not set. Backend API calls will not be authenticated. " +
-      "Please set VITE_AZURE_API_SCOPE in your .env file (format: api://client-id/access_as_user)."
-  );
-} else {
-  console.log("✅ VITE_AZURE_API_SCOPE is set:", apiScope);
-}
+// Configuration validation happens at runtime - errors will be handled by the application
 
 export const msalConfig: Configuration = {
   auth: {
@@ -62,10 +36,6 @@ export const msalConfig: Configuration = {
 const getApiScope = (): string | null => {
   const apiScope = import.meta.env.VITE_AZURE_API_SCOPE;
   if (!apiScope) {
-    console.warn(
-      "VITE_AZURE_API_SCOPE is not set. Backend API calls will not be authenticated. " +
-        "Please set VITE_AZURE_API_SCOPE in your .env file or environment variables."
-    );
     return null;
   }
   
@@ -115,7 +85,6 @@ export const loginRequest: PopupRequest = {
       // Fallback to .default scope if no custom scope is configured
       const defaultScope = getDefaultScope();
       if (defaultScope) {
-        console.warn("Using .default scope as fallback. Consider exposing an API in Azure AD for better security.");
         scopes.push(defaultScope);
       }
     }

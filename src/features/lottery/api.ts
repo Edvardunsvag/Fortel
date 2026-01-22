@@ -4,13 +4,15 @@ import type {
   HarvestAccountsResponse,
 } from "./types";
 import { harvestConfig } from "@/shared/config/harvestConfig";
-import { lotteryTicketsApi, employeeWeeksApi } from "@/shared/api/client";
+import { lotteryTicketsApi, employeeWeeksApi, harvestOAuthApi } from "@/shared/api/client";
 import type {
   FortedleServerModelsDTOsSyncLotteryTicketsRequest,
   FortedleServerModelsDTOsSyncLotteryTicketsResponse,
   FortedleServerModelsDTOsSyncHarvestRequest,
   FortedleServerModelsDTOsSyncHarvestResponse,
   FortedleServerModelsDTOsEmployeeWeeksResponse,
+  FortedleServerModelsDTOsExchangeTokenRequest,
+  FortedleServerModelsDTOsRefreshTokenRequest,
 } from "@/shared/api/generated/index";
 
 /**
@@ -26,10 +28,12 @@ const extractAccountIdFromToken = (accessToken: string): string => {
 };
 
 /**
- * Exchange authorization code for access token
+ * Exchange authorization code for access token via backend
+ * The backend securely handles the client secret
  */
 export const exchangeCodeForToken = async (
-  code: string
+  code: string,
+  state: string
 ): Promise<{
   access_token: string;
   token_type: string;
@@ -37,38 +41,38 @@ export const exchangeCodeForToken = async (
   refresh_token: string;
   account_id: string;
 }> => {
-  const response = await fetch(harvestConfig.tokenEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "User-Agent": "Fortedle App",
-    },
-    body: new URLSearchParams({
-      client_id: harvestConfig.clientId,
-      client_secret: harvestConfig.clientSecret,
+  try {
+    const request: FortedleServerModelsDTOsExchangeTokenRequest = {
       code,
-      grant_type: "authorization_code",
-      redirect_uri: harvestConfig.redirectUri,
-    }),
-  });
+      state,
+    };
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to exchange code for token: ${response.status} ${error}`);
+    const response = await harvestOAuthApi.apiHarvestOauthExchangePost(request);
+    const tokenData = response.data;
+
+    // Map backend response to expected format (backend returns snake_case)
+    return {
+      access_token: tokenData.access_token || "",
+      token_type: tokenData.token_type || "",
+      expires_in: tokenData.expires_in || 0,
+      refresh_token: tokenData.refresh_token || "",
+      account_id: tokenData.account_id || extractAccountIdFromToken(tokenData.access_token || ""),
+    };
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to exchange code for token: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to exchange code for token");
   }
-
-  const tokenData = await response.json();
-
-  // Extract account_id from the access token if not provided in response
-  if (!tokenData.account_id && tokenData.access_token) {
-    tokenData.account_id = extractAccountIdFromToken(tokenData.access_token);
-  }
-
-  return tokenData;
 };
 
 /**
- * Refresh access token using refresh token
+ * Refresh access token using refresh token via backend
+ * The backend securely handles the client secret
  */
 export const refreshAccessToken = async (
   refreshToken: string
@@ -79,32 +83,32 @@ export const refreshAccessToken = async (
   refresh_token: string;
   account_id: string;
 }> => {
-  const response = await fetch(harvestConfig.tokenEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "User-Agent": "Fortedle App",
-    },
-    body: new URLSearchParams({
-      client_id: harvestConfig.clientId,
-      client_secret: harvestConfig.clientSecret,
+  try {
+    const request: FortedleServerModelsDTOsRefreshTokenRequest = {
       refresh_token: refreshToken,
-      grant_type: "refresh_token",
-    }),
-  });
+    };
 
-  if (!response.ok) {
-    throw new Error(`Failed to refresh token: ${response.status} ${response.statusText}`);
+    const response = await harvestOAuthApi.apiHarvestOauthRefreshPost(request);
+    const tokenData = response.data;
+
+    // Map backend response to expected format (backend returns snake_case)
+    return {
+      access_token: tokenData.access_token || "",
+      token_type: tokenData.token_type || "",
+      expires_in: tokenData.expires_in || 0,
+      refresh_token: tokenData.refresh_token || "",
+      account_id: tokenData.account_id || extractAccountIdFromToken(tokenData.access_token || ""),
+    };
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to refresh token: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to refresh token");
   }
-
-  const tokenData = await response.json();
-
-  // Extract account_id from the access token if not provided in response
-  if (!tokenData.account_id && tokenData.access_token) {
-    tokenData.account_id = extractAccountIdFromToken(tokenData.access_token);
-  }
-
-  return tokenData;
 };
 
 /**

@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **amount** | **number** |  | [optional] [default to undefined]
 **message** | **string** |  | [optional] [default to undefined]
 **reason** | **string** |  | [optional] [default to undefined]
+**phone** | **string** |  | [optional] [default to undefined]
 **winningTicketId** | **number** |  | [optional] [default to undefined]
 **monthlyWinningTicketId** | **number** |  | [optional] [default to undefined]
 
@@ -22,6 +23,7 @@ const instance: FortedleServerModelsDTOsSendGiftcardRequest = {
     amount,
     message,
     reason,
+    phone,
     winningTicketId,
     monthlyWinningTicketId,
 };

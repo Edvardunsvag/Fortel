@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.apiEmployeeWeeksGet(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -93,7 +93,7 @@ const { status, data } = await apiInstance.apiEmployeeWeeksSyncPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

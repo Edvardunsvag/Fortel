@@ -1,9 +1,11 @@
+using Fortedle.Server;
 using Fortedle.Server.Data;
 using Fortedle.Server.Repositories;
 using Fortedle.Server.Services;
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -141,6 +143,49 @@ builder.Services.AddHttpClient<HarvestApiService>();
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString);
 
+// Configure Azure AD Authentication
+var azureAdSection = builder.Configuration.GetSection("AzureAd");
+var instance = azureAdSection["Instance"] ?? "https://login.microsoftonline.com/";
+var clientId = azureAdSection["ClientId"];
+var tenantId = azureAdSection["TenantId"];
+var audience = azureAdSection["Audience"];
+
+if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
+{
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.Authority = $"{instance}{tenantId}/v2.0";
+            options.Audience = audience;
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                // Accept both the custom API scope audience and the client ID as audience
+                // This allows using either api://client-id/scope or client-id/.default scopes
+                ValidAudiences = new[] { audience, clientId },
+                // Accept both v1.0 and v2.0 issuer formats
+                // v1.0: https://sts.windows.net/{tenantId}/
+                // v2.0: https://login.microsoftonline.com/{tenantId}/v2.0
+                ValidIssuers = new[]
+                {
+                    $"https://sts.windows.net/{tenantId}/",
+                    $"{instance}{tenantId}/v2.0"
+                }
+            };
+        });
+
+    builder.Services.AddAuthorization();
+    earlyLogger.LogInformation("Azure AD authentication configured: ClientId={ClientId}, TenantId={TenantId}, Audience={Audience}", 
+        clientId, tenantId, audience);
+}
+else
+{
+    earlyLogger.LogWarning("Azure AD configuration is missing. Authentication will not be enabled.");
+}
+
 // Configure Hangfire
 builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -160,6 +205,34 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API for Fortedle game"
     });
+    
+    // Add JWT Bearer authentication to Swagger
+    if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
+    {
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+    }
     
     // Include XML comments if available (optional)
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -193,11 +266,25 @@ app.UseCors();
 // Explicit routing
 app.UseRouting();
 
-// Hangfire Dashboard - enabled in both Development and Production (matching Swagger behavior)
+// Authentication and Authorization must be after routing but before endpoints
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Hangfire Dashboard - protected with JWT authentication
 var dashboardOptions = new DashboardOptions();
-// Allow all requests - use empty array to disable authorization
-// Note: In production, you may want to add proper authorization for security
-dashboardOptions.Authorization = Array.Empty<IDashboardAuthorizationFilter>();
+if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
+{
+    // Require authentication for Hangfire dashboard in all environments
+    dashboardOptions.Authorization = new[]
+    {
+        new HangfireJwtAuthorizationFilter()
+    };
+}
+else
+{
+    // Fallback to no authorization if Azure AD is not configured
+    dashboardOptions.Authorization = Array.Empty<IDashboardAuthorizationFilter>();
+}
 app.UseHangfireDashboard("/hangfire", dashboardOptions);
 
 // Enable Swagger in both Development and Production

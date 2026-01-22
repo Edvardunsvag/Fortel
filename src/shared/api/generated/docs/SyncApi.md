@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.apiSyncPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

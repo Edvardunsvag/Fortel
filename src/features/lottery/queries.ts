@@ -1,5 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import { selectAccessToken } from "@/features/auth/authSlice";
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "@/shared/config/msalConfig";
 import type { AppDispatch } from "@/app/store";
 import {
   fetchHarvestUser,
@@ -196,6 +199,8 @@ export const useLotteryTimeEntries = (from: string, to: string, enabled = true) 
 export const useAuthenticateLottery = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
+  const { instance, accounts } = useMsal();
+  const msalAccessTokenFromRedux = useAppSelector(selectAccessToken);
 
   return useMutation<{ token: HarvestToken }, Error, { code: string; state: string }>({
     mutationFn: async ({ code, state }) => {
@@ -237,8 +242,51 @@ export const useAuthenticateLottery = () => {
       dispatch(setTokenFromAuth(token));
 
       // After OAuth, sync from Harvest to populate employee weeks
+      // Dynamically acquire MSAL token when needed (required for backend authentication)
+      let msalAccessToken: string | null = null;
+      
+      // Try to get token dynamically first
+      // If accounts aren't available immediately (e.g., after redirect), wait a bit and retry
+      if (accounts.length === 0 && msalAccessTokenFromRedux) {
+        console.log("No MSAL accounts available yet, using Redux token as fallback");
+        msalAccessToken = msalAccessTokenFromRedux;
+      } else {
+        try {
+          if (accounts.length > 0) {
+            const account = accounts[0];
+            console.log("Acquiring MSAL token dynamically for sync...");
+            const tokenResponse = await instance.acquireTokenSilent({
+              ...loginRequest,
+              account,
+            });
+            msalAccessToken = tokenResponse.accessToken;
+            console.log("Successfully acquired MSAL token dynamically");
+          } else {
+            console.warn("No MSAL accounts available, will try Redux fallback");
+            // Fall back to Redux token if available
+            if (msalAccessTokenFromRedux) {
+              console.log("Using MSAL token from Redux as fallback");
+              msalAccessToken = msalAccessTokenFromRedux;
+            }
+          }
+        } catch (tokenError) {
+          console.warn("Failed to acquire MSAL token dynamically:", tokenError);
+          // Fall back to Redux token if available
+          if (msalAccessTokenFromRedux) {
+            console.log("Using MSAL token from Redux as fallback after error");
+            msalAccessToken = msalAccessTokenFromRedux;
+          } else {
+            console.warn("No MSAL token available from Redux either, sync may fail");
+          }
+        }
+      }
+
+      if (!msalAccessToken) {
+        console.error("No MSAL token available for sync request. Backend requires authentication. Sync will fail.");
+      }
+
       try {
-        await syncFromHarvest(token.accessToken, token.refreshToken, token.expiresAt, token.accountId);
+        await syncFromHarvest(token.accessToken, token.refreshToken, token.expiresAt, token.accountId, msalAccessToken);
         console.log("Successfully synced from Harvest after OAuth");
       } catch (syncError) {
         // Log but don't fail the authentication if sync fails
@@ -348,18 +396,20 @@ export const useTestLotteryApi = () => {
  * Query hook for fetching lottery tickets for a user
  */
 export const useLotteryTickets = (userId: string | null, enabled = true) => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery({
     queryKey: lotteryKeys.tickets(userId || ""),
     queryFn: async () => {
       if (!userId) {
         throw new Error("User ID is required");
       }
-      return fetchLotteryTickets(userId);
+      return fetchLotteryTickets(userId, accessToken);
     },
-    enabled: enabled && userId !== null && userId !== "",
+    enabled: enabled && userId !== null && userId !== "" && !!accessToken,
     retry: (failureCount, error) => {
-      // Don't retry on 400/404 errors (invalid userId)
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      // Don't retry on 400/404 errors (invalid userId) or 401 (auth issues)
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -371,19 +421,28 @@ export const useLotteryTickets = (userId: string | null, enabled = true) => {
  * Mutation hook for syncing lottery tickets
  */
 export const useSyncLotteryTickets = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useMutation<
     { syncedCount: number; skippedCount: number; totalCount: number },
     Error,
     { userId: string; name: string; image: string | null | undefined; eligibleWeeks: string[] }
   >({
     mutationFn: async ({ userId, name, image, eligibleWeeks }) => {
-      const response = await syncLotteryTickets(userId, name, image, eligibleWeeks);
+      const response = await syncLotteryTickets(userId, name, image, eligibleWeeks, accessToken);
       // Map the response to ensure all properties are defined (generated types have optional properties)
       return {
         syncedCount: response.syncedCount ?? 0,
         skippedCount: response.skippedCount ?? 0,
         totalCount: response.totalCount ?? 0,
       };
+    },
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors (auth issues)
+      if (error instanceof Error && error.message.includes("Unauthorized")) {
+        return false;
+      }
+      return failureCount < 1;
     },
   });
 };
@@ -392,14 +451,17 @@ export const useSyncLotteryTickets = () => {
  * Query hook for fetching all winners grouped by week
  */
 export const useAllWinners = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery({
     queryKey: lotteryKeys.winners(),
     queryFn: async () => {
-      return fetchAllWinners();
+      return fetchAllWinners(accessToken);
     },
+    enabled: !!accessToken,
     retry: (failureCount, error) => {
-      // Don't retry on 400/404 errors
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      // Don't retry on 400/404 errors or 401 (auth issues)
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -411,14 +473,17 @@ export const useAllWinners = () => {
  * Query hook for fetching employee lottery statistics
  */
 export const useEmployeeStatistics = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery({
     queryKey: lotteryKeys.statistics(),
     queryFn: async () => {
-      return fetchEmployeeStatistics();
+      return fetchEmployeeStatistics(accessToken);
     },
+    enabled: !!accessToken,
     retry: (failureCount, error) => {
-      // Don't retry on 400/404 errors
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      // Don't retry on 400/404 errors or 401 (auth issues)
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -432,11 +497,14 @@ export const useEmployeeStatistics = () => {
  * Query hook for fetching wheel data (segments and participants)
  */
 export const useWheelData = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery<WheelDataResponse>({
     queryKey: lotteryKeys.wheelData(),
-    queryFn: fetchWheelData,
+    queryFn: () => fetchWheelData(accessToken),
+    enabled: !!accessToken,
     retry: (failureCount, error) => {
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -448,11 +516,14 @@ export const useWheelData = () => {
  * Query hook for fetching monthly winners for a specific month
  */
 export const useMonthlyWinners = (month?: string) => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery<MonthlyWinnersResponse>({
     queryKey: lotteryKeys.monthlyWinners(month),
-    queryFn: () => fetchMonthlyWinners(month),
+    queryFn: () => fetchMonthlyWinners(month, accessToken),
+    enabled: !!accessToken,
     retry: (failureCount, error) => {
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -464,11 +535,14 @@ export const useMonthlyWinners = (month?: string) => {
  * Query hook for fetching the latest monthly winners
  */
 export const useLatestMonthlyWinners = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery<MonthlyWinnersResponse>({
     queryKey: lotteryKeys.latestMonthlyWinners(),
-    queryFn: fetchLatestMonthlyWinners,
+    queryFn: () => fetchLatestMonthlyWinners(accessToken),
+    enabled: !!accessToken,
     retry: (failureCount, error) => {
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -480,11 +554,14 @@ export const useLatestMonthlyWinners = () => {
  * Query hook for fetching lottery configuration
  */
 export const useLotteryConfig = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery<LotteryConfig>({
     queryKey: lotteryKeys.lotteryConfig(),
-    queryFn: fetchLotteryConfig,
+    queryFn: () => fetchLotteryConfig(accessToken),
+    enabled: !!accessToken,
     retry: (failureCount, error) => {
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;
@@ -498,6 +575,7 @@ export const useLotteryConfig = () => {
  */
 export const useSyncFromHarvest = () => {
   const queryClient = useQueryClient();
+  const msalAccessToken = useAppSelector(selectAccessToken);
 
   return useMutation<
     FortedleServerModelsDTOsSyncHarvestResponse,
@@ -505,7 +583,7 @@ export const useSyncFromHarvest = () => {
     { accessToken: string; refreshToken: string; expiresAt: number; accountId: string }
   >({
     mutationFn: async ({ accessToken, refreshToken, expiresAt, accountId }) => {
-      return syncFromHarvest(accessToken, refreshToken, expiresAt, accountId);
+      return syncFromHarvest(accessToken, refreshToken, expiresAt, accountId, msalAccessToken);
     },
     onSuccess: (data) => {
       console.log("Harvest sync successful:", data);
@@ -528,18 +606,20 @@ export const useSyncFromHarvest = () => {
  * Query hook for fetching employee weeks
  */
 export const useEmployeeWeeks = (userId: string | null, enabled = true) => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery<FortedleServerModelsDTOsEmployeeWeeksResponse>({
     queryKey: lotteryKeys.employeeWeeks(userId || ""),
     queryFn: async () => {
       if (!userId) {
         throw new Error("User ID is required");
       }
-      return fetchEmployeeWeeks(userId);
+      return fetchEmployeeWeeks(userId, accessToken);
     },
-    enabled: enabled && userId !== null && userId !== "",
+    enabled: enabled && userId !== null && userId !== "" && !!accessToken,
     retry: (failureCount, error) => {
-      // Don't retry on 400/404 errors (invalid userId)
-      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404"))) {
+      // Don't retry on 400/404 errors (invalid userId) or 401 (auth issues)
+      if (error instanceof Error && (error.message.includes("400") || error.message.includes("404") || error.message.includes("Unauthorized"))) {
         return false;
       }
       return failureCount < 2;

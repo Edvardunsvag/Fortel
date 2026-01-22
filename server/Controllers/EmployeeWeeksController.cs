@@ -1,11 +1,13 @@
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fortedle.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class EmployeeWeeksController : ControllerBase
 {
     private readonly IEmployeeWeekService _employeeWeekService;

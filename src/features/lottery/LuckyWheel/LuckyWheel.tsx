@@ -1,6 +1,7 @@
 import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { selectAccessToken } from "@/features/auth/authSlice";
 import { useWheelData, useLatestMonthlyWinners, useLotteryConfig } from "../queries";
 import {
   selectSpinPhase,
@@ -13,7 +14,8 @@ import {
   setRevealedWinners,
 } from "../lotterySlice";
 import type { WheelSegment, MonthlyWinner } from "../api";
-import { lotteryTicketsApi } from "@/shared/api/client";
+import type { FortedleServerModelsDTOsMonthlyWinnerDto } from "@/shared/api/generated/index";
+import { createApiClients } from "@/shared/api/client";
 import { SpinningWheel, type SpinningWheelHandle } from "./SpinningWheel";
 import { WinnerRevealCard } from "./WinnerRevealCard/WinnerRevealCard";
 import { ParticipantsList } from "./ParticipantsList/ParticipantsList";
@@ -27,9 +29,10 @@ import { WinnersBoard } from "./WinnersBoard/WinnersBoard";
 const interleaveSegments = (segments: WheelSegment[]): WheelSegment[] => {
   if (segments.length === 0) return [];
 
-  // Group segments by userId
+  // Group segments by userId (filter out segments without userId)
   const userGroups = new Map<string, WheelSegment[]>();
   segments.forEach((segment) => {
+    if (!segment.userId) return;
     const group = userGroups.get(segment.userId) || [];
     group.push(segment);
     userGroups.set(segment.userId, group);
@@ -66,6 +69,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const wheelRef = useRef<SpinningWheelHandle>(null);
+  const accessToken = useAppSelector(selectAccessToken);
 
   // Flag to skip auto-population after manually triggering a draw
   const skipAutoPopulateRef = useRef(false);
@@ -113,7 +117,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     if (revealedWinners.length === 0) return segments;
 
     const revealedUserIds = new Set(revealedWinners.map((w) => w.userId));
-    return segments.filter((s) => !revealedUserIds.has(s.userId));
+    return segments.filter((s) => s.userId && !revealedUserIds.has(s.userId));
   }, [segments, revealedWinners]);
 
   // Calculate if draw is complete (all winners revealed)
@@ -130,8 +134,21 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   useEffect(() => {
     if (monthlyWinners.length > 0 && revealedWinners.length === 0 && !skipAutoPopulateRef.current) {
       // Pre-populate revealed winners if draw is already done
-      dispatch(setRevealedWinners(monthlyWinners));
-      if (monthlyWinners.length >= winnerCount) {
+      // Map DTOs to MonthlyWinner type (ensuring required fields are present)
+      const mappedWinners: MonthlyWinner[] = monthlyWinners
+        .filter((w) => w.userId && w.name && w.month && w.position !== undefined)
+        .map((w) => ({
+          userId: w.userId!,
+          name: w.name!,
+          image: w.image ?? null,
+          color: w.color ?? null,
+          month: w.month!,
+          position: w.position!,
+          ticketsConsumed: w.ticketsConsumed ?? 0,
+          createdAt: w.createdAt ?? new Date().toISOString(),
+        }));
+      dispatch(setRevealedWinners(mappedWinners));
+      if (mappedWinners.length >= winnerCount) {
         dispatch(setSpinPhase("complete"));
       }
     }
@@ -175,29 +192,55 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     [displaySegments]
   );
 
+  // Helper to map DTO to MonthlyWinner type
+  const mapDtoToMonthlyWinner = useCallback(
+    (dto: FortedleServerModelsDTOsMonthlyWinnerDto | null | undefined): MonthlyWinner | null => {
+      if (!dto || !dto.userId || !dto.name || !dto.month || dto.position === undefined) {
+        return null;
+      }
+      return {
+        userId: dto.userId,
+        name: dto.name,
+        image: dto.image ?? null,
+        color: dto.color ?? null,
+        month: dto.month,
+        position: dto.position,
+        ticketsConsumed: dto.ticketsConsumed ?? 0,
+        createdAt: dto.createdAt ?? new Date().toISOString(),
+      };
+    },
+    []
+  );
+
   // Handle spin
   const handleSpin = useCallback(() => {
     if (!canSpin || !wheelRef.current) return;
 
-    const targetWinner = monthlyWinners[currentSpinIndex];
+    const targetWinnerDto = monthlyWinners[currentSpinIndex];
+    if (!targetWinnerDto) return;
+
+    const targetWinner = mapDtoToMonthlyWinner(targetWinnerDto);
     if (!targetWinner) return;
 
     dispatch(setSpinPhase("spinning"));
 
     const targetSegmentIndex = findWinnerSegmentIndex(targetWinner);
     wheelRef.current.spinToSegment(targetSegmentIndex);
-  }, [canSpin, monthlyWinners, currentSpinIndex, dispatch, findWinnerSegmentIndex]);
+  }, [canSpin, monthlyWinners, currentSpinIndex, dispatch, findWinnerSegmentIndex, mapDtoToMonthlyWinner]);
 
   // Handle spin complete
   const handleSpinComplete = useCallback(
     (_segmentIndex: number, _segment: WheelSegment) => {
-      const targetWinner = monthlyWinners[currentSpinIndex];
+      const targetWinnerDto = monthlyWinners[currentSpinIndex];
+      if (!targetWinnerDto) return;
+
+      const targetWinner = mapDtoToMonthlyWinner(targetWinnerDto);
       if (!targetWinner) return;
 
       dispatch(setSpinPhase("revealing"));
       setShowingWinner(targetWinner);
     },
-    [monthlyWinners, currentSpinIndex, dispatch]
+    [monthlyWinners, currentSpinIndex, dispatch, mapDtoToMonthlyWinner]
   );
 
   // Handle winner reveal close
@@ -205,6 +248,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     if (showingWinner) {
       // Consume the winner's tickets in the backend
       try {
+        const { lotteryTicketsApi } = createApiClients(accessToken);
         await lotteryTicketsApi.apiLotteryTicketsConsumeWinnerMonthPositionPost(
           showingWinner.month,
           showingWinner.position
@@ -232,7 +276,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     } else {
       dispatch(setSpinPhase("idle"));
     }
-  }, [showingWinner, currentSpinIndex, winnerCount, dispatch, refetchWheel]);
+  }, [showingWinner, currentSpinIndex, winnerCount, dispatch, refetchWheel, accessToken]);
 
   // Handle reset
   const handleReset = useCallback(() => {
@@ -245,6 +289,7 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
+      const { lotteryTicketsApi } = createApiClients(accessToken);
       await lotteryTicketsApi.apiLotteryTicketsMonthlyDrawPost();
       setAdminStatus(`✅ Draw complete!`);
       // Skip auto-population so user can spin through winners
@@ -259,13 +304,14 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     } finally {
       setIsAdminLoading(false);
     }
-  }, [dispatch, refetchWheel, refetchWinners]);
+  }, [dispatch, refetchWheel, refetchWinners, accessToken]);
 
   // Admin: Seed test data
   const handleAdminSeedData = useCallback(async () => {
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
+      const { lotteryTicketsApi } = createApiClients(accessToken);
       await lotteryTicketsApi.apiLotteryTicketsSeedTestDataPost();
       setAdminStatus(`✅ Test data seeded successfully`);
       await refetchWheel();
@@ -274,19 +320,22 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
     } finally {
       setIsAdminLoading(false);
     }
-  }, [refetchWheel]);
+  }, [refetchWheel, accessToken]);
 
   // Admin: Force spin to current winner (for testing)
   const handleAdminForceSpin = useCallback(() => {
     if (!wheelRef.current || displaySegments.length === 0) return;
 
-    const targetWinner = monthlyWinners[currentSpinIndex];
+    const targetWinnerDto = monthlyWinners[currentSpinIndex];
+    if (!targetWinnerDto) return;
+
+    const targetWinner = mapDtoToMonthlyWinner(targetWinnerDto);
     if (!targetWinner) return;
 
     dispatch(setSpinPhase("spinning"));
     const targetSegmentIndex = findWinnerSegmentIndex(targetWinner);
     wheelRef.current.spinToSegment(targetSegmentIndex);
-  }, [displaySegments.length, monthlyWinners, currentSpinIndex, dispatch, findWinnerSegmentIndex]);
+  }, [displaySegments.length, monthlyWinners, currentSpinIndex, dispatch, findWinnerSegmentIndex, mapDtoToMonthlyWinner]);
 
   // Admin: Full reset (clear winners and reset wheel)
   const handleAdminFullReset = useCallback(() => {
@@ -298,20 +347,24 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   // Admin: Advance to next spin
   const handleAdminNextSpin = useCallback(() => {
     if (currentSpinIndex < monthlyWinners.length) {
-      const currentWinner = monthlyWinners[currentSpinIndex];
-      if (currentWinner) {
-        dispatch(addRevealedWinner(currentWinner));
+      const currentWinnerDto = monthlyWinners[currentSpinIndex];
+      if (currentWinnerDto) {
+        const currentWinner = mapDtoToMonthlyWinner(currentWinnerDto);
+        if (currentWinner) {
+          dispatch(addRevealedWinner(currentWinner));
+        }
       }
       dispatch(advanceSpinIndex());
       setAdminStatus(`✅ Advanced to spin ${currentSpinIndex + 2}/${winnerCount}`);
     }
-  }, [currentSpinIndex, monthlyWinners, winnerCount, dispatch]);
+  }, [currentSpinIndex, monthlyWinners, winnerCount, dispatch, mapDtoToMonthlyWinner]);
 
   // Admin: Complete reset as new month (clear DB winners + reset tickets + reset wheel)
   const handleAdminNewMonth = useCallback(async () => {
     setIsAdminLoading(true);
     setAdminStatus(null);
     try {
+      const { lotteryTicketsApi } = createApiClients(accessToken);
       await lotteryTicketsApi.apiLotteryTicketsResetMonthPost();
       // Skip auto-population after reset
       skipAutoPopulateRef.current = true;

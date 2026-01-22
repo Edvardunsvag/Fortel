@@ -47,7 +47,7 @@ const { status, data } = await apiInstance.apiRoundsCurrentGet(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -98,7 +98,7 @@ const { status, data } = await apiInstance.apiRoundsGuessPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -149,7 +149,7 @@ const { status, data } = await apiInstance.apiRoundsRevealFunfactPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -200,7 +200,7 @@ const { status, data } = await apiInstance.apiRoundsStartPost(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

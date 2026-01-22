@@ -36,37 +36,42 @@ export const ParticipantsList = ({ participants, totalTickets }: ParticipantsLis
       </p>
 
       <div className={styles.list}>
-        {participants.map((participant) => (
-          <div key={participant.userId} className={styles.participant}>
-            <div className={styles.info}>
-              <div
-                className={styles.colorIndicator}
-                style={{ backgroundColor: participant.color }}
-              />
-              {participant.image ? (
-                <img
-                  src={participant.image}
-                  alt={participant.name}
-                  className={styles.avatar}
-                />
-              ) : (
+        {participants.map((participant) => {
+          if (!participant.userId) return null;
+          const color = participant.color ?? "#cccccc";
+          const name = participant.name ?? "Unknown";
+          return (
+            <div key={participant.userId} className={styles.participant}>
+              <div className={styles.info}>
                 <div
-                  className={styles.avatarPlaceholder}
-                  style={{ backgroundColor: participant.color }}
-                >
-                  {participant.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <span className={styles.name}>{participant.name}</span>
+                  className={styles.colorIndicator}
+                  style={{ backgroundColor: color }}
+                />
+                {participant.image ? (
+                  <img
+                    src={participant.image}
+                    alt={name}
+                    className={styles.avatar}
+                  />
+                ) : (
+                  <div
+                    className={styles.avatarPlaceholder}
+                    style={{ backgroundColor: color }}
+                  >
+                    {name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className={styles.name}>{name}</span>
+              </div>
+              <div className={styles.ticketCount}>
+                <span className={styles.count}>{participant.ticketCount ?? 0}</span>
+                <span className={styles.label}>
+                  {t("lottery.luckyWheel.participants.tickets", "tickets")}
+                </span>
+              </div>
             </div>
-            <div className={styles.ticketCount}>
-              <span className={styles.count}>{participant.ticketCount}</span>
-              <span className={styles.label}>
-                {t("lottery.luckyWheel.participants.tickets", "tickets")}
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

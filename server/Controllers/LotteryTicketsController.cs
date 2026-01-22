@@ -2,6 +2,7 @@ using Fortedle.Server.Data;
 using Fortedle.Server.Models.Database;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace Fortedle.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class LotteryTicketsController : ControllerBase
 {
     private readonly ILotteryTicketService _lotteryTicketService;

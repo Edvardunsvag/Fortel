@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-23]
+
+### Added
+- Azure AD JWT authentication for all API endpoints
+- Hangfire dashboard JWT authentication via `HangfireJwtAuthorizationFilter`
+- JWT Bearer token support in Swagger UI
+- Frontend API client factory with token-based authentication
+
+### Changed
+- All API controllers now require authentication via `[Authorize]` attribute
+- Frontend API clients now use JWT tokens from Redux store
+- MSAL configuration updated to request only API scope (not Microsoft Graph)
+- API client configuration supports Bearer token authentication with proper header format
+
+### Security
+- Moved authentication token handling to backend for Harvest OAuth
+- Secured Hangfire dashboard to require valid JWT authentication
+- Updated cursor rules with Azure AD authentication patterns and token handling best practices
+
 ## [2026-01-22]
 
 ### Changed

@@ -1,4 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useAppSelector } from "@/app/hooks";
+import { selectAccessToken } from "@/features/auth/authSlice";
 import { getCurrentRound, startRound, saveGuess, revealFunfact } from "./api";
 import { roundFromDto } from "./fromDto";
 import type { RoundDto } from "./fromDto";
@@ -18,16 +20,25 @@ export const roundKeys = {
  * Query hook for fetching the current round
  */
 export const useCurrentRound = (userId: string, date?: string, enabled = true) => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useQuery<RoundDto | null>({
     queryKey: roundKeys.current(userId, date),
     queryFn: async () => {
-      const apiRound = await getCurrentRound(userId, date);
+      const apiRound = await getCurrentRound(userId, date, accessToken);
       if (apiRound) {
         return roundFromDto(apiRound);
       }
       return null;
     },
-    enabled,
+    enabled: enabled && !!accessToken, // Only fetch if enabled and we have a token
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors (auth issues)
+      if (error instanceof Error && error.message.includes("Unauthorized")) {
+        return false;
+      }
+      return failureCount < 2;
+    },
   });
 };
 
@@ -35,10 +46,19 @@ export const useCurrentRound = (userId: string, date?: string, enabled = true) =
  * Mutation hook for starting a round
  */
 export const useStartRound = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useMutation<RoundDto, Error, FortedleServerModelsDTOsStartRoundRequest>({
     mutationFn: async (request) => {
-      const apiRound = await startRound(request);
+      const apiRound = await startRound(request, accessToken);
       return roundFromDto(apiRound);
+    },
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors (auth issues)
+      if (error instanceof Error && error.message.includes("Unauthorized")) {
+        return false;
+      }
+      return failureCount < 1;
     },
   });
 };
@@ -47,10 +67,19 @@ export const useStartRound = () => {
  * Mutation hook for saving a guess
  */
 export const useSaveGuess = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useMutation<RoundDto, Error, FortedleServerModelsDTOsSaveGuessRequest>({
     mutationFn: async (request) => {
-      const apiRound = await saveGuess(request);
+      const apiRound = await saveGuess(request, accessToken);
       return roundFromDto(apiRound);
+    },
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors (auth issues)
+      if (error instanceof Error && error.message.includes("Unauthorized")) {
+        return false;
+      }
+      return failureCount < 1;
     },
   });
 };
@@ -59,10 +88,19 @@ export const useSaveGuess = () => {
  * Mutation hook for revealing funfact
  */
 export const useRevealFunfact = () => {
+  const accessToken = useAppSelector(selectAccessToken);
+
   return useMutation<RoundDto, Error, FortedleServerModelsDTOsRevealFunfactRequest>({
     mutationFn: async (request) => {
-      const apiRound = await revealFunfact(request);
+      const apiRound = await revealFunfact(request, accessToken);
       return roundFromDto(apiRound);
+    },
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors (auth issues)
+      if (error instanceof Error && error.message.includes("Unauthorized")) {
+        return false;
+      }
+      return failureCount < 1;
     },
   });
 };

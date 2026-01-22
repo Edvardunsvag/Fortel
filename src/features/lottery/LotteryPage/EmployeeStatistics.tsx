@@ -22,7 +22,7 @@ export const EmployeeStatistics = () => {
     );
   }
 
-  if (!data || data.employees.length === 0) {
+  if (!data || !data.employees || data.employees.length === 0) {
     return (
       <div className={styles.dataSection}>
         <p className={styles.empty}>{t("lottery.employees.noEmployees")}</p>
@@ -52,7 +52,7 @@ export const EmployeeStatistics = () => {
                 <td className={styles.employeeColumn}>
                   <div className={styles.employeeInfo}>
                     {employee.image && (
-                      <img src={employee.image} alt={employee.name} className={styles.avatar} loading="lazy" />
+                      <img src={employee.image ?? ""} alt={employee.name ?? ""} className={styles.avatar} loading="lazy" />
                     )}
                     <span className={styles.name}>{employee.name}</span>
                   </div>
@@ -61,8 +61,8 @@ export const EmployeeStatistics = () => {
                   <span className={styles.count}>{employee.ticketCount}</span>
                 </td>
                 <td className={styles.winsColumn}>
-                  <span className={`${styles.count} ${employee.winCount > 0 ? styles.winner : ""}`}>
-                    {employee.winCount}
+                  <span className={`${styles.count} ${(employee.winCount ?? 0) > 0 ? styles.winner : ""}`}>
+                    {employee.winCount ?? 0}
                   </span>
                 </td>
               </tr>

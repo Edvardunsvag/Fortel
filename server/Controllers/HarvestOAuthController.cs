@@ -1,12 +1,13 @@
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Fortedle.Server.Controllers;
 
 [ApiController]
 [Route("api/harvest-oauth")]
+[Authorize]
 public class HarvestOAuthController : ControllerBase
 {
     private readonly HarvestApiService _harvestApiService;

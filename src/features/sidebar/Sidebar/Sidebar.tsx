@@ -4,6 +4,8 @@ import { useAppSelector } from "@/app/hooks";
 import { selectActiveTab, ActiveTab } from "@/features/sidebar/navigationSlice";
 import { selectAccount } from "@/features/auth/authSlice";
 import { isAdminAccount } from "@/shared/config/adminConfig";
+import { getInitials, findMatchingEmployee } from "@/shared/utils/nameMatcher";
+import { useEmployees } from "@/features/game/employees";
 import { SidebarItem } from "./SidebarItem";
 import { LanguageToggle } from "../LanguageToggle/LanguageToggle";
 import { LoginButton } from "../LoginButton/LoginButton";
@@ -16,6 +18,12 @@ export const Sidebar = () => {
   const activeTab = useAppSelector(selectActiveTab);
   const account = useAppSelector(selectAccount);
   const isAdmin = isAdminAccount(account?.username);
+  const { data: employees = [] } = useEmployees();
+  
+  // Find matching employee for the logged-in user
+  const userEmployee = account ? findMatchingEmployee(account.name, employees) : null;
+  const shouldShowPlaceholder = !userEmployee?.avatarImageUrl || 
+    (userEmployee?.avatarImageUrl && userEmployee.avatarImageUrl.toLowerCase().includes("imagekit"));
 
   const handleTabClick = (tab: ActiveTab) => {
     const route = tabToRoute[tab];
@@ -38,6 +46,19 @@ export const Sidebar = () => {
       </div>
       {account && (
         <div className={styles.userNameContainer}>
+          {shouldShowPlaceholder ? (
+            <div className={styles.userAvatarPlaceholder}>
+              {userEmployee
+                ? `${userEmployee.firstName.charAt(0)}${userEmployee.surname.charAt(0)}`
+                : getInitials(account.name || account.username || "")}
+            </div>
+          ) : (
+            <img 
+              src={userEmployee?.avatarImageUrl} 
+              alt={`${account.name || account.username} avatar`} 
+              className={styles.userAvatar} 
+            />
+          )}
           <span className={styles.userName} title={account.name || account.username}>
             {account.name || account.username}
           </span>

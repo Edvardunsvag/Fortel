@@ -135,7 +135,7 @@ export const TimeBankPage = () => {
             </div>
           </>
         ) : (
-          <div className={styles.authenticated}>
+          <div>
             <div className={styles.header}>
               <h1 className={styles.title}>{t("timebank.title")}</h1>
             </div>

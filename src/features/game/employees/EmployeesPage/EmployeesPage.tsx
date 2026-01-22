@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { GameNavigationChips } from "@/features/game/Game/GameNavigationChips";
 import styles from "./EmployeesPage.module.scss";
 import { Employee } from "@/features/game/employees";
 import { useEmployees } from "../queries";
@@ -24,48 +23,19 @@ export const EmployeesPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className={styles.pageContent}>
-        <div className={styles.container}>
-          <GameNavigationChips />
-          <h1 className={styles.title}>{t("employees.title")}</h1>
-          <p className={styles.loadingText}>{t("employees.loading")}</p>
-        </div>
-      </div>
-    );
+    return <p className={styles.loadingText}>{t("employees.loading")}</p>;
   }
 
   if (isError) {
-    return (
-      <div className={styles.pageContent}>
-        <div className={styles.container}>
-          <GameNavigationChips />
-          <h1 className={styles.title}>{t("employees.title")}</h1>
-          <p className={styles.errorText}>{t("employees.failedToLoad")}</p>
-        </div>
-      </div>
-    );
+    return <p className={styles.errorText}>{t("employees.failedToLoad")}</p>;
   }
 
   if (employees.length === 0) {
-    return (
-      <div className={styles.pageContent}>
-        <div className={styles.container}>
-          <GameNavigationChips />
-          <h1 className={styles.title}>{t("employees.title")}</h1>
-          <p className={styles.emptyText}>{t("employees.noEmployees")}</p>
-        </div>
-      </div>
-    );
+    return <p className={styles.emptyText}>{t("employees.noEmployees")}</p>;
   }
 
   return (
-    <div className={styles.pageContent}>
-      <div className={styles.container}>
-        <GameNavigationChips />
-        <h1 className={styles.title}>{t("employees.title")}</h1>
-      </div>
-      <div className={styles.employeesLayout}>
+    <div className={styles.employeesLayout}>
         <div className={styles.employeeList}>
           <ul className={styles.list} role="listbox" aria-label="Employee list">
             {employees.map((employee) => (
@@ -98,12 +68,11 @@ export const EmployeesPage = () => {
             <EmployeeDetails employee={selectedEmployee} />
           ) : (
             <div className={styles.emptyState}>
-              <p className={styles.emptyStateText}>{t("employees.selectEmployee")}</p>
+              <p className={styles.emptyStateText}>{t("employees.selectEmployee")}...</p>
             </div>
           )}
         </div>
       </div>
-    </div>
   );
 };
 

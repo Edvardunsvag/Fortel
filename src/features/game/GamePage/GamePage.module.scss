@@ -1,4 +1,4 @@
-@use "../../../../shared/styles/variables.scss" as *;
+@use "shared/styles/variables.scss" as *;
 
 .page {
   min-height: 100vh;
@@ -27,31 +27,4 @@
   font-weight: 500;
   margin: 0 0 $spacing-xl 0;
   color: $color-dark-accent;
-}
-
-@media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
-  }
-}
-
-.subtitle {
-  font-size: 1.25rem;
-  color: $color-dark-accent;
-  margin: 0;
-}
-
-.content {
-  margin-top: $spacing-xl;
-}
-
-.text {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: $color-dark-fill;
-  margin: 0;
-}
-
-.avatarPlaceholder {
-  background-color: $color-light-grey;
 }

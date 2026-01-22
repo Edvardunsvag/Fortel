@@ -1,7 +1,9 @@
+using Fortedle.Server.Data;
 using Fortedle.Server.Models.Database;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Repositories;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fortedle.Server.Services;
 
@@ -9,6 +11,7 @@ public interface IGiftcardService
 {
     Task<SendGiftcardResponse> SendGiftcardAsync(SendGiftcardRequest request);
     Task<SendGiftcardResponse> SendGiftcardToWinnerAsync(string userId, int amount, string reason, int? winningTicketId = null, int? monthlyWinningTicketId = null, string? customMessage = null);
+    Task<SendGiftcardResponse> ClaimWeeklyPrizeAsync(string userId, int winningTicketId);
     Task<List<GiftcardTransactionDto>> GetAllTransactionsAsync();
     Task<List<GiftcardTransactionDto>> GetTransactionsByUserIdAsync(string userId);
     Task<GiftcardTransactionDto?> GetTransactionByIdAsync(int id);
@@ -19,6 +22,8 @@ public class GiftcardService : IGiftcardService
     private readonly IGledeApiService _gledeApiService;
     private readonly IGiftcardTransactionRepository _giftcardRepository;
     private readonly IEmployeeRepository _employeeRepository;
+    private readonly IWinningTicketRepository _winningTicketRepository;
+    private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<GiftcardService> _logger;
@@ -27,6 +32,8 @@ public class GiftcardService : IGiftcardService
         IGledeApiService gledeApiService,
         IGiftcardTransactionRepository giftcardRepository,
         IEmployeeRepository employeeRepository,
+        IWinningTicketRepository winningTicketRepository,
+        AppDbContext context,
         IConfiguration configuration,
         IWebHostEnvironment environment,
         ILogger<GiftcardService> logger)
@@ -34,6 +41,8 @@ public class GiftcardService : IGiftcardService
         _gledeApiService = gledeApiService;
         _giftcardRepository = giftcardRepository;
         _employeeRepository = employeeRepository;
+        _winningTicketRepository = winningTicketRepository;
+        _context = context;
         _configuration = configuration;
         _environment = environment;
         _logger = logger;
@@ -248,6 +257,162 @@ public class GiftcardService : IGiftcardService
             WinningTicketId = winningTicketId,
             MonthlyWinningTicketId = monthlyWinningTicketId
         });
+    }
+
+    public async Task<SendGiftcardResponse> ClaimWeeklyPrizeAsync(string userId, int winningTicketId)
+    {
+        try
+        {
+            _logger.LogInformation(
+                "Attempting to claim weekly prize for user {UserId}, WinningTicketId: {WinningTicketId}",
+                userId,
+                winningTicketId);
+
+            // Verify the winning ticket exists and belongs to the user
+            var winningTicket = await _winningTicketRepository.GetByIdAsync(winningTicketId);
+            if (winningTicket == null)
+            {
+                _logger.LogWarning("Winning ticket {WinningTicketId} not found", winningTicketId);
+                return new SendGiftcardResponse
+                {
+                    Success = false,
+                    ErrorMessage = $"Winning ticket {winningTicketId} not found"
+                };
+            }
+
+            if (winningTicket.UserId != userId)
+            {
+                _logger.LogWarning(
+                    "User {UserId} attempted to claim prize for winning ticket {WinningTicketId} owned by {OwnerUserId}",
+                    userId,
+                    winningTicketId,
+                    winningTicket.UserId);
+                return new SendGiftcardResponse
+                {
+                    Success = false,
+                    ErrorMessage = "You do not own this winning ticket"
+                };
+            }
+
+            // Check if prize has already been claimed
+            var existingTransaction = await _giftcardRepository.GetByWinningTicketIdAsync(winningTicketId);
+            if (existingTransaction != null)
+            {
+                _logger.LogWarning(
+                    "Prize already claimed for winning ticket {WinningTicketId}. Transaction ID: {TransactionId}",
+                    winningTicketId,
+                    existingTransaction.Id);
+                return new SendGiftcardResponse
+                {
+                    Success = false,
+                    ErrorMessage = "Prize has already been claimed for this winning ticket"
+                };
+            }
+
+            // Convert Harvest user ID to Huma employee ID
+            // The userId parameter is a Harvest user ID, but employees use Huma IDs
+            // We need to look up the employee by email from harvest_users table
+            string? employeeId = null;
+            if (int.TryParse(userId, out var harvestUserId))
+            {
+                try
+                {
+                    // Get email from harvest_users table
+                    var dbConnection = _context.Database.GetDbConnection();
+                    var wasOpen = dbConnection.State == System.Data.ConnectionState.Open;
+                    
+                    if (!wasOpen)
+                    {
+                        await dbConnection.OpenAsync();
+                    }
+                    
+                    try
+                    {
+                        using var command = dbConnection.CreateCommand();
+                        command.CommandText = "SELECT email FROM harvest_users WHERE harvest_user_id = @userId LIMIT 1";
+                        var parameter = command.CreateParameter();
+                        parameter.ParameterName = "@userId";
+                        parameter.Value = harvestUserId;
+                        command.Parameters.Add(parameter);
+                        
+                        var result = await command.ExecuteScalarAsync();
+                        var harvestUserEmail = result?.ToString();
+                        
+                        if (!string.IsNullOrEmpty(harvestUserEmail))
+                        {
+                            // Find employee by email
+                            var allEmployees = await _employeeRepository.GetAllAsync();
+                            var matchingEmployee = allEmployees.FirstOrDefault(e =>
+                                !string.IsNullOrEmpty(e.Email) &&
+                                e.Email.Equals(harvestUserEmail, StringComparison.OrdinalIgnoreCase));
+                            
+                            if (matchingEmployee != null)
+                            {
+                                employeeId = matchingEmployee.Id;
+                                _logger.LogInformation(
+                                    "Mapped Harvest user ID {HarvestUserId} to employee ID {EmployeeId} via email {Email}",
+                                    harvestUserId,
+                                    employeeId,
+                                    harvestUserEmail);
+                            }
+                            else
+                            {
+                                _logger.LogWarning(
+                                    "No employee found with email {Email} for Harvest user ID {HarvestUserId}",
+                                    harvestUserEmail,
+                                    harvestUserId);
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogWarning(
+                                "No email found in harvest_users table for Harvest user ID {HarvestUserId}",
+                                harvestUserId);
+                        }
+                    }
+                    finally
+                    {
+                        if (!wasOpen)
+                        {
+                            await dbConnection.CloseAsync();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error mapping Harvest user ID {HarvestUserId} to employee ID", harvestUserId);
+                }
+            }
+            
+            if (string.IsNullOrEmpty(employeeId))
+            {
+                _logger.LogWarning("Could not map Harvest user ID {UserId} to employee ID", userId);
+                return new SendGiftcardResponse
+                {
+                    Success = false,
+                    ErrorMessage = $"Could not find employee for user {userId}"
+                };
+            }
+
+            // Get the weekly winner amount from configuration
+            var weeklyWinnerAmount = _configuration.GetValue<int>("Glede:WeeklyWinnerAmount", 1);
+
+            // Send the giftcard using the Huma employee ID
+            return await SendGiftcardToWinnerAsync(
+                employeeId,
+                weeklyWinnerAmount,
+                "weekly_lottery_winner",
+                winningTicketId: winningTicketId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error claiming weekly prize for user {UserId}, WinningTicketId: {WinningTicketId}", userId, winningTicketId);
+            return new SendGiftcardResponse
+            {
+                Success = false,
+                ErrorMessage = $"Unexpected error: {ex.Message}"
+            };
+        }
     }
 
     public async Task<List<GiftcardTransactionDto>> GetAllTransactionsAsync()

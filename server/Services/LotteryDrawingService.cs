@@ -14,21 +14,15 @@ public class LotteryDrawingService : ILotteryDrawingService
 
     private readonly ILotteryTicketRepository _lotteryTicketRepository;
     private readonly IWinningTicketRepository _winningTicketRepository;
-    private readonly IGiftcardService _giftcardService;
-    private readonly IConfiguration _configuration;
     private readonly ILogger<LotteryDrawingService> _logger;
 
     public LotteryDrawingService(
         ILotteryTicketRepository lotteryTicketRepository,
         IWinningTicketRepository winningTicketRepository,
-        IGiftcardService giftcardService,
-        IConfiguration configuration,
         ILogger<LotteryDrawingService> logger)
     {
         _lotteryTicketRepository = lotteryTicketRepository;
         _winningTicketRepository = winningTicketRepository;
-        _giftcardService = giftcardService;
-        _configuration = configuration;
         _logger = logger;
     }
 
@@ -102,45 +96,7 @@ public class LotteryDrawingService : ILotteryDrawingService
                 week,
                 string.Join(", ", winningTicketEntities.Select(w => $"UserId: {w.UserId}, TicketId: {w.LotteryTicketId}")));
 
-            // Send giftcards to winners
-            var weeklyWinnerAmount = _configuration.GetValue<int>("Glede:WeeklyWinnerAmount", 1);
-            foreach (var winner in winningTicketEntities)
-            {
-                try
-                {
-                    _logger.LogInformation("Sending giftcard to weekly winner {UserId}, WinningTicketId: {WinningTicketId}, Amount: {Amount}", winner.UserId, winner.Id, weeklyWinnerAmount);
-
-                    var giftcardResult = await _giftcardService.SendGiftcardToWinnerAsync(
-                        winner.UserId,
-                        weeklyWinnerAmount,
-                        "weekly_lottery_winner",
-                        winningTicketId: winner.Id);
-
-                    if (giftcardResult.Success)
-                    {
-                        _logger.LogInformation(
-                            "Giftcard sent successfully to weekly winner {UserId}. Order ID: {OrderId}",
-                            winner.UserId,
-                            giftcardResult.OrderId);
-                    }
-                    else
-                    {
-                        _logger.LogWarning(
-                            "Failed to send giftcard to weekly winner {UserId}: {Error}",
-                            winner.UserId,
-                            giftcardResult.ErrorMessage);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "Error sending giftcard to weekly winner {UserId}: {Message}",
-                        winner.UserId,
-                        ex.Message);
-                    // Don't throw - we still want the lottery drawing to be considered successful
-                }
-            }
+            // Note: Giftcards are no longer sent automatically. Winners must claim their prize via the "Hev premie" button.
         }
         catch (Exception ex)
         {

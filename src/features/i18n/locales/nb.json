@@ -281,7 +281,11 @@
       "noWinner": "Ingen vinner",
       "countdownLabel": "Tid til trekning",
       "waitingForDraw": "Venter på trekning...",
-      "checkWeeklyWinner": "Sjekk ukesvinner"
+      "checkWeeklyWinner": "Sjekk ukesvinner",
+      "claimPrize": "Hev premie",
+      "prizeClaimed": "Sjekk mobilen din eller mailen din for å se gavekortet",
+      "claimingPrize": "Henter premie...",
+      "prizeClaimError": "Kunne ikke hente premie. Prøv igjen senere."
     },
     "eligibility": {
       "missingHours": "Mangler 8 timer på: {{dates}}",

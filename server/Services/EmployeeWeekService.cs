@@ -16,6 +16,7 @@ public class EmployeeWeekService : IEmployeeWeekService
     private readonly IEmployeeWeekRepository _employeeWeekRepository;
     private readonly ILotteryTicketRepository _lotteryTicketRepository;
     private readonly IWinningTicketRepository _winningTicketRepository;
+    private readonly IGiftcardTransactionRepository _giftcardTransactionRepository;
     private readonly ILotteryTicketService _lotteryTicketService;
     private readonly HarvestApiService _harvestApiService;
     private readonly ILogger<EmployeeWeekService> _logger;
@@ -24,6 +25,7 @@ public class EmployeeWeekService : IEmployeeWeekService
         IEmployeeWeekRepository employeeWeekRepository,
         ILotteryTicketRepository lotteryTicketRepository,
         IWinningTicketRepository winningTicketRepository,
+        IGiftcardTransactionRepository giftcardTransactionRepository,
         ILotteryTicketService lotteryTicketService,
         HarvestApiService harvestApiService,
         ILogger<EmployeeWeekService> logger)
@@ -31,6 +33,7 @@ public class EmployeeWeekService : IEmployeeWeekService
         _employeeWeekRepository = employeeWeekRepository;
         _lotteryTicketRepository = lotteryTicketRepository;
         _winningTicketRepository = winningTicketRepository;
+        _giftcardTransactionRepository = giftcardTransactionRepository;
         _lotteryTicketService = lotteryTicketService;
         _harvestApiService = harvestApiService;
         _logger = logger;
@@ -215,7 +218,15 @@ public class EmployeeWeekService : IEmployeeWeekService
                 var winningTicket = userWon
                     ? weekWinners.First(w => w.UserId == userId)
                     : weekWinners.First();
-                dto.Winner = winningTicket.ToDto();
+                
+                var winnerDto = winningTicket.ToDto();
+                winnerDto.WinningTicketId = winningTicket.Id;
+                
+                // Check if prize has been claimed for this winning ticket
+                var existingTransaction = await _giftcardTransactionRepository.GetByWinningTicketIdAsync(winningTicket.Id);
+                winnerDto.PrizeClaimed = existingTransaction != null;
+                
+                dto.Winner = winnerDto;
             }
 
             // Calculate countdown target (Friday 15:00 of that week)

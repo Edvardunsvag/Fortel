@@ -21,6 +21,8 @@ import type {
   FortedleServerModelsDTOsLotteryConfigDto,
   FortedleServerModelsDTOsWheelSegmentDto,
   FortedleServerModelsDTOsWheelParticipantDto,
+  FortedleServerModelsDTOsClaimWeeklyPrizeRequest,
+  FortedleServerModelsDTOsSendGiftcardResponse,
 } from "@/shared/api/generated/index";
 
 /**
@@ -528,5 +530,37 @@ export const fetchEmployeeWeeks = async (userId: string, accessToken: string | n
       throw new Error(errorMessage);
     }
     throw new Error(error instanceof Error ? error.message : "Failed to fetch employee weeks");
+  }
+};
+
+/**
+ * Claims weekly prize for a winning ticket
+ *
+ * @param winningTicketId - ID of the winning ticket
+ * @param userId - Harvest user ID
+ * @param accessToken - MSAL access token for backend authentication
+ */
+export const claimWeeklyPrize = async (winningTicketId: number, userId: string, accessToken: string | null): Promise<FortedleServerModelsDTOsSendGiftcardResponse> => {
+  try {
+    const { giftcardsApi } = createApiClients(accessToken);
+    // TODO: After regenerating API client, this type will include userId
+    const request = {
+      winningTicketId,
+      userId,
+    } as FortedleServerModelsDTOsClaimWeeklyPrizeRequest & { userId: string };
+    const response = await giftcardsApi.apiGiftcardsClaimWeeklyPrizePost(request);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to claim prize: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to claim prize");
   }
 };

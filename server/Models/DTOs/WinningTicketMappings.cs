@@ -13,6 +13,8 @@ public static class WinningTicketExtensions
             Image = entity.LotteryTicket?.Image,
             Week = entity.Week,
             CreatedAt = entity.CreatedAt,
+            WinningTicketId = entity.Id,
+            PrizeClaimed = false // Will be set by service layer after checking transaction
         };
     }
 }

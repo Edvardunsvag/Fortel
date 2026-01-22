@@ -53,9 +53,12 @@ export const lotteryKeys = {
 };
 
 /**
- * Helper to get a valid token, refreshing if needed//
+ * Helper to get a valid token, refreshing if needed
+ * @param token - Current Harvest token
+ * @param dispatch - Redux dispatch function
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
-const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch): Promise<HarvestToken> => {
+const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch, msalAccessToken: string | null): Promise<HarvestToken> => {
   if (!token) {
     throw new Error("Not authenticated with Harvest");
   }
@@ -68,7 +71,7 @@ const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch):
   if (Date.now() >= token.expiresAt - 60000) {
     // Refresh token
     try {
-      const tokenResponse = await refreshAccessToken(token.refreshToken);
+      const tokenResponse = await refreshAccessToken(token.refreshToken, msalAccessToken);
       const newToken: HarvestToken = {
         ...token,
         accessToken: tokenResponse.access_token,
@@ -96,11 +99,12 @@ const getValidToken = async (token: HarvestToken | null, dispatch: AppDispatch):
 export const useLotteryUser = (enabled = true) => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectLotteryToken);
+  const msalAccessToken = useAppSelector(selectAccessToken);
 
   return useQuery<HarvestUser>({
     queryKey: lotteryKeys.user(),
     queryFn: async () => {
-      const validToken = await getValidToken(token, dispatch);
+      const validToken = await getValidToken(token, dispatch, msalAccessToken);
       return fetchHarvestUser(validToken.accessToken, validToken.accountId);
     },
     enabled: enabled && token !== null,
@@ -120,12 +124,13 @@ export const useLotteryUser = (enabled = true) => {
 export const useLotteryTimeEntries = (from: string, to: string, enabled = true) => {
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectLotteryToken);
+  const msalAccessToken = useAppSelector(selectAccessToken);
   const queryClient = useQueryClient();
 
   return useQuery<HarvestTimeEntry[]>({
     queryKey: lotteryKeys.timeEntries(from, to),
     queryFn: async () => {
-      const validToken = await getValidToken(token, dispatch);
+      const validToken = await getValidToken(token, dispatch, msalAccessToken);
 
       // Fetch user info if we don't have it yet (needed for user ID)
       let user: HarvestUser | undefined;
@@ -155,7 +160,7 @@ export const useLotteryTimeEntries = (from: string, to: string, enabled = true) 
             if (!token) {
               throw new Error("No token to refresh");
             }
-            const tokenResponse = await refreshAccessToken(token.refreshToken);
+            const tokenResponse = await refreshAccessToken(token.refreshToken, msalAccessToken);
             const refreshedToken: HarvestToken = {
               ...token,
               accessToken: tokenResponse.access_token,
@@ -212,7 +217,9 @@ export const useAuthenticateLottery = () => {
       sessionStorage.removeItem("harvest_oauth_state");
 
       // Exchange code for token (state is validated on frontend and backend)
-      const tokenResponse = await exchangeCodeForToken(code, state);
+      // Use MSAL token from Redux or acquire dynamically
+      const msalToken = msalAccessTokenFromRedux || (accounts.length > 0 ? (await instance.acquireTokenSilent({ ...loginRequest, account: accounts[0] })).accessToken : null);
+      const tokenResponse = await exchangeCodeForToken(code, state, msalToken);
 
       // Fetch accounts to get the correct account ID (not from token extraction)
       let accountId = tokenResponse.account_id;
@@ -311,6 +318,7 @@ export const useRefreshLotteryToken = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const token = useAppSelector(selectLotteryToken);
+  const msalAccessToken = useAppSelector(selectAccessToken);
 
   return useMutation<HarvestToken, Error, void>({
     mutationFn: async () => {
@@ -318,7 +326,7 @@ export const useRefreshLotteryToken = () => {
         throw new Error("No token to refresh");
       }
 
-      const tokenResponse = await refreshAccessToken(token.refreshToken);
+      const tokenResponse = await refreshAccessToken(token.refreshToken, msalAccessToken);
 
       const newToken: HarvestToken = {
         ...token,

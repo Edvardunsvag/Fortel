@@ -4,7 +4,7 @@ import type {
   HarvestAccountsResponse,
 } from "./types";
 import { harvestConfig } from "@/shared/config/harvestConfig";
-import { createApiClients, harvestOAuthApi } from "@/shared/api/client";
+import { createApiClients } from "@/shared/api/client";
 import type {
   FortedleServerModelsDTOsSyncLotteryTicketsRequest,
   FortedleServerModelsDTOsSyncLotteryTicketsResponse,
@@ -38,10 +38,14 @@ const extractAccountIdFromToken = (accessToken: string): string => {
 /**
  * Exchange authorization code for access token via backend
  * The backend securely handles the client secret
+ * @param code - Authorization code from Harvest OAuth callback
+ * @param state - State parameter for CSRF protection
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const exchangeCodeForToken = async (
   code: string,
-  state: string
+  state: string,
+  msalAccessToken: string | null
 ): Promise<{
   access_token: string;
   token_type: string;
@@ -55,6 +59,7 @@ export const exchangeCodeForToken = async (
       state,
     };
 
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
     const response = await harvestOAuthApi.apiHarvestOauthExchangePost(request);
     const tokenData = response.data;
 
@@ -81,9 +86,12 @@ export const exchangeCodeForToken = async (
 /**
  * Refresh access token using refresh token via backend
  * The backend securely handles the client secret
+ * @param refreshToken - Harvest refresh token
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const refreshAccessToken = async (
-  refreshToken: string
+  refreshToken: string,
+  msalAccessToken: string | null
 ): Promise<{
   access_token: string;
   token_type: string;
@@ -96,6 +104,7 @@ export const refreshAccessToken = async (
       refresh_token: refreshToken,
     };
 
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
     const response = await harvestOAuthApi.apiHarvestOauthRefreshPost(request);
     const tokenData = response.data;
 

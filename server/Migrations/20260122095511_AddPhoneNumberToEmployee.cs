@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fortedle.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddGiftcardTransactions : Migration
+    public partial class AddPhoneNumberToEmployee : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

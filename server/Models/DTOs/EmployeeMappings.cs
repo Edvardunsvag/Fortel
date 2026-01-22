@@ -20,6 +20,7 @@ public static class EmployeeExtensions
             Age = entity.Age,
             Supervisor = entity.Supervisor ?? "-",
             Funfact = entity.Funfact,
+            PhoneNumber = entity.PhoneNumber,
             Interests = entity.Interests ?? new List<string>(),
         };
     }

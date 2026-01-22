@@ -16,10 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added validation for minimum giftcard amount (50 NOK) in `GiftcardService`
 - Added validation for required employee name fields (FirstName and Surname) before sending giftcards
 - Improved null handling in giftcard service with proper fallback values
+- Fixed broken giftcard_transactions migration - regenerated migration with proper CreateTable operation
+- Improved migration error handling in `Program.cs` to catch and log all migration failures with detailed diagnostics
 
 ### Added
 - Enhanced logging in `GledeApiService` for API request debugging
 - Enhanced logging in `LotteryDrawingService` for giftcard sending operations
+- Database diagnostic command in `.cursor/commands/db-diagnostic.md` for troubleshooting migration issues
 
 ## [2026-01-20]
 

@@ -57,14 +57,18 @@ public class GiftcardService : IGiftcardService
                 };
             }
 
-            // Validate employee has required contact information
-            if (string.IsNullOrEmpty(employee.Email))
+            // Determine effective phone (request override takes priority)
+            var effectivePhone = request.Phone ?? employee.PhoneNumber;
+            var effectiveEmail = employee.Email;
+
+            // Validate employee has at least one contact method (phone or email)
+            if (string.IsNullOrEmpty(effectivePhone) && string.IsNullOrEmpty(effectiveEmail))
             {
-                _logger.LogWarning("Employee {UserId} has no email address", request.UserId);
+                _logger.LogWarning("Employee {UserId} has no phone number or email address", request.UserId);
                 return new SendGiftcardResponse
                 {
                     Success = false,
-                    ErrorMessage = "Employee has no email address"
+                    ErrorMessage = "Employee has no phone number or email address"
                 };
             }
 
@@ -96,8 +100,8 @@ public class GiftcardService : IGiftcardService
             {
                 UserId = request.UserId,
                 EmployeeName = employee.Name,
-                EmployeeEmail = employee.Email,
-                EmployeePhone = null, // Glede primarily uses email
+                EmployeeEmail = effectiveEmail,
+                EmployeePhone = effectivePhone,
                 Amount = request.Amount,
                 Currency = "NOK",
                 Reason = request.Reason,
@@ -112,17 +116,19 @@ public class GiftcardService : IGiftcardService
             transaction = await _giftcardRepository.AddAsync(transaction);
 
             // Prepare Glede API request
+            // Phone takes priority over email for delivery (SMS preferred)
+            var recipient = new GledeRecipient
+            {
+                FirstName = employee.FirstName ?? string.Empty,
+                LastName = employee.Surname ?? string.Empty,
+                // If phone available, use SMS delivery; otherwise use email
+                PhoneNumber = !string.IsNullOrEmpty(effectivePhone) ? effectivePhone : null,
+                Email = !string.IsNullOrEmpty(effectivePhone) ? null : effectiveEmail
+            };
+
             var gledeRequest = new GledeCreateOrderRequest
             {
-                Recipients = new List<GledeRecipient>
-                {
-                    new GledeRecipient
-                    {
-                        FirstName = employee.FirstName ?? string.Empty,
-                        LastName = employee.Surname ?? string.Empty,
-                        Email = employee.Email
-                    }
-                },
+                Recipients = new List<GledeRecipient> { recipient },
                 Payment = new GledePayment
                 {
                     GiftCardAmount = request.Amount
@@ -131,11 +137,14 @@ public class GiftcardService : IGiftcardService
                 Message = request.Message ?? GetDefaultMessage(request.Reason)
             };
 
+            var deliveryMethod = !string.IsNullOrEmpty(effectivePhone) ? "SMS" : "Email";
+            var deliveryTarget = !string.IsNullOrEmpty(effectivePhone) ? effectivePhone : effectiveEmail;
             _logger.LogInformation(
-                "Prepared Glede request: Recipient={FirstName} {LastName} ({Email}), Amount={Amount}, Sender={SenderName}",
-                gledeRequest.Recipients[0].FirstName,
-                gledeRequest.Recipients[0].LastName,
-                gledeRequest.Recipients[0].Email,
+                "Prepared Glede request: Recipient={FirstName} {LastName}, Delivery={DeliveryMethod} ({DeliveryTarget}), Amount={Amount}, Sender={SenderName}",
+                recipient.FirstName,
+                recipient.LastName,
+                deliveryMethod,
+                deliveryTarget,
                 gledeRequest.Payment.GiftCardAmount,
                 gledeRequest.SenderName);
 

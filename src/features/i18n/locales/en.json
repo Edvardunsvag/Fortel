@@ -222,7 +222,7 @@
     "rules": {
       "title": "Weekly Lottery Rules",
       "eligibility": "Eligibility Criteria",
-      "rule1": "Must have at least 8 hours logged for each day Monday-Friday",
+      "rule1": "Must have at least 40 total hours logged for the week (Monday-Friday)",
       "rule2": "All time entries for the week must be created AND updated before Friday 15:00",
       "monthChange": "Month Change",
       "rule3": "If you are late with time entries across month change, you lose all saved tickets for that month",
@@ -272,7 +272,7 @@
       "eligible": "Eligible",
       "notEligible": "Not eligible",
       "hasTicket": "Has ticket",
-      "notEligibleReason": "You do not meet the qualification criteria for this week. To be eligible, you must have at least 8 hours logged for each day Monday-Friday, and all time entries must be created AND updated before Friday 15:00.",
+      "notEligibleReason": "You do not meet the qualification criteria for this week. To be eligible, you must have at least 40 total hours logged for the week (Monday-Friday), and all time entries must be created AND updated before Friday 15:00.",
       "winnerStatus": "Winner status",
       "youWon": "You won!",
       "winner": "Winner",
@@ -288,7 +288,7 @@
       "prizeClaimError": "Could not claim prize. Please try again later."
     },
     "eligibility": {
-      "missingHours": "Missing 8 hours on: {{dates}}",
+      "missingHours": "Missing hours to reach 40 total hours. Current total: {{currentHours}} hours",
       "entriesUpdatedAfterDeadline": "Some entries were updated after Friday 15:00. Latest update: {{timestamp}}"
     },
     "employees": {

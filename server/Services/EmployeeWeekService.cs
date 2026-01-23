@@ -393,18 +393,14 @@ public class EmployeeWeekService : IEmployeeWeekService
         }
 
         // Check eligibility criteria:
-        // 1. All days (Mon-Fri) must have at least 8 hours
+        // 1. Total hours (Mon-Fri) must be at least 40 hours
         // 2. All entries must be finalized (created AND updated) before Friday 15:00
-        bool allDaysMeetRequirement = true;
+        double totalHours = dailyHours.Values.Sum(d => d.Hours);
+        bool meetsTotalHoursRequirement = totalHours >= 40;
         bool allEntriesBeforeCutoff = true;
 
         foreach (var dayData in dailyHours.Values)
         {
-            if (dayData.Hours < 8)
-            {
-                allDaysMeetRequirement = false;
-            }
-
             if (dayData.LastUpdated.HasValue && dayData.LastUpdated.Value > cutoffTime)
             {
                 allEntriesBeforeCutoff = false;
@@ -416,7 +412,7 @@ public class EmployeeWeekService : IEmployeeWeekService
             allEntriesBeforeCutoff = false;
         }
 
-        return allDaysMeetRequirement && allEntriesBeforeCutoff;
+        return meetsTotalHoursRequirement && allEntriesBeforeCutoff;
     }
 
     private DateTime? CalculateCountdownTarget(DateTime weekEnd)

@@ -94,6 +94,19 @@ public static class ApplicationBuilderExtensions
             c.EnableDeepLinking();
             // Enable filter
             c.EnableFilter();
+            
+            // Configure OAuth2 for Azure AD authentication
+            if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
+            {
+                c.OAuthClientId(clientId);
+                c.OAuthAppName("Fortedle API");
+                c.OAuthUsePkce();
+                c.OAuthScopeSeparator(" ");
+                
+                // For SPA apps, Swagger UI needs to handle token redemption client-side
+                // Ensure the redirect URI is registered as "Single-page application" type in Azure AD
+                // The redirect URI should be: {backend-url}/swagger/oauth2-redirect.html
+            }
         });
 
         // Map endpoints

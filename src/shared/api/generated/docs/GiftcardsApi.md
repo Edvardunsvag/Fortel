@@ -46,7 +46,7 @@ const { status, data } = await apiInstance.apiGiftcardsClaimWeeklyPrizePost(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -89,7 +89,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -139,7 +139,7 @@ const { status, data } = await apiInstance.apiGiftcardsIdGet(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -190,7 +190,7 @@ const { status, data } = await apiInstance.apiGiftcardsSendPost(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -240,7 +240,7 @@ const { status, data } = await apiInstance.apiGiftcardsUserUserIdGet(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 

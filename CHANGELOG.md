@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JWT Bearer token support in Swagger UI
 - Frontend API client factory with token-based authentication
 - Extension methods for Program.cs configuration (CORS, Database, Authentication, Swagger, Hangfire, Middleware)
+- `AzureAdHelper` utility class for Azure AD configuration and URI manipulation
 
 ### Changed
 - All API controllers now require authentication via `[Authorize]` attribute
@@ -22,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored Program.cs to use extension methods for better code organization
 - Hangfire lottery drawing job now uses Norway timezone (Europe/Oslo) instead of UTC
 - Countdown calculations use Norway timezone for accurate Friday 15:00 timing
+- Swagger UI authentication changed from JWT Bearer to OAuth2 Authorization Code flow with Azure AD redirect
+- Token validation now accepts multiple audience formats (full scope URI, base Application ID URI, and client ID)
 
 ### Fixed
 - UTC date parsing in frontend countdown hook to handle timezone issues correctly

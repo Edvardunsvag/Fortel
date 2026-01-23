@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.apiLeaderboardGet(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -93,7 +93,7 @@ const { status, data } = await apiInstance.apiLeaderboardSubmitScorePost(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 

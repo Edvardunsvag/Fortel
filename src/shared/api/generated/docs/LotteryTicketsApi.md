@@ -45,7 +45,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -98,7 +98,7 @@ void (empty response body)
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -148,7 +148,7 @@ const { status, data } = await apiInstance.apiLotteryTicketsGet(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -191,7 +191,7 @@ void (empty response body)
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -241,7 +241,7 @@ const { status, data } = await apiInstance.apiLotteryTicketsMonthlyWinnersGet(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -284,7 +284,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -334,7 +334,7 @@ void (empty response body)
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -377,7 +377,7 @@ void (empty response body)
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -420,7 +420,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -471,7 +471,7 @@ const { status, data } = await apiInstance.apiLotteryTicketsSyncPost(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -514,7 +514,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -557,7 +557,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 

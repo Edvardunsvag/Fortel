@@ -43,7 +43,7 @@ const { status, data } = await apiInstance.apiHarvestOauthExchangePost(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -94,7 +94,7 @@ const { status, data } = await apiInstance.apiHarvestOauthRefreshPost(
 
 ### Authorization
 
-[Bearer](../README.md#Bearer)
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 

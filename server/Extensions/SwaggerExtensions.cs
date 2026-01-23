@@ -24,16 +24,33 @@ public static class SwaggerExtensions
                 Description = "API for Fortedle game"
             });
             
-            // Add JWT Bearer authentication to Swagger
+            // Add OAuth2 authentication to Swagger with Azure AD redirect flow
             if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                var instance = azureAdSection["Instance"] ?? "https://login.microsoftonline.com/";
+                var authorizationUrl = $"{instance}{tenantId}/oauth2/v2.0/authorize";
+                var tokenUrl = $"{instance}{tenantId}/oauth2/v2.0/token";
+                
+                // For Azure AD, use the Application ID URI as the scope
+                // Ensure the audience has a scope path (e.g., "api://client-id/access_as_user")
+                var scopeName = AzureAdHelper.EnsureScopeInAudience(audience);
+                
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri(authorizationUrl),
+                            TokenUrl = new Uri(tokenUrl),
+                            Scopes = new Dictionary<string, string>
+                            {
+                                { scopeName, "Access the Fortedle API" }
+                            }
+                        }
+                    },
+                    Description = "Azure AD OAuth2 Authorization Code flow. Click 'Authorize' to be redirected to Azure AD login."
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -44,10 +61,10 @@ public static class SwaggerExtensions
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Id = "oauth2"
                             }
                         },
-                        Array.Empty<string>()
+                        new[] { scopeName }
                     }
                 });
             }

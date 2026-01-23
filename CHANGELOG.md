@@ -12,12 +12,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Hangfire dashboard JWT authentication via `HangfireJwtAuthorizationFilter`
 - JWT Bearer token support in Swagger UI
 - Frontend API client factory with token-based authentication
+- Extension methods for Program.cs configuration (CORS, Database, Authentication, Swagger, Hangfire, Middleware)
 
 ### Changed
 - All API controllers now require authentication via `[Authorize]` attribute
 - Frontend API clients now use JWT tokens from Redux store
 - MSAL configuration updated to request only API scope (not Microsoft Graph)
 - API client configuration supports Bearer token authentication with proper header format
+- Refactored Program.cs to use extension methods for better code organization
+- Hangfire lottery drawing job now uses Norway timezone (Europe/Oslo) instead of UTC
+- Countdown calculations use Norway timezone for accurate Friday 15:00 timing
+
+### Fixed
+- UTC date parsing in frontend countdown hook to handle timezone issues correctly
+- Countdown target calculation now properly converts Norway time to UTC
 
 ### Security
 - Moved authentication token handling to backend for Harvest OAuth

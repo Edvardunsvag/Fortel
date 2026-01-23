@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { selectAccessToken } from "@/features/auth/authSlice";
 import { useWheelData, useLatestMonthlyWinners, useLotteryConfig } from "../queries";
+import { parseUtcDate } from "../hooks/useCountdown";
 import {
   selectSpinPhase,
   selectCurrentSpinIndex,
@@ -108,8 +109,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
   const month = monthlyWinnersData?.month || "";
   const winnerCount = config?.monthlyWinnerCount || 3;
   // Memoize nextDrawDate to prevent infinite loops in useEffect
+  // Use parseUtcDate to ensure UTC time is correctly parsed (fixes timezone issues)
   const nextDrawDate = useMemo(() => {
-    return config?.nextMonthlyDrawDate ? new Date(config.nextMonthlyDrawDate) : null;
+    return config?.nextMonthlyDrawDate ? parseUtcDate(config.nextMonthlyDrawDate) : null;
   }, [config?.nextMonthlyDrawDate]);
 
   // Filter out revealed winners' segments from the wheel display

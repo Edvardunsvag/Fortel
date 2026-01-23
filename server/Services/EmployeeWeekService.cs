@@ -417,8 +417,12 @@ public class EmployeeWeekService : IEmployeeWeekService
 
     private DateTime? CalculateCountdownTarget(DateTime weekEnd)
     {
-        // Countdown target is Friday 15:00 of that week
-        return new DateTime(weekEnd.Year, weekEnd.Month, weekEnd.Day, 15, 0, 0, DateTimeKind.Utc);
+        // Countdown target is Friday 15:00 of that week (Norway time, Europe/Oslo)
+        // Create DateTime for 15:00 in Norway timezone, then convert to UTC
+        var norwayTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Oslo");
+        var norwayTime = new DateTime(weekEnd.Year, weekEnd.Month, weekEnd.Day, 15, 0, 0, DateTimeKind.Unspecified);
+        var utcTime = TimeZoneInfo.ConvertTimeToUtc(norwayTime, norwayTimeZone);
+        return utcTime;
     }
 
     private class WeekData

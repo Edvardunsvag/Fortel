@@ -24,6 +24,8 @@ export const employeeFromDto = (dto: FortedleServerModelsDTOsEmployeeDto): Emplo
     teams: dto.teams ?? [],
     age: dto.age ?? "-",
     supervisor: dto.supervisor ?? undefined,
+    supervisorLastname: dto.supervisorLastname ?? undefined,
+    stillingstittel: dto.stillingstittel ?? undefined,
     funfact: dto.funfact ?? null,
     interests: dto.interests ?? [],
   };

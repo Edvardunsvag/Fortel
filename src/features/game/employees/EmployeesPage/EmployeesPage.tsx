@@ -131,7 +131,13 @@ const EmployeeDetails = ({ employee }: EmployeeDetailsProps) => {
           {employee.supervisor && (
             <div className={styles.detailItem}>
               <dt className={styles.detailLabel}>{t("employees.supervisor")}</dt>
-              <dd className={styles.detailValue}>{employee.supervisor}</dd>
+              <dd className={styles.detailValue}>{employee.supervisor} {employee.supervisorLastname}</dd>
+            </div>
+          )}
+          {employee.stillingstittel && (
+            <div className={styles.detailItem}>
+              <dt className={styles.detailLabel}>{t("employees.stillingstittel")}</dt>
+              <dd className={styles.detailValue}>{employee.stillingstittel}</dd>
             </div>
           )}
         </dl>

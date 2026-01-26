@@ -3,6 +3,7 @@
 .hintCell {
   padding: $spacing-sm;
   min-width: 100px;
+  width: 120px;
   vertical-align: middle;
 }
 
@@ -48,18 +49,19 @@
 .tooltipContent {
   background-color: #4a4a4a;
   color: $color-white;
-  padding: $spacing-md;
+  padding: $spacing-sm;
   border-radius: $radius-md;
   box-shadow: 0 4px 12px $color-shadow-medium;
   min-width: 200px;
   max-width: 300px;
-  font-size: 0.875rem;
-  line-height: 1.4;
+  font-size: 0.8125rem;
+  line-height: 1.3;
   border: 1px solid rgba($color-white, 0.2);
 }
 
 .tooltipTitle {
   font-weight: 600;
+  font-size: 0.75rem;
   margin-bottom: $spacing-xs;
 }
 
@@ -67,6 +69,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spacing-xs;
+  font-size: 0.8125rem;
 }
 
 .tooltipTeam {
@@ -76,11 +79,21 @@
 @media (max-width: 768px) {
   .hintCell {
     min-width: 80px;
+    width: 100px;
   }
 
   .tooltipContent {
     min-width: 150px;
     max-width: 250px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    padding: $spacing-xs;
+  }
+
+  .tooltipTitle {
+    font-size: 0.6875rem;
+  }
+
+  .tooltipTeams {
+    font-size: 0.7rem;
   }
 }

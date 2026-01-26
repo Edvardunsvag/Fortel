@@ -4,6 +4,7 @@ export enum HintType {
   Teams = "teams",
   Age = "age",
   Supervisor = "supervisor",
+  Stillingstittel = "stillingstittel",
 }
 
 export enum HintResult {

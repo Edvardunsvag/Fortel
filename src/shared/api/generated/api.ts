@@ -38,9 +38,11 @@ export interface FortedleServerModelsDTOsEmployeeDto {
     'teams'?: Array<string> | null;
     'age'?: number | null;
     'supervisor'?: string | null;
+    'supervisorLastname'?: string | null;
     'funfact'?: string | null;
     'phoneNumber'?: string | null;
     'interests'?: Array<string> | null;
+    'stillingstittel'?: string | null;
 }
 export interface FortedleServerModelsDTOsEmployeeStatisticsDto {
     'userId'?: string | null;

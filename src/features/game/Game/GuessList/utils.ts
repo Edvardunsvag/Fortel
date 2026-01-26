@@ -5,7 +5,7 @@ import { HintType, HintResult } from "@/features/game/types";
 export const ANIMATION_CONFIG = {
   BASE_DELAY: 400, // Base delay in ms
   DELAY_PER_BOX: 400, // Delay between each box
-  BOXES_PER_GUESS: 5, // Number of boxes per guess
+  BOXES_PER_GUESS: 6, // Number of hint boxes per guess (department, office, teams, age, supervisor, stillingstittel)
   NEW_GUESS_DELAY: 100, // Delay before triggering animation for new guess
 } as const;
 
@@ -16,6 +16,7 @@ export const TABLE_COLUMNS = [
   { key: "office", hintType: HintType.Office },
   { key: "teams", hintType: HintType.Teams },
   { key: "age", hintType: HintType.Age },
+  { key: "stillingstittel", hintType: HintType.Stillingstittel },
   { key: "supervisor", hintType: HintType.Supervisor },
 ] as const;
 

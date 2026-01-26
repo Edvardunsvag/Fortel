@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-26]
+
+### Added
+- Added `Stillingstittel` (job title) and `SupervisorLastname` fields to Employee model
+- Database migrations for new employee fields (Stillingstittel and SupervisorLastname)
+- Stillingstittel hint in game guess hints
+- Enhanced supervisor hint matching with lastname support (displays as "supervisor L." format)
+
+### Changed
+- Updated SyncService to map and sync Stillingstittel and SupervisorLastname from Huma API
+- Improved supervisor hint logic to require both supervisor and supervisorLastname match for correct hint
+- Enhanced game UI styling for FlipBox and HintCell components
+
 ## [2026-01-22]
 
 ### Changed

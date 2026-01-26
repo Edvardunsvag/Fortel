@@ -10,6 +10,8 @@ export interface Employee {
   teams: string[];
   age: number | string; // Age or '-' if unknown
   supervisor?: string; // Supervisor name or '-' if unknown
+  supervisorLastname?: string; // Supervisor last name
+  stillingstittel?: string; // Job title (stillingstittel)
   funfact?: string | null; // Fun fact about the employee
   interests?: string[]; // Array of interests
 }

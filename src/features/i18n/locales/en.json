@@ -118,6 +118,7 @@
     "teams": "Teams",
     "age": "Age",
     "supervisor": "Supervisor",
+    "stillingstittel": "Job Title",
     "funfact": "Fun Fact",
     "funfactClue": "Today's Fun Fact",
     "noFunfact": "No fun fact",
@@ -128,7 +129,8 @@
     "office": "Office",
     "teams": "Teams",
     "age": "Age",
-    "supervisor": "Supervisor"
+    "supervisor": "Supervisor",
+    "stillingstittel": "Job Title"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -177,7 +179,8 @@
     "age": "Age",
     "department": "Department",
     "office": "Office",
-    "supervisor": "Supervisor"
+    "supervisor": "Supervisor",
+    "stillingstittel": "Job Title"
   },
   "auth": {
     "login": "Login",

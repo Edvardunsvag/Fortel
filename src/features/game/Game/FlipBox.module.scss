@@ -66,12 +66,39 @@
   align-items: center;
   gap: $spacing-xs;
   justify-content: center;
+  width: 100%;
+  min-width: 0; // Allow flex item to shrink below content size
 }
 
 .value {
   font-size: 0.75rem;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
   line-height: 1.2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+// Teams-specific styling - reduced padding and smaller font
+.teamsBox {
+  .flipBack {
+    padding: $spacing-xs;
+    gap: 0;
+  }
+
+  .valueContainer {
+    padding: 0;
+    gap: $spacing-xs;
+  }
+
+  .value {
+    font-size: 0.6875rem;
+    line-height: 1.1;
+  }
 }
 
 .icon {

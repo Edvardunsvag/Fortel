@@ -58,6 +58,7 @@ export const HintCell = ({ guess, hintType, guessIndex, boxIndex, isAnimated, t 
           showArrow={hintType === HintType.Age ? arrow.show : false}
           arrowDirection={arrow.direction}
           icon={hasMoreTeams ? <Info className={styles.tooltipIcon} aria-label="Show all teams" /> : undefined}
+          className={hintType === HintType.Teams ? "teamsBox" : undefined}
         />
         {hasMoreTeams && (
           <>

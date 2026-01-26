@@ -8,6 +8,7 @@ public interface IEmployeeRepository
 {
     Task<List<Employee>> GetAllAsync();
     Task<Employee?> GetByIdAsync(string id);
+    Task<Employee?> GetByIdForUpdateAsync(string id);
     Task<bool> ExistsAsync(string id);
     Task<Employee> AddAsync(Employee employee);
     Task UpdateAsync(Employee employee);
@@ -37,6 +38,12 @@ public class EmployeeRepository : IEmployeeRepository
     {
         return await _context.Employees
             .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
+    }
+
+    public async Task<Employee?> GetByIdForUpdateAsync(string id)
+    {
+        return await _context.Employees
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 

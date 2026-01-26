@@ -10,6 +10,7 @@ interface FlipBoxProps {
   showArrow?: boolean;
   arrowDirection?: "up" | "down";
   icon?: ReactNode;
+  className?: string;
 }
 
 export const FlipBox = ({
@@ -20,6 +21,7 @@ export const FlipBox = ({
   showArrow = false,
   arrowDirection = "up",
   icon,
+  className,
 }: FlipBoxProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -55,7 +57,7 @@ export const FlipBox = ({
   return (
     <div className={styles.flipContainer}>
       <div
-        className={`${styles.flipBox} ${getResultClass()} ${isFlipped ? styles.flipped : ""}`}
+        className={`${styles.flipBox} ${getResultClass()} ${isFlipped ? styles.flipped : ""} ${className ? styles[className] || className : ""}`}
         aria-label={`${label}: ${value} - ${result}`}
       >
         <div className={styles.flipInner}>

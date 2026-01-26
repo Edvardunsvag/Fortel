@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILotteryConfigRepository, LotteryConfigRepository>();
         services.AddScoped<IEmployeeWeekRepository, EmployeeWeekRepository>();
         services.AddScoped<IGiftcardTransactionRepository, GiftcardTransactionRepository>();
+        services.AddScoped<IHarvestTokenRepository, HarvestTokenRepository>();
 
         // Register services (which depend on repositories)
         services.AddScoped<IEmployeeService, EmployeeService>();
@@ -31,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmployeeWeekService, EmployeeWeekService>();
         services.AddScoped<IGledeApiService, GledeApiService>();
         services.AddScoped<IGiftcardService, GiftcardService>();
+        services.AddScoped<ITokenEncryptionService, TokenEncryptionService>();
 
         // Add HttpClient for external API calls
         services.AddHttpClient();

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Hangfire;
 using Fortedle.Server.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,16 @@ builder.Services.AddHangfireServices(connectionString);
 
 // Configure Swagger
 builder.Services.AddSwaggerDocumentation(builder.Configuration);
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiting(builder.Configuration);
+
+// Configure Data Protection for token encryption
+var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
+Directory.CreateDirectory(dataProtectionKeysPath);
+builder.Services.AddDataProtection()
+    .SetApplicationName("Fortedle")
+    .PersistKeysToFileSystem(new System.IO.DirectoryInfo(dataProtectionKeysPath));
 
 var app = builder.Build();
 

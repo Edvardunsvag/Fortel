@@ -66,25 +66,17 @@ const { status, data } = await apiInstance.apiEmployeeWeeksGet(
 ```typescript
 import {
     EmployeeWeeksApi,
-    Configuration,
-    FortedleServerModelsDTOsSyncHarvestRequest
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new EmployeeWeeksApi(configuration);
 
-let fortedleServerModelsDTOsSyncHarvestRequest: FortedleServerModelsDTOsSyncHarvestRequest; // (optional)
-
-const { status, data } = await apiInstance.apiEmployeeWeeksSyncPost(
-    fortedleServerModelsDTOsSyncHarvestRequest
-);
+const { status, data } = await apiInstance.apiEmployeeWeeksSyncPost();
 ```
 
 ### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **fortedleServerModelsDTOsSyncHarvestRequest** | **FortedleServerModelsDTOsSyncHarvestRequest**|  | |
+This endpoint does not have any parameters.
 
 
 ### Return type
@@ -97,7 +89,7 @@ const { status, data } = await apiInstance.apiEmployeeWeeksSyncPost(
 
 ### HTTP request headers
 
- - **Content-Type**: application/json, text/json, application/*+json
+ - **Content-Type**: Not defined
  - **Accept**: text/plain, application/json, text/json
 
 

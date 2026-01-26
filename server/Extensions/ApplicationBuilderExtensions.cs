@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using AspNetCoreRateLimit;
 
 namespace Fortedle.Server.Extensions;
 
@@ -36,6 +37,9 @@ public static class ApplicationBuilderExtensions
 
         // CORS must be before routing
         app.UseCors();
+
+        // Rate Limiting - must be after CORS but before routing
+        app.UseIpRateLimiting();
 
         // Explicit routing
         app.UseRouting();

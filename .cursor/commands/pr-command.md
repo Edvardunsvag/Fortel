@@ -16,6 +16,7 @@ alwaysApply: false
      - Database files: `*.db`, `*.sqlite`, `*.sqlite3`
      - Private key files: `*.pem`, `*.key`, `*.p12`, `*.pfx`
      - `appsettings.json` or `appsettings.Production.json` (unless explicitly approved)
+     - `DataProtection-Keys/` directory (contains encryption keys)
    - If any sensitive files are detected:
      - **DO NOT create the PR**
      - Report the detected files to the user with a clear error message

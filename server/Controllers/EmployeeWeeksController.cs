@@ -2,6 +2,7 @@ using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fortedle.Server.Controllers;
 
@@ -21,27 +22,46 @@ public class EmployeeWeeksController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Extract user email from JWT token claims
+    /// Tries preferred_username, email, or User.Identity.Name
+    /// </summary>
+    private string? GetUserEmail()
+    {
+        // Try preferred_username first (most common in Azure AD v2.0 tokens)
+        var preferredUsername = User.FindFirst("preferred_username")?.Value;
+        if (!string.IsNullOrWhiteSpace(preferredUsername))
+        {
+            return preferredUsername;
+        }
+
+        // Try email claim
+        var email = User.FindFirst(ClaimTypes.Email)?.Value 
+                   ?? User.FindFirst("email")?.Value;
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            return email;
+        }
+
+        // Fallback to User.Identity.Name
+        return User.Identity?.Name;
+    }
+
     [HttpPost("sync")]
-    public async Task<ActionResult<SyncHarvestResponse>> SyncFromHarvest([FromBody] SyncHarvestRequest request)
+    public async Task<ActionResult<SyncHarvestResponse>> SyncFromHarvest()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken))
+            // Extract user email from JWT token
+            var userEmail = GetUserEmail();
+            if (string.IsNullOrWhiteSpace(userEmail))
             {
-                return BadRequest(new { error = "accessToken is required" });
+                _logger.LogWarning("Unable to extract user email from JWT token");
+                return Unauthorized(new { error = "Unable to identify user. Please log in again." });
             }
 
-            if (string.IsNullOrWhiteSpace(request.RefreshToken))
-            {
-                return BadRequest(new { error = "refreshToken is required" });
-            }
-
-            if (string.IsNullOrWhiteSpace(request.AccountId))
-            {
-                return BadRequest(new { error = "accountId is required" });
-            }
-
-            var response = await _employeeWeekService.SyncFromHarvestAsync(request);
+            // Backend will retrieve tokens from database automatically
+            var response = await _employeeWeekService.SyncFromHarvestAsync(userEmail);
             return Ok(response);
         }
         catch (InvalidOperationException ex)

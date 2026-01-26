@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<LotteryConfig> LotteryConfigs { get; set; }
     public DbSet<EmployeeWeek> EmployeeWeeks { get; set; }
     public DbSet<GiftcardTransaction> GiftcardTransactions { get; set; }
+    public DbSet<HarvestToken> HarvestTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -140,6 +141,16 @@ public class AppDbContext : DbContext
                 .HasDatabaseName("idx_giftcard_transactions_created_at");
             entity.HasIndex(e => e.GledeOrderId)
                 .HasDatabaseName("idx_giftcard_transactions_glede_order_id");
+        });
+
+        // Configure HarvestToken entity
+        modelBuilder.Entity<Models.Database.HarvestToken>(entity =>
+        {
+            entity.HasKey(e => e.UserId);
+            entity.HasIndex(e => e.UserId)
+                .HasDatabaseName("idx_harvest_tokens_user_id");
+            entity.HasIndex(e => e.UpdatedAt)
+                .HasDatabaseName("idx_harvest_tokens_updated_at");
         });
     }
 }

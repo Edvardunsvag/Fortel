@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import styles from "./ConnectToHarvest.module.scss";
-import { selectLotteryToken } from "../lotterySlice";
-import { useAppSelector } from "@/app/hooks";
+import { useHarvestTokenStatus } from "../queries";
 
 interface ConnectToHarvestProps {
   error?: string;
@@ -12,7 +11,9 @@ interface ConnectToHarvestProps {
 
 export const ConnectToHarvest = ({ error, isLoading, onLogin, onTestApi }: ConnectToHarvestProps) => {
   const { t } = useTranslation();
-  const token = useAppSelector(selectLotteryToken);
+  const { data: harvestStatus } = useHarvestTokenStatus();
+  const isAuthenticated = harvestStatus?.is_authenticated ?? false;
+  
   return (
     <div className={styles.loginForm}>
       <p className={styles.description}>{t("lottery.description")}</p>
@@ -23,9 +24,9 @@ export const ConnectToHarvest = ({ error, isLoading, onLogin, onTestApi }: Conne
         {isLoading ? t("lottery.connecting") : t("lottery.connect")}
       </button>
 
-      {token && (
+      {isAuthenticated && (
         <div className={styles.testSection}>
-          <p className={styles.testDescription}>Token received! Test API calls:</p>
+          <p className={styles.testDescription}>Connected to Harvest! Test API calls:</p>
           <button onClick={onTestApi} className={styles.testButton} disabled={isLoading} type="button">
             {isLoading ? "Testing..." : "Test API Calls"}
           </button>

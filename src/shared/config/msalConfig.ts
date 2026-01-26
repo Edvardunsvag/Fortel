@@ -23,7 +23,7 @@ export const msalConfig: Configuration = {
     redirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI || window.location.origin,
   },
   cache: {
-    cacheLocation: "sessionStorage", // This configures where your cache will be stored
+    cacheLocation: "localStorage", // This configures where your cache will be stored
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
   },
 };

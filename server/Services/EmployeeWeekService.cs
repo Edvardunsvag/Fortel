@@ -7,7 +7,7 @@ namespace Fortedle.Server.Services;
 
 public interface IEmployeeWeekService
 {
-    Task<SyncHarvestResponse> SyncFromHarvestAsync(SyncHarvestRequest request);
+    Task<SyncHarvestResponse> SyncFromHarvestAsync(string azureAdUserId);
     Task<EmployeeWeeksResponse> GetEmployeeWeeksAsync(string userId);
 }
 
@@ -39,25 +39,24 @@ public class EmployeeWeekService : IEmployeeWeekService
         _logger = logger;
     }
 
-    public async Task<SyncHarvestResponse> SyncFromHarvestAsync(SyncHarvestRequest request)
+    public async Task<SyncHarvestResponse> SyncFromHarvestAsync(string azureAdUserId)
     {
         try
         {
-            _logger.LogInformation("Starting Harvest sync for user with account {AccountId}", request.AccountId);
+            _logger.LogInformation("Starting Harvest sync for user {AzureAdUserId}", azureAdUserId);
 
-            // Get valid token
-            var (accessToken, accountId) = await _harvestApiService.GetValidTokenAsync(
-                request.AccessToken,
-                request.RefreshToken,
-                request.ExpiresAt,
-                request.AccountId);
+            // Get tokens from database (automatically refreshes if expired)
+            var (accessToken, accountId) = await _harvestApiService.GetTokenForUserAsync(azureAdUserId);
+
+            _logger.LogInformation("Retrieved tokens from database for user {AzureAdUserId} with account {AccountId}", azureAdUserId, accountId);
 
             // Fetch user info - first get /users/me to get the user ID
             var user = await _harvestApiService.GetCurrentUserAsync(
-                accessToken,
-                request.RefreshToken,
-                request.ExpiresAt,
-                accountId);
+                accessToken: null,
+                refreshToken: null,
+                tokenExpiresAt: null,
+                accountId: null,
+                azureAdUserId: azureAdUserId);
             
             if (user == null)
             {
@@ -81,10 +80,11 @@ public class EmployeeWeekService : IEmployeeWeekService
                 user.Id,
                 fromDateStr,
                 toDateStr,
-                accessToken,
-                request.RefreshToken,
-                request.ExpiresAt,
-                accountId);
+                accessToken: null,
+                refreshToken: null,
+                tokenExpiresAt: null,
+                accountId: null,
+                azureAdUserId: azureAdUserId);
 
             _logger.LogInformation("Fetched {Count} time entries", timeEntries.Count);
 

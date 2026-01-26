@@ -114,3 +114,6 @@ appsettings.json
 # EF Core migrations (behold i repo, men ignorer compiled output)
 # Migrations/ er inkludert, men ikke compiled output
 
+
+# Data Protection Keys (contains encryption keys - DO NOT COMMIT)
+DataProtection-Keys/

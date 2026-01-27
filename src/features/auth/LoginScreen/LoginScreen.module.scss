@@ -91,3 +91,10 @@
     outline-offset: 2px;
   }
 }
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  justify-content: center;
+}

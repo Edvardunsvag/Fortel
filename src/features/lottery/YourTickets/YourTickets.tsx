@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { useEmployeeWeeks, useLotteryUser, useLotteryTickets, useSyncFromHarvest } from "../queries";
 import {
   setActiveSubTab,
@@ -70,9 +72,23 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
       await refetchWeeks();
       await refetchTickets();
     } catch (error) {
-      // Error handling is done by the mutation
+      // Error handling is done by toast in useEffect
     }
   };
+
+  useEffect(() => {
+    if (syncMutation.isSuccess) {
+      toast.success(t("lottery.syncSuccess"));
+    }
+  }, [syncMutation.isSuccess, t]);
+
+  useEffect(() => {
+    if (syncMutation.isError) {
+      const errorMessage =
+        syncMutation.error instanceof Error ? syncMutation.error.message : t("lottery.syncError");
+      toast.error(errorMessage);
+    }
+  }, [syncMutation.isError, syncMutation.error, t]);
 
   // Use employee weeks data from backend
   const weeklyData = weeksData?.weeks || [];
@@ -89,7 +105,9 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
 
   return (
     <div className={styles.dataSection}>
-      {displayError && <div className={styles.error}>{displayError}</div>}
+      {displayError && (
+        <div className={styles.error}>{displayError}</div>
+      )}
 
       {/* Dine lodd section */}
       <div className={styles.section}>
@@ -121,7 +139,14 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
                     disabled={syncMutation.isPending}
                     type="button"
                   >
-                    {syncMutation.isPending ? t("lottery.syncing") : t("lottery.syncTickets")}
+                    {syncMutation.isPending ? (
+                      <span className={styles.buttonContent}>
+                        <LoadingSpinner size="small" />
+                        {t("lottery.syncing")}
+                      </span>
+                    ) : (
+                      t("lottery.syncTickets")
+                    )}
                   </button>
                 )}
               </>
@@ -133,16 +158,6 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
                 </span>
                 <span className={styles.ticketIconLarge}>🎫</span>
               </div>
-            )}
-            {syncMutation.isSuccess && (
-              <p className={styles.syncSuccess}>{t("lottery.syncSuccess")}</p>
-            )}
-            {syncMutation.isError && (
-              <p className={styles.syncError}>
-                {syncMutation.error instanceof Error
-                  ? syncMutation.error.message
-                  : t("lottery.syncError")}
-              </p>
             )}
           </div>
         )}

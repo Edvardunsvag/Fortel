@@ -42,18 +42,29 @@ export const AdminNavigationChips = () => {
   ];
 
   useEffect(() => {
-    if (navRef.current) {
-      const activeButton = navRef.current.querySelector(`[data-tab="${activeSubTab}"]`) as HTMLElement;
-      if (activeButton) {
-        setSliderStyle({
-          left: activeButton.offsetLeft,
-          width: activeButton.offsetWidth,
-        });
-        if (!isInitialized) {
-          requestAnimationFrame(() => setIsInitialized(true));
+    const updateSliderPosition = () => {
+      if (navRef.current) {
+        const activeButton = navRef.current.querySelector(`[data-tab="${activeSubTab}"]`) as HTMLElement;
+        if (activeButton) {
+          setSliderStyle({
+            left: activeButton.offsetLeft,
+            width: activeButton.offsetWidth,
+          });
+          if (!isInitialized) {
+            requestAnimationFrame(() => setIsInitialized(true));
+          }
         }
       }
-    }
+    };
+
+    updateSliderPosition();
+
+    const handleResize = () => {
+      updateSliderPosition();
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [activeSubTab, isInitialized]);
 
   return (

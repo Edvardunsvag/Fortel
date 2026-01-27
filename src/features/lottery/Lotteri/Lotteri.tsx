@@ -8,6 +8,7 @@ import { CountdownChip } from "./CountdownChip";
 import { formatDateDDMM } from "@/shared/utils/dateUtils";
 import { createWeekKey } from "@/features/timebank/calculations/weekUtils";
 import { triggerConfetti } from "@/features/game/utils";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./Lotteri.module.scss";
 
 export const Lotteri = () => {
@@ -125,7 +126,7 @@ export const Lotteri = () => {
         {!userId ? (
           <p className={styles.winnersText}>{t("lottery.notAuthenticated")}</p>
         ) : isLoading ? (
-          <p className={styles.winnersText}>{t("lottery.loading")}</p>
+          <LoadingSpinner message={t("lottery.loading")} />
         ) : error ? (
           <div>
             <p className={styles.error} role="alert">

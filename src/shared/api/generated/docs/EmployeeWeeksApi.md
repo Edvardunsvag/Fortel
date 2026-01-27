@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.apiEmployeeWeeksGet(
 
 ### Authorization
 
-[oauth2](../README.md#oauth2)
+No authorization required
 
 ### HTTP request headers
 
@@ -66,17 +66,25 @@ const { status, data } = await apiInstance.apiEmployeeWeeksGet(
 ```typescript
 import {
     EmployeeWeeksApi,
-    Configuration
+    Configuration,
+    FortedleServerModelsDTOsSyncHarvestRequest
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new EmployeeWeeksApi(configuration);
 
-const { status, data } = await apiInstance.apiEmployeeWeeksSyncPost();
+let fortedleServerModelsDTOsSyncHarvestRequest: FortedleServerModelsDTOsSyncHarvestRequest; // (optional)
+
+const { status, data } = await apiInstance.apiEmployeeWeeksSyncPost(
+    fortedleServerModelsDTOsSyncHarvestRequest
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **fortedleServerModelsDTOsSyncHarvestRequest** | **FortedleServerModelsDTOsSyncHarvestRequest**|  | |
 
 
 ### Return type
@@ -85,11 +93,11 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[oauth2](../README.md#oauth2)
+No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 

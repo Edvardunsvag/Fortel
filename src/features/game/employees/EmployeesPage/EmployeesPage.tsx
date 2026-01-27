@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./EmployeesPage.module.scss";
 import { Employee } from "@/features/game/employees";
 import { useEmployees } from "../queries";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 
 export const EmployeesPage = () => {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ export const EmployeesPage = () => {
   };
 
   if (isLoading) {
-    return <p className={styles.loadingText}>{t("employees.loading")}</p>;
+    return <LoadingSpinner message={t("employees.loading")} fullScreen />;
   }
 
   if (isError) {

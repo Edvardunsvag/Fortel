@@ -44,21 +44,32 @@ export const GameNavigationChips = () => {
     GameSubTab.Employees,
   ];
 
-  // Update slider position when active tab changes
+  // Update slider position when active tab changes or window resizes
   useEffect(() => {
-    if (navRef.current) {
-      const activeButton = navRef.current.querySelector(`[data-tab="${activeSubTab}"]`) as HTMLElement;
-      if (activeButton) {
-        setSliderStyle({
-          left: activeButton.offsetLeft,
-          width: activeButton.offsetWidth,
-        });
-        // Enable transitions after initial position is set
-        if (!isInitialized) {
-          requestAnimationFrame(() => setIsInitialized(true));
+    const updateSliderPosition = () => {
+      if (navRef.current) {
+        const activeButton = navRef.current.querySelector(`[data-tab="${activeSubTab}"]`) as HTMLElement;
+        if (activeButton) {
+          setSliderStyle({
+            left: activeButton.offsetLeft,
+            width: activeButton.offsetWidth,
+          });
+          // Enable transitions after initial position is set
+          if (!isInitialized) {
+            requestAnimationFrame(() => setIsInitialized(true));
+          }
         }
       }
-    }
+    };
+
+    updateSliderPosition();
+
+    const handleResize = () => {
+      updateSliderPosition();
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [activeSubTab, isInitialized]);
 
   return (

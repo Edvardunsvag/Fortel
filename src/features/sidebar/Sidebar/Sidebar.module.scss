@@ -23,6 +23,20 @@
   height: 2rem;
   width: auto;
   display: block;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.logoIcon {
+  height: 1.5rem;
+  width: auto;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 }
 
 .userNameContainer {
@@ -154,11 +168,13 @@
     align-items: center;
   }
 
-  .logo {
-    height: 1.5rem;
-  }
 
   .userNameContainer {
+    padding: $spacing-md;
+    justify-content: center;
+  }
+
+  .userName {
     display: none;
   }
 

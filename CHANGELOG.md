@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-27]
+
+### Added
+- react-toastify library for user notifications and feedback
+- LoadingSpinner component with multiple sizes and full-screen option
+- Loading spinners on all pages with async operations (GiftcardAdmin, LeaderboardPage, EmployeesPage, TimeBankPage, Lottery pages)
+- Loading spinners in buttons for sync, submit, and authentication actions
+- Toast notifications for success, error, and info messages across the app
+
+### Changed
+- Replaced inline error/success messages with toast notifications in EmployeeOfTheDay, GiftcardAdmin, and Lottery components
+- Improved mobile navigation chips to show only icons when screen width ≤900px
+- Navigation chips now recalculate slider position on window resize
+- Sidebar shows favicon logo (F) instead of full logo when collapsed on mobile
+- Sidebar language toggle and logout button show only icons when collapsed
+- Sidebar user section shows only avatar (no name) when collapsed on mobile
+- Admin page "Dagens vinner" section is now collapsible with accordion
+- Updated text colors for better readability (darker gray for subtitles and instructions)
+- Navigation chips have fixed height to prevent overlap on mobile
+
+### Fixed
+- Navigation chips slider width now updates correctly on window resize without page refresh
+- Mobile navigation chips no longer overlap when wrapping to new lines
+
 ## [2026-01-26]
 
 ### Added

@@ -13,6 +13,7 @@
     "changeEmployee": "Change today's employee",
     "title": "Admin",
     "todaysWinner": "Today's Winner",
+    "toggleWinner": "Show/hide today's winner",
     "originalId": "Original ID",
     "obfuscatedId": "Obfuscated ID (Employee of the Day)",
     "copyId": "Copy ID",

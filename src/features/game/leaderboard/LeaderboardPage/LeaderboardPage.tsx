@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import styles from "./LeaderboardPage.module.scss";
 import { useLeaderboard } from "../queries";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 
 export const LeaderboardPage = () => {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ export const LeaderboardPage = () => {
   };
 
   if (isLoading) {
-    return <p className={styles.subtitle}>{t("leaderboard.loading")}</p>;
+    return <LoadingSpinner message={t("leaderboard.loading")} fullScreen />;
   }
 
   if (isError) {

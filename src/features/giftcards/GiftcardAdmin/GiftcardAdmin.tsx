@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { useGiftcardTransactions, useSendGiftcard } from "../queries";
 import type { GiftcardTransaction } from "../queries";
 import { useEmployees } from "@/features/game/employees";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./GiftcardAdmin.module.scss";
 
 const formatDate = (dateString: string | null | undefined): string => {
@@ -51,19 +53,17 @@ export const GiftcardAdmin = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [amount, setAmount] = useState(500);
   const [message, setMessage] = useState("");
-  const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
 
     if (!selectedUserId) {
-      setFormError(t("giftcards.errors.selectEmployee"));
+      toast.error(t("giftcards.errors.selectEmployee"));
       return;
     }
 
     if (amount <= 0 || amount > 10000) {
-      setFormError(t("giftcards.errors.invalidAmount"));
+      toast.error(t("giftcards.errors.invalidAmount"));
       return;
     }
 
@@ -76,15 +76,16 @@ export const GiftcardAdmin = () => {
       });
 
       if (result.success) {
+        toast.success(t("giftcards.success.sent") || "Giftcard sent successfully");
         setShowForm(false);
         setSelectedUserId("");
         setAmount(500);
         setMessage("");
       } else {
-        setFormError(result.errorMessage || "Failed to send giftcard");
+        toast.error(result.errorMessage || t("giftcards.errors.sendFailed") || "Failed to send giftcard");
       }
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Failed to send giftcard");
+      toast.error(err instanceof Error ? err.message : t("giftcards.errors.sendFailed") || "Failed to send giftcard");
     }
   };
 
@@ -92,7 +93,7 @@ export const GiftcardAdmin = () => {
     return (
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("giftcards.title")}</h2>
-        <p className={styles.loading}>{t("giftcards.loading")}</p>
+        <LoadingSpinner message={t("giftcards.loading")} fullScreen />
       </div>
     );
   }
@@ -171,14 +172,19 @@ export const GiftcardAdmin = () => {
             />
           </div>
 
-          {formError && <p className={styles.formError}>{formError}</p>}
-
           <button
             type="submit"
             className={styles.submitButton}
             disabled={sendGiftcard.isPending}
           >
-            {sendGiftcard.isPending ? t("giftcards.sending") : t("giftcards.form.submit")}
+            {sendGiftcard.isPending ? (
+              <span className={styles.buttonContent}>
+                <LoadingSpinner size="small" />
+                {t("giftcards.sending")}
+              </span>
+            ) : (
+              t("giftcards.form.submit")
+            )}
           </button>
         </form>
       )}

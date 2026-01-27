@@ -26,7 +26,7 @@
 
 .subtitle {
   font-size: 1rem;
-  color: $color-light-grey-text;
+  color: #6b6b6b;
   margin: 0;
 }
 
@@ -126,6 +126,12 @@
     outline: 2px solid $color-success;
     outline-offset: 2px;
   }
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
 }
 
 .loading,

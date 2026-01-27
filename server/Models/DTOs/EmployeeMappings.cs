@@ -19,9 +19,11 @@ public static class EmployeeExtensions
             Teams = entity.Teams ?? new List<string>(),
             Age = entity.Age,
             Supervisor = entity.Supervisor ?? "-",
+            SupervisorLastname = entity.SupervisorLastname,
             Funfact = entity.Funfact,
             PhoneNumber = entity.PhoneNumber,
             Interests = entity.Interests ?? new List<string>(),
+            Stillingstittel = entity.Stillingstittel,
         };
     }
 }

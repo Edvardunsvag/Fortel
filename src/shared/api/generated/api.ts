@@ -2207,12 +2207,11 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
     return {
         /**
          * 
-         * @param {string} [userId] 
          * @param {string} [date] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsCurrentGet: async (userId?: string, date?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiRoundsCurrentGet: async (date?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Rounds/current`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2351,13 +2350,12 @@ export const RoundsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {string} [userId] 
          * @param {string} [date] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRoundDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsCurrentGet(userId, date, options);
+        async apiRoundsCurrentGet(date?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRoundDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiRoundsCurrentGet(date, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['RoundsApi.apiRoundsCurrentGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2409,13 +2407,12 @@ export const RoundsApiFactory = function (configuration?: Configuration, basePat
     return {
         /**
          * 
-         * @param {string} [userId] 
          * @param {string} [date] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto> {
-            return localVarFp.apiRoundsCurrentGet(userId, date, options).then((request) => request(axios, basePath));
+        apiRoundsCurrentGet(date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto> {
+            return localVarFp.apiRoundsCurrentGet(date, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2453,12 +2450,11 @@ export const RoundsApiFactory = function (configuration?: Configuration, basePat
 export interface RoundsApiInterface {
     /**
      * 
-     * @param {string} [userId] 
      * @param {string} [date] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto>;
+    apiRoundsCurrentGet(date?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRoundDto>;
 
     /**
      * 
@@ -2492,13 +2488,12 @@ export interface RoundsApiInterface {
 export class RoundsApi extends BaseAPI implements RoundsApiInterface {
     /**
      * 
-     * @param {string} [userId] 
      * @param {string} [date] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiRoundsCurrentGet(userId?: string, date?: string, options?: RawAxiosRequestConfig) {
-        return RoundsApiFp(this.configuration).apiRoundsCurrentGet(userId, date, options).then((request) => request(this.axios, this.basePath));
+    public apiRoundsCurrentGet(date?: string, options?: RawAxiosRequestConfig) {
+        return RoundsApiFp(this.configuration).apiRoundsCurrentGet(date, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -17,6 +17,7 @@ import { Sidebar } from "./features/sidebar/Sidebar/Sidebar";
 import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
 import { AdminPage } from "./features/admin";
+import { ErrorBoundary } from "./shared/components";
 
 export const App = () => {
   const dispatch = useAppDispatch();

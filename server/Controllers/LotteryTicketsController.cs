@@ -1,10 +1,8 @@
-using Fortedle.Server.Data;
-using Fortedle.Server.Models.Database;
+using Fortedle.Server.Helpers;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fortedle.Server.Controllers;
 
@@ -16,20 +14,23 @@ public class LotteryTicketsController : ControllerBase
     private readonly ILotteryTicketService _lotteryTicketService;
     private readonly IWheelDataService _wheelDataService;
     private readonly IMonthlyLotteryDrawingService _monthlyDrawingService;
-    private readonly AppDbContext _context;
+    private readonly IWinnersService _winnersService;
+    private readonly ILotteryStatisticsService _statisticsService;
     private readonly ILogger<LotteryTicketsController> _logger;
 
     public LotteryTicketsController(
         ILotteryTicketService lotteryTicketService,
         IWheelDataService wheelDataService,
         IMonthlyLotteryDrawingService monthlyDrawingService,
-        AppDbContext context,
+        IWinnersService winnersService,
+        ILotteryStatisticsService statisticsService,
         ILogger<LotteryTicketsController> logger)
     {
         _lotteryTicketService = lotteryTicketService;
         _wheelDataService = wheelDataService;
         _monthlyDrawingService = monthlyDrawingService;
-        _context = context;
+        _winnersService = winnersService;
+        _statisticsService = statisticsService;
         _logger = logger;
     }
 
@@ -38,6 +39,8 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
+            // Note: userId here is the Harvest user ID (numeric), not the Azure AD email
+            // The data in lottery_tickets is stored with Harvest user IDs
             if (string.IsNullOrWhiteSpace(userId))
             {
                 return BadRequest(new { error = "userId is required" });
@@ -63,10 +66,23 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.UserId))
+            // Extract userId from JWT claims - override any userId in request for security
+            var userId = UserClaimsHelper.GetUserId(User);
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                return BadRequest(new { error = "userId is required" });
+                _logger.LogWarning("Unable to extract user ID from JWT token");
+                return Unauthorized(new { error = "Unable to identify user. Please log in again." });
             }
+
+            // Log warning if request contains different userId (potential tampering attempt)
+            if (!string.IsNullOrWhiteSpace(request.UserId) && request.UserId != userId)
+            {
+                _logger.LogWarning("Request userId {RequestUserId} does not match authenticated user {AuthUserId}. Using authenticated user ID.",
+                    request.UserId, userId);
+            }
+
+            // Override request UserId with authenticated user's ID
+            request.UserId = userId;
 
             if (string.IsNullOrWhiteSpace(request.Name))
             {
@@ -98,145 +114,7 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
-            // Query winning tickets joined with lottery tickets to get Name and Image
-            var winners = await _context.WinningTickets
-                .Include(wt => wt.LotteryTicket)
-                .OrderByDescending(wt => wt.Week)
-                .ThenByDescending(wt => wt.CreatedAt)
-                .Select(wt => new WinnerDto
-                {
-                    UserId = wt.UserId,
-                    Name = wt.LotteryTicket != null ? wt.LotteryTicket.Name : string.Empty,
-                    Image = wt.LotteryTicket != null ? wt.LotteryTicket.Image : null,
-                    Week = wt.Week,
-                    CreatedAt = wt.CreatedAt
-                })
-                .ToListAsync();
-
-            // Get all employees for email matching (include all employees with email, even if avatarImageUrl is null)
-            var employees = await _context.Employees
-                .Where(e => !string.IsNullOrEmpty(e.Email))
-                .ToListAsync();
-
-            _logger.LogInformation("Loaded {Count} employees with email addresses for matching", employees.Count);
-
-            // For winners with null images, try to get harvest user email from database and match with employees
-            foreach (var winner in winners)
-            {
-                if (string.IsNullOrEmpty(winner.Image))
-                {
-                    _logger.LogInformation("Processing winner with null image: UserId={UserId}, Name={Name}", winner.UserId, winner.Name);
-                    
-                    // Try to parse userId as int (Harvest user ID)
-                    if (int.TryParse(winner.UserId, out var harvestUserId))
-                    {
-                        _logger.LogInformation("Parsed userId {UserId} as harvestUserId {HarvestUserId}", winner.UserId, harvestUserId);
-                        
-                        try
-                        {
-                            // Fetch harvest user email from harvest_users table
-                            _logger.LogInformation("Fetching harvest user email for ID {HarvestUserId} from database", harvestUserId);
-                            
-                            // Use raw SQL query to get email from harvest_users table
-                            string? harvestUserEmail = null;
-                            
-                            var connection = _context.Database.GetDbConnection();
-                            var wasOpen = connection.State == System.Data.ConnectionState.Open;
-                            
-                            if (!wasOpen)
-                            {
-                                await connection.OpenAsync();
-                            }
-                            
-                            try
-                            {
-                                using var command = connection.CreateCommand();
-                                command.CommandText = "SELECT email FROM harvest_users WHERE harvest_user_id = @userId LIMIT 1";
-                                var parameter = command.CreateParameter();
-                                parameter.ParameterName = "@userId";
-                                parameter.Value = harvestUserId;
-                                command.Parameters.Add(parameter);
-                                
-                                var result = await command.ExecuteScalarAsync();
-                                harvestUserEmail = result?.ToString();
-                            }
-                            finally
-                            {
-                                if (!wasOpen)
-                                {
-                                    await connection.CloseAsync();
-                                }
-                            }
-
-                            if (string.IsNullOrEmpty(harvestUserEmail))
-                            {
-                                _logger.LogWarning("Harvest user {HarvestUserId} not found in harvest_users table or has no email", harvestUserId);
-                                continue;
-                            }
-
-                            _logger.LogInformation("Fetched harvest user email: {Email} for user ID {HarvestUserId}", harvestUserEmail, harvestUserId);
-
-                            // Find matching employee by email (case-insensitive)
-                            var matchingEmployee = employees.FirstOrDefault(e => 
-                                !string.IsNullOrEmpty(e.Email) && 
-                                e.Email.Equals(harvestUserEmail, StringComparison.OrdinalIgnoreCase));
-
-                            if (matchingEmployee == null)
-                            {
-                                _logger.LogWarning("No employee found matching email {Email} for harvest user {HarvestUserId}", 
-                                    harvestUserEmail, harvestUserId);
-                                continue;
-                            }
-
-                            _logger.LogInformation("Found matching employee: Id={EmployeeId}, Name={EmployeeName}, Email={EmployeeEmail}, HasAvatar={HasAvatar}", 
-                                matchingEmployee.Id, matchingEmployee.Name, matchingEmployee.Email, 
-                                !string.IsNullOrEmpty(matchingEmployee.AvatarImageUrl));
-
-                            if (string.IsNullOrEmpty(matchingEmployee.AvatarImageUrl))
-                            {
-                                _logger.LogWarning("Matching employee {EmployeeId} has no AvatarImageUrl", matchingEmployee.Id);
-                                continue;
-                            }
-
-                            winner.Image = matchingEmployee.AvatarImageUrl;
-                            _logger.LogInformation(
-                                "Successfully matched winner {UserId} ({WinnerName}) with employee {EmployeeId} ({EmployeeName}) via email {Email}. Set image to {ImageUrl}",
-                                winner.UserId,
-                                winner.Name,
-                                matchingEmployee.Id,
-                                matchingEmployee.Name,
-                                harvestUserEmail,
-                                matchingEmployee.AvatarImageUrl);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Failed to fetch harvest user email from database for winner {UserId} ({Name})", winner.UserId, winner.Name);
-                            // Continue with null image if fetch fails
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Could not parse userId {UserId} as integer for winner {Name}", winner.UserId, winner.Name);
-                    }
-                }
-            }
-
-            // Group winners by week
-            var weeklyWinners = winners
-                .GroupBy(w => w.Week)
-                .Select(g => new WeeklyWinnersDto
-                {
-                    Week = g.Key,
-                    Winners = g.OrderByDescending(w => w.CreatedAt).ToList()
-                })
-                .OrderByDescending(w => w.Week)
-                .ToList();
-
-            var response = new AllWinnersResponse
-            {
-                WeeklyWinners = weeklyWinners
-            };
-
+            var response = await _winnersService.GetWinnersAsync();
             return Ok(response);
         }
         catch (Exception ex)
@@ -251,50 +129,7 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
-            // Get all unique users with lottery tickets
-            var usersWithTickets = await _context.LotteryTickets
-                .GroupBy(t => new { t.UserId, t.Name, t.Image })
-                .Select(g => new
-                {
-                    g.Key.UserId,
-                    g.Key.Name,
-                    g.Key.Image,
-                    TicketCount = g.Count()
-                })
-                .ToListAsync();
-
-            // Get win counts per user
-            var winCounts = await _context.WinningTickets
-                .GroupBy(wt => wt.UserId)
-                .Select(g => new
-                {
-                    UserId = g.Key,
-                    WinCount = g.Count()
-                })
-                .ToListAsync();
-
-            // Create a dictionary for quick lookup of win counts
-            var winCountDict = winCounts.ToDictionary(w => w.UserId, w => w.WinCount);
-
-            // Map to DTOs
-            var employeeStats = usersWithTickets.Select(u => new EmployeeStatisticsDto
-            {
-                UserId = u.UserId,
-                Name = u.Name,
-                Image = u.Image,
-                TicketCount = u.TicketCount,
-                WinCount = winCountDict.GetValueOrDefault(u.UserId, 0)
-            })
-            .OrderByDescending(e => e.TicketCount)
-            .ThenByDescending(e => e.WinCount)
-            .ThenBy(e => e.Name)
-            .ToList();
-
-            var response = new EmployeeStatisticsResponse
-            {
-                Employees = employeeStats
-            };
-
+            var response = await _statisticsService.GetEmployeeStatisticsAsync();
             return Ok(response);
         }
         catch (Exception ex)
@@ -309,74 +144,14 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
-            const int totalTickets = 40;
-            const int usersCount = 10;
-            const int weeksPerUser = 4;
-
-            var ticketsCreated = 0;
-            var ticketsSkipped = 0;
-            var currentYear = DateTime.UtcNow.Year;
-
-            // Generate 10 users with 4 weeks each = 40 unique tickets
-            for (int userIndex = 1; userIndex <= usersCount; userIndex++)
-            {
-                var userId = $"test-user-{userIndex:D3}";
-                var userName = $"Test User {userIndex}";
-                var userImage = $"https://api.dicebear.com/7.x/avataaars/svg?seed={userName}";
-
-                // Generate 4 different weeks for each user
-                for (int weekIndex = 1; weekIndex <= weeksPerUser; weekIndex++)
-                {
-                    // Create unique weeks: each user gets consecutive weeks
-                    // User 1: W01-W04, User 2: W05-W08, etc.
-                    var weekNumber = ((userIndex - 1) * weeksPerUser + weekIndex);
-                    // Ensure week number is between 1 and 52
-                    if (weekNumber > 52)
-                    {
-                        weekNumber = ((weekNumber - 1) % 52) + 1;
-                    }
-                    var eligibleWeek = $"{currentYear}-W{weekNumber:D2}";
-
-                    // Check if ticket already exists
-                    var existingTicket = await _context.LotteryTickets
-                        .FirstOrDefaultAsync(t => t.UserId == userId && t.EligibleWeek == eligibleWeek);
-
-                    if (existingTicket != null)
-                    {
-                        ticketsSkipped++;
-                        continue;
-                    }
-
-                    // Create new ticket
-                    var ticket = new LotteryTicket
-                    {
-                        UserId = userId,
-                        Name = userName,
-                        Image = userImage,
-                        EligibleWeek = eligibleWeek,
-                        IsUsed = false,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                    };
-
-                    _context.LotteryTickets.Add(ticket);
-                    ticketsCreated++;
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Seeded test lottery tickets: {Created} created, {Skipped} skipped",
-                ticketsCreated,
-                ticketsSkipped);
+            var result = await _lotteryTicketService.SeedTestDataAsync();
 
             return Ok(new
             {
                 message = "Test lottery tickets seeded successfully",
-                ticketsCreated,
-                ticketsSkipped,
-                totalRequested = totalTickets
+                ticketsCreated = result.TicketsCreated,
+                ticketsSkipped = result.TicketsSkipped,
+                totalRequested = result.TotalRequested
             });
         }
         catch (Exception ex)
@@ -471,37 +246,18 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
-            // Find the winning ticket for this position
-            var winner = await _context.MonthlyWinningTickets
-                .FirstOrDefaultAsync(w => w.Month == month && w.Position == position);
+            var result = await _monthlyDrawingService.ConsumeWinnerTicketsAsync(month, position);
 
-            if (winner == null)
+            if (!result.Success)
             {
-                return NotFound(new { error = $"Winner not found for month {month} position {position}" });
+                return NotFound(new { error = result.ErrorMessage });
             }
-
-            // Mark all of this user's tickets as used
-            var ticketsToConsume = await _context.LotteryTickets
-                .Where(t => t.UserId == winner.UserId && !t.IsUsed)
-                .ToListAsync();
-
-            foreach (var ticket in ticketsToConsume)
-            {
-                ticket.IsUsed = true;
-                ticket.UpdatedAt = DateTime.UtcNow;
-            }
-
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Consumed {Count} tickets for winner {UserId} (position {Position}, month {Month})",
-                ticketsToConsume.Count, winner.UserId, position, month);
 
             return Ok(new
             {
                 message = "Winner tickets consumed successfully",
-                ticketsConsumed = ticketsToConsume.Count,
-                userId = winner.UserId
+                ticketsConsumed = result.TicketsConsumed,
+                userId = result.UserId
             });
         }
         catch (Exception ex)
@@ -516,34 +272,13 @@ public class LotteryTicketsController : ControllerBase
     {
         try
         {
-            var targetMonth = month ?? $"{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month:D2}";
-
-            // Restore ALL used tickets (not just current month's winners)
-            var usedTickets = await _context.LotteryTickets
-                .Where(t => t.IsUsed)
-                .ToListAsync();
-
-            foreach (var ticket in usedTickets)
-            {
-                ticket.IsUsed = false;
-                ticket.UpdatedAt = DateTime.UtcNow;
-            }
-
-            // Delete ALL monthly winners (full reset)
-            var allWinners = await _context.MonthlyWinningTickets.ToListAsync();
-            _context.MonthlyWinningTickets.RemoveRange(allWinners);
-
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation(
-                "Full reset: restored {TicketCount} tickets, removed {WinnerCount} winners",
-                usedTickets.Count, allWinners.Count);
+            var result = await _monthlyDrawingService.ResetMonthAsync(month);
 
             return Ok(new
             {
                 message = "Full reset completed successfully",
-                winnersRemoved = allWinners.Count,
-                ticketsRestored = usedTickets.Count
+                winnersRemoved = result.WinnersRemoved,
+                ticketsRestored = result.TicketsRestored
             });
         }
         catch (Exception ex)

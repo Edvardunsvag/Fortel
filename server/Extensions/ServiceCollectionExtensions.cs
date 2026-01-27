@@ -1,5 +1,6 @@
 using Fortedle.Server.Repositories;
 using Fortedle.Server.Services;
+using Fortedle.Server.Services.Harvest;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fortedle.Server.Extensions;
@@ -29,14 +30,23 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILotteryDrawingService, LotteryDrawingService>();
         services.AddScoped<IMonthlyLotteryDrawingService, MonthlyLotteryDrawingService>();
         services.AddScoped<IWheelDataService, WheelDataService>();
+        services.AddScoped<IWinnersService, WinnersService>();
+        services.AddScoped<ILotteryStatisticsService, LotteryStatisticsService>();
         services.AddScoped<IEmployeeWeekService, EmployeeWeekService>();
         services.AddScoped<IGledeApiService, GledeApiService>();
         services.AddScoped<IGiftcardService, GiftcardService>();
         services.AddScoped<ITokenEncryptionService, TokenEncryptionService>();
 
+        // Register Harvest services (order matters - dependencies first)
+        services.AddScoped<HarvestConfiguration>();
+        services.AddHttpClient<IHarvestOAuthService, HarvestOAuthService>();
+        services.AddHttpClient<IHarvestTokenManager, HarvestTokenManager>();
+        services.AddHttpClient<IHarvestApiClient, HarvestApiClient>();
+        // HarvestApiService is a facade that uses other services (not HttpClient directly)
+        services.AddScoped<HarvestApiService>();
+
         // Add HttpClient for external API calls
         services.AddHttpClient();
-        services.AddHttpClient<HarvestApiService>();
 
         return services;
     }

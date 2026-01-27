@@ -225,7 +225,7 @@ export const fetchHarvestTimeEntries = async (
 /**
  * Fetches all lottery tickets for a user
  *
- * @param userId - User ID (from Harvest user)
+ * @param userId - User ID (Harvest user ID - numeric)
  */
 export const fetchLotteryTickets = async (
   userId: string,
@@ -491,7 +491,7 @@ export const syncFromHarvest = async (
 /**
  * Fetches all employee weeks for a user
  *
- * @param userId - User ID (from Harvest user)
+ * @param userId - User ID (Harvest user ID - numeric)
  * @param accessToken - MSAL access token for backend authentication
  */
 export const fetchEmployeeWeeks = async (

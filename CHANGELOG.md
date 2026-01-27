@@ -32,6 +32,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026-01-26]
 
 ### Added
+- Added `Stillingstittel` (job title) and `SupervisorLastname` fields to Employee model
+- Database migrations for new employee fields (Stillingstittel and SupervisorLastname)
+- Stillingstittel hint in game guess hints
+- Enhanced supervisor hint matching with lastname support (displays as "supervisor L." format)
+
+### Changed
+- Updated SyncService to map and sync Stillingstittel and SupervisorLastname from Huma API
+- Improved supervisor hint logic to require both supervisor and supervisorLastname match for correct hint
+- Enhanced game UI styling for FlipBox and HintCell components
+## [2026-01-27]
+
+### Security
+- Controllers now extract userId from JWT claims instead of trusting client-provided data
+- Added tampering detection logging when request userId differs from authenticated user
+
+### Refactored
+- Split HarvestApiService into focused services (HarvestOAuthService, HarvestTokenManager, HarvestApiClient, HarvestConfiguration)
+- Moved Harvest models to Models/Application/Harvest folder
+- Converted db-access command to Cursor skill
+- Extracted `WinnersService` and `LotteryStatisticsService` from `LotteryTicketsController`
+- Centralized JWT claim extraction into `UserClaimsHelper` helper class
+- Moved test data seeding logic from controller to `LotteryTicketService`
+- Added repository methods for lottery statistics and winner operations
+- Updated cursor rules with explicit MCP tool usage instructions and cleaned up examples
+
+### Added
+- `ErrorBoundary` component for graceful React error handling in frontend
+
+## [2026-01-26]
+
+### Added
 - Harvest OAuth integration with token storage and management
 - Token encryption at rest using ASP.NET Core Data Protection
 - Rate limiting for Harvest OAuth endpoints (exchange, status, user, time-entries, revoke)

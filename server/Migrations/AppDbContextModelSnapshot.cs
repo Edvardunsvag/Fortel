@@ -87,10 +87,20 @@ namespace Fortedle.Server.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("phone_number");
 
+                    b.Property<string>("Stillingstittel")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("stillingstittel");
+
                     b.Property<string>("Supervisor")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("supervisor");
+
+                    b.Property<string>("SupervisorLastname")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("supervisor_lastname");
 
                     b.Property<string>("Surname")
                         .IsRequired()

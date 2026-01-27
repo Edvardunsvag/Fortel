@@ -24,11 +24,9 @@ import {
 const configuration = new Configuration();
 const apiInstance = new RoundsApi(configuration);
 
-let userId: string; // (optional) (default to undefined)
 let date: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.apiRoundsCurrentGet(
-    userId,
     date
 );
 ```
@@ -37,7 +35,6 @@ const { status, data } = await apiInstance.apiRoundsCurrentGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **userId** | [**string**] |  | (optional) defaults to undefined|
 | **date** | [**string**] |  | (optional) defaults to undefined|
 
 

@@ -54,6 +54,10 @@ public class Employee
     [MaxLength(255)]
     public string? Supervisor { get; set; }
 
+    [Column("supervisor_lastname")]
+    [MaxLength(255)]
+    public string? SupervisorLastname { get; set; }
+
     [Column("funfact")]
     public string? Funfact { get; set; }
 
@@ -63,6 +67,10 @@ public class Employee
 
     [Column("interests")]
     public List<string> Interests { get; set; } = new();
+
+    [Column("stillingstittel")]
+    [MaxLength(255)]
+    public string? Stillingstittel { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

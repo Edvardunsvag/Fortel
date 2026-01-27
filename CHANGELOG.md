@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Centralized JWT claim extraction into `UserClaimsHelper` helper class
 - Moved test data seeding logic from controller to `LotteryTicketService`
 - Added repository methods for lottery statistics and winner operations
+- Updated cursor rules with explicit MCP tool usage instructions and cleaned up examples
 
 ### Added
 - `ErrorBoundary` component for graceful React error handling in frontend

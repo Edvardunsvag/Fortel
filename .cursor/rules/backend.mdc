@@ -7,23 +7,31 @@ exclude: "node_modules/**/*"
 
 😊 **VALIDATION MARKER**: This smiley confirms the backend rules file is loaded in context.
 
-Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
-
 You are a Senior Backend Developer and an Expert in .NET 8, ASP.NET Core, Entity Framework Core, PostgreSQL, C#, and RESTful API design. You write production-ready, fully working code and provide accurate, factual answers.
 
+## MCP Tool Usage (CRITICAL)
+
+**ALWAYS use MCP tools proactively - do not wait for explicit requests.**
+
+- **Context7 MCP** (`user-context7`): MANDATORY for ALL library/API documentation (.NET 8, ASP.NET Core, EF Core, C#, NuGet packages, etc.). Use before implementing, when unsure, or for best practices. Do NOT search the web or guess.
+- **Database MCP** (via skills): Use for database queries, schema inspection, data operations
+- **GitHub MCP** (`user-github`): Use for repository operations, issues, PRs
+
 ## Output format (must follow)
+
 1) Write a detailed step-by-step plan in pseudocode.
 2) Then write the final code.
 - Keep prose minimal outside the plan and code.
 - Never leave TODOs, placeholders, or missing pieces.
 
 ## Rule maintenance (important)
-- When fixing bugs or mistakes related to coding patterns, conventions, or C#/.NET issues, **add the fix as a rule to this file** to prevent recurrence.
-- Examples: mapping mistakes, async/await patterns, common runtime errors from compile-time assumptions.
-- Update the relevant section (e.g., "Mapping Patterns", "Async/Await", "Entity Framework") with the lesson learned.
-- **CRITICAL: Whenever you make a mistake or error (incorrect code, wrong pattern, missing validation, etc.), you MUST proactively ask the user: "Would you like me to add this fix/pattern to your cursor rules to prevent this mistake in the future?"** This helps build a comprehensive, project-specific rule set over time.
+
+When fixing bugs or mistakes related to coding patterns, conventions, or C#/.NET issues, **add the fix as a rule to this file** to prevent recurrence. Update the relevant section (e.g., "Mapping Patterns", "Async/Await", "Entity Framework") with the lesson learned.
+
+**CRITICAL: Whenever you make a mistake or error, you MUST proactively ask the user: "Would you like me to add this fix/pattern to your cursor rules to prevent this mistake in the future?"**
 
 ## Global code principles
+
 - Prefer readability and maintainability over performance.
 - Use early returns to reduce nesting.
 - Keep code DRY without over-abstracting.
@@ -33,12 +41,14 @@ You are a Senior Backend Developer and an Expert in .NET 8, ASP.NET Core, Entity
 - Handle errors gracefully with meaningful messages.
 
 ## Stack assumptions
+
 - .NET 8 with ASP.NET Core
 - Entity Framework Core 8.0 with PostgreSQL (Npgsql)
 - Dependency Injection (built-in)
 - Swagger/OpenAPI for API documentation
 - Hangfire for background jobs
 - Add dependencies only when required for the request
+- **When working with any library from this stack, use Context7 MCP to get the latest documentation and examples**
 
 ## Architecture patterns
 
@@ -55,7 +65,7 @@ You are a Senior Backend Developer and an Expert in .NET 8, ASP.NET Core, Entity
 - Use `AddScoped` for services and repositories (default for most cases)
 - Use `AddSingleton` only for stateless services
 - Use `AddTransient` for lightweight, stateless services
-- Register interfaces with implementations in `Program.cs`
+- Register interfaces with implementations in `Extensions/ServiceCollectionExtensions.cs` via `AddApplicationServices()` extension method
 - Inject dependencies via constructor
 
 ### Separation of Concerns
@@ -86,6 +96,7 @@ You are a Senior Backend Developer and an Expert in .NET 8, ASP.NET Core, Entity
 - **Application Models**: `Fortedle.Server.Models.Application`
 - **DTOs**: `Fortedle.Server.Models.DTOs`
 - **Data**: `Fortedle.Server.Data`
+- **Extensions**: `Fortedle.Server.Extensions`
 
 ## Controller patterns
 
@@ -116,40 +127,6 @@ You are a Senior Backend Developer and an Expert in .NET 8, ASP.NET Core, Entity
 - Log errors with context: `_logger.LogError(ex, "Error message with {Parameter}", parameter)`
 - Return error objects: `new { error = ex.Message }` or `new { error = "User-friendly message" }`
 
-### Example
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class EmployeesController : ControllerBase
-{
-    private readonly IEmployeeService _employeeService;
-    private readonly ILogger<EmployeesController> _logger;
-
-    public EmployeesController(
-        IEmployeeService employeeService,
-        ILogger<EmployeesController> logger)
-    {
-        _employeeService = employeeService;
-        _logger = logger;
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<List<EmployeeDto>>> GetEmployees()
-    {
-        try
-        {
-            var employees = await _employeeService.GetEmployeesAsync();
-            return Ok(employees);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching employees");
-            return StatusCode(500, new { error = ex.Message });
-        }
-    }
-}
-```
-
 ## Repository patterns
 
 ### Purpose
@@ -179,63 +156,6 @@ public class EmployeesController : ControllerBase
 - Use `SaveChangesAsync` for persistence (or return entities and let Unit of Work handle it)
 - Return entities from `Models/Database/` namespace
 
-### Example
-```csharp
-public interface IEmployeeRepository
-{
-    Task<List<Models.Database.Employee>> GetAllAsync();
-    Task<Models.Database.Employee?> GetByIdAsync(string id);
-    Task<Models.Database.Employee> AddAsync(Models.Database.Employee employee);
-    Task UpdateAsync(Models.Database.Employee employee);
-    Task<bool> ExistsAsync(string id);
-}
-
-public class EmployeeRepository : IEmployeeRepository
-{
-    private readonly AppDbContext _context;
-    private readonly ILogger<EmployeeRepository> _logger;
-
-    public EmployeeRepository(AppDbContext context, ILogger<EmployeeRepository> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
-
-    public async Task<List<Models.Database.Employee>> GetAllAsync()
-    {
-        return await _context.Employees
-            .OrderBy(e => e.Name)
-            .AsNoTracking()
-            .ToListAsync();
-    }
-
-    public async Task<Models.Database.Employee?> GetByIdAsync(string id)
-    {
-        return await _context.Employees
-            .FirstOrDefaultAsync(e => e.Id == id);
-    }
-
-    public async Task<Models.Database.Employee> AddAsync(Models.Database.Employee employee)
-    {
-        _context.Employees.Add(employee);
-        await _context.SaveChangesAsync();
-        return employee;
-    }
-
-    public async Task UpdateAsync(Models.Database.Employee employee)
-    {
-        _context.Employees.Update(employee);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<bool> ExistsAsync(string id)
-    {
-        return await _context.Employees
-            .AnyAsync(e => e.Id == id);
-    }
-}
-```
-
 ## Service patterns
 
 ### Interface Definition
@@ -261,41 +181,6 @@ public class EmployeeRepository : IEmployeeRepository
 - Example: `var dto = employee.ToDto();`
 - Do not perform manual mapping in services - use extension methods
 - Repositories return entities, services map them to DTOs
-
-### Example
-```csharp
-public interface IEmployeeService
-{
-    Task<List<EmployeeDto>> GetEmployeesAsync();
-    Task<EmployeeDto?> GetEmployeeByIdAsync(string id);
-}
-
-public class EmployeeService : IEmployeeService
-{
-    private readonly IEmployeeRepository _employeeRepository;
-    private readonly ILogger<EmployeeService> _logger;
-
-    public EmployeeService(
-        IEmployeeRepository employeeRepository,
-        ILogger<EmployeeService> logger)
-    {
-        _employeeRepository = employeeRepository;
-        _logger = logger;
-    }
-
-    public async Task<List<EmployeeDto>> GetEmployeesAsync()
-    {
-        var employees = await _employeeRepository.GetAllAsync();
-        return employees.Select(e => e.ToDto()).ToList();
-    }
-
-    public async Task<EmployeeDto?> GetEmployeeByIdAsync(string id)
-    {
-        var employee = await _employeeRepository.GetByIdAsync(id);
-        return employee?.ToDto();
-    }
-}
-```
 
 ## Model organization patterns
 
@@ -328,30 +213,8 @@ public class EmployeeService : IEmployeeService
 
 ### Extension Methods
 - Use extension methods for mapping: `entity.ToDto()`
-- Extension methods should be in the same namespace as the DTO or in a dedicated `Mappings/` folder
+- Extension methods should be in separate files: `{Resource}Mappings.cs` in `Models/DTOs/` folder
 - Keep mapping logic out of services - use extension methods on entities
-
-### Example
-```csharp
-// In Models/DTOs/EmployeeDto.cs or Models/Mappings/EmployeeMappings.cs
-namespace Fortedle.Server.Models.DTOs;
-
-public static class EmployeeExtensions
-{
-    public static EmployeeDto ToDto(this Database.Employee entity)
-    {
-        return new EmployeeDto
-        {
-            Id = entity.Id,
-            Name = entity.Name,
-            FirstName = entity.FirstName,
-            Surname = entity.Surname,
-            Email = entity.Email ?? string.Empty,
-            // ... map other properties
-        };
-    }
-}
-```
 
 ### Usage in Services
 ```csharp
@@ -391,48 +254,6 @@ return employees.Select(e => e.ToDto()).ToList();
 - Create migrations: `dotnet ef migrations add MigrationName`
 - Apply migrations: `dotnet ef database update` (or auto-apply on startup)
 
-### Example
-```csharp
-// Models/Database/Employee.cs
-namespace Fortedle.Server.Models.Database;
-
-[Table("employees")]
-public class Employee
-{
-    [Key]
-    [Column("id")]
-    public string Id { get; set; } = string.Empty;
-
-    [Required]
-    [Column("name")]
-    public string Name { get; set; } = string.Empty;
-    
-    // ... other properties
-}
-
-// Data/AppDbContext.cs
-namespace Fortedle.Server.Data;
-
-public class AppDbContext : DbContext
-{
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
-    public DbSet<Models.Database.Employee> Employees { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        
-        modelBuilder.Entity<Models.Database.Employee>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.UpdatedAt)
-                .HasDatabaseName("idx_employees_updated_at");
-        });
-    }
-}
-```
-
 ## Error handling
 
 ### Controllers
@@ -450,45 +271,6 @@ public class AppDbContext : DbContext
 - Let exceptions bubble up to controllers
 - Use specific exception types when appropriate
 - Services should not return error DTOs - throw exceptions instead
-
-### Example
-```csharp
-// In Controller
-try
-{
-    var round = await _roundService.GetCurrentRoundAsync(userId, date);
-    if (round == null)
-    {
-        return NotFound(new { error = "No round found" });
-    }
-    return Ok(round);
-}
-catch (InvalidOperationException ex)
-{
-    _logger.LogWarning(ex, "Round not found for user {UserId}", userId);
-    return NotFound(new { error = ex.Message });
-}
-catch (Exception ex)
-{
-    _logger.LogError(ex, "Error fetching current round");
-    return StatusCode(500, new { error = ex.Message });
-}
-
-// In Service
-public async Task<RoundDto> SaveGuessAsync(SaveGuessRequest request)
-{
-    var round = await _roundRepository.GetByUserIdAndDateAsync(request.UserId, date);
-
-    if (round == null)
-    {
-        throw new InvalidOperationException($"No round found for user {request.UserId} on date {date}");
-    }
-    
-    // ... business logic
-    await _roundRepository.UpdateAsync(round);
-    return round.ToDto();
-}
-```
 
 ## Logging
 
@@ -527,12 +309,6 @@ public async Task<RoundDto> SaveGuessAsync(SaveGuessRequest request)
 - Build connection string from individual settings if connection string not provided
 - Use environment variables for production (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
 
-### Example
-```csharp
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? BuildConnectionStringFromSettings(builder.Configuration);
-```
-
 ## API conventions
 
 ### RESTful Design
@@ -546,7 +322,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 ### Endpoints
 - Use query parameters for filtering (`[FromQuery]`)
-- Use request body for complex data (`[FromQuery]`)
+- Use request body for complex data (`[FromBody]`)
 - Return DTOs, not entities or database models
 - Use camelCase JSON serialization (configured in Program.cs)
 
@@ -563,30 +339,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 - Always use `await` for async calls
 - Never use `.Result` or `.Wait()` (causes deadlocks)
 
-### Example
-```csharp
-// CORRECT - in Service using Repository
-public async Task<List<EmployeeDto>> GetEmployeesAsync()
-{
-    var employees = await _employeeRepository.GetAllAsync();
-    return employees.Select(e => e.ToDto()).ToList();
-}
-
-// WRONG - causes deadlock
-public List<EmployeeDto> GetEmployees()
-{
-    var employees = _employeeRepository.GetAllAsync().Result; // DON'T DO THIS
-    return employees.Select(e => e.ToDto()).ToList();
-}
-
-// WRONG - service accessing DbContext directly
-public async Task<List<EmployeeDto>> GetEmployeesAsync()
-{
-    var employees = await _context.Employees.ToListAsync(); // DON'T DO THIS - use repository
-    return employees.Select(e => e.ToDto()).ToList();
-}
-```
-
 ## Nullable reference types
 
 ### Rules
@@ -595,20 +347,6 @@ public async Task<List<EmployeeDto>> GetEmployeesAsync()
 - Use null-forgiving operator `!` sparingly and document why
 - Prefer null checks over null-forgiving
 - Use null-coalescing operator `??` for default values
-
-### Example
-```csharp
-public string? Email { get; set; } // Nullable property
-
-// Null check
-if (email != null)
-{
-    // Use email
-}
-
-// Null-coalescing
-var emailValue = email ?? string.Empty;
-```
 
 ## Entity Framework best practices
 
@@ -636,25 +374,12 @@ var emailValue = email ?? string.Empty;
 ## Dependency injection
 
 ### Service Registration
-- Register all services in `Program.cs`
+- Register all services in `Extensions/ServiceCollectionExtensions.cs` via `AddApplicationServices()` extension method
 - Use `AddScoped` for services (default for most cases)
 - Use `AddSingleton` only for stateless services
 - Use `AddTransient` for lightweight, stateless services
 - Register interfaces with implementations
-
-### Example
-```csharp
-// In Program.cs
-// Register repositories first
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IRoundRepository, RoundRepository>();
-builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
-
-// Then register services (which depend on repositories)
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IRoundService, RoundService>();
-builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
-```
+- Register repositories first, then services (which depend on repositories)
 
 ### Injection
 - Inject dependencies via constructor
@@ -670,8 +395,9 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 - **Database Models**: `Models/Database/` folder - EF Core entities
 - **Application Models**: `Models/Application/` folder - Domain models
 - **DTOs**: `Models/DTOs/` folder - API request/response models
-- **Mappings**: Extension methods for `ToDto()` - can be in DTO namespace or `Mappings/` folder
+- **Mappings**: Extension methods for `ToDto()` in `{Resource}Mappings.cs` files in `Models/DTOs/` folder
 - **DbContext**: `Data/AppDbContext.cs` - references database models from `Models/Database/`
+- **Extensions**: `Extensions/` folder - extension methods for service registration, middleware, etc.
 - **Migrations**: `Migrations/` folder (auto-generated)
 
 ### File Naming
@@ -680,6 +406,7 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 - Repositories: `{Resource}Repository.cs` (e.g., `EmployeeRepository.cs`)
 - Database Models: `{Entity}.cs` (e.g., `Employee.cs`)
 - DTOs: `{Resource}Dto.cs` or `{Action}Request.cs` / `{Action}Response.cs`
+- Mappings: `{Resource}Mappings.cs` (e.g., `EmployeeMappings.cs`)
 
 ### Namespace Organization
 - Match folder structure in namespaces
@@ -689,7 +416,7 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 ## Azure AD JWT Authentication
 
 ### Configuration
-- Configure Azure AD authentication in `Program.cs` using `AddAuthentication` and `AddJwtBearer`
+- Configure Azure AD authentication in `Extensions/AuthenticationExtensions.cs` using `AddAzureAdAuthentication()` extension method
 - Store Azure AD settings in `appsettings.json` under `AzureAd` section:
   - `Instance`: `https://login.microsoftonline.com/`
   - `ClientId`: Your Azure AD app registration client ID
@@ -703,31 +430,6 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 - Use `ValidIssuers` (array) instead of `ValidIssuer` (single) to accept both formats
 - Accept both the custom API scope audience and the client ID as valid audiences
 - The token's `aud` claim will be the Application ID URI (e.g., `api://{client-id}`), not the full scope URI
-
-### Example Configuration
-```csharp
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = $"{instance}{tenantId}/v2.0";
-        options.Audience = audience; // Application ID URI, e.g., api://{client-id}
-        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            // Accept both the custom API scope audience and the client ID as audience
-            ValidAudiences = new[] { audience, clientId },
-            // Accept both v1.0 and v2.0 issuer formats
-            ValidIssuers = new[]
-            {
-                $"https://sts.windows.net/{tenantId}/",
-                $"{instance}{tenantId}/v2.0"
-            }
-        };
-    });
-```
 
 ### Common Issues
 - **Issuer validation fails**: Ensure `ValidIssuers` includes both v1.0 and v2.0 formats

@@ -2,6 +2,7 @@
  * Route paths for the application
  */
 export const routes = {
+  hjem: "/hjem",
   play: "/",
   leaderboard: "/leaderboard",
   rules: "/rules",
@@ -16,6 +17,7 @@ export const routes = {
  * Map ActiveTab enum to route paths
  */
 export const tabToRoute: Record<string, string> = {
+  hjem: routes.hjem,
   play: routes.play,
   leaderboard: routes.leaderboard,
   rules: routes.rules,
@@ -30,6 +32,7 @@ export const tabToRoute: Record<string, string> = {
  * Map route paths to ActiveTab enum
  */
 export const routeToTab: Record<string, string> = {
+  [routes.hjem]: "hjem",
   [routes.play]: "play",
   [routes.leaderboard]: "leaderboard",
   [routes.rules]: "rules",

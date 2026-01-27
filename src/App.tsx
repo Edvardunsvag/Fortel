@@ -17,6 +17,7 @@ import { Sidebar } from "./features/sidebar/Sidebar/Sidebar";
 import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
 import { AdminPage } from "./features/admin";
+import { OptimizelyPage } from "./features/optimizely";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +35,9 @@ export const App = () => {
     const tab = routeToTab[path];
     if (tab) {
       // Set ActiveTab for sidebar navigation
-      if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees") {
+      if (tab === "hjem") {
+        dispatch(setActiveTab(ActiveTab.Hjem));
+      } else if (tab === "play" || tab === "leaderboard" || tab === "rules" || tab === "employees") {
         dispatch(setActiveTab(ActiveTab.Play));
       } else if (tab === "lottery") {
         dispatch(setActiveTab(ActiveTab.Lottery));
@@ -68,6 +71,7 @@ export const App = () => {
     <div className={styles.app}>
       <Sidebar />
       <Routes>
+        <Route path={routes.hjem} element={<OptimizelyPage />} />
         <Route path={routes.play} element={<GamePage />} />
         <Route path={routes.leaderboard} element={<GamePage />} />
         <Route path={routes.rules} element={<GamePage />} />

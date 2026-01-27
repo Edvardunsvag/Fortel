@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "@/app/store";
 
 export enum ActiveTab {
+  Hjem = "hjem",
   Play = "play",
   Lottery = "lottery",
   TimeBank = "timebank",

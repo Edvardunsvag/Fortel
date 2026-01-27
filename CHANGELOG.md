@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin page "Dagens vinner" section is now collapsible with accordion
 - Updated text colors for better readability (darker gray for subtitles and instructions)
 - Navigation chips have fixed height to prevent overlap on mobile
+- Grand Finale lottery wheel temporarily hidden behind "Kommer snart" message
 
 ### Fixed
 - Navigation chips slider width now updates correctly on window resize without page refresh

@@ -307,6 +307,7 @@
     "luckyWheel": {
       "title": "Grand Finale",
       "subtitle": "Monthly Lucky Wheel Draw",
+      "comingSoon": "Coming soon",
       "nextDraw": "Next Draw",
       "lockedDescription": "The wheel will be available when the monthly draw is ready",
       "days": "days",

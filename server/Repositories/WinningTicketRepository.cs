@@ -9,10 +9,17 @@ public interface IWinningTicketRepository
     Task<int> GetCountByWeekAsync(string week);
     Task<List<WinningTicket>> GetByWeekAsync(string week);
     Task<List<WinningTicket>> GetAllAsync();
+    Task<List<WinningTicket>> GetAllWithLotteryTicketsAsync();
+    Task<List<UserWinCount>> GetUserWinCountsAsync();
     Task<WinningTicket?> GetByIdAsync(int id);
     Task<WinningTicket> AddAsync(WinningTicket ticket);
     Task AddRangeAsync(List<WinningTicket> tickets);
 }
+
+/// <summary>
+/// DTO for user win counts used in statistics
+/// </summary>
+public record UserWinCount(string UserId, int WinCount);
 
 public class WinningTicketRepository : IWinningTicketRepository
 {
@@ -46,6 +53,22 @@ public class WinningTicketRepository : IWinningTicketRepository
         return await _context.WinningTickets
             .Include(w => w.LotteryTicket)
             .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<List<WinningTicket>> GetAllWithLotteryTicketsAsync()
+    {
+        return await _context.WinningTickets
+            .Include(w => w.LotteryTicket)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<List<UserWinCount>> GetUserWinCountsAsync()
+    {
+        return await _context.WinningTickets
+            .GroupBy(wt => wt.UserId)
+            .Select(g => new UserWinCount(g.Key, g.Count()))
             .ToListAsync();
     }
 

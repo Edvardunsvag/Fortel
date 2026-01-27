@@ -1,3 +1,4 @@
+using Fortedle.Server.Helpers;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -22,13 +23,16 @@ public class RoundsController : ControllerBase
     }
 
     [HttpGet("current")]
-    public async Task<ActionResult<RoundDto>> GetCurrentRound([FromQuery] string userId, [FromQuery] string? date = null)
+    public async Task<ActionResult<RoundDto>> GetCurrentRound([FromQuery] string? date = null)
     {
         try
         {
+            // Extract userId from JWT claims - users can only access their own rounds
+            var userId = UserClaimsHelper.GetUserId(User);
             if (string.IsNullOrWhiteSpace(userId))
             {
-                return BadRequest(new { error = "userId is required" });
+                _logger.LogWarning("Unable to extract user ID from JWT token");
+                return Unauthorized(new { error = "Unable to identify user. Please log in again." });
             }
 
             var round = await _roundService.GetCurrentRoundAsync(userId, date);
@@ -52,10 +56,23 @@ public class RoundsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.UserId))
+            // Extract userId from JWT claims - override any userId in request for security
+            var userId = UserClaimsHelper.GetUserId(User);
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                return BadRequest(new { error = "userId is required" });
+                _logger.LogWarning("Unable to extract user ID from JWT token");
+                return Unauthorized(new { error = "Unable to identify user. Please log in again." });
             }
+
+            // Log warning if request contains different userId (potential tampering attempt)
+            if (!string.IsNullOrWhiteSpace(request.UserId) && request.UserId != userId)
+            {
+                _logger.LogWarning("Request userId {RequestUserId} does not match authenticated user {AuthUserId}. Using authenticated user ID.",
+                    request.UserId, userId);
+            }
+
+            // Override request UserId with authenticated user's ID
+            request.UserId = userId;
 
             var round = await _roundService.StartRoundAsync(request);
             return Ok(round);
@@ -72,10 +89,23 @@ public class RoundsController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.UserId))
+            // Extract userId from JWT claims - override any userId in request for security
+            var userId = UserClaimsHelper.GetUserId(User);
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                return BadRequest(new { error = "userId is required" });
+                _logger.LogWarning("Unable to extract user ID from JWT token");
+                return Unauthorized(new { error = "Unable to identify user. Please log in again." });
             }
+
+            // Log warning if request contains different userId (potential tampering attempt)
+            if (!string.IsNullOrWhiteSpace(request.UserId) && request.UserId != userId)
+            {
+                _logger.LogWarning("Request userId {RequestUserId} does not match authenticated user {AuthUserId}. Using authenticated user ID.",
+                    request.UserId, userId);
+            }
+
+            // Override request UserId with authenticated user's ID
+            request.UserId = userId;
 
             if (request.Guess == null)
             {

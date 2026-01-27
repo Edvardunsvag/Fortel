@@ -5,11 +5,11 @@
   margin-top: $spacing-xl;
   display: flex;
   flex-direction: column;
-  gap: $spacing-xxl;
+  gap: $spacing-lg;
 }
 
 .section {
-  margin-bottom: $spacing-lg;
+  margin-bottom: 0;
 
   &:last-child {
     margin-bottom: 0;
@@ -23,10 +23,105 @@
   margin: 0 0 $spacing-md 0;
 }
 
+.winnerDetails {
+  margin-top: $spacing-sm;
+  margin-bottom: 0;
+}
+
+.winnerSummary {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  transition: opacity 0.2s;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::marker {
+    display: none;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link-blue;
+    outline-offset: 2px;
+    border-radius: $radius-sm;
+  }
+
+  &::before {
+    content: "▶";
+    display: inline-block;
+    margin-right: $spacing-sm;
+    transition: transform 0.2s;
+    color: $color-link-blue;
+  }
+}
+
+.winnerSubtitle {
+  font-size: 1.25rem;
+  color: #6b6b6b;
+  margin: 0;
+  display: inline-block;
+}
+
+.winnerDetails[open] .winnerSummary::before {
+  transform: rotate(90deg);
+}
+
+.winnerDetails[open] .winnerCard,
+.winnerDetails[open] .message {
+  margin-top: $spacing-md;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .subtitle {
   font-size: 1.25rem;
-  color: $color-light-grey-text;
+  color: #6b6b6b;
   margin: 0 0 $spacing-lg 0;
+}
+
+.alreadySyncedMessage {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: 1rem;
+  color: $color-success;
+  margin: 0 0 $spacing-md 0;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($color-success, 0.1);
+  border-radius: $radius-md;
+  border: 1px solid rgba($color-success, 0.3);
+}
+
+.checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background-color: $color-success;
+  color: $color-white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .winnerCard {
@@ -217,10 +312,16 @@
   }
 }
 
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
 .instructions {
   margin-top: $spacing-lg;
   font-size: 0.875rem;
-  color: $color-light-grey-text;
+  color: #6b6b6b;
   line-height: 1.6;
 
   code {

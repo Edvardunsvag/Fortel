@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.apiSyncPost(
 
 ### Authorization
 
-[oauth2](../README.md#oauth2)
+No authorization required
 
 ### HTTP request headers
 

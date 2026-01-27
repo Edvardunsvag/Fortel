@@ -1,0 +1,71 @@
+@use "../../styles/variables.scss" as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-xl;
+}
+
+.fullScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  min-height: 400px;
+  padding: $spacing-xl;
+}
+
+.spinner {
+  border-radius: 50%;
+  border-style: solid;
+  animation: spin 1s linear infinite;
+  border-color: rgba($color-dark-accent, 0.2);
+  border-top-color: $color-dark-accent;
+}
+
+.small {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.medium {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+.large {
+  width: 64px;
+  height: 64px;
+  border-width: 5px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.message {
+  margin: 0;
+  font-size: 1rem;
+  color: $color-dark-fill;
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

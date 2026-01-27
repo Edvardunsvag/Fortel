@@ -43,6 +43,7 @@ export const Sidebar = () => {
     <nav className={styles.sidebar} aria-label="Main navigation">
       <div className={styles.logoContainer}>
         <img src="/forte-logo.svg" alt="Forte" className={styles.logo} />
+        <img src="/favicon.svg" alt="Forte" className={styles.logoIcon} />
       </div>
       {account && (
         <div className={styles.userNameContainer}>

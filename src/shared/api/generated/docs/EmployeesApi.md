@@ -34,7 +34,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-[oauth2](../README.md#oauth2)
+No authorization required
 
 ### HTTP request headers
 

@@ -26,10 +26,6 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerM
 export interface FortedleServerModelsDTOsAllWinnersResponse {
     'weeklyWinners'?: Array<FortedleServerModelsDTOsWeeklyWinnersDto> | null;
 }
-export interface FortedleServerModelsDTOsClaimWeeklyPrizeRequest {
-    'winningTicketId'?: number;
-    'userId'?: string | null;
-}
 export interface FortedleServerModelsDTOsEmployeeDto {
     'id'?: string | null;
     'name'?: string | null;
@@ -42,9 +38,11 @@ export interface FortedleServerModelsDTOsEmployeeDto {
     'teams'?: Array<string> | null;
     'age'?: number | null;
     'supervisor'?: string | null;
+    'supervisorLastname'?: string | null;
     'funfact'?: string | null;
     'phoneNumber'?: string | null;
     'interests'?: Array<string> | null;
+    'stillingstittel'?: string | null;
 }
 export interface FortedleServerModelsDTOsEmployeeStatisticsDto {
     'userId'?: string | null;
@@ -116,34 +114,6 @@ export interface FortedleServerModelsDTOsGuessHintDto {
     'result'?: string | null;
     'message'?: string | null;
 }
-export interface FortedleServerModelsDTOsHarvestClientResponse {
-    'id'?: number;
-    'name'?: string | null;
-}
-export interface FortedleServerModelsDTOsHarvestTimeEntriesResponse {
-    'time_entries'?: Array<FortedleServerModelsDTOsHarvestTimeEntryResponse> | null;
-}
-export interface FortedleServerModelsDTOsHarvestTimeEntryResponse {
-    'id'?: number;
-    'spent_date'?: string | null;
-    'hours'?: number;
-    'created_at'?: string;
-    'updated_at'?: string;
-    'client'?: FortedleServerModelsDTOsHarvestClientResponse;
-}
-export interface FortedleServerModelsDTOsHarvestTokenStatusResponse {
-    'is_authenticated'?: boolean;
-    'account_id'?: string | null;
-}
-export interface FortedleServerModelsDTOsHarvestUserResponse {
-    'id'?: number;
-    'first_name'?: string | null;
-    'last_name'?: string | null;
-    'email'?: string | null;
-    'timezone'?: string | null;
-    'weekly_capacity'?: number;
-    'is_active'?: boolean;
-}
 export interface FortedleServerModelsDTOsLeaderboardDto {
     'date'?: string | null;
     'leaderboard'?: Array<FortedleServerModelsDTOsLeaderboardEntryDto> | null;
@@ -184,6 +154,16 @@ export interface FortedleServerModelsDTOsMonthlyWinnersResponse {
     'month'?: string | null;
     'winners'?: Array<FortedleServerModelsDTOsMonthlyWinnerDto> | null;
     'isDrawComplete'?: boolean;
+}
+export interface FortedleServerModelsDTOsRefreshTokenRequest {
+    'refresh_token'?: string | null;
+}
+export interface FortedleServerModelsDTOsRefreshTokenResponse {
+    'access_token'?: string | null;
+    'token_type'?: string | null;
+    'expires_in'?: number;
+    'refresh_token'?: string | null;
+    'account_id'?: string | null;
 }
 export interface FortedleServerModelsDTOsRevealFunfactRequest {
     'roundId'?: number;
@@ -233,6 +213,12 @@ export interface FortedleServerModelsDTOsSubmitScoreRequest {
 export interface FortedleServerModelsDTOsSubmitScoreResponse {
     'success'?: boolean;
     'result'?: FortedleServerModelsDTOsLeaderboardEntryDto;
+}
+export interface FortedleServerModelsDTOsSyncHarvestRequest {
+    'accessToken'?: string | null;
+    'refreshToken'?: string | null;
+    'expiresAt'?: string;
+    'accountId'?: string | null;
 }
 export interface FortedleServerModelsDTOsSyncHarvestResponse {
     'weeksSynced'?: number;
@@ -289,8 +275,6 @@ export interface FortedleServerModelsDTOsWinnerDto {
     'image'?: string | null;
     'week'?: string | null;
     'createdAt'?: string;
-    'winningTicketId'?: number;
-    'prizeClaimed'?: boolean;
 }
 
 /**
@@ -317,10 +301,6 @@ export const EmployeeWeeksApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             if (userId !== undefined) {
                 localVarQueryParameter['userId'] = userId;
             }
@@ -338,10 +318,11 @@ export const EmployeeWeeksApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
+         * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiEmployeeWeeksSyncPost: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiEmployeeWeeksSyncPost: async (fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/EmployeeWeeks/sync`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -354,15 +335,13 @@ export const EmployeeWeeksApiAxiosParamCreator = function (configuration?: Confi
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
+            localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsSyncHarvestRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -392,11 +371,12 @@ export const EmployeeWeeksApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiEmployeeWeeksSyncPost(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiEmployeeWeeksSyncPost(options);
+        async apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EmployeeWeeksApi.apiEmployeeWeeksSyncPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -421,11 +401,12 @@ export const EmployeeWeeksApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
+         * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiEmployeeWeeksSyncPost(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse> {
-            return localVarFp.apiEmployeeWeeksSyncPost(options).then((request) => request(axios, basePath));
+        apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse> {
+            return localVarFp.apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -444,10 +425,11 @@ export interface EmployeeWeeksApiInterface {
 
     /**
      * 
+     * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiEmployeeWeeksSyncPost(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse>;
+    apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSyncHarvestResponse>;
 
 }
 
@@ -467,11 +449,12 @@ export class EmployeeWeeksApi extends BaseAPI implements EmployeeWeeksApiInterfa
 
     /**
      * 
+     * @param {FortedleServerModelsDTOsSyncHarvestRequest} [fortedleServerModelsDTOsSyncHarvestRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiEmployeeWeeksSyncPost(options?: RawAxiosRequestConfig) {
-        return EmployeeWeeksApiFp(this.configuration).apiEmployeeWeeksSyncPost(options).then((request) => request(this.axios, this.basePath));
+    public apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest?: FortedleServerModelsDTOsSyncHarvestRequest, options?: RawAxiosRequestConfig) {
+        return EmployeeWeeksApiFp(this.configuration).apiEmployeeWeeksSyncPost(fortedleServerModelsDTOsSyncHarvestRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -499,10 +482,6 @@ export const EmployeesApiAxiosParamCreator = function (configuration?: Configura
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -591,42 +570,6 @@ export const GiftcardsApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * 
-         * @param {FortedleServerModelsDTOsClaimWeeklyPrizeRequest} [fortedleServerModelsDTOsClaimWeeklyPrizeRequest] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiGiftcardsClaimWeeklyPrizePost: async (fortedleServerModelsDTOsClaimWeeklyPrizeRequest?: FortedleServerModelsDTOsClaimWeeklyPrizeRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/Giftcards/claim-weekly-prize`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsClaimWeeklyPrizeRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -642,10 +585,6 @@ export const GiftcardsApiAxiosParamCreator = function (configuration?: Configura
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -680,10 +619,6 @@ export const GiftcardsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -713,10 +648,6 @@ export const GiftcardsApiAxiosParamCreator = function (configuration?: Configura
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
@@ -753,10 +684,6 @@ export const GiftcardsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -777,18 +704,6 @@ export const GiftcardsApiAxiosParamCreator = function (configuration?: Configura
 export const GiftcardsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = GiftcardsApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @param {FortedleServerModelsDTOsClaimWeeklyPrizeRequest} [fortedleServerModelsDTOsClaimWeeklyPrizeRequest] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest?: FortedleServerModelsDTOsClaimWeeklyPrizeRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsSendGiftcardResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GiftcardsApi.apiGiftcardsClaimWeeklyPrizePost']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
         /**
          * 
          * @param {*} [options] Override http request option.
@@ -847,15 +762,6 @@ export const GiftcardsApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * 
-         * @param {FortedleServerModelsDTOsClaimWeeklyPrizeRequest} [fortedleServerModelsDTOsClaimWeeklyPrizeRequest] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest?: FortedleServerModelsDTOsClaimWeeklyPrizeRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSendGiftcardResponse> {
-            return localVarFp.apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -898,14 +804,6 @@ export const GiftcardsApiFactory = function (configuration?: Configuration, base
 export interface GiftcardsApiInterface {
     /**
      * 
-     * @param {FortedleServerModelsDTOsClaimWeeklyPrizeRequest} [fortedleServerModelsDTOsClaimWeeklyPrizeRequest] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest?: FortedleServerModelsDTOsClaimWeeklyPrizeRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsSendGiftcardResponse>;
-
-    /**
-     * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -941,16 +839,6 @@ export interface GiftcardsApiInterface {
  * GiftcardsApi - object-oriented interface
  */
 export class GiftcardsApi extends BaseAPI implements GiftcardsApiInterface {
-    /**
-     * 
-     * @param {FortedleServerModelsDTOsClaimWeeklyPrizeRequest} [fortedleServerModelsDTOsClaimWeeklyPrizeRequest] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest?: FortedleServerModelsDTOsClaimWeeklyPrizeRequest, options?: RawAxiosRequestConfig) {
-        return GiftcardsApiFp(this.configuration).apiGiftcardsClaimWeeklyPrizePost(fortedleServerModelsDTOsClaimWeeklyPrizeRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * 
      * @param {*} [options] Override http request option.
@@ -1017,10 +905,6 @@ export const HarvestOAuthApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -1036,11 +920,12 @@ export const HarvestOAuthApiAxiosParamCreator = function (configuration?: Config
         },
         /**
          * 
+         * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiHarvestOauthRevokeDelete: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/harvest-oauth/revoke`;
+        apiHarvestOauthRefreshPost: async (fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/harvest-oauth/refresh`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1048,127 +933,17 @@ export const HarvestOAuthApiAxiosParamCreator = function (configuration?: Config
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiHarvestOauthStatusGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/harvest-oauth/status`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
+            localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} [from] 
-         * @param {string} [to] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiHarvestOauthTimeEntriesGet: async (from?: string, to?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/harvest-oauth/time-entries`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
-            if (from !== undefined) {
-                localVarQueryParameter['from'] = from;
-            }
-
-            if (to !== undefined) {
-                localVarQueryParameter['to'] = to;
-            }
-
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiHarvestOauthUserGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/harvest-oauth/user`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
-            localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fortedleServerModelsDTOsRefreshTokenRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1198,48 +973,14 @@ export const HarvestOAuthApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiHarvestOauthRevokeDelete(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthRevokeDelete(options);
+        async apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsRefreshTokenResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthRevokeDelete']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiHarvestOauthStatusGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsHarvestTokenStatusResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthStatusGet(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthStatusGet']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} [from] 
-         * @param {string} [to] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiHarvestOauthTimeEntriesGet(from?: string, to?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsHarvestTimeEntriesResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthTimeEntriesGet(from, to, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthTimeEntriesGet']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiHarvestOauthUserGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FortedleServerModelsDTOsHarvestUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiHarvestOauthUserGet(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthUserGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['HarvestOAuthApi.apiHarvestOauthRefreshPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -1262,37 +1003,12 @@ export const HarvestOAuthApiFactory = function (configuration?: Configuration, b
         },
         /**
          * 
+         * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiHarvestOauthRevokeDelete(options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.apiHarvestOauthRevokeDelete(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiHarvestOauthStatusGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsHarvestTokenStatusResponse> {
-            return localVarFp.apiHarvestOauthStatusGet(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} [from] 
-         * @param {string} [to] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiHarvestOauthTimeEntriesGet(from?: string, to?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsHarvestTimeEntriesResponse> {
-            return localVarFp.apiHarvestOauthTimeEntriesGet(from, to, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiHarvestOauthUserGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsHarvestUserResponse> {
-            return localVarFp.apiHarvestOauthUserGet(options).then((request) => request(axios, basePath));
+        apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRefreshTokenResponse> {
+            return localVarFp.apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1311,33 +1027,11 @@ export interface HarvestOAuthApiInterface {
 
     /**
      * 
+     * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiHarvestOauthRevokeDelete(options?: RawAxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    apiHarvestOauthStatusGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsHarvestTokenStatusResponse>;
-
-    /**
-     * 
-     * @param {string} [from] 
-     * @param {string} [to] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    apiHarvestOauthTimeEntriesGet(from?: string, to?: string, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsHarvestTimeEntriesResponse>;
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    apiHarvestOauthUserGet(options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsHarvestUserResponse>;
+    apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<FortedleServerModelsDTOsRefreshTokenResponse>;
 
 }
 
@@ -1357,40 +1051,12 @@ export class HarvestOAuthApi extends BaseAPI implements HarvestOAuthApiInterface
 
     /**
      * 
+     * @param {FortedleServerModelsDTOsRefreshTokenRequest} [fortedleServerModelsDTOsRefreshTokenRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiHarvestOauthRevokeDelete(options?: RawAxiosRequestConfig) {
-        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthRevokeDelete(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public apiHarvestOauthStatusGet(options?: RawAxiosRequestConfig) {
-        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthStatusGet(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} [from] 
-     * @param {string} [to] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public apiHarvestOauthTimeEntriesGet(from?: string, to?: string, options?: RawAxiosRequestConfig) {
-        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthTimeEntriesGet(from, to, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public apiHarvestOauthUserGet(options?: RawAxiosRequestConfig) {
-        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthUserGet(options).then((request) => request(this.axios, this.basePath));
+    public apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest?: FortedleServerModelsDTOsRefreshTokenRequest, options?: RawAxiosRequestConfig) {
+        return HarvestOAuthApiFp(this.configuration).apiHarvestOauthRefreshPost(fortedleServerModelsDTOsRefreshTokenRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1418,10 +1084,6 @@ export const HealthApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1526,10 +1188,6 @@ export const LeaderboardApiAxiosParamCreator = function (configuration?: Configu
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             if (date !== undefined) {
                 localVarQueryParameter['date'] = date;
             }
@@ -1563,10 +1221,6 @@ export const LeaderboardApiAxiosParamCreator = function (configuration?: Configu
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
@@ -1716,10 +1370,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1757,10 +1407,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1789,10 +1435,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             if (userId !== undefined) {
                 localVarQueryParameter['userId'] = userId;
@@ -1827,10 +1469,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1859,10 +1497,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             if (month !== undefined) {
                 localVarQueryParameter['month'] = month;
@@ -1897,10 +1531,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1930,10 +1560,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             if (month !== undefined) {
                 localVarQueryParameter['month'] = month;
@@ -1967,10 +1593,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1998,10 +1620,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -2032,10 +1650,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
@@ -2068,10 +1682,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2100,10 +1710,6 @@ export const LotteryTicketsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -2619,10 +2225,6 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             if (userId !== undefined) {
                 localVarQueryParameter['userId'] = userId;
             }
@@ -2661,10 +2263,6 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -2697,10 +2295,6 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
-
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
 
@@ -2732,10 +2326,6 @@ export const RoundsApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';
@@ -2967,10 +2557,6 @@ export const SyncApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication oauth2 required
-            // oauth required
-            await setOAuthToObject(localVarHeaderParameter, "oauth2", ["api://3731cf8a-db7f-431e-8942-7ff9acad062a/access_as_user"], configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'text/plain,application/json,text/json';

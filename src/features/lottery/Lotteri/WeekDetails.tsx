@@ -15,8 +15,9 @@ export const WeekDetails = ({ week }: WeekDetailsProps) => {
   const claimPrizeMutation = useClaimWeeklyPrize();
 
   const handleClaimPrize = () => {
-    if (week.winner?.winningTicketId) {
-      claimPrizeMutation.mutate({ winningTicketId: week.winner.winningTicketId });
+    // TODO: Fix API client to include winningTicketId and prizeClaimed properties
+    if (week.winner && (week.winner as any).winningTicketId) {
+      claimPrizeMutation.mutate({ winningTicketId: (week.winner as any).winningTicketId });
     }
   };
 
@@ -27,9 +28,10 @@ export const WeekDetails = ({ week }: WeekDetailsProps) => {
     }
   };
 
-  const canClaimPrize = week.hasWon && week.winnerDrawn && week.winner && !week.winner.prizeClaimed && week.winner.winningTicketId;
+  // TODO: Fix API client to include winningTicketId and prizeClaimed properties
+  const canClaimPrize = week.hasWon && week.winnerDrawn && week.winner && !(week.winner as any).prizeClaimed && (week.winner as any).winningTicketId;
   const isClaiming = claimPrizeMutation.isPending;
-  const prizeClaimed = week.winner?.prizeClaimed === true;
+  const prizeClaimed = (week.winner as any)?.prizeClaimed === true;
 
   return (
     <div className={styles.weekDetails}>

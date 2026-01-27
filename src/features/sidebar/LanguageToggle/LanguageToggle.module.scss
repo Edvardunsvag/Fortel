@@ -14,6 +14,11 @@
     background-color 0.2s,
     border-color 0.2s;
 
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    justify-content: center;
+  }
+
   &:hover {
     background-color: var(--color-light-fill-hover, #e8e8e8);
     border-color: var(--color-border-medium, #bbb);
@@ -32,4 +37,8 @@
 .languageCode {
   font-weight: 600;
   color: var(--color-dark-fill, #333);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }

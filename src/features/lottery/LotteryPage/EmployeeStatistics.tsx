@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useEmployeeStatistics } from "../queries";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./EmployeeStatistics.module.scss";
 
 export const EmployeeStatistics = () => {
@@ -9,7 +10,7 @@ export const EmployeeStatistics = () => {
   if (isLoading) {
     return (
       <div className={styles.dataSection}>
-        <p className={styles.loading}>{t("lottery.loading")}</p>
+        <LoadingSpinner message={t("lottery.loading")} />
       </div>
     );
   }

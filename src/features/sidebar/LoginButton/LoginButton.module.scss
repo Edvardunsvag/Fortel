@@ -17,6 +17,10 @@
 }
 
 .loginButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
   padding: 0.5rem 1rem;
   background-color: $color-dark-accent;
@@ -27,6 +31,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+    justify-content: center;
+  }
 
   &:hover:not(:disabled) {
     background-color: rgba($color-dark-accent, 0.9);
@@ -39,5 +48,17 @@
 
   &:active:not(:disabled) {
     transform: translateY(1px);
+  }
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.buttonText {
+  @media (max-width: 768px) {
+    display: none;
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import { format, subMonths } from "date-fns";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { clearLottery } from "@/features/lottery/lotterySlice";
@@ -150,7 +151,14 @@ export const TimeBankPage = () => {
               <p className={styles.connectText}>{t("timebank.connectDescription")}</p>
               {error && <div className={styles.error}>{error.message}</div>}
               <button className={styles.connectButton} onClick={handleLogin} disabled={authenticateMutation.isPending}>
-                {authenticateMutation.isPending ? t("timebank.connecting") : t("timebank.connectToHarvest")}
+                {authenticateMutation.isPending ? (
+                  <span className={styles.buttonContent}>
+                    <LoadingSpinner size="small" />
+                    {t("timebank.connecting")}
+                  </span>
+                ) : (
+                  t("timebank.connectToHarvest")
+                )}
               </button>
             </div>
           </>
@@ -174,7 +182,7 @@ export const TimeBankPage = () => {
                 </div>
 
                 {isLoading ? (
-                  <div className={styles.loading}>{t("timebank.loading")}</div>
+                  <LoadingSpinner message={t("timebank.loading")} fullScreen />
                 ) : error ? (
                   <div className={styles.error}>{error.message}</div>
                 ) : (

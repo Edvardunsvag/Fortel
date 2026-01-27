@@ -8,6 +8,7 @@
   margin-bottom: $spacing-lg;
   padding-bottom: $spacing-md;
   border-bottom: 2px solid $color-border-medium;
+  min-height: fit-content;
 }
 
 .slider {
@@ -19,11 +20,16 @@
   border-radius: 1rem;
   z-index: 0;
   pointer-events: none;
+  max-height: 2.5rem;
 
   &.animated {
     transition:
       transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
       width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (max-width: 600px) {
+    max-height: 2.25rem;
   }
 }
 
@@ -45,6 +51,28 @@
     color 0.25s ease,
     transform $transition-fast;
   white-space: nowrap;
+  min-height: 2.25rem;
+  max-height: 2.25rem;
+  box-sizing: border-box;
+
+  @media (max-width: 900px) {
+    justify-content: center;
+    padding: $spacing-sm;
+    width: fit-content;
+    min-width: auto;
+    gap: 0;
+  }
+
+  @media (max-width: 600px) {
+    min-height: 2rem;
+    max-height: 2rem;
+    padding: $spacing-xs;
+    font-size: 0.8125rem;
+    justify-content: center;
+    width: fit-content;
+    min-width: auto;
+    gap: 0;
+  }
 
   &:hover:not(:disabled):not(.active) {
     background-color: $color-secondary-beige;
@@ -74,8 +102,13 @@
 .icon {
   font-size: 1rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .label {
   line-height: 1.2;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
 }

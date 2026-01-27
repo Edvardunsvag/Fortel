@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useMsalAuth } from "@/features/auth/useMsalAuth";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./LoginScreen.module.scss";
 import { LanguageToggle } from "@/features/sidebar/LanguageToggle/LanguageToggle";
 
@@ -33,7 +34,14 @@ export const LoginScreen = () => {
           disabled={isLoading}
           aria-label={t("auth.login")}
         >
-          {isLoading ? t("auth.loggingIn") : t("auth.login")}
+          {isLoading ? (
+            <span className={styles.buttonContent}>
+              <LoadingSpinner size="small" />
+              {t("auth.loggingIn")}
+            </span>
+          ) : (
+            t("auth.login")
+          )}
         </button>
       </div>
     </div>

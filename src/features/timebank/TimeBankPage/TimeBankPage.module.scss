@@ -845,6 +845,13 @@
   }
 }
 
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  justify-content: center;
+}
+
 // Disconnect button - matches Lottery's logoutButton (outlined style)
 .disconnectButton {
   margin-top: $spacing-xl;

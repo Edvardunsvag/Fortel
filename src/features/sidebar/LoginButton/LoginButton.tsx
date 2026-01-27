@@ -1,7 +1,9 @@
 import { useTranslation } from "react-i18next";
+import { LogOut, LogIn } from "lucide-react";
 import { useMsalAuth } from "@/features/auth/useMsalAuth";
 import { useAppSelector } from "@/app/hooks";
 import { selectIsAuthenticated, selectAccount } from "@/features/auth/authSlice";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./LoginButton.module.scss";
 
 export const LoginButton = () => {
@@ -35,7 +37,14 @@ export const LoginButton = () => {
           disabled={isLoading}
           aria-label={t("auth.logout")}
         >
-          {isLoading ? t("auth.loggingOut") : t("auth.logout")}
+          {isLoading ? (
+            <LoadingSpinner size="small" />
+          ) : (
+            <LogOut className={styles.icon} aria-hidden="true" />
+          )}
+          <span className={styles.buttonText}>
+            {isLoading ? t("auth.loggingOut") : t("auth.logout")}
+          </span>
         </button>
       </div>
     );
@@ -49,7 +58,14 @@ export const LoginButton = () => {
       disabled={isLoading}
       aria-label={t("auth.login")}
     >
-      {isLoading ? t("auth.loggingIn") : t("auth.login")}
+      {isLoading ? (
+        <LoadingSpinner size="small" />
+      ) : (
+        <LogIn className={styles.icon} aria-hidden="true" />
+      )}
+      <span className={styles.buttonText}>
+        {isLoading ? t("auth.loggingIn") : t("auth.login")}
+      </span>
     </button>
   );
 };

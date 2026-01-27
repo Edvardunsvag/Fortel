@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./ConnectToHarvest.module.scss";
 import { useHarvestTokenStatus } from "../queries";
 
@@ -21,14 +22,28 @@ export const ConnectToHarvest = ({ error, isLoading, onLogin, onTestApi }: Conne
       {error && <div className={styles.error}>{error}</div>}
 
       <button onClick={onLogin} className={styles.button} disabled={isLoading} type="button">
-        {isLoading ? t("lottery.connecting") : t("lottery.connect")}
+        {isLoading ? (
+          <span className={styles.buttonContent}>
+            <LoadingSpinner size="small" />
+            {t("lottery.connecting")}
+          </span>
+        ) : (
+          t("lottery.connect")
+        )}
       </button>
 
       {isAuthenticated && (
         <div className={styles.testSection}>
           <p className={styles.testDescription}>Connected to Harvest! Test API calls:</p>
           <button onClick={onTestApi} className={styles.testButton} disabled={isLoading} type="button">
-            {isLoading ? "Testing..." : "Test API Calls"}
+            {isLoading ? (
+              <span className={styles.buttonContent}>
+                <LoadingSpinner size="small" />
+                Testing...
+              </span>
+            ) : (
+              "Test API Calls"
+            )}
           </button>
         </div>
       )}

@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import styles from "./App.module.scss";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { GamePage } from "./features/game/GamePage/GamePage";
@@ -76,6 +78,18 @@ export const App = () => {
         <Route path={routes.admin} element={isAdmin ? <AdminPage /> : <Navigate to={routes.play} replace />} />
         <Route path="*" element={<Navigate to={routes.play} replace />} />
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };

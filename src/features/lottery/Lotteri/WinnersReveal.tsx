@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAllWinners } from "../queries";
 import { getInitials } from "@/shared/utils/nameMatcher";
+import { LoadingSpinner } from "@/shared/components/LoadingSpinner";
 import styles from "./Lotteri.module.scss";
 
 interface WinnersRevealProps {
@@ -41,7 +42,7 @@ export const WinnersReveal = ({ isUserWinner = false }: WinnersRevealProps) => {
       )}
       <div className={`${styles.winnersContainer} ${!winnersRevealed ? styles.blurred : ""}`}>
         {isLoading ? (
-          <p className={styles.winnersText}>{t("lottery.loading")}</p>
+          <LoadingSpinner message={t("lottery.loading")} />
         ) : error ? (
           <p className={styles.winnersText} role="alert">
             {error instanceof Error ? error.message : t("lottery.winners.error")}

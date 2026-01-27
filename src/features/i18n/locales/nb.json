@@ -13,6 +13,7 @@
     "changeEmployee": "Bytt dagens ansatt",
     "title": "Admin",
     "todaysWinner": "Dagens vinner",
+    "toggleWinner": "Vis/skjul dagens vinner",
     "originalId": "Original ID",
     "obfuscatedId": "Obfuskert ID (Dagens ansatt)",
     "copyId": "Kopier ID",

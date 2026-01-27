@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loading spinners on all pages with async operations (GiftcardAdmin, LeaderboardPage, EmployeesPage, TimeBankPage, Lottery pages)
 - Loading spinners in buttons for sync, submit, and authentication actions
 - Toast notifications for success, error, and info messages across the app
+- "Hjem" (Home) tab in sidebar for Optimizely CMS experimentation
+- Optimizely feature folder with playground page for learning and testing
 
 ### Changed
 - Replaced inline error/success messages with toast notifications in EmployeeOfTheDay, GiftcardAdmin, and Lottery components

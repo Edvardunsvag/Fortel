@@ -67,6 +67,14 @@ export const Sidebar = () => {
       )}
       <ul className={styles.navList}>
         <SidebarItem
+          tab={ActiveTab.Hjem}
+          icon="🏠"
+          label={t("sidebar.hjem")}
+          activeTab={activeTab}
+          onTabClick={handleTabClick}
+          onKeyDown={handleKeyDown}
+        />
+        <SidebarItem
           tab={ActiveTab.Play}
           icon="🎮"
           label={t("sidebar.fortedle")}

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Fortedle.Server.Models.DTOs;
 
 public class EmployeeDto
@@ -13,7 +15,9 @@ public class EmployeeDto
     public List<string> Teams { get; set; } = new();
     public int? Age { get; set; }
     public string Supervisor { get; set; } = "-";
+    public string? SupervisorLastname { get; set; }
     public string? Funfact { get; set; }
     public string? PhoneNumber { get; set; }
     public List<string> Interests { get; set; } = new();
+    public string? Stillingstittel { get; set; }
 }

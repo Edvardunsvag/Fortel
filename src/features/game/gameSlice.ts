@@ -99,15 +99,71 @@ const calculateHints = (guessed: Employee, target: Employee): Guess["hints"] => 
   });
 
   // Supervisor hint
+  // Format: "supervisor L." where L is first letter of supervisorLastname
+  const formatSupervisorDisplay = (supervisor?: string, supervisorLastname?: string): string => {
+    if (!supervisor || supervisor === "-") return "-";
+    if (supervisorLastname && supervisorLastname.trim()) {
+      const firstLetter = supervisorLastname.trim().charAt(0).toUpperCase();
+      return `${supervisor} ${firstLetter}.`;
+    }
+    return supervisor;
+  };
+
+  // Check if supervisors match (both supervisor and supervisorLastname must match)
+  const supervisorsMatch = (guessed: Employee, target: Employee): boolean => {
+    const guessedSupervisor = guessed.supervisor?.trim();
+    const targetSupervisor = target.supervisor?.trim();
+    const guessedSupervisorLastname = guessed.supervisorLastname?.trim();
+    const targetSupervisorLastname = target.supervisorLastname?.trim();
+
+    // Both must have supervisor values (not "-" or empty)
+    if (!guessedSupervisor || guessedSupervisor === "-" || !targetSupervisor || targetSupervisor === "-") {
+      return false;
+    }
+
+    // If both have supervisorLastname, both must match
+    if (guessedSupervisorLastname && targetSupervisorLastname) {
+      return (
+        guessedSupervisor === targetSupervisor &&
+        guessedSupervisorLastname === targetSupervisorLastname
+      );
+    }
+
+    // If only one has supervisorLastname, they don't match
+    if (guessedSupervisorLastname || targetSupervisorLastname) {
+      return false;
+    }
+
+    // If neither has supervisorLastname, just compare supervisor
+    return guessedSupervisor === targetSupervisor;
+  };
+
+  const supervisorResult =
+    supervisorsMatch(guessed, target)
+      ? HintResult.Correct
+      : guessed.supervisor && target.supervisor && guessed.supervisor !== "-" && target.supervisor !== "-"
+        ? HintResult.Incorrect
+        : HintResult.None;
+
   hints.push({
     type: HintType.Supervisor,
+    result: supervisorResult,
+    message: formatSupervisorDisplay(guessed.supervisor, guessed.supervisorLastname),
+  });
+
+  // Stillingstittel (Job Title) hint
+  const guessedStillingstittel = guessed.stillingstittel?.trim() || "-";
+  const targetStillingstittel = target.stillingstittel?.trim() || "-";
+  
+  hints.push({
+    type: HintType.Stillingstittel,
     result:
-      guessed.supervisor && target.supervisor && guessed.supervisor !== "-" && target.supervisor !== "-"
-        ? guessed.supervisor === target.supervisor
+      guessedStillingstittel !== "-" && targetStillingstittel !== "-"
+        ? guessedStillingstittel === targetStillingstittel
           ? HintResult.Correct
           : HintResult.Incorrect
         : HintResult.None,
-    message: guessed.supervisor || "-",
+    message: guessedStillingstittel,
   });
 
   return hints;

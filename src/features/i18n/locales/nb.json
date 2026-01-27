@@ -118,6 +118,7 @@
     "teams": "Team",
     "age": "Alder",
     "supervisor": "Leder",
+    "stillingstittel": "Tittel",
     "funfact": "Morsomt Fakta",
     "funfactClue": "Fun fact",
     "noFunfact": "Ingen morsomt fakta",
@@ -128,7 +129,8 @@
     "office": "Kontor",
     "teams": "Team",
     "age": "Alder",
-    "supervisor": "Leder"
+    "supervisor": "Leder",
+    "stillingstittel": "Tittel"
   },
   "leaderboard": {
     "title": "Toppliste",
@@ -177,7 +179,8 @@
     "age": "Alder",
     "department": "Avdeling",
     "office": "Kontor",
-    "supervisor": "Leder"
+    "supervisor": "Leder",
+    "stillingstittel": "Tittel"
   },
   "auth": {
     "login": "Logg inn",

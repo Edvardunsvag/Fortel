@@ -55,7 +55,7 @@ public class SyncService : ISyncService
         var userDetails = await FetchEmployeesFromHumaAsync(token);
 
         // Map to employee format
-        var employees = userDetails.Select(MapHumaUserToEmployee).ToList();
+        var employees = userDetails.Select(u => MapHumaUserToEmployee(u)).ToList();
 
         // Store in PostgreSQL using transaction with execution strategy
         // Clear existing employees
@@ -64,7 +64,7 @@ public class SyncService : ISyncService
         // Insert new employees
         foreach (var employee in employees)
         {
-            var existingEmployee = await _employeeRepository.GetByIdAsync(employee.Id);
+            var existingEmployee = await _employeeRepository.GetByIdForUpdateAsync(employee.Id);
             if (existingEmployee != null)
             {
                 // Update existing
@@ -78,15 +78,24 @@ public class SyncService : ISyncService
                 existingEmployee.Teams = employee.Teams;
                 existingEmployee.Age = employee.Age;
                 existingEmployee.Supervisor = employee.Supervisor;
+                existingEmployee.SupervisorLastname = employee.SupervisorLastname;
                 existingEmployee.Funfact = employee.Funfact;
                 existingEmployee.PhoneNumber = employee.PhoneNumber;
                 existingEmployee.Interests = employee.Interests;
+                existingEmployee.Stillingstittel = employee.Stillingstittel;
                 existingEmployee.UpdatedAt = DateTime.UtcNow;
+                
+                _logger.LogInformation("Updating employee {EmployeeId}: Stillingstittel='{Stillingstittel}', SupervisorLastname='{SupervisorLastname}'", 
+                    employee.Id, employee.Stillingstittel ?? "NULL", employee.SupervisorLastname ?? "NULL");
+                
                 await _employeeRepository.UpdateAsync(existingEmployee);
             }
             else
             {
                 // Insert new
+                _logger.LogInformation("Adding new employee {EmployeeId}: Stillingstittel='{Stillingstittel}', SupervisorLastname='{SupervisorLastname}'", 
+                    employee.Id, employee.Stillingstittel ?? "NULL", employee.SupervisorLastname ?? "NULL");
+                
                 await _employeeRepository.AddAsync(employee);
             }
         }
@@ -176,8 +185,10 @@ public class SyncService : ISyncService
         return userDetails.Where(u => u.HasValue).Select(u => u!.Value).ToList();
     }
 
-    private static Employee MapHumaUserToEmployee(JsonElement user)
+    private Employee MapHumaUserToEmployee(JsonElement user)
     {
+        var userId = user.TryGetProperty("id", out var uid) ? uid.GetString() : "unknown";
+        
         // Helper to get string value from Huma API field format
         static string? GetStringValue(JsonElement element)
         {
@@ -324,19 +335,29 @@ public class SyncService : ISyncService
 
         // Supervisor
         var supervisor = "-";
+        var supervisorLastname = "-";
         if (user.TryGetProperty("supervisor", out var supervisorData))
-        {
-            var supervisorObj = GetObjectValue(supervisorData);
-            if (supervisorObj.HasValue)
+        {            
+            if (supervisorData.ValueKind == JsonValueKind.Object && supervisorData.TryGetProperty("value", out var supervisorValue))
             {
-                var supervisorPreferredName = GetStringValue(supervisorObj.Value.TryGetProperty("preferredName", out var spn) ? spn : default);
-                var supervisorGivenName = GetStringValue(supervisorObj.Value.TryGetProperty("givenName", out var sgn) ? sgn : default);
-                var supervisorFamilyName = GetStringValue(supervisorObj.Value.TryGetProperty("familyName", out var sfn) ? sfn : default);
+                if (supervisorValue.ValueKind == JsonValueKind.Object)
+                {
+                    var supervisorPreferredName = GetStringValue(supervisorValue.TryGetProperty("preferredName", out var spn) ? spn : default);
+                    var supervisorGivenName = GetStringValue(supervisorValue.TryGetProperty("givenName", out var sgn) ? sgn : default);
+                    var supervisorFamilyName = GetStringValue(supervisorValue.TryGetProperty("familyName", out var sfn) ? sfn : default);
 
-                supervisor = supervisorPreferredName ?? $"{supervisorGivenName} {supervisorFamilyName}".Trim();
-                if (string.IsNullOrEmpty(supervisor))
-                    supervisor = "-";
+                    supervisor = supervisorPreferredName ?? $"{supervisorGivenName} {supervisorFamilyName}".Trim();
+                    if (string.IsNullOrEmpty(supervisor))
+                        supervisor = "-";
+                    
+                    supervisorLastname = supervisorFamilyName;
+                    if (string.IsNullOrEmpty(supervisorFamilyName))
+                        supervisorLastname = "-";
+                   
+                }
+              
             }
+           
         }
 
         // Funfact
@@ -356,6 +377,19 @@ public class SyncService : ISyncService
             }
         }
 
+        // Job Title (stillingstittel)
+        var stillingstittel = "-";
+        if (user.TryGetProperty("jobTitle", out var jobTitle))
+        {
+            if (jobTitle.ValueKind == JsonValueKind.Object && jobTitle.TryGetProperty("value", out var jobTitleValue))
+            {
+                if (jobTitleValue.ValueKind == JsonValueKind.Object && jobTitleValue.TryGetProperty("name", out var jobTitleName))
+                {
+                    stillingstittel = GetStringValue(jobTitleName) ?? "-";
+                }
+            }
+        }
+
         return new Employee
         {
             Id = user.GetProperty("id").GetString() ?? string.Empty,
@@ -369,9 +403,11 @@ public class SyncService : ISyncService
             Teams = teamsArray,
             Age = age,
             Supervisor = supervisor,
+            SupervisorLastname = supervisorLastname,
             Funfact = funfact,
             PhoneNumber = phoneNumber,
             Interests = interestsArray,
+            Stillingstittel = stillingstittel,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Fortedle.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fortedle.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260122130507_AddSupervisorLastnameToEmployee")]
+    partial class AddSupervisorLastnameToEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,52 +317,6 @@ namespace Fortedle.Server.Migrations
                     b.HasIndex("WinningTicketId");
 
                     b.ToTable("giftcard_transactions");
-                });
-
-            modelBuilder.Entity("Fortedle.Server.Models.Database.HarvestToken", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("user_id");
-
-                    b.Property<string>("AccessToken")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("access_token");
-
-                    b.Property<string>("AccountId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("account_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
-
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("refresh_token");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("UpdatedAt")
-                        .HasDatabaseName("idx_harvest_tokens_updated_at");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("idx_harvest_tokens_user_id");
-
-                    b.ToTable("harvest_tokens");
                 });
 
             modelBuilder.Entity("Fortedle.Server.Models.Database.LeaderboardEntry", b =>

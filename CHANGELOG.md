@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mobile navigation chips no longer overlap when wrapping to new lines
 - Removed unused ErrorBoundary import causing TypeScript build error
 - Fixed undefined userId reference in generated API client
+- Fixed lottery page loading state to prevent "Kobler til..." from showing after authentication completes
+
+### Changed
+- Enabled Harvest OAuth endpoints (user, time-entries, status) by removing TODO placeholders and implementing API calls
 
 ## [2026-01-26]
 

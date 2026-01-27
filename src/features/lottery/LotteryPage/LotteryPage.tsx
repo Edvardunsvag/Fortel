@@ -28,7 +28,9 @@ export const LotteryPage = () => {
   const authenticateMutation = useAuthenticateLottery();
   const { isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
 
-  const isLoading = isLoadingUser || authenticateMutation.isPending;
+  // Only show loading during authentication mutation, not during harvest status check
+  // This prevents "Kobler til..." from showing after authentication completes
+  const isLoading = isLoadingUser || (authenticateMutation.isPending && !authenticateMutation.isSuccess);
   const error = userError?.message || authenticateMutation.error?.message;
 
   // Handle OAuth callback

@@ -17,9 +17,9 @@ import type {
   // TODO: These types are missing from generated API - need to add Swagger attributes to backend endpoints
   // FortedleServerModelsDTOsClaimWeeklyPrizeRequest,
   FortedleServerModelsDTOsSendGiftcardResponse,
-  // FortedleServerModelsDTOsHarvestTokenStatusResponse,
-  // FortedleServerModelsDTOsHarvestUserResponse,
-  // FortedleServerModelsDTOsHarvestTimeEntriesResponse,
+  FortedleServerModelsDTOsHarvestTokenStatusResponse,
+  FortedleServerModelsDTOsHarvestUserResponse,
+  FortedleServerModelsDTOsHarvestTimeEntriesResponse,
 } from "@/shared/api/generated/index";
 
 /**
@@ -103,10 +103,8 @@ export const fetchHarvestAccounts = async (accessToken: string): Promise<Harvest
  *
  * @param msalAccessToken - MSAL access token for backend authentication
  */
-export const fetchHarvestUser = async (_msalAccessToken: string | null): Promise<HarvestUser> => {
-  // TODO: Fix Swagger to expose /api/harvest-oauth/user endpoint
-  throw new Error("Harvest user endpoint not available in API client - needs Swagger fix");
-  /* try {
+export const fetchHarvestUser = async (msalAccessToken: string | null): Promise<HarvestUser> => {
+  try {
     const { harvestOAuthApi } = createApiClients(msalAccessToken);
     const response = await harvestOAuthApi.apiHarvestOauthUserGet();
     const data: FortedleServerModelsDTOsHarvestUserResponse = response.data;
@@ -138,7 +136,6 @@ export const fetchHarvestUser = async (_msalAccessToken: string | null): Promise
     }
     throw new Error(error instanceof Error ? error.message : "Failed to fetch Harvest user");
   }
-  */
 };
 
 /**
@@ -150,13 +147,11 @@ export const fetchHarvestUser = async (_msalAccessToken: string | null): Promise
  * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const fetchHarvestTimeEntries = async (
-  _from: string,
-  _to: string,
-  _msalAccessToken: string | null
+  from: string,
+  to: string,
+  msalAccessToken: string | null
 ): Promise<HarvestTimeEntriesResponse> => {
-  // TODO: Fix Swagger to expose /api/harvest-oauth/time-entries endpoint
-  throw new Error("Harvest time entries endpoint not available in API client - needs Swagger fix");
-  /* try {
+  try {
     const { harvestOAuthApi } = createApiClients(msalAccessToken);
     const response = await harvestOAuthApi.apiHarvestOauthTimeEntriesGet(from, to);
     const data: FortedleServerModelsDTOsHarvestTimeEntriesResponse = response.data;
@@ -219,7 +214,6 @@ export const fetchHarvestTimeEntries = async (
     }
     throw new Error(error instanceof Error ? error.message : "Failed to fetch time entries");
   }
-  */
 };
 
 /**
@@ -561,14 +555,16 @@ export const claimWeeklyPrize = async (
  * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const checkHarvestTokenStatus = async (
-  _msalAccessToken: string | null
+  msalAccessToken: string | null
 ): Promise<{ is_authenticated: boolean; account_id: string | null }> => {
-  // TODO: Fix Swagger to expose /api/harvest-oauth/status endpoint
-  throw new Error("Harvest token status endpoint not available in API client - needs Swagger fix");
-  /* try {
+  try {
     const { harvestOAuthApi } = createApiClients(msalAccessToken);
     const response = await harvestOAuthApi.apiHarvestOauthStatusGet();
-    return response.data;
+    const data: FortedleServerModelsDTOsHarvestTokenStatusResponse = response.data;
+    return {
+      is_authenticated: data.is_authenticated ?? false,
+      account_id: data.account_id ?? null,
+    };
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
@@ -579,7 +575,6 @@ export const checkHarvestTokenStatus = async (
     }
     throw new Error(error instanceof Error ? error.message : "Failed to check token status");
   }
-  */
 };
 
 /**

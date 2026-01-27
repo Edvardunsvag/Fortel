@@ -4,7 +4,17 @@
  * Creates configured instances of the generated API clients
  * with support for JWT Bearer token authentication.
  */
-import { Configuration, EmployeesApi, LeaderboardApi, RoundsApi, SyncApi, LotteryTicketsApi, EmployeeWeeksApi, GiftcardsApi, HarvestOAuthApi } from "./generated/index";
+import {
+  Configuration,
+  EmployeesApi,
+  LeaderboardApi,
+  RoundsApi,
+  SyncApi,
+  LotteryTicketsApi,
+  EmployeeWeeksApi,
+  GiftcardsApi,
+  HarvestOAuthApi,
+} from "./generated/index";
 
 const getApiBaseUrl = (): string => {
   // In development, Vite proxy handles /api routes

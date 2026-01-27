@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Navigation chips slider width now updates correctly on window resize without page refresh
 - Mobile navigation chips no longer overlap when wrapping to new lines
+- Removed unused ErrorBoundary import causing TypeScript build error
+- Fixed undefined userId reference in generated API client
 
 ## [2026-01-26]
 

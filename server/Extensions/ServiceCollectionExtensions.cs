@@ -1,5 +1,6 @@
 using Fortedle.Server.Repositories;
 using Fortedle.Server.Services;
+using Fortedle.Server.Services.Harvest;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fortedle.Server.Extensions;
@@ -34,9 +35,15 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGiftcardService, GiftcardService>();
         services.AddScoped<ITokenEncryptionService, TokenEncryptionService>();
 
+        // Register Harvest services (order matters - dependencies first)
+        services.AddScoped<HarvestConfiguration>();
+        services.AddHttpClient<IHarvestOAuthService, HarvestOAuthService>();
+        services.AddHttpClient<IHarvestTokenManager, HarvestTokenManager>();
+        services.AddHttpClient<IHarvestApiClient, HarvestApiClient>();
+        services.AddHttpClient<HarvestApiService>();
+
         // Add HttpClient for external API calls
         services.AddHttpClient();
-        services.AddHttpClient<HarvestApiService>();
 
         return services;
     }

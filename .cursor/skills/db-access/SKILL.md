@@ -1,6 +1,7 @@
 ---
+name: db-access
 description: Access the development database directly. Use when you need to query, inspect, or modify the database schema or data. Contains all connection details, environment variables, and common SQL commands needed for database operations.
-alwaysApply: false
+disable-model-invocation: false
 ---
 
 # Development Database Access

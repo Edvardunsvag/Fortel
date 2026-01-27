@@ -103,6 +103,12 @@ public class SendGiftcardResponse
     public string? ErrorMessage { get; set; }
 }
 
+public class ClaimWeeklyPrizeRequest
+{
+    public int WinningTicketId { get; set; }
+    public string UserId { get; set; } = string.Empty; // Harvest user ID
+}
+
 public class GiftcardTransactionDto
 {
     public int Id { get; set; }

@@ -17,8 +17,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated SyncService to map and sync Stillingstittel and SupervisorLastname from Huma API
 - Improved supervisor hint logic to require both supervisor and supervisorLastname match for correct hint
 - Enhanced game UI styling for FlipBox and HintCell components
+## [2026-01-27]
+
+### Security
+- Controllers now extract userId from JWT claims instead of trusting client-provided data
+- Added tampering detection logging when request userId differs from authenticated user
+
+### Refactored
+- Split HarvestApiService into focused services (HarvestOAuthService, HarvestTokenManager, HarvestApiClient, HarvestConfiguration)
+- Moved Harvest models to Models/Application/Harvest folder
+- Converted db-access command to Cursor skill
+- Extracted `WinnersService` and `LotteryStatisticsService` from `LotteryTicketsController`
+- Centralized JWT claim extraction into `UserClaimsHelper` helper class
+- Moved test data seeding logic from controller to `LotteryTicketService`
+- Added repository methods for lottery statistics and winner operations
+
+### Added
+- `ErrorBoundary` component for graceful React error handling in frontend
+
+## [2026-01-26]
+
+### Added
+- Harvest OAuth integration with token storage and management
+- Token encryption at rest using ASP.NET Core Data Protection
+- Rate limiting for Harvest OAuth endpoints (exchange, status, user, time-entries, revoke)
+- Harvest token repository with encryption/decryption support
+- Frontend Harvest OAuth connection flow and token status checking
+
+### Changed
+- Removed unused refresh token endpoint from backend and frontend
+
+### Fixed
+- EF Core change tracking issue preventing token encryption from persisting to database
+
+### Security
+- Harvest OAuth tokens encrypted at rest in database
+- Rate limiting on OAuth endpoints to prevent abuse
+- Removed token previews from logs (now only logs token length)
+
+## [2026-01-23]
+
+### Added
+- Azure AD JWT authentication for all API endpoints
+- Hangfire dashboard JWT authentication via `HangfireJwtAuthorizationFilter`
+- JWT Bearer token support in Swagger UI
+- Frontend API client factory with token-based authentication
+- Extension methods for Program.cs configuration (CORS, Database, Authentication, Swagger, Hangfire, Middleware)
+- `AzureAdHelper` utility class for Azure AD configuration and URI manipulation
+
+### Changed
+- All API controllers now require authentication via `[Authorize]` attribute
+- Frontend API clients now use JWT tokens from Redux store
+- MSAL configuration updated to request only API scope (not Microsoft Graph)
+- API client configuration supports Bearer token authentication with proper header format
+- Refactored Program.cs to use extension methods for better code organization
+- Hangfire lottery drawing job now uses Norway timezone (Europe/Oslo) instead of UTC
+- Countdown calculations use Norway timezone for accurate Friday 15:00 timing
+- Swagger UI authentication changed from JWT Bearer to OAuth2 Authorization Code flow with Azure AD redirect
+- Token validation now accepts multiple audience formats (full scope URI, base Application ID URI, and client ID)
+
+### Fixed
+- UTC date parsing in frontend countdown hook to handle timezone issues correctly
+- Countdown target calculation now properly converts Norway time to UTC
+
+### Security
+- Moved authentication token handling to backend for Harvest OAuth
+- Secured Hangfire dashboard to require valid JWT authentication
+- Updated cursor rules with Azure AD authentication patterns and token handling best practices
 
 ## [2026-01-22]
+
+### Added
+- Weekly prize claiming feature for lottery winners
+- `POST /api/giftcards/claim-weekly-prize` endpoint to claim prizes
+- Prize claim status tracking in `WinnerDto` (`WinningTicketId`, `PrizeClaimed`)
+- Frontend UI for claiming weekly prizes in lottery week details
 
 ### Changed
 - Simplified PR command documentation in `.cursor/commands/pr-command.md` ([#21](https://github.com/Edvardunsvag/Fortedle/pull/21))

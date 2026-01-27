@@ -24,11 +24,9 @@ import {
 const configuration = new Configuration();
 const apiInstance = new RoundsApi(configuration);
 
-let userId: string; // (optional) (default to undefined)
 let date: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.apiRoundsCurrentGet(
-    userId,
     date
 );
 ```
@@ -37,7 +35,6 @@ const { status, data } = await apiInstance.apiRoundsCurrentGet(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **userId** | [**string**] |  | (optional) defaults to undefined|
 | **date** | [**string**] |  | (optional) defaults to undefined|
 
 
@@ -47,7 +44,7 @@ const { status, data } = await apiInstance.apiRoundsCurrentGet(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -98,7 +95,7 @@ const { status, data } = await apiInstance.apiRoundsGuessPost(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -149,7 +146,7 @@ const { status, data } = await apiInstance.apiRoundsRevealFunfactPost(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -200,7 +197,7 @@ const { status, data } = await apiInstance.apiRoundsStartPost(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 

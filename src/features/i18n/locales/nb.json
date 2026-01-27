@@ -225,7 +225,7 @@
     "rules": {
       "title": "Ukeslotteriregler",
       "eligibility": "Kvalifikasjonskriterier",
-      "rule1": "Må ha minst 8 timer registrert for hver dag mandag-fredag",
+      "rule1": "Må ha totalt minst 40 timer registrert for uken (mandag-fredag)",
       "rule2": "Alle tidsregistreringer for uken må være opprettet OG oppdatert før fredag 15:00",
       "monthChange": "Månedsskifte",
       "rule3": "Hvis man er for sen med timer over månedsskifte, mister man alle oppsparte lodd den måneden",
@@ -277,17 +277,23 @@
       "notEligible": "Ikke kvalifisert",
       "hasTicket": "Har lodd",
       "noTicket": "Har ikke lodd",
-      "notEligibleReason": "Du oppfyller ikke kvalifikasjonskriteriene for denne uken. For å være kvalifisert må du ha minst 8 timer registrert for hver dag mandag-fredag, og alle tidsregistreringer må være opprettet OG oppdatert før fredag 15:00.",
+      "notEligibleReason": "Du oppfyller ikke kvalifikasjonskriteriene for denne uken. For å være kvalifisert må du ha totalt minst 40 timer registrert for uken (mandag-fredag), og alle tidsregistreringer må være opprettet OG oppdatert før fredag 15:00.",
       "winnerStatus": "Vinnerstatus",
       "youWon": "Du vant!",
       "winner": "Vinner",
+      "weeklyWinnerLabel": "Vinneren av ukens lotteri:",
+      "loserMessage": "Dessverre ikke noe seier på deg i dag, men du tar med loddet videre til Grand Finale 🥲",
       "noWinner": "Ingen vinner",
       "countdownLabel": "Tid til trekning",
       "waitingForDraw": "Venter på trekning...",
-      "checkWeeklyWinner": "Sjekk ukesvinner"
+      "checkWeeklyWinner": "Sjekk ukesvinner",
+      "claimPrize": "Hev premie",
+      "prizeClaimed": "Sjekk mobilen din eller mailen din for å se gavekortet",
+      "claimingPrize": "Henter premie...",
+      "prizeClaimError": "Kunne ikke hente premie. Prøv igjen senere."
     },
     "eligibility": {
-      "missingHours": "Mangler 8 timer på: {{dates}}",
+      "missingHours": "Mangler timer for å nå 40 timer totalt. Nåværende total: {{currentHours}} timer",
       "entriesUpdatedAfterDeadline": "Noen registreringer ble oppdatert etter fredag 15:00. Siste oppdatering: {{timestamp}}"
     },
     "employees": {

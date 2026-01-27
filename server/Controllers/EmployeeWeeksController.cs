@@ -1,11 +1,14 @@
+using Fortedle.Server.Helpers;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fortedle.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class EmployeeWeeksController : ControllerBase
 {
     private readonly IEmployeeWeekService _employeeWeekService;
@@ -20,26 +23,20 @@ public class EmployeeWeeksController : ControllerBase
     }
 
     [HttpPost("sync")]
-    public async Task<ActionResult<SyncHarvestResponse>> SyncFromHarvest([FromBody] SyncHarvestRequest request)
+    public async Task<ActionResult<SyncHarvestResponse>> SyncFromHarvest()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.AccessToken))
+            // Extract user email from JWT token
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
+            if (string.IsNullOrWhiteSpace(userEmail))
             {
-                return BadRequest(new { error = "accessToken is required" });
+                _logger.LogWarning("Unable to extract user email from JWT token");
+                return Unauthorized(new { error = "Unable to identify user. Please log in again." });
             }
 
-            if (string.IsNullOrWhiteSpace(request.RefreshToken))
-            {
-                return BadRequest(new { error = "refreshToken is required" });
-            }
-
-            if (string.IsNullOrWhiteSpace(request.AccountId))
-            {
-                return BadRequest(new { error = "accountId is required" });
-            }
-
-            var response = await _employeeWeekService.SyncFromHarvestAsync(request);
+            // Backend will retrieve tokens from database automatically
+            var response = await _employeeWeekService.SyncFromHarvestAsync(userEmail);
             return Ok(response);
         }
         catch (InvalidOperationException ex)
@@ -59,6 +56,8 @@ public class EmployeeWeeksController : ControllerBase
     {
         try
         {
+            // Note: userId here is the Harvest user ID (numeric), not the Azure AD email
+            // The data in employee_weeks is stored with Harvest user IDs
             if (string.IsNullOrWhiteSpace(userId))
             {
                 return BadRequest(new { error = "userId is required" });

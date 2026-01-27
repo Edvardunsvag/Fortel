@@ -4,10 +4,62 @@ All URIs are relative to *http://localhost:8080*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**apiGiftcardsClaimWeeklyPrizePost**](#apigiftcardsclaimweeklyprizepost) | **POST** /api/Giftcards/claim-weekly-prize | |
 |[**apiGiftcardsGet**](#apigiftcardsget) | **GET** /api/Giftcards | |
 |[**apiGiftcardsIdGet**](#apigiftcardsidget) | **GET** /api/Giftcards/{id} | |
 |[**apiGiftcardsSendPost**](#apigiftcardssendpost) | **POST** /api/Giftcards/send | |
 |[**apiGiftcardsUserUserIdGet**](#apigiftcardsuseruseridget) | **GET** /api/Giftcards/user/{userId} | |
+
+# **apiGiftcardsClaimWeeklyPrizePost**
+> FortedleServerModelsDTOsSendGiftcardResponse apiGiftcardsClaimWeeklyPrizePost()
+
+
+### Example
+
+```typescript
+import {
+    GiftcardsApi,
+    Configuration,
+    FortedleServerModelsDTOsClaimWeeklyPrizeRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new GiftcardsApi(configuration);
+
+let fortedleServerModelsDTOsClaimWeeklyPrizeRequest: FortedleServerModelsDTOsClaimWeeklyPrizeRequest; // (optional)
+
+const { status, data } = await apiInstance.apiGiftcardsClaimWeeklyPrizePost(
+    fortedleServerModelsDTOsClaimWeeklyPrizeRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **fortedleServerModelsDTOsClaimWeeklyPrizeRequest** | **FortedleServerModelsDTOsClaimWeeklyPrizeRequest**|  | |
+
+
+### Return type
+
+**FortedleServerModelsDTOsSendGiftcardResponse**
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json, text/json, application/*+json
+ - **Accept**: text/plain, application/json, text/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiGiftcardsGet**
 > Array<FortedleServerModelsDTOsGiftcardTransactionDto> apiGiftcardsGet()
@@ -37,7 +89,7 @@ This endpoint does not have any parameters.
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -87,7 +139,7 @@ const { status, data } = await apiInstance.apiGiftcardsIdGet(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -138,7 +190,7 @@ const { status, data } = await apiInstance.apiGiftcardsSendPost(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 
@@ -188,7 +240,7 @@ const { status, data } = await apiInstance.apiGiftcardsUserUserIdGet(
 
 ### Authorization
 
-No authorization required
+[oauth2](../README.md#oauth2)
 
 ### HTTP request headers
 

@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format, subMonths } from "date-fns";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import {
-  loadTokenFromStorage,
-  selectIsLotteryAuthenticated,
-  clearLottery,
-} from "@/features/lottery/lotterySlice";
-import { useLotteryTimeEntries, useAuthenticateLottery } from "@/features/lottery/queries";
+import { clearLottery } from "@/features/lottery/lotterySlice";
+import { useLotteryTimeEntries, useAuthenticateLottery, useHarvestTokenStatus } from "@/features/lottery/queries";
+import { revokeHarvestToken } from "@/features/lottery/api";
 import { getHarvestAuthUrl, generateState } from "@/shared/config/harvestConfig";
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "@/shared/config/msalConfig";
+import { selectAccessToken } from "@/features/auth/authSlice";
 import { routes } from "@/shared/routes";
 import { Timeframe } from "../types";
 import type { DateRange } from "../types";
@@ -28,7 +28,12 @@ export const TimeBankPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const isAuthenticated = useAppSelector(selectIsLotteryAuthenticated);
+  const { instance, accounts } = useMsal();
+  const msalAccessToken = useAppSelector(selectAccessToken);
+
+  // Check Harvest authentication status
+  const { data: harvestStatus } = useHarvestTokenStatus();
+  const isAuthenticated = harvestStatus?.is_authenticated ?? false;
 
   const [timeframe, setTimeframe] = useState<Timeframe>(Timeframe.YearToDate);
   const [activeSubTab, setActiveSubTab] = useState<TimeBankSubTab>(TimeBankSubTab.Data);
@@ -87,7 +92,6 @@ export const TimeBankPage = () => {
     const errorParam = params.get("error");
 
     if (errorParam) {
-      console.error("OAuth error:", errorParam);
       window.history.replaceState({}, "", window.location.pathname);
       return;
     }
@@ -99,20 +103,40 @@ export const TimeBankPage = () => {
     }
   }, [authenticateMutation, navigate]);
 
-  // Load token from storage on mount
-  useEffect(() => {
-    dispatch(loadTokenFromStorage());
-  }, [dispatch]);
-
   const handleLogin = () => {
     const state = generateState();
-    sessionStorage.setItem("harvest_oauth_state", state);
+    // Store OAuth state temporarily (not sensitive token data)
+    localStorage.setItem("harvest_oauth_state", state);
     // Store redirect to timebank after auth
-    sessionStorage.setItem("harvest_oauth_redirect", routes.timebank);
+    localStorage.setItem("harvest_oauth_redirect", routes.timebank);
     window.location.href = getHarvestAuthUrl(state);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Get MSAL token for backend authentication
+      let token = msalAccessToken;
+
+      if (!token && accounts.length > 0) {
+        try {
+          const response = await instance.acquireTokenSilent({
+            ...loginRequest,
+            account: accounts[0],
+          });
+          token = response.accessToken;
+        } catch (error) {
+          // If we can't get token, still clear local state
+        }
+      }
+
+      if (token) {
+        await revokeHarvestToken(token);
+      }
+    } catch (error) {
+      // Log error but continue with clearing local state
+      console.error("Failed to revoke Harvest token:", error);
+    }
+
     dispatch(clearLottery());
   };
 
@@ -125,11 +149,7 @@ export const TimeBankPage = () => {
             <div className={styles.connectSection}>
               <p className={styles.connectText}>{t("timebank.connectDescription")}</p>
               {error && <div className={styles.error}>{error.message}</div>}
-              <button
-                className={styles.connectButton}
-                onClick={handleLogin}
-                disabled={authenticateMutation.isPending}
-              >
+              <button className={styles.connectButton} onClick={handleLogin} disabled={authenticateMutation.isPending}>
                 {authenticateMutation.isPending ? t("timebank.connecting") : t("timebank.connectToHarvest")}
               </button>
             </div>

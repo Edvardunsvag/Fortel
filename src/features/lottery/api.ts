@@ -1,39 +1,37 @@
-import type {
-  HarvestUser,
-  HarvestTimeEntriesResponse,
-  HarvestAccountsResponse,
-} from "./types";
-import { harvestConfig } from "@/shared/config/harvestConfig";
-import { lotteryTicketsApi, employeeWeeksApi, harvestOAuthApi } from "@/shared/api/client";
+import type { HarvestUser, HarvestTimeEntriesResponse, HarvestAccountsResponse } from "./types";
+import { createApiClients } from "@/shared/api/client";
 import type {
   FortedleServerModelsDTOsSyncLotteryTicketsRequest,
   FortedleServerModelsDTOsSyncLotteryTicketsResponse,
-  FortedleServerModelsDTOsSyncHarvestRequest,
   FortedleServerModelsDTOsSyncHarvestResponse,
   FortedleServerModelsDTOsEmployeeWeeksResponse,
   FortedleServerModelsDTOsExchangeTokenRequest,
-  FortedleServerModelsDTOsRefreshTokenRequest,
+  FortedleServerModelsDTOsLotteryTicketDto,
+  FortedleServerModelsDTOsAllWinnersResponse,
+  FortedleServerModelsDTOsEmployeeStatisticsResponse,
+  FortedleServerModelsDTOsWheelDataResponse,
+  FortedleServerModelsDTOsMonthlyWinnersResponse,
+  FortedleServerModelsDTOsLotteryConfigDto,
+  FortedleServerModelsDTOsWheelSegmentDto,
+  FortedleServerModelsDTOsWheelParticipantDto,
+  FortedleServerModelsDTOsClaimWeeklyPrizeRequest,
+  FortedleServerModelsDTOsSendGiftcardResponse,
+  FortedleServerModelsDTOsHarvestTokenStatusResponse,
+  FortedleServerModelsDTOsHarvestUserResponse,
+  FortedleServerModelsDTOsHarvestTimeEntriesResponse,
 } from "@/shared/api/generated/index";
-
-/**
- * Extract account ID from Harvest access token
- * Harvest tokens are in format: {account_id}.at.{token}
- */
-const extractAccountIdFromToken = (accessToken: string): string => {
-  const parts = accessToken.split(".");
-  if (parts.length >= 2 && parts[0]) {
-    return parts[0];
-  }
-  throw new Error("Unable to extract account ID from access token");
-};
 
 /**
  * Exchange authorization code for access token via backend
  * The backend securely handles the client secret
+ * @param code - Authorization code from Harvest OAuth callback
+ * @param state - State parameter for CSRF protection
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const exchangeCodeForToken = async (
   code: string,
-  state: string
+  state: string,
+  msalAccessToken: string | null
 ): Promise<{
   access_token: string;
   token_type: string;
@@ -47,16 +45,18 @@ export const exchangeCodeForToken = async (
       state,
     };
 
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
     const response = await harvestOAuthApi.apiHarvestOauthExchangePost(request);
     const tokenData = response.data;
 
-    // Map backend response to expected format (backend returns snake_case)
+    // Backend now stores tokens in database and doesn't return them for security
+    // Return success response with account_id only (tokens are managed by backend)
     return {
-      access_token: tokenData.access_token || "",
+      access_token: "", // Tokens are now stored on backend, not returned to frontend
       token_type: tokenData.token_type || "",
       expires_in: tokenData.expires_in || 0,
-      refresh_token: tokenData.refresh_token || "",
-      account_id: tokenData.account_id || extractAccountIdFromToken(tokenData.access_token || ""),
+      refresh_token: "", // Tokens are now stored on backend, not returned to frontend
+      account_id: tokenData.account_id || "",
     };
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
@@ -71,49 +71,9 @@ export const exchangeCodeForToken = async (
 };
 
 /**
- * Refresh access token using refresh token via backend
- * The backend securely handles the client secret
- */
-export const refreshAccessToken = async (
-  refreshToken: string
-): Promise<{
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-  refresh_token: string;
-  account_id: string;
-}> => {
-  try {
-    const request: FortedleServerModelsDTOsRefreshTokenRequest = {
-      refresh_token: refreshToken,
-    };
-
-    const response = await harvestOAuthApi.apiHarvestOauthRefreshPost(request);
-    const tokenData = response.data;
-
-    // Map backend response to expected format (backend returns snake_case)
-    return {
-      access_token: tokenData.access_token || "",
-      token_type: tokenData.token_type || "",
-      expires_in: tokenData.expires_in || 0,
-      refresh_token: tokenData.refresh_token || "",
-      account_id: tokenData.account_id || extractAccountIdFromToken(tokenData.access_token || ""),
-    };
-  } catch (error: unknown) {
-    if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
-      const errorMessage =
-        axiosError.response?.data?.error ||
-        `Failed to refresh token: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
-      throw new Error(errorMessage);
-    }
-    throw new Error(error instanceof Error ? error.message : "Failed to refresh token");
-  }
-};
-
-/**
  * Fetches accessible accounts for the authenticated user
  * This endpoint works WITHOUT the Harvest-Account-ID header
+ * @deprecated This function may not be needed anymore - backend handles account retrieval
  * @see https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/
  */
 export const fetchHarvestAccounts = async (accessToken: string): Promise<HarvestAccountsResponse> => {
@@ -137,122 +97,143 @@ export const fetchHarvestAccounts = async (accessToken: string): Promise<Harvest
 };
 
 /**
- * Fetches the current user's information from Harvest API
- * Uses the /v2/users/me endpoint to get the authenticated user's info including user ID
+ * Fetches the current user's information from Harvest API via backend
+ * Backend retrieves tokens from database automatically
  *
- * IMPORTANT: The accountId parameter is required to get the account-specific user ID.
- * Without it, the endpoint returns the global Harvest ID user ID (not the account-specific one).
- *
- * @param accessToken - OAuth access token
- * @param accountId - Account ID (required to get account-specific user ID)
- * @see https://help.getharvest.com/api-v2/users-api/users/users/
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
-export const fetchHarvestUser = async (accessToken: string, accountId?: string | null): Promise<HarvestUser> => {
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${accessToken}`,
-    "User-Agent": "Fortedle App",
-    "Content-Type": "application/json",
-  };
+export const fetchHarvestUser = async (msalAccessToken: string | null): Promise<HarvestUser> => {
+  try {
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
+    const response = await harvestOAuthApi.apiHarvestOauthUserGet();
+    const data: FortedleServerModelsDTOsHarvestUserResponse = response.data;
 
-  // Include Harvest-Account-ID header to get account-specific user ID
-  if (accountId) {
-    headers["Harvest-Account-ID"] = accountId;
-  }
-
-  const response = await fetch(`${harvestConfig.apiBase}/users/me`, {
-    method: "GET",
-    headers,
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error("Invalid Harvest credentials. Please re-authenticate.");
+    // Map backend response to frontend HarvestUser type
+    if (!data.id || !data.first_name || !data.last_name || !data.email) {
+      throw new Error("Invalid user data received from backend");
     }
-    throw new Error(`Failed to fetch user: ${response.status} ${response.statusText}`);
-  }
 
-  return response.json();
+    return {
+      id: data.id,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email,
+      timezone: data.timezone ?? "",
+      weekly_capacity: data.weekly_capacity ?? 0,
+      is_active: data.is_active ?? false,
+    };
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch Harvest user: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch Harvest user");
+  }
 };
 
 /**
- * Fetches time entries for a user within a date range
+ * Fetches time entries for a user within a date range via backend
+ * Backend retrieves tokens from database automatically
  *
- * According to Harvest API documentation, the time entries endpoint REQUIRES the Harvest-Account-ID header.
- *
- * @param accountId - Account ID (required - the time entries endpoint requires this header)
- * @param accessToken - OAuth access token
- * @param userId - Account-specific user ID (from /users/me with Harvest-Account-ID header)
  * @param from - Start date (YYYY-MM-DD)
  * @param to - End date (YYYY-MM-DD)
- * @see https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const fetchHarvestTimeEntries = async (
-  accountId: string,
-  accessToken: string,
-  userId: number,
   from: string,
-  to: string
+  to: string,
+  msalAccessToken: string | null
 ): Promise<HarvestTimeEntriesResponse> => {
-  if (!accountId) {
-    throw new Error("Account ID is required for fetching time entries");
-  }
+  try {
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
+    const response = await harvestOAuthApi.apiHarvestOauthTimeEntriesGet(from, to);
+    const data: FortedleServerModelsDTOsHarvestTimeEntriesResponse = response.data;
 
-  const url = new URL(`${harvestConfig.apiBase}/time_entries`);
-  url.searchParams.append("user_id", userId.toString());
-  url.searchParams.append("from", from);
-  url.searchParams.append("to", to);
+    // Map backend response to frontend HarvestTimeEntriesResponse type
+    const timeEntries = (data.time_entries || []).map((te) => ({
+      id: te.id ?? 0,
+      spent_date: te.spent_date ?? "",
+      hours: te.hours ?? 0,
+      hours_without_timer: te.hours ?? 0, // Backend doesn't provide this, use hours as fallback
+      rounded_hours: te.hours ?? 0, // Backend doesn't provide this, use hours as fallback
+      notes: null,
+      is_locked: false,
+      locked_reason: null,
+      approval_status: "pending",
+      is_closed: false,
+      is_billed: false,
+      created_at: te.created_at ?? new Date().toISOString(),
+      updated_at: te.updated_at ?? new Date().toISOString(),
+      user: {
+        id: 0, // Backend doesn't provide user info in time entry
+        name: "",
+      },
+      client: te.client
+        ? {
+            id: te.client.id ?? 0,
+            name: te.client.name ?? "",
+            currency: "",
+          }
+        : null,
+      project: null,
+      task: null,
+    }));
 
-  const headers: Record<string, string> = {
-    "Harvest-Account-ID": accountId,
-    Authorization: `Bearer ${accessToken}`,
-    "User-Agent": "Fortedle App",
-    "Content-Type": "application/json",
-  };
-
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers,
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error("Invalid Harvest credentials. Please re-authenticate.");
+    return {
+      time_entries: timeEntries,
+      per_page: timeEntries.length,
+      total_pages: 1,
+      total_entries: timeEntries.length,
+      page: 1,
+      next_page: null,
+      previous_page: null,
+      links: {
+        first: "",
+        next: null,
+        previous: null,
+        last: "",
+      },
+    };
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to fetch time entries: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
     }
-    const errorText = await response.text().catch(() => response.statusText);
-    throw new Error(`Failed to fetch time entries: ${response.status} ${errorText}`);
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch time entries");
   }
-
-  return response.json();
 };
 
 /**
  * Fetches all lottery tickets for a user
  *
- * @param userId - User ID (from Harvest user)
+ * @param userId - User ID (Harvest user ID - numeric)
  */
 export const fetchLotteryTickets = async (
-  userId: string
-): Promise<
-  Array<{
-    id: number;
-    userId: string;
-    name: string;
-    image: string | null;
-    eligibleWeek: string;
-    isUsed: boolean;
-    createdAt: string;
-    updatedAt: string;
-  }>
-> => {
+  userId: string,
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsLotteryTicketDto[]> => {
   try {
-    // Method will be available after regenerating API client: npm run generate:api
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsGet(userId);
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsGet(userId);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch lottery tickets: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -275,7 +256,8 @@ export const syncLotteryTickets = async (
   userId: string,
   name: string,
   image: string | null | undefined,
-  eligibleWeeks: string[]
+  eligibleWeeks: string[],
+  accessToken: string | null
 ): Promise<FortedleServerModelsDTOsSyncLotteryTicketsResponse> => {
   try {
     const request: FortedleServerModelsDTOsSyncLotteryTicketsRequest = {
@@ -285,11 +267,15 @@ export const syncLotteryTickets = async (
       eligibleWeeks,
     };
 
+    const { lotteryTicketsApi } = createApiClients(accessToken);
     const response = await lotteryTicketsApi.apiLotteryTicketsSyncPost(request);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to sync lottery tickets: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -304,27 +290,19 @@ export const syncLotteryTickets = async (
  *
  * @returns All winners grouped by week
  */
-export const fetchAllWinners = async (): Promise<{
-  weeklyWinners: Array<{
-    week: string;
-    winners: Array<{
-      userId: string;
-      name: string;
-      image: string | null;
-      week: string;
-      createdAt: string;
-    }>;
-  }>;
-}> => {
+export const fetchAllWinners = async (
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsAllWinnersResponse> => {
   try {
-    // Method will be available after regenerating API client: npm run generate:api
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsWinnersGet();
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsWinnersGet();
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch winners: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -339,24 +317,19 @@ export const fetchAllWinners = async (): Promise<{
  *
  * @returns Employee statistics with ticket counts and win counts
  */
-export const fetchEmployeeStatistics = async (): Promise<{
-  employees: Array<{
-    userId: string;
-    name: string;
-    image: string | null;
-    ticketCount: number;
-    winCount: number;
-  }>;
-}> => {
+export const fetchEmployeeStatistics = async (
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsEmployeeStatisticsResponse> => {
   try {
-    // Method will be available after regenerating API client: npm run generate:api
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsStatisticsGet();
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsStatisticsGet();
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch employee statistics: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -368,56 +341,32 @@ export const fetchEmployeeStatistics = async (): Promise<{
 
 // ============ Grand Finale Lucky Wheel API Functions ============
 
-export interface WheelSegment {
-  userId: string;
-  name: string;
-  image: string | null;
-  color: string;
-  ticketId: number;
-}
-
-export interface WheelParticipant {
-  userId: string;
-  name: string;
-  image: string | null;
-  color: string;
-  ticketCount: number;
-}
-
-export interface WheelDataResponse {
-  segments: WheelSegment[];
-  participants: WheelParticipant[];
-  totalTickets: number;
-}
+// Re-export generated types for convenience
+export type WheelSegment = FortedleServerModelsDTOsWheelSegmentDto;
+export type WheelParticipant = FortedleServerModelsDTOsWheelParticipantDto;
+export type WheelDataResponse = FortedleServerModelsDTOsWheelDataResponse;
+export type MonthlyWinnersResponse = FortedleServerModelsDTOsMonthlyWinnersResponse;
+export type LotteryConfig = FortedleServerModelsDTOsLotteryConfigDto;
 
 // MonthlyWinner type is exported from lotterySlice to avoid duplicate exports
-import type { MonthlyWinner } from "./lotterySlice";
 export type { MonthlyWinner } from "./lotterySlice";
-
-export interface MonthlyWinnersResponse {
-  month: string;
-  winners: MonthlyWinner[];
-  isDrawComplete: boolean;
-}
-
-export interface LotteryConfig {
-  monthlyWinnerCount: number;
-  nextMonthlyDrawDate: string;
-  currentMonth: string;
-}
 
 /**
  * Fetches wheel data (segments and participants)
  */
-export const fetchWheelData = async (): Promise<WheelDataResponse> => {
+export const fetchWheelData = async (
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsWheelDataResponse> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsWheelGet();
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsWheelGet();
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch wheel data: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -430,15 +379,20 @@ export const fetchWheelData = async (): Promise<WheelDataResponse> => {
 /**
  * Fetches monthly winners for a specific month
  */
-export const fetchMonthlyWinners = async (month?: string): Promise<MonthlyWinnersResponse> => {
+export const fetchMonthlyWinners = async (
+  month: string | undefined,
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsMonthlyWinnersResponse> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsMonthlyWinnersGet(month);
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsMonthlyWinnersGet(month);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch monthly winners: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -451,15 +405,19 @@ export const fetchMonthlyWinners = async (month?: string): Promise<MonthlyWinner
 /**
  * Fetches the latest monthly winners
  */
-export const fetchLatestMonthlyWinners = async (): Promise<MonthlyWinnersResponse> => {
+export const fetchLatestMonthlyWinners = async (
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsMonthlyWinnersResponse> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsMonthlyWinnersLatestGet();
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsMonthlyWinnersLatestGet();
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch latest monthly winners: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -472,15 +430,19 @@ export const fetchLatestMonthlyWinners = async (): Promise<MonthlyWinnersRespons
 /**
  * Fetches lottery configuration
  */
-export const fetchLotteryConfig = async (): Promise<LotteryConfig> => {
+export const fetchLotteryConfig = async (
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsLotteryConfigDto> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const api = lotteryTicketsApi as any;
-    const response = await api.apiLotteryTicketsConfigGet();
+    const { lotteryTicketsApi } = createApiClients(accessToken);
+    const response = await lotteryTicketsApi.apiLotteryTicketsConfigGet();
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch lottery config: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -492,29 +454,24 @@ export const fetchLotteryConfig = async (): Promise<LotteryConfig> => {
 
 /**
  * Syncs employee weeks from Harvest
- * Sends OAuth tokens to backend, which fetches time entries and calculates weekly summaries
+ * Backend retrieves tokens from database automatically
  *
- * @param request - OAuth token data
+ * @param msalAccessToken - MSAL access token for backend authentication
  */
 export const syncFromHarvest = async (
-  accessToken: string,
-  refreshToken: string,
-  expiresAt: number,
-  accountId: string
+  msalAccessToken: string | null
 ): Promise<FortedleServerModelsDTOsSyncHarvestResponse> => {
   try {
-    const request: FortedleServerModelsDTOsSyncHarvestRequest = {
-      accessToken,
-      refreshToken,
-      expiresAt: new Date(expiresAt).toISOString(),
-      accountId,
-    };
-
-    const response = await employeeWeeksApi.apiEmployeeWeeksSyncPost(request);
+    // The sync endpoint no longer requires a request body - backend gets tokens from database
+    const { employeeWeeksApi } = createApiClients(msalAccessToken);
+    const response = await employeeWeeksApi.apiEmployeeWeeksSyncPost();
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to sync from Harvest: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
@@ -527,20 +484,107 @@ export const syncFromHarvest = async (
 /**
  * Fetches all employee weeks for a user
  *
- * @param userId - User ID (from Harvest user)
+ * @param userId - User ID (Harvest user ID - numeric)
+ * @param accessToken - MSAL access token for backend authentication
  */
-export const fetchEmployeeWeeks = async (userId: string): Promise<FortedleServerModelsDTOsEmployeeWeeksResponse> => {
+export const fetchEmployeeWeeks = async (
+  userId: string,
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsEmployeeWeeksResponse> => {
   try {
+    const { employeeWeeksApi } = createApiClients(accessToken);
     const response = await employeeWeeksApi.apiEmployeeWeeksGet(userId);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
       const errorMessage =
         axiosError.response?.data?.error ||
         `Failed to fetch employee weeks: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
       throw new Error(errorMessage);
     }
     throw new Error(error instanceof Error ? error.message : "Failed to fetch employee weeks");
+  }
+};
+
+/**
+ * Claims weekly prize for a winning ticket
+ *
+ * @param winningTicketId - ID of the winning ticket
+ * @param userId - Harvest user ID
+ * @param accessToken - MSAL access token for backend authentication
+ */
+export const claimWeeklyPrize = async (
+  winningTicketId: number,
+  userId: string,
+  accessToken: string | null
+): Promise<FortedleServerModelsDTOsSendGiftcardResponse> => {
+  try {
+    const { giftcardsApi } = createApiClients(accessToken);
+    // TODO: After regenerating API client, this type will include userId
+    const request = {
+      winningTicketId,
+      userId,
+    } as FortedleServerModelsDTOsClaimWeeklyPrizeRequest & { userId: string };
+    const response = await giftcardsApi.apiGiftcardsClaimWeeklyPrizePost(request);
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      if (axiosError.response?.status === 401) {
+        throw new Error("Unauthorized. Please log in again.");
+      }
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to claim prize: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to claim prize");
+  }
+};
+
+/**
+ * Check Harvest token status for the authenticated user
+ * @param msalAccessToken - MSAL access token for backend authentication
+ */
+export const checkHarvestTokenStatus = async (
+  msalAccessToken: string | null
+): Promise<FortedleServerModelsDTOsHarvestTokenStatusResponse> => {
+  try {
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
+    const response = await harvestOAuthApi.apiHarvestOauthStatusGet();
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to check token status: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to check token status");
+  }
+};
+
+/**
+ * Revoke Harvest token for the authenticated user
+ * @param msalAccessToken - MSAL access token for backend authentication
+ */
+export const revokeHarvestToken = async (msalAccessToken: string | null): Promise<void> => {
+  try {
+    const { harvestOAuthApi } = createApiClients(msalAccessToken);
+    await harvestOAuthApi.apiHarvestOauthRevokeDelete();
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as { response?: { data?: { error?: string }; status?: number; statusText?: string } };
+      const errorMessage =
+        axiosError.response?.data?.error ||
+        `Failed to revoke token: ${axiosError.response?.status} ${axiosError.response?.statusText}`;
+      throw new Error(errorMessage);
+    }
+    throw new Error(error instanceof Error ? error.message : "Failed to revoke token");
   }
 };

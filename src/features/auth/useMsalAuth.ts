@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 import { useAppDispatch } from "@/app/hooks";
 import { setAccount, setAccessToken, clearAuth, toSerializableAccount } from "./authSlice";
-import { loginRequest } from "@/shared/config/msalConfig";
+import { loginRequest, msalConfig } from "@/shared/config/msalConfig";
 
 /**
  * Custom hook to manage MSAL authentication state and sync with Redux
@@ -29,7 +29,7 @@ export const useMsalAuth = () => {
           dispatch(setAccessToken(response.accessToken));
         })
         .catch((error) => {
-          console.error("Failed to acquire token silently:", error);
+          console.error("Error acquiring token silently:", error);
           dispatch(setAccessToken(null));
         });
     } else {
@@ -38,10 +38,26 @@ export const useMsalAuth = () => {
   }, [accounts, instance, dispatch]);
 
   const handleLogin = async () => {
+    // Validate that Azure AD is configured
+    if (!msalConfig.auth.clientId || msalConfig.auth.clientId === "") {
+      const errorMessage = "Azure AD Client ID is not configured. Please set VITE_AZURE_CLIENT_ID in your .env file.";
+      alert(errorMessage);
+      return;
+    }
+
     try {
       await instance.loginPopup(loginRequest);
     } catch (error) {
-      console.error("Login failed:", error);
+      // Show user-friendly error message
+      if (error instanceof Error) {
+        if (error.message.includes("popup")) {
+          alert("Login popup was blocked. Please allow popups for this site and try again.");
+        } else {
+          alert(`Login failed: ${error.message}`);
+        }
+      } else {
+        alert("Login failed. Please try again.");
+      }
     }
   };
 
@@ -50,7 +66,7 @@ export const useMsalAuth = () => {
       await instance.logoutPopup();
       dispatch(clearAuth());
     } catch (error) {
-      console.error("Logout failed:", error);
+      // Error handling is done silently
     }
   };
 
@@ -67,7 +83,6 @@ export const useMsalAuth = () => {
       });
       return response.accessToken;
     } catch (error) {
-      console.error("Failed to acquire token:", error);
       return null;
     }
   };

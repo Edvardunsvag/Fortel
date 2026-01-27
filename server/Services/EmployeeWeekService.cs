@@ -7,7 +7,7 @@ namespace Fortedle.Server.Services;
 
 public interface IEmployeeWeekService
 {
-    Task<SyncHarvestResponse> SyncFromHarvestAsync(SyncHarvestRequest request);
+    Task<SyncHarvestResponse> SyncFromHarvestAsync(string azureAdUserId);
     Task<EmployeeWeeksResponse> GetEmployeeWeeksAsync(string userId);
 }
 
@@ -16,6 +16,7 @@ public class EmployeeWeekService : IEmployeeWeekService
     private readonly IEmployeeWeekRepository _employeeWeekRepository;
     private readonly ILotteryTicketRepository _lotteryTicketRepository;
     private readonly IWinningTicketRepository _winningTicketRepository;
+    private readonly IGiftcardTransactionRepository _giftcardTransactionRepository;
     private readonly ILotteryTicketService _lotteryTicketService;
     private readonly HarvestApiService _harvestApiService;
     private readonly ILogger<EmployeeWeekService> _logger;
@@ -24,6 +25,7 @@ public class EmployeeWeekService : IEmployeeWeekService
         IEmployeeWeekRepository employeeWeekRepository,
         ILotteryTicketRepository lotteryTicketRepository,
         IWinningTicketRepository winningTicketRepository,
+        IGiftcardTransactionRepository giftcardTransactionRepository,
         ILotteryTicketService lotteryTicketService,
         HarvestApiService harvestApiService,
         ILogger<EmployeeWeekService> logger)
@@ -31,30 +33,30 @@ public class EmployeeWeekService : IEmployeeWeekService
         _employeeWeekRepository = employeeWeekRepository;
         _lotteryTicketRepository = lotteryTicketRepository;
         _winningTicketRepository = winningTicketRepository;
+        _giftcardTransactionRepository = giftcardTransactionRepository;
         _lotteryTicketService = lotteryTicketService;
         _harvestApiService = harvestApiService;
         _logger = logger;
     }
 
-    public async Task<SyncHarvestResponse> SyncFromHarvestAsync(SyncHarvestRequest request)
+    public async Task<SyncHarvestResponse> SyncFromHarvestAsync(string azureAdUserId)
     {
         try
         {
-            _logger.LogInformation("Starting Harvest sync for user with account {AccountId}", request.AccountId);
+            _logger.LogInformation("Starting Harvest sync for user {AzureAdUserId}", azureAdUserId);
 
-            // Get valid token
-            var (accessToken, accountId) = await _harvestApiService.GetValidTokenAsync(
-                request.AccessToken,
-                request.RefreshToken,
-                request.ExpiresAt,
-                request.AccountId);
+            // Get tokens from database (automatically refreshes if expired)
+            var (accessToken, accountId) = await _harvestApiService.GetTokenForUserAsync(azureAdUserId);
+
+            _logger.LogInformation("Retrieved tokens from database for user {AzureAdUserId} with account {AccountId}", azureAdUserId, accountId);
 
             // Fetch user info - first get /users/me to get the user ID
             var user = await _harvestApiService.GetCurrentUserAsync(
-                accessToken,
-                request.RefreshToken,
-                request.ExpiresAt,
-                accountId);
+                accessToken: null,
+                refreshToken: null,
+                tokenExpiresAt: null,
+                accountId: null,
+                azureAdUserId: azureAdUserId);
             
             if (user == null)
             {
@@ -78,10 +80,11 @@ public class EmployeeWeekService : IEmployeeWeekService
                 user.Id,
                 fromDateStr,
                 toDateStr,
-                accessToken,
-                request.RefreshToken,
-                request.ExpiresAt,
-                accountId);
+                accessToken: null,
+                refreshToken: null,
+                tokenExpiresAt: null,
+                accountId: null,
+                azureAdUserId: azureAdUserId);
 
             _logger.LogInformation("Fetched {Count} time entries", timeEntries.Count);
 
@@ -215,7 +218,15 @@ public class EmployeeWeekService : IEmployeeWeekService
                 var winningTicket = userWon
                     ? weekWinners.First(w => w.UserId == userId)
                     : weekWinners.First();
-                dto.Winner = winningTicket.ToDto();
+                
+                var winnerDto = winningTicket.ToDto();
+                winnerDto.WinningTicketId = winningTicket.Id;
+                
+                // Check if prize has been claimed for this winning ticket
+                var existingTransaction = await _giftcardTransactionRepository.GetByWinningTicketIdAsync(winningTicket.Id);
+                winnerDto.PrizeClaimed = existingTransaction != null;
+                
+                dto.Winner = winnerDto;
             }
 
             // Calculate countdown target (Friday 15:00 of that week)
@@ -382,18 +393,14 @@ public class EmployeeWeekService : IEmployeeWeekService
         }
 
         // Check eligibility criteria:
-        // 1. All days (Mon-Fri) must have at least 8 hours
+        // 1. Total hours (Mon-Fri) must be at least 40 hours
         // 2. All entries must be finalized (created AND updated) before Friday 15:00
-        bool allDaysMeetRequirement = true;
+        double totalHours = dailyHours.Values.Sum(d => d.Hours);
+        bool meetsTotalHoursRequirement = totalHours >= 40;
         bool allEntriesBeforeCutoff = true;
 
         foreach (var dayData in dailyHours.Values)
         {
-            if (dayData.Hours < 8)
-            {
-                allDaysMeetRequirement = false;
-            }
-
             if (dayData.LastUpdated.HasValue && dayData.LastUpdated.Value > cutoffTime)
             {
                 allEntriesBeforeCutoff = false;
@@ -405,13 +412,17 @@ public class EmployeeWeekService : IEmployeeWeekService
             allEntriesBeforeCutoff = false;
         }
 
-        return allDaysMeetRequirement && allEntriesBeforeCutoff;
+        return meetsTotalHoursRequirement && allEntriesBeforeCutoff;
     }
 
     private DateTime? CalculateCountdownTarget(DateTime weekEnd)
     {
-        // Countdown target is Friday 15:00 of that week
-        return new DateTime(weekEnd.Year, weekEnd.Month, weekEnd.Day, 15, 0, 0, DateTimeKind.Utc);
+        // Countdown target is Friday 15:00 of that week (Norway time, Europe/Oslo)
+        // Create DateTime for 15:00 in Norway timezone, then convert to UTC
+        var norwayTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Oslo");
+        var norwayTime = new DateTime(weekEnd.Year, weekEnd.Month, weekEnd.Day, 15, 0, 0, DateTimeKind.Unspecified);
+        var utcTime = TimeZoneInfo.ConvertTimeToUtc(norwayTime, norwayTimeZone);
+        return utcTime;
     }
 
     private class WeekData

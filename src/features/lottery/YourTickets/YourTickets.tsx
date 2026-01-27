@@ -2,12 +2,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useEmployeeWeeks, useLotteryUser, useLotteryTickets, useSyncFromHarvest } from "../queries";
 import {
-  selectLotteryToken,
   setActiveSubTab,
   LotterySubTab,
   setAutoOpenWeekKey,
 } from "../lotterySlice";
-import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import { useAppDispatch } from "@/app/hooks";
 import { formatDateDDMM, formatHours } from "@/shared/utils/dateUtils";
 import { createWeekKey } from "@/features/timebank/calculations/weekUtils";
 import styles from "./YourTickets.module.scss";
@@ -27,7 +26,6 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
 
   const { data: user } = useLotteryUser(isAuthenticated);
   const userId = user?.id.toString() || null;
-  const token = useAppSelector(selectLotteryToken);
   const { data: weeksData, error: weeksError, refetch: refetchWeeks } = useEmployeeWeeks(
     userId,
     isAuthenticated && !!userId
@@ -61,22 +59,18 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
   };
 
   const handleSync = async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       return;
     }
 
     try {
-      await syncMutation.mutateAsync({
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-        expiresAt: token.expiresAt,
-        accountId: token.accountId,
-      });
+      // Backend now retrieves tokens from database automatically
+      await syncMutation.mutateAsync();
       // Refetch weeks and tickets after sync
       await refetchWeeks();
       await refetchTickets();
     } catch (error) {
-      console.error("Failed to sync from Harvest:", error);
+      // Error handling is done by the mutation
     }
   };
 
@@ -109,7 +103,7 @@ export const YourTickets = ({ isAuthenticated, error, isLoading, onLogin }: Your
           </div>
         ) : (
           <div className={styles.totalTicketsBadge}>
-            {token && (
+            {isAuthenticated && (
               <>
                 {hasCurrentWeekTicket ? (
                   <button

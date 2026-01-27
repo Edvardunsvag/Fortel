@@ -1,13 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAppSelector } from "@/app/hooks";
 import {
-  loadTokenFromStorage,
-  selectIsLotteryAuthenticated,
   selectActiveLotterySubTab,
   LotterySubTab,
 } from "../lotterySlice";
-import { useLotteryUser, useAuthenticateLottery } from "../queries";
+import { useLotteryUser, useAuthenticateLottery, useHarvestTokenStatus } from "../queries";
 import { getHarvestAuthUrl, generateState } from "@/shared/config/harvestConfig";
 import { routes } from "@/shared/routes";
 import { useTranslation } from "react-i18next";
@@ -21,12 +19,12 @@ import styles from "./LotteryPage.module.scss";
 
 export const LotteryPage = () => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const isAuthenticated = useAppSelector(selectIsLotteryAuthenticated);
   const activeSubTab = useAppSelector(selectActiveLotterySubTab);
 
   // TanStack Query hooks
+  const { data: harvestStatus } = useHarvestTokenStatus();
+  const isAuthenticated = harvestStatus?.is_authenticated ?? false;
   const authenticateMutation = useAuthenticateLottery();
   const { isLoading: isLoadingUser, error: userError } = useLotteryUser(isAuthenticated);
 
@@ -41,7 +39,6 @@ export const LotteryPage = () => {
     const errorParam = params.get("error");
 
     if (errorParam) {
-      console.error("OAuth error:", errorParam);
       // Clean up URL
       window.history.replaceState({}, "", window.location.pathname);
       return;
@@ -56,14 +53,10 @@ export const LotteryPage = () => {
     }
   }, [authenticateMutation, navigate]);
 
-  // Load token from storage on mount
-  useEffect(() => {
-    dispatch(loadTokenFromStorage());
-  }, [dispatch]);
-
   const handleLogin = () => {
     const state = generateState();
-    sessionStorage.setItem("harvest_oauth_state", state);
+    // Store OAuth state temporarily (not sensitive token data)
+    localStorage.setItem("harvest_oauth_state", state);
     window.location.href = getHarvestAuthUrl(state);
   };
 

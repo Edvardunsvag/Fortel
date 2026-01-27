@@ -80,6 +80,7 @@ public class SyncService : ISyncService
                 existingEmployee.Supervisor = employee.Supervisor;
                 existingEmployee.SupervisorLastname = employee.SupervisorLastname;
                 existingEmployee.Funfact = employee.Funfact;
+                existingEmployee.PhoneNumber = employee.PhoneNumber;
                 existingEmployee.Interests = employee.Interests;
                 existingEmployee.Stillingstittel = employee.Stillingstittel;
                 existingEmployee.UpdatedAt = DateTime.UtcNow;
@@ -251,6 +252,20 @@ public class SyncService : ISyncService
         var name = preferredName ?? $"{givenName} {familyName}";
         var email = GetStringValue(user.TryGetProperty("email", out var e) ? e : default) ?? string.Empty;
 
+        // Phone number - try common field names in order of preference
+        string? phoneNumber = null;
+        if (user.TryGetProperty("phoneNumber", out var phoneNumberField))
+        {
+            phoneNumber = GetStringValue(phoneNumberField);
+        }
+        else if (user.TryGetProperty("phone", out var phoneField))
+        {
+            phoneNumber = GetStringValue(phoneField);
+        }
+        else if (user.TryGetProperty("mobilePhone", out var mobilePhoneField))
+        {
+            phoneNumber = GetStringValue(mobilePhoneField);
+        }
 
         // Avatar image URL
         string? avatarImageUrl = null;
@@ -390,6 +405,7 @@ public class SyncService : ISyncService
             Supervisor = supervisor,
             SupervisorLastname = supervisorLastname,
             Funfact = funfact,
+            PhoneNumber = phoneNumber,
             Interests = interestsArray,
             Stillingstittel = stillingstittel,
             CreatedAt = DateTime.UtcNow,

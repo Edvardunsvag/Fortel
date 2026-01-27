@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { useAppSelector } from "@/app/hooks";
+import { selectAccessToken } from "@/features/auth/authSlice";
 import { fetchEmployees } from "@/features/game/employees/api";
 import type { MonthlyWinner } from "../../api";
 import styles from "./WinnerRevealCard.module.scss";
@@ -26,14 +28,17 @@ export const EddiWinnerComment = ({ winner, onTtsComplete }: EddiWinnerCommentPr
 
   const isNorwegian = i18n.language === "nb" || i18n.language === "no";
 
+  const accessToken = useAppSelector(selectAccessToken);
+
   const { data: employees } = useQuery({
     queryKey: ["employees"],
-    queryFn: fetchEmployees,
+    queryFn: () => fetchEmployees(accessToken),
     staleTime: Infinity,
+    enabled: !!accessToken,
   });
 
   const eddiAvatar = employees?.find(
-    (e) => e.email?.toLowerCase() === EDDI_EMAIL
+    (e: { email?: string | null }) => e.email?.toLowerCase() === EDDI_EMAIL
   )?.avatarImageUrl;
 
   // Generate AI comment for winner

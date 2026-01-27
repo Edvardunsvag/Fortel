@@ -1,11 +1,13 @@
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fortedle.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class GiftcardsController : ControllerBase
 {
     private readonly IGiftcardService _giftcardService;
@@ -120,6 +122,40 @@ public class GiftcardsController : ControllerBase
         {
             _logger.LogError(ex, "Error fetching giftcard transaction {TransactionId}", id);
             return StatusCode(500, new { error = "An error occurred while fetching the transaction", details = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Claim weekly prize for a winning ticket
+    /// </summary>
+    [HttpPost("claim-weekly-prize")]
+    public async Task<ActionResult<SendGiftcardResponse>> ClaimWeeklyPrize([FromBody] ClaimWeeklyPrizeRequest request)
+    {
+        try
+        {
+            if (request.WinningTicketId <= 0)
+            {
+                return BadRequest(new { error = "winningTicketId is required and must be greater than 0" });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.UserId))
+            {
+                return BadRequest(new { error = "userId is required" });
+            }
+
+            var response = await _giftcardService.ClaimWeeklyPrizeAsync(request.UserId, request.WinningTicketId);
+
+            if (!response.Success)
+            {
+                return BadRequest(new { error = response.ErrorMessage });
+            }
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error claiming weekly prize for winning ticket {WinningTicketId}", request.WinningTicketId);
+            return StatusCode(500, new { error = "An error occurred while claiming the prize", details = ex.Message });
         }
     }
 }

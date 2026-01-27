@@ -15,7 +15,6 @@
  */
 const getRedirectUri = (): string => {
   // Allow override via environment variable
-  console.log("VITE_HARVEST_REDIRECT_URI", import.meta.env.VITE_HARVEST_REDIRECT_URI);
   if (import.meta.env.VITE_HARVEST_REDIRECT_URI) {
     return import.meta.env.VITE_HARVEST_REDIRECT_URI;
   }
@@ -30,13 +29,6 @@ const getRedirectUri = (): string => {
 };
 
 const clientId = import.meta.env.VITE_HARVEST_CLIENT_ID;
-
-if (!clientId) {
-  console.warn(
-    "VITE_HARVEST_CLIENT_ID is not set. Harvest OAuth will not work. " +
-      "Please set VITE_HARVEST_CLIENT_ID in your .env file or environment variables."
-  );
-}
 
 export const harvestConfig = {
   clientId: clientId || "",

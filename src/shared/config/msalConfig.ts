@@ -14,12 +14,7 @@ import { Configuration, PopupRequest } from "@azure/msal-browser";
  */
 const clientId = import.meta.env.VITE_AZURE_CLIENT_ID;
 
-if (!clientId) {
-  console.warn(
-    "VITE_AZURE_CLIENT_ID is not set. Azure AD authentication will not work. " +
-      "Please set VITE_AZURE_CLIENT_ID in your .env file or environment variables."
-  );
-}
+// Configuration validation happens at runtime - errors will be handled by the application
 
 export const msalConfig: Configuration = {
   auth: {
@@ -28,16 +23,74 @@ export const msalConfig: Configuration = {
     redirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI || window.location.origin,
   },
   cache: {
-    cacheLocation: "sessionStorage", // This configures where your cache will be stored
+    cacheLocation: "localStorage", // This configures where your cache will be stored
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
   },
 };
 
 /**
- * Add scopes here for ID token to be used at Microsoft identity platform endpoints.
+ * Get the API scope from environment variable
+ * This should be the full scope URI: api://<client-id>/access_as_user
+ * Or use {client-id}/.default as a fallback if API is not exposed
+ */
+const getApiScope = (): string | null => {
+  const apiScope = import.meta.env.VITE_AZURE_API_SCOPE;
+  if (!apiScope) {
+    return null;
+  }
+  
+  // If the API scope format is api://client-id/scope-name and it fails,
+  // try using {client-id}/.default as a fallback
+  // This requests all permissions for the app
+  if (apiScope.startsWith("api://") && clientId) {
+    // Try the custom scope first, but also support .default fallback
+    return apiScope;
+  }
+  
+  return apiScope;
+};
+
+/**
+ * Get fallback scope using .default format
+ * This can be used if the custom API scope is not exposed in Azure AD
+ */
+const getDefaultScope = (): string | null => {
+  if (!clientId) {
+    return null;
+  }
+  return `${clientId}/.default`;
+};
+
+/**
+ * Add scopes here for ID token and access token.
+ * For backend API authentication, we only request the API scope.
+ * 
+ * Note: When requesting scopes from different resources (e.g., Microsoft Graph and custom API),
+ * MSAL returns a token for the first resource. To get a token for our API, we must request ONLY
+ * the API scope, not User.Read or other Microsoft Graph scopes.
+ * 
+ * If you need Microsoft Graph data (like user profile), request it separately with a different
+ * token acquisition call.
  */
 export const loginRequest: PopupRequest = {
-  scopes: ["User.Read"],
+  scopes: (() => {
+    const apiScope = getApiScope();
+    const scopes: string[] = [];
+    
+    // Request only the API scope for backend authentication
+    // Do NOT include User.Read here - it causes MSAL to return a Microsoft Graph token
+    if (apiScope) {
+      scopes.push(apiScope);
+    } else {
+      // Fallback to .default scope if no custom scope is configured
+      const defaultScope = getDefaultScope();
+      if (defaultScope) {
+        scopes.push(defaultScope);
+      }
+    }
+    
+    return scopes;
+  })(),
 };
 
 /**

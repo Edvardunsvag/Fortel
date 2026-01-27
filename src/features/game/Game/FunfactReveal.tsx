@@ -43,7 +43,6 @@ export const FunfactReveal = ({ employees }: FunfactRevealProps) => {
 
   const handleRevealFunfact = () => {
     if (!roundId) {
-      console.warn("Cannot reveal funfact: roundId is not available");
       return;
     }
 
@@ -55,9 +54,6 @@ export const FunfactReveal = ({ employees }: FunfactRevealProps) => {
     revealFunfactMutation.mutate(request, {
       onSuccess: (round) => {
         dispatch(loadRoundFromState({ round }));
-      },
-      onError: (error) => {
-        console.error("Failed to reveal funfact on server:", error);
       },
     });
   };

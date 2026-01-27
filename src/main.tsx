@@ -33,7 +33,7 @@ msalInstance
     );
   })
   .catch((error) => {
-    console.error("Failed to initialize MSAL:", error);
+    console.error("MSAL initialization failed:", error);
     // Still render the app even if MSAL initialization fails
     ReactDOM.createRoot(document.getElementById("root")!).render(
       <React.StrictMode>

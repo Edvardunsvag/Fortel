@@ -1,55 +1,67 @@
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Fortedle.Server.Models.Application.Harvest;
+using Fortedle.Server.Services.Harvest;
 
 namespace Fortedle.Server.Services;
 
+/// <summary>
+/// Facade service that coordinates Harvest OAuth, token management, and API operations.
+/// Maintains backward compatibility with existing code.
+/// </summary>
 public class HarvestApiService
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHarvestOAuthService _oauthService;
+    private readonly IHarvestTokenManager _tokenManager;
+    private readonly IHarvestApiClient _apiClient;
     private readonly ILogger<HarvestApiService> _logger;
-    private readonly IConfiguration _configuration;
 
     public HarvestApiService(
-        HttpClient httpClient,
-        ILogger<HarvestApiService> logger,
-        IConfiguration configuration)
+        IHarvestOAuthService oauthService,
+        IHarvestTokenManager tokenManager,
+        IHarvestApiClient apiClient,
+        ILogger<HarvestApiService> logger)
     {
-        _httpClient = httpClient;
+        _oauthService = oauthService;
+        _tokenManager = tokenManager;
+        _apiClient = apiClient;
         _logger = logger;
-        _configuration = configuration;
     }
 
+    // Backward compatibility: Keep TokenResponse as nested class for existing code
     public class TokenResponse
     {
-        [JsonPropertyName("access_token")]
         public string AccessToken { get; set; } = string.Empty;
-
-        [JsonPropertyName("token_type")]
         public string TokenType { get; set; } = string.Empty;
-
-        [JsonPropertyName("expires_in")]
         public int ExpiresIn { get; set; }
-
-        [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; set; } = string.Empty;
-
-        [JsonPropertyName("account_id")]
         public string? AccountId { get; set; }
     }
 
-    /// <summary>
-    /// Extract account ID from Harvest access token
-    /// Harvest tokens are in format: {account_id}.at.{token}
-    /// </summary>
-    private string ExtractAccountIdFromToken(string accessToken)
+    // Backward compatibility: Keep nested classes for existing code
+    public class HarvestTimeEntry
     {
-        var parts = accessToken.Split('.');
-        if (parts.Length >= 2 && !string.IsNullOrEmpty(parts[0]))
-        {
-            return parts[0];
-        }
-        throw new InvalidOperationException("Unable to extract account ID from access token");
+        public long Id { get; set; }
+        public string SpentDate { get; set; } = string.Empty;
+        public double Hours { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public HarvestClient? Client { get; set; }
+    }
+
+    public class HarvestClient
+    {
+        public long Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class HarvestUser
+    {
+        public long Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Timezone { get; set; } = string.Empty;
+        public int WeeklyCapacity { get; set; }
+        public bool IsActive { get; set; }
     }
 
     /// <summary>
@@ -57,60 +69,15 @@ public class HarvestApiService
     /// </summary>
     public async Task<TokenResponse> ExchangeCodeForTokenAsync(string code)
     {
-        var clientId = _configuration["Harvest:ClientId"];
-        var clientSecret = _configuration["Harvest:ClientSecret"];
-        var redirectUri = _configuration["Harvest:RedirectUri"];
-
-        if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+        var response = await _oauthService.ExchangeCodeForTokenAsync(code);
+        return new TokenResponse
         {
-            throw new InvalidOperationException("Harvest ClientId and ClientSecret must be configured in appsettings.json");
-        }
-
-        var tokenEndpoint = "https://id.getharvest.com/api/v2/oauth2/token";
-        var requestBody = new List<KeyValuePair<string, string>>
-        {
-            new("client_id", clientId),
-            new("client_secret", clientSecret),
-            new("code", code),
-            new("grant_type", "authorization_code"),
-            new("redirect_uri", redirectUri ?? "http://localhost:5173/time-lottery")
+            AccessToken = response.AccessToken,
+            TokenType = response.TokenType,
+            ExpiresIn = response.ExpiresIn,
+            RefreshToken = response.RefreshToken,
+            AccountId = response.AccountId
         };
-
-        var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint)
-        {
-            Content = new FormUrlEncodedContent(requestBody)
-        };
-        request.Headers.Add("User-Agent", "Fortedle App");
-
-        try
-        {
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var tokenData = JsonSerializer.Deserialize<TokenResponse>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            if (tokenData == null)
-            {
-                throw new InvalidOperationException("Failed to deserialize token response");
-            }
-
-            // Extract account_id from the access token if not provided in response
-            if (string.IsNullOrEmpty(tokenData.AccountId) && !string.IsNullOrEmpty(tokenData.AccessToken))
-            {
-                tokenData.AccountId = ExtractAccountIdFromToken(tokenData.AccessToken);
-            }
-
-            return tokenData;
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "Failed to exchange code for token");
-            throw;
-        }
     }
 
     /// <summary>
@@ -118,118 +85,23 @@ public class HarvestApiService
     /// </summary>
     public async Task<TokenResponse> RefreshAccessTokenAsync(string refreshToken)
     {
-        var clientId = _configuration["Harvest:ClientId"];
-        var clientSecret = _configuration["Harvest:ClientSecret"];
-
-        if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+        var response = await _oauthService.RefreshAccessTokenAsync(refreshToken);
+        return new TokenResponse
         {
-            throw new InvalidOperationException("Harvest ClientId and ClientSecret must be configured in appsettings.json");
-        }
-
-        var tokenEndpoint = "https://id.getharvest.com/api/v2/oauth2/token";
-        var requestBody = new List<KeyValuePair<string, string>>
-        {
-            new("client_id", clientId),
-            new("client_secret", clientSecret),
-            new("refresh_token", refreshToken),
-            new("grant_type", "refresh_token")
+            AccessToken = response.AccessToken,
+            TokenType = response.TokenType,
+            ExpiresIn = response.ExpiresIn,
+            RefreshToken = response.RefreshToken,
+            AccountId = response.AccountId
         };
-
-        var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint)
-        {
-            Content = new FormUrlEncodedContent(requestBody)
-        };
-        request.Headers.Add("User-Agent", "Fortedle App");
-
-        try
-        {
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var tokenData = JsonSerializer.Deserialize<TokenResponse>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            if (tokenData == null)
-            {
-                throw new InvalidOperationException("Failed to deserialize token response");
-            }
-
-            // Extract account_id from the access token if not provided in response
-            if (string.IsNullOrEmpty(tokenData.AccountId) && !string.IsNullOrEmpty(tokenData.AccessToken))
-            {
-                tokenData.AccountId = ExtractAccountIdFromToken(tokenData.AccessToken);
-            }
-
-            return tokenData;
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "Failed to refresh access token");
-            throw;
-        }
     }
 
-    public class HarvestTimeEntry
+    /// <summary>
+    /// Fetches the list of accounts available for the access token
+    /// </summary>
+    public async Task<string?> GetAccountIdFromAccountsEndpointAsync(string accessToken)
     {
-        [JsonPropertyName("id")]
-        public long Id { get; set; }
-
-        [JsonPropertyName("spent_date")]
-        public string SpentDate { get; set; } = string.Empty;
-
-        [JsonPropertyName("hours")]
-        public double Hours { get; set; }
-
-        [JsonPropertyName("created_at")]
-        public DateTime CreatedAt { get; set; }
-
-        [JsonPropertyName("updated_at")]
-        public DateTime UpdatedAt { get; set; }
-
-        [JsonPropertyName("client")]
-        public HarvestClient? Client { get; set; }
-    }
-
-    public class HarvestClient
-    {
-        [JsonPropertyName("id")]
-        public long Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-    }
-
-    public class HarvestTimeEntriesResponse
-    {
-        [JsonPropertyName("time_entries")]
-        public List<HarvestTimeEntry> TimeEntries { get; set; } = new();
-    }
-
-    public class HarvestUser
-    {
-        [JsonPropertyName("id")]
-        public long Id { get; set; }
-
-        [JsonPropertyName("first_name")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [JsonPropertyName("last_name")]
-        public string LastName { get; set; } = string.Empty;
-
-        [JsonPropertyName("email")]
-        public string Email { get; set; } = string.Empty;
-
-        [JsonPropertyName("timezone")]
-        public string Timezone { get; set; } = string.Empty;
-
-        [JsonPropertyName("weekly_capacity")]
-        public int WeeklyCapacity { get; set; }
-
-        [JsonPropertyName("is_active")]
-        public bool IsActive { get; set; }
+        return await _apiClient.GetAccountIdFromAccountsEndpointAsync(accessToken);
     }
 
     /// <summary>
@@ -241,44 +113,20 @@ public class HarvestApiService
         DateTime? tokenExpiresAt,
         string? accountId)
     {
-        // If token is provided and not expired, use it
-        if (!string.IsNullOrEmpty(accessToken) && 
-            tokenExpiresAt.HasValue && 
-            tokenExpiresAt.Value > DateTime.UtcNow.AddMinutes(1))
-        {
-            return (accessToken, accountId ?? string.Empty);
-        }
+        return await _tokenManager.GetValidTokenAsync(accessToken, refreshToken, tokenExpiresAt, accountId);
+    }
 
-        // Try to refresh if we have a refresh token
-        if (!string.IsNullOrEmpty(refreshToken))
-        {
-            try
-            {
-                var tokenResponse = await RefreshAccessTokenAsync(refreshToken);
-                return (tokenResponse.AccessToken, tokenResponse.AccountId ?? string.Empty);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to refresh token, will try configuration fallback");
-            }
-        }
-
-        // Fallback to configuration
-        var configToken = _configuration["Harvest:AccessToken"];
-        var configAccount = _configuration["Harvest:AccountId"];
-
-        if (string.IsNullOrEmpty(configToken))
-        {
-            throw new InvalidOperationException(
-                "Harvest access token is required but not configured. " +
-                "Please authenticate through OAuth or add 'Harvest:AccessToken' and 'Harvest:AccountId' to appsettings.json.");
-        }
-
-        return (configToken, configAccount ?? string.Empty);
+    /// <summary>
+    /// Gets tokens from database for a user, refreshing if expired
+    /// </summary>
+    public async Task<(string AccessToken, string AccountId)> GetTokenForUserAsync(string azureAdUserId)
+    {
+        return await _tokenManager.GetTokenForUserAsync(azureAdUserId);
     }
 
     /// <summary>
     /// Fetches time entries for a user from Harvest API
+    /// Automatically refreshes token on 401 errors if azureAdUserId is provided
     /// </summary>
     public async Task<List<HarvestTimeEntry>> GetTimeEntriesAsync(
         long userId,
@@ -287,101 +135,69 @@ public class HarvestApiService
         string? accessToken = null,
         string? refreshToken = null,
         DateTime? tokenExpiresAt = null,
-        string? accountId = null)
+        string? accountId = null,
+        string? azureAdUserId = null)
     {
-        // Get valid token (refresh if needed)
-        var (token, account) = await GetValidTokenAsync(accessToken, refreshToken, tokenExpiresAt, accountId);
+        var entries = await _apiClient.GetTimeEntriesAsync(
+            userId,
+            from,
+            to,
+            accessToken,
+            refreshToken,
+            tokenExpiresAt,
+            accountId,
+            azureAdUserId);
 
-        if (string.IsNullOrEmpty(token))
+        // Map to backward-compatible nested class
+        return entries.Select(e => new HarvestTimeEntry
         {
-            throw new InvalidOperationException("Unable to obtain valid access token");
-        }
-
-        var url = $"https://api.harvestapp.com/v2/time_entries?user_id={userId}&from={from}&to={to}";
-
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Add("Authorization", $"Bearer {token}");
-        request.Headers.Add("User-Agent", "Fortedle App");
-
-        if (!string.IsNullOrEmpty(account))
-        {
-            request.Headers.Add("Harvest-Account-ID", account);
-        }
-
-        try
-        {
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<HarvestTimeEntriesResponse>(json, new JsonSerializerOptions
+            Id = e.Id,
+            SpentDate = e.SpentDate,
+            Hours = e.Hours,
+            CreatedAt = e.CreatedAt,
+            UpdatedAt = e.UpdatedAt,
+            Client = e.Client != null ? new HarvestClient
             {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return result?.TimeEntries ?? new List<HarvestTimeEntry>();
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "Failed to fetch time entries from Harvest API for user {UserId}", userId);
-            throw;
-        }
+                Id = e.Client.Id,
+                Name = e.Client.Name
+            } : null
+        }).ToList();
     }
 
     /// <summary>
     /// Fetches the current user from Harvest API (/users/me)
+    /// Automatically refreshes token on 401 errors if azureAdUserId is provided
     /// </summary>
     public async Task<HarvestUser?> GetCurrentUserAsync(
         string? accessToken = null,
         string? refreshToken = null,
         DateTime? tokenExpiresAt = null,
-        string? accountId = null)
+        string? accountId = null,
+        string? azureAdUserId = null)
     {
-        // Get valid token (refresh if needed)
-        var (token, account) = await GetValidTokenAsync(accessToken, refreshToken, tokenExpiresAt, accountId);
+        var user = await _apiClient.GetCurrentUserAsync(
+            accessToken,
+            refreshToken,
+            tokenExpiresAt,
+            accountId,
+            azureAdUserId);
 
-        if (string.IsNullOrEmpty(token))
+        if (user == null)
         {
-            throw new InvalidOperationException("Unable to obtain valid access token");
-        }
-
-        var url = "https://api.harvestapp.com/v2/users/me";
-
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Add("Authorization", $"Bearer {token}");
-        request.Headers.Add("User-Agent", "Fortedle App");
-
-        if (!string.IsNullOrEmpty(account))
-        {
-            request.Headers.Add("Harvest-Account-ID", account);
-        }
-
-        try
-        {
-            var response = await _httpClient.SendAsync(request);
-            
-            // Return null if user not found (404) or other non-success status
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                _logger.LogWarning("Harvest current user not found");
-                return null;
-            }
-
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<HarvestUser>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return result;
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "Failed to fetch current user from Harvest API");
             return null;
         }
+
+        // Map to backward-compatible nested class
+        return new HarvestUser
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Timezone = user.Timezone,
+            WeeklyCapacity = user.WeeklyCapacity,
+            IsActive = user.IsActive
+        };
     }
 
     /// <summary>
@@ -394,50 +210,28 @@ public class HarvestApiService
         DateTime? tokenExpiresAt = null,
         string? accountId = null)
     {
-        // Get valid token (refresh if needed)
-        var (token, account) = await GetValidTokenAsync(accessToken, refreshToken, tokenExpiresAt, accountId);
+        var user = await _apiClient.GetUserByIdAsync(
+            userId,
+            accessToken,
+            refreshToken,
+            tokenExpiresAt,
+            accountId);
 
-        if (string.IsNullOrEmpty(token))
+        if (user == null)
         {
-            throw new InvalidOperationException("Unable to obtain valid access token");
-        }
-
-        var url = $"https://api.harvestapp.com/v2/users/{userId}";
-
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Add("Authorization", $"Bearer {token}");
-        request.Headers.Add("User-Agent", "Fortedle App");
-
-        if (!string.IsNullOrEmpty(account))
-        {
-            request.Headers.Add("Harvest-Account-ID", account);
-        }
-
-        try
-        {
-            var response = await _httpClient.SendAsync(request);
-            
-            // Return null if user not found (404) or other non-success status
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                _logger.LogWarning("Harvest user {UserId} not found", userId);
-                return null;
-            }
-
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<HarvestUser>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return result;
-        }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "Failed to fetch user from Harvest API for user ID {UserId}", userId);
             return null;
         }
+
+        // Map to backward-compatible nested class
+        return new HarvestUser
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Timezone = user.Timezone,
+            WeeklyCapacity = user.WeeklyCapacity,
+            IsActive = user.IsActive
+        };
     }
 }

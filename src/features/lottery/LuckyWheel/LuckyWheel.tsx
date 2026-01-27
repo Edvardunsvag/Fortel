@@ -67,6 +67,9 @@ interface LuckyWheelProps {
 }
 
 export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyWheelProps) => {
+  // TODO: Remove this when grand finale works
+  const comingSoon = true;
+
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const wheelRef = useRef<SpinningWheelHandle>(null);
@@ -404,118 +407,124 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
         <p className={styles.subtitle}>{t("lottery.luckyWheel.subtitle", "Monthly Lucky Wheel Draw")}</p>
       </div>
 
-      {isLoading ? (
-        <div className={styles.loading}>
-          <div className={styles.spinner} />
-          <p>{t("lottery.loading", "Loading...")}</p>
+      {comingSoon ? (
+        <div className={styles.comingSoon}>
+          <p>{t("lottery.luckyWheel.comingSoon", "Kommer snart")}</p>
         </div>
       ) : (
-        <div className={styles.contentWrapper}>
-          {/* Locked overlay with countdown */}
-          {isLocked && nextDrawDate && timeRemaining && (
-            <div className={styles.lockedOverlay}>
-              <div className={styles.lockedContent}>
-                <div className={styles.lockedIcon}>🎡</div>
-                <h3 className={styles.lockedTitle}>{t("lottery.luckyWheel.nextDraw", "Next Draw")}</h3>
-                <p className={styles.lockedDate}>{formatDrawDate(nextDrawDate)}</p>
-                <div className={styles.lockedCountdown}>
-                  <div className={styles.lockedTimeUnit}>
-                    <span className={styles.lockedValue}>{timeRemaining.days}</span>
-                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.days", "days")}</span>
-                  </div>
-                  <div className={styles.lockedTimeUnit}>
-                    <span className={styles.lockedValue}>{String(timeRemaining.hours).padStart(2, "0")}</span>
-                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.hours", "hrs")}</span>
-                  </div>
-                  <div className={styles.lockedTimeUnit}>
-                    <span className={styles.lockedValue}>{String(timeRemaining.minutes).padStart(2, "0")}</span>
-                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.minutes", "min")}</span>
-                  </div>
-                  <div className={styles.lockedTimeUnit}>
-                    <span className={styles.lockedValue}>{String(timeRemaining.seconds).padStart(2, "0")}</span>
-                    <span className={styles.lockedLabel}>{t("lottery.luckyWheel.seconds", "sec")}</span>
+        <>
+          {isLoading ? (
+            <div className={styles.loading}>
+              <div className={styles.spinner} />
+              <p>{t("lottery.loading", "Loading...")}</p>
+            </div>
+          ) : (
+            <div className={styles.contentWrapper}>
+              {/* Locked overlay with countdown */}
+              {isLocked && nextDrawDate && timeRemaining && (
+                <div className={styles.lockedOverlay}>
+                  <div className={styles.lockedContent}>
+                    <div className={styles.lockedIcon}>🎡</div>
+                    <h3 className={styles.lockedTitle}>{t("lottery.luckyWheel.nextDraw", "Next Draw")}</h3>
+                    <p className={styles.lockedDate}>{nextDrawDate ? formatDrawDate(nextDrawDate!) : ""}</p>
+                    <div className={styles.lockedCountdown}>
+                      <div className={styles.lockedTimeUnit}>
+                        <span className={styles.lockedValue}>{timeRemaining?.days ?? 0}</span>
+                        <span className={styles.lockedLabel}>{t("lottery.luckyWheel.days", "days")}</span>
+                      </div>
+                      <div className={styles.lockedTimeUnit}>
+                        <span className={styles.lockedValue}>{String(timeRemaining?.hours ?? 0).padStart(2, "0")}</span>
+                        <span className={styles.lockedLabel}>{t("lottery.luckyWheel.hours", "hrs")}</span>
+                      </div>
+                      <div className={styles.lockedTimeUnit}>
+                        <span className={styles.lockedValue}>{String(timeRemaining?.minutes ?? 0).padStart(2, "0")}</span>
+                        <span className={styles.lockedLabel}>{t("lottery.luckyWheel.minutes", "min")}</span>
+                      </div>
+                      <div className={styles.lockedTimeUnit}>
+                        <span className={styles.lockedValue}>{String(timeRemaining?.seconds ?? 0).padStart(2, "0")}</span>
+                        <span className={styles.lockedLabel}>{t("lottery.luckyWheel.seconds", "sec")}</span>
+                      </div>
+                    </div>
+                    <p className={styles.lockedDescription}>
+                      {t(
+                        "lottery.luckyWheel.lockedDescription",
+                        "The wheel will be available when the monthly draw is ready"
+                      )}
+                    </p>
                   </div>
                 </div>
-                <p className={styles.lockedDescription}>
-                  {t(
-                    "lottery.luckyWheel.lockedDescription",
-                    "The wheel will be available when the monthly draw is ready"
+              )}
+
+              <div className={`${styles.content} ${isLocked ? styles.blurred : ""}`}>
+                <div className={styles.leftPanel}>
+                  <ParticipantsList participants={participants} totalTickets={totalTickets} />
+                  {nextDrawDate && timeRemaining && !isLocked && (
+                    <div className={styles.countdown}>
+                      <h4 className={styles.countdownTitle}>{t("lottery.luckyWheel.nextDraw", "Next Draw")}</h4>
+                      <p className={styles.countdownDate}>{nextDrawDate ? formatDrawDate(nextDrawDate!) : ""}</p>
+                      <div className={styles.countdownTimer}>
+                        <div className={styles.timeUnit}>
+                          <span className={styles.value}>{timeRemaining?.days ?? 0}</span>
+                          <span className={styles.label}>{t("lottery.luckyWheel.days", "days")}</span>
+                        </div>
+                        <div className={styles.timeUnit}>
+                          <span className={styles.value}>{timeRemaining?.hours ?? 0}</span>
+                          <span className={styles.label}>{t("lottery.luckyWheel.hours", "hrs")}</span>
+                        </div>
+                        <div className={styles.timeUnit}>
+                          <span className={styles.value}>{timeRemaining?.minutes ?? 0}</span>
+                          <span className={styles.label}>{t("lottery.luckyWheel.minutes", "min")}</span>
+                        </div>
+                        <div className={styles.timeUnit}>
+                          <span className={styles.value}>{timeRemaining?.seconds ?? 0}</span>
+                          <span className={styles.label}>{t("lottery.luckyWheel.seconds", "sec")}</span>
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </p>
+                </div>
+
+                <div className={styles.centerPanel}>
+                  <div className={styles.wheelWrapper}>
+                    <SpinningWheel
+                      ref={wheelRef}
+                      segments={displaySegments}
+                      onSpinComplete={handleSpinComplete}
+                      size={380}
+                    />
+                  </div>
+                  <SpinControls
+                    currentSpin={currentSpinIndex}
+                    totalSpins={winnerCount}
+                    spinPhase={spinPhase}
+                    canSpin={canSpin}
+                    onSpin={handleSpin}
+                    onReset={handleReset}
+                  />
+                </div>
+
+                <div className={styles.rightPanel}>
+                  <WinnersBoard winners={revealedWinners} month={month} />
+                </div>
               </div>
             </div>
           )}
 
-          <div className={`${styles.content} ${isLocked ? styles.blurred : ""}`}>
-            <div className={styles.leftPanel}>
-              <ParticipantsList participants={participants} totalTickets={totalTickets} />
-              {nextDrawDate && timeRemaining && !isLocked && (
-                <div className={styles.countdown}>
-                  <h4 className={styles.countdownTitle}>{t("lottery.luckyWheel.nextDraw", "Next Draw")}</h4>
-                  <p className={styles.countdownDate}>{formatDrawDate(nextDrawDate)}</p>
-                  <div className={styles.countdownTimer}>
-                    <div className={styles.timeUnit}>
-                      <span className={styles.value}>{timeRemaining.days}</span>
-                      <span className={styles.label}>{t("lottery.luckyWheel.days", "days")}</span>
-                    </div>
-                    <div className={styles.timeUnit}>
-                      <span className={styles.value}>{timeRemaining.hours}</span>
-                      <span className={styles.label}>{t("lottery.luckyWheel.hours", "hrs")}</span>
-                    </div>
-                    <div className={styles.timeUnit}>
-                      <span className={styles.value}>{timeRemaining.minutes}</span>
-                      <span className={styles.label}>{t("lottery.luckyWheel.minutes", "min")}</span>
-                    </div>
-                    <div className={styles.timeUnit}>
-                      <span className={styles.value}>{timeRemaining.seconds}</span>
-                      <span className={styles.label}>{t("lottery.luckyWheel.seconds", "sec")}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Winner reveal overlay */}
+          {showingWinner && <WinnerRevealCard winner={showingWinner!} onClose={handleWinnerRevealClose} />}
 
-            <div className={styles.centerPanel}>
-              <div className={styles.wheelWrapper}>
-                <SpinningWheel
-                  ref={wheelRef}
-                  segments={displaySegments}
-                  onSpinComplete={handleSpinComplete}
-                  size={380}
-                />
-              </div>
-              <SpinControls
-                currentSpin={currentSpinIndex}
-                totalSpins={winnerCount}
-                spinPhase={spinPhase}
-                canSpin={canSpin}
-                onSpin={handleSpin}
-                onReset={handleReset}
-              />
-            </div>
+          {/* Admin Panel Toggle Button */}
+          <button
+            className={styles.adminToggle}
+            onClick={() => setShowAdminPanel(!showAdminPanel)}
+            title="Toggle Admin Panel"
+          >
+            ⚙️
+          </button>
 
-            <div className={styles.rightPanel}>
-              <WinnersBoard winners={revealedWinners} month={month} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Winner reveal overlay */}
-      {showingWinner && <WinnerRevealCard winner={showingWinner} onClose={handleWinnerRevealClose} />}
-
-      {/* Admin Panel Toggle Button */}
-      <button
-        className={styles.adminToggle}
-        onClick={() => setShowAdminPanel(!showAdminPanel)}
-        title="Toggle Admin Panel"
-      >
-        ⚙️
-      </button>
-
-      {/* Admin Panel */}
-      {showAdminPanel && (
-        <div className={styles.adminPanel}>
+          {/* Admin Panel */}
+          {showAdminPanel && (
+            <div className={styles.adminPanel}>
           <div className={styles.adminHeader}>
             <h4>🔧 Admin Controls</h4>
             <button onClick={() => setShowAdminPanel(false)}>✕</button>
@@ -594,7 +603,9 @@ export const LuckyWheel = ({ isAuthenticated: _isAuthenticated = false }: LuckyW
             </div>
             {adminStatus && <div className={styles.adminStatus}>{adminStatus}</div>}
           </div>
-        </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

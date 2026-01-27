@@ -309,6 +309,7 @@
     "luckyWheel": {
       "title": "Grand Finale",
       "subtitle": "Månedlig lykkehjul-trekning",
+      "comingSoon": "Kommer snart",
       "nextDraw": "Neste trekning",
       "lockedDescription": "Hjulet blir tilgjengelig når den månedlige trekningen er klar",
       "days": "dager",

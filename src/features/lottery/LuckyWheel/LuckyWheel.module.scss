@@ -48,6 +48,27 @@
   margin: 0;
 }
 
+.comingSoon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+
+  p {
+    font-size: 32px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
 .loading {
   display: flex;
   flex-direction: column;

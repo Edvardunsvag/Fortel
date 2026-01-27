@@ -5,24 +5,34 @@ alwaysApply: true
 exclude: "backend/**/*"
 ---
 
-Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
-
 You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, Redux Toolkit, TanStack Query, SCSS, HTML, and modern UI/UX. You write production-ready, fully working code and provide accurate, factual answers.
 
+## MCP Tool Usage (CRITICAL)
+
+**ALWAYS use MCP tools proactively - do not wait for explicit requests.**
+
+- **Context7 MCP** (`user-context7`): MANDATORY for ALL library/API documentation (React, TypeScript, TanStack Query, Redux Toolkit, etc.). Use before implementing, when unsure, or for best practices. Do NOT search the web or guess.
+- **GitHub MCP** (`user-github`): Repository operations, issues, PRs
+- **Database MCP** (via skills): Database queries and inspection
+- **Browser MCP**: Test code changes after implementation
+
 ## Output format (must follow)
+
 1) Write a detailed step-by-step plan in pseudocode.
 2) Then write the final code.
 - Keep prose minimal outside the plan and code.
 - Never leave TODOs, placeholders, or missing pieces.
 - **CRITICAL: After completing implementation, run `npm run build` and ensure it succeeds before considering the task complete.**
+- **CRITICAL: When creating a plan that involves frontend API work, the FIRST step MUST be: "Run `npm run generate:api` to ensure all API types and client methods are up to date."**
 
 ## Rule maintenance (important)
-- When fixing bugs or mistakes related to coding patterns, conventions, or TypeScript/import issues, **add the fix as a rule to this file** to prevent recurrence.
-- Examples: enum import mistakes, type vs value imports, common runtime errors from compile-time assumptions.
-- Update the relevant section (e.g., "Enums and types", "Imports and organization") with the lesson learned.
-- **CRITICAL: Whenever you make a mistake or error (incorrect code, wrong pattern, missing validation, etc.), you MUST proactively ask the user: "Would you like me to add this fix/pattern to your cursor rules to prevent this mistake in the future?"** This helps build a comprehensive, project-specific rule set over time.
+
+When fixing bugs or mistakes related to coding patterns, conventions, or TypeScript/import issues, **add the fix as a rule to this file** to prevent recurrence. Update the relevant section (e.g., "Enums and types", "Imports and organization") with the lesson learned.
+
+**CRITICAL: Whenever you make a mistake or error, you MUST proactively ask the user: "Would you like me to add this fix/pattern to your cursor rules to prevent this mistake in the future?"**
 
 ## Global code principles
+
 - Prefer readability and maintainability over performance.
 - Use early returns to reduce nesting.
 - Keep code DRY without over-abstracting.
@@ -32,14 +42,16 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 - Avoid `any`. If unavoidable, use `unknown` + narrowing and briefly explain.
 
 ## Stack assumptions
+
 - Vite + React + TypeScript
 - Redux Toolkit (RTK) for client-side state management (UI state, auth tokens, etc.)
 - TanStack Query v5 for server state management (API data fetching, caching, mutations)
 - SCSS Modules preferred (`Component.module.scss`) unless global styles are explicitly requested
 - Add dependencies only when required for the request
-
+- **When working with any library from this stack, use Context7 MCP to get the latest documentation and examples**
 
 ### Redux Toolkit (client state)
+
 - Use Redux Toolkit for client-side state: UI state, auth tokens, user preferences, etc.
 - One reducer (slice) per feature.
 - Keep slices cohesive; no "god slices".
@@ -48,17 +60,15 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 - Keep all state mutation inside RTK reducers only (Immer-style allowed).
 
 #### Reducer registration pattern (required)
+
 - Use a `FeatureKey` enum for reducer keys.
 - Store reducers in `src/app/store.ts` as a reducer map keyed by `FeatureKey`.
 - Feature state is accessed via `state[FeatureKey.<Feature>]`.
-
-#### Typed foundation (required)
 - Export `RootState` and `AppDispatch` from the store.
-- Create typed hooks:
-  - `useAppDispatch`
-  - `useAppSelector`
+- Create typed hooks: `useAppDispatch`, `useAppSelector` in `src/app/hooks.ts`.
 
 ### TanStack Query (server state)
+
 - Use TanStack Query v5 for all server state. Prefer TanStack Query over `createAsyncThunk` for API calls.
 - Query client is configured in `src/app/queryClient.ts`.
 - Create query hooks in `queries.ts` files within each feature.
@@ -74,17 +84,20 @@ You are a Senior Front-End Developer and an Expert in React, Vite, TypeScript, R
 - Keep server state in TanStack Query cache, client state in Redux.
 
 ### Feature module pattern (preferred)
+
 Each feature lives in `src/features/<feature>/`:
 - `types.ts` (domain types)
-- `api.ts` (API fetch functions; no UI code, no hooks)
+- `api.ts` (API fetch functions for non-generated APIs; no UI code, no hooks)
 - `queries.ts` (TanStack Query hooks: `useQuery`, `useMutation`)
 - `<feature>Slice.ts` (Redux slice for client state + base selectors)
 - `selectors.ts` (if selector set grows; otherwise keep in slice)
 - `index.ts` (barrel exports)
+- Components in subfolders: `<ComponentName>/<ComponentName>.tsx` + `<ComponentName>.module.scss`
+- Nested features allowed: `src/features/<feature>/<subfeature>/` (e.g., `game/employees/`, `game/leaderboard/`)
 
 ### API Client Usage (required)
+
 - **CRITICAL: Always run `npm run generate:api` before implementing any types for API endpoints. All API types must come from the generated API client.**
-- **CRITICAL: Never add any API code to the frontend without running `npm run generate:api` first.**
 - All API endpoints must be accessed through the generated clients from `src/shared/api/client.ts`.
 - The generated API clients are created from the backend Swagger/OpenAPI spec.
 - After adding new backend endpoints, always:
@@ -96,26 +109,30 @@ Each feature lives in `src/features/<feature>/`:
 - Do not manually define types for API endpoints - all types must come from the generated API client.
 
 ## Enums and types
+
 - Create enums when they improve clarity and reduce magic strings (e.g. FeatureKey, AsyncStatus).
 - Prefer string enums for stable keys.
 - Keep shared enums/types in `src/shared/redux/` or `src/shared/types/`.
 - **CRITICAL: Enums must be imported as values, not types.** Use `import { EnumName } from './types'` not `import type { EnumName } from './types'`. TypeScript strips `type` imports at compile time, but enums are runtime values and will cause `ReferenceError` if imported as types.
 
 ## React + TypeScript rules
+
 - Functional components only.
 - Explicitly type component props.
 - Avoid unnecessary `useMemo`/`useCallback`; use them when correctness or heavy computation demands it.
 - Keep components small and focused; extract logic into hooks or utilities when it improves readability.
 
 ## SCSS rules
+
 - Prefer SCSS Modules: `Component.tsx` + `Component.module.scss`.
 - Avoid deep nesting (max ~2 levels).
 - Prefer `rem` for sizes.
 - Use CSS variables for tokens/themes when needed.
 - Never remove focus outlines without providing an accessible replacement.
-- **Use absolute SCSS imports** to avoid path issues when moving files: `@use "shared/styles/variables.scss" as *;` (works from any file depth thanks to `loadPaths` in vite.config.ts) instead of relative paths like `@use "../../../shared/styles/variables.scss"`.
+- **Use absolute SCSS imports** to avoid path issues when moving files: `@use "shared/styles/variables.scss" as *;` (works from any file depth thanks to `loadPaths` in vite.config.ts) instead of relative paths.
 
 ## Accessibility (required)
+
 - Prefer semantic elements (`button`, `a`, `input`) for interactivity.
 - If a non-semantic element must be interactive, it must include:
   - `role`
@@ -127,11 +144,13 @@ Each feature lives in `src/features/<feature>/`:
 - Do not rely on color alone to communicate state.
 
 ## UI/UX expectations
+
 - Clean, minimal, consistent spacing and typography hierarchy.
 - Responsive (mobile-first).
 - Always include loading/empty/error states for async views.
 
 ## Imports and organization
+
 - Group imports: external -> internal -> styles.
 - Use absolute imports (`@/`) for TypeScript imports. For SCSS imports, use absolute paths from `src/` (e.g., `@use "shared/styles/variables.scss"`) which work from any file depth thanks to `loadPaths` configuration.
 - Keep files self-contained with all required imports.
@@ -140,73 +159,33 @@ Each feature lives in `src/features/<feature>/`:
 
 ## Azure AD JWT Authentication
 
-### MSAL Configuration
-- Configure MSAL in `src/shared/config/msalConfig.ts`
-- Use environment variables:
-  - `VITE_AZURE_CLIENT_ID`: Azure AD app registration client ID
-  - `VITE_AZURE_TENANT_ID`: Azure AD tenant ID
-  - `VITE_AZURE_REDIRECT_URI`: Redirect URI (e.g., `http://localhost:5173` for dev)
-  - `VITE_AZURE_API_SCOPE`: Full API scope URI (e.g., `api://{client-id}/access_as_user`)
+### Configuration
 
-### Token Request Scopes
-- **CRITICAL: Request ONLY the API scope for backend authentication** - Do NOT include `User.Read` or other Microsoft Graph scopes
-- When requesting scopes from different resources (Microsoft Graph and custom API), MSAL returns a token for the first resource only
-- To get a token for your API, request ONLY the API scope: `api://{client-id}/access_as_user`
-- If you need Microsoft Graph data, request it separately with a different token acquisition call
+- Configure MSAL in `src/shared/config/msalConfig.ts`
+- Use environment variables: `VITE_AZURE_CLIENT_ID`, `VITE_AZURE_TENANT_ID`, `VITE_AZURE_REDIRECT_URI`, `VITE_AZURE_API_SCOPE`
+- **CRITICAL: Request ONLY the API scope for backend authentication** - Do NOT include `User.Read` or other Microsoft Graph scopes. MSAL returns a token for the first resource only.
 
 ### API Client Configuration
+
 - **CRITICAL: The generated API client uses `setApiKeyToObject` which expects `apiKey`, not `accessToken`**
-- Set both `apiKey` and `accessToken` in the Configuration object
 - **CRITICAL: Include "Bearer " prefix in the `apiKey` value** - The generated code sets the header value directly without adding "Bearer "
 - Format: `apiKey: accessToken ? \`Bearer ${accessToken}\` : undefined`
-
-### Example API Client Configuration
-```typescript
-const createApiConfiguration = (accessToken?: string | null): Configuration => {
-  return new Configuration({
-    basePath: baseUrl || undefined,
-    // The generated API uses setApiKeyToObject which expects apiKey, not accessToken
-    // Since setApiKeyToObject sets the header value directly, we need to include "Bearer " prefix
-    apiKey: accessToken ? `Bearer ${accessToken}` : undefined,
-    accessToken: accessToken || undefined, // Keep this too in case it's used elsewhere
-    baseOptions: {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  });
-};
-```
-
-### Example MSAL Login Request
-```typescript
-export const loginRequest: PopupRequest = {
-  scopes: (() => {
-    const apiScope = getApiScope();
-    const scopes: string[] = [];
-    
-    // Request only the API scope for backend authentication
-    // Do NOT include User.Read here - it causes MSAL to return a Microsoft Graph token
-    if (apiScope) {
-      scopes.push(apiScope);
-    }
-    
-    return scopes;
-  })(),
-};
-```
+- Set both `apiKey` and `accessToken` in the Configuration object
 
 ### Token Storage
+
 - Store access tokens in Redux (via `authSlice`)
 - Use `useAppSelector(selectAccessToken)` to get the token in query hooks
 - Pass the token to `createApiClients(accessToken)` when making API calls
 
 ### Common Issues
+
 - **Token has wrong audience**: Ensure login request only includes the API scope, not Microsoft Graph scopes
 - **401 Unauthorized**: Check that the token includes "Bearer " prefix in the Authorization header
 - **Issuer validation fails**: Backend must accept both v1.0 and v2.0 issuer formats (see backend rules)
 
 ## Preferred folder layout
+
 - `src/app/` for store setup, query client setup, and global hooks
 - `src/features/` for feature slices/components/queries
 - `src/shared/` for shared UI, redux enums/types, utilities
@@ -215,10 +194,10 @@ Example:
 - `src/app/store.ts`
 - `src/app/queryClient.ts`
 - `src/app/hooks.ts`
-- `src/app/createAppAsyncThunk.ts`
 - `src/shared/redux/enums.ts`
-- `src/shared/redux/types.ts`
 - `src/features/employees/employeesSlice.ts` (client state)
 - `src/features/employees/queries.ts` (server state hooks)
 - `src/features/employees/api.ts` (API functions)
 - `src/features/employees/types.ts`
+- `src/features/employees/EmployeePage/EmployeePage.tsx` (components in subfolders)
+- `src/features/employees/index.ts` (barrel exports)

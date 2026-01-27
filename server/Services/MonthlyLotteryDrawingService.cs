@@ -7,7 +7,19 @@ public interface IMonthlyLotteryDrawingService
 {
     Task DrawMonthlyWinnersAsync();
     Task<int> GetMonthlyWinnerCountAsync();
+    Task<ConsumeWinnerResult> ConsumeWinnerTicketsAsync(string month, int position);
+    Task<ResetMonthResult> ResetMonthAsync(string? month = null);
 }
+
+/// <summary>
+/// Result of consuming winner tickets
+/// </summary>
+public record ConsumeWinnerResult(bool Success, int TicketsConsumed, string UserId, string? ErrorMessage = null);
+
+/// <summary>
+/// Result of resetting month
+/// </summary>
+public record ResetMonthResult(bool Success, int WinnersRemoved, int TicketsRestored);
 
 public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
 {
@@ -180,6 +192,43 @@ public class MonthlyLotteryDrawingService : IMonthlyLotteryDrawingService
             _logger.LogError(ex, "Error during monthly lottery drawing: {Message}", ex.Message);
             throw;
         }
+    }
+
+    public async Task<ConsumeWinnerResult> ConsumeWinnerTicketsAsync(string month, int position)
+    {
+        // Find the winning ticket for this position
+        var winner = await _monthlyWinningTicketRepository.GetByMonthAndPositionAsync(month, position);
+
+        if (winner == null)
+        {
+            return new ConsumeWinnerResult(false, 0, string.Empty, $"Winner not found for month {month} position {position}");
+        }
+
+        // Mark all of this user's unused tickets as used
+        var ticketsConsumed = await _lotteryTicketRepository.MarkUserTicketsAsUsedAsync(winner.UserId);
+
+        _logger.LogInformation(
+            "Consumed {Count} tickets for winner {UserId} (position {Position}, month {Month})",
+            ticketsConsumed, winner.UserId, position, month);
+
+        return new ConsumeWinnerResult(true, ticketsConsumed, winner.UserId);
+    }
+
+    public async Task<ResetMonthResult> ResetMonthAsync(string? month = null)
+    {
+        var targetMonth = month ?? GetMonthString(DateTime.UtcNow);
+
+        // Restore ALL used tickets (not just current month's winners)
+        var ticketsRestored = await _lotteryTicketRepository.MarkAllTicketsAsUnusedAsync();
+
+        // Delete ALL monthly winners (full reset)
+        var winnersRemoved = await _monthlyWinningTicketRepository.DeleteAllAsync();
+
+        _logger.LogInformation(
+            "Full reset: restored {TicketCount} tickets, removed {WinnerCount} winners",
+            ticketsRestored, winnersRemoved);
+
+        return new ResetMonthResult(true, winnersRemoved, ticketsRestored);
     }
 
     private static string GetMonthString(DateTime date)

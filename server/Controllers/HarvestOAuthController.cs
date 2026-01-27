@@ -1,10 +1,10 @@
+using Fortedle.Server.Helpers;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Models.Database;
 using Fortedle.Server.Repositories;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace Fortedle.Server.Controllers;
 
@@ -26,31 +26,6 @@ public class HarvestOAuthController : ControllerBase
         _harvestApiService = harvestApiService;
         _harvestTokenRepository = harvestTokenRepository;
         _logger = logger;
-    }
-
-    /// <summary>
-    /// Extract user email from JWT token claims
-    /// Tries preferred_username, email, or User.Identity.Name
-    /// </summary>
-    private string? GetUserEmail()
-    {
-        // Try preferred_username first (most common in Azure AD v2.0 tokens)
-        var preferredUsername = User.FindFirst("preferred_username")?.Value;
-        if (!string.IsNullOrWhiteSpace(preferredUsername))
-        {
-            return preferredUsername;
-        }
-
-        // Try email claim
-        var email = User.FindFirst(ClaimTypes.Email)?.Value 
-                   ?? User.FindFirst("email")?.Value;
-        if (!string.IsNullOrWhiteSpace(email))
-        {
-            return email;
-        }
-
-        // Fallback to User.Identity.Name
-        return User.Identity?.Name;
     }
 
     /// <summary>
@@ -77,7 +52,7 @@ public class HarvestOAuthController : ControllerBase
             _logger.LogInformation("Exchanging authorization code for token (state validated on frontend)");
 
             // Extract user email from JWT token
-            var userEmail = GetUserEmail();
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 _logger.LogWarning("Unable to extract user email from JWT token");
@@ -151,7 +126,7 @@ public class HarvestOAuthController : ControllerBase
     {
         try
         {
-            var userEmail = GetUserEmail();
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 _logger.LogWarning("Unable to extract user email from JWT token");
@@ -193,7 +168,7 @@ public class HarvestOAuthController : ControllerBase
     {
         try
         {
-            var userEmail = GetUserEmail();
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 _logger.LogWarning("Unable to extract user email from JWT token");
@@ -221,7 +196,7 @@ public class HarvestOAuthController : ControllerBase
     {
         try
         {
-            var userEmail = GetUserEmail();
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 _logger.LogWarning("Unable to extract user email from JWT token");
@@ -299,7 +274,7 @@ public class HarvestOAuthController : ControllerBase
                 return BadRequest(new { error = "to parameter is required (YYYY-MM-DD)" });
             }
 
-            var userEmail = GetUserEmail();
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 _logger.LogWarning("Unable to extract user email from JWT token");

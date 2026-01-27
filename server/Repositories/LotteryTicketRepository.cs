@@ -10,10 +10,18 @@ public interface ILotteryTicketRepository
     Task<LotteryTicket?> GetByUserIdAndWeekAsync(string userId, string week);
     Task<List<LotteryTicket>> GetAllAsync();
     Task<List<LotteryTicket>> GetUnusedAsync();
+    Task<List<UserTicketCount>> GetUserTicketCountsAsync();
     Task<LotteryTicket> AddAsync(LotteryTicket ticket);
     Task UpdateAsync(LotteryTicket ticket);
     Task UpdateRangeAsync(List<LotteryTicket> tickets);
+    Task<int> MarkUserTicketsAsUsedAsync(string userId);
+    Task<int> MarkAllTicketsAsUnusedAsync();
 }
+
+/// <summary>
+/// DTO for user ticket counts used in statistics
+/// </summary>
+public record UserTicketCount(string UserId, string Name, string? Image, int TicketCount);
 
 public class LotteryTicketRepository : ILotteryTicketRepository
 {
@@ -57,6 +65,18 @@ public class LotteryTicketRepository : ILotteryTicketRepository
             .ToListAsync();
     }
 
+    public async Task<List<UserTicketCount>> GetUserTicketCountsAsync()
+    {
+        return await _context.LotteryTickets
+            .GroupBy(t => new { t.UserId, t.Name, t.Image })
+            .Select(g => new UserTicketCount(
+                g.Key.UserId,
+                g.Key.Name,
+                g.Key.Image,
+                g.Count()))
+            .ToListAsync();
+    }
+
     public async Task<LotteryTicket> AddAsync(LotteryTicket ticket)
     {
         _context.LotteryTickets.Add(ticket);
@@ -74,5 +94,37 @@ public class LotteryTicketRepository : ILotteryTicketRepository
     {
         _context.LotteryTickets.UpdateRange(tickets);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> MarkUserTicketsAsUsedAsync(string userId)
+    {
+        var tickets = await _context.LotteryTickets
+            .Where(t => t.UserId == userId && !t.IsUsed)
+            .ToListAsync();
+
+        foreach (var ticket in tickets)
+        {
+            ticket.IsUsed = true;
+            ticket.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+        return tickets.Count;
+    }
+
+    public async Task<int> MarkAllTicketsAsUnusedAsync()
+    {
+        var tickets = await _context.LotteryTickets
+            .Where(t => t.IsUsed)
+            .ToListAsync();
+
+        foreach (var ticket in tickets)
+        {
+            ticket.IsUsed = false;
+            ticket.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+        return tickets.Count;
     }
 }

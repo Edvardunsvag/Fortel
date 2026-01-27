@@ -1,8 +1,8 @@
+using Fortedle.Server.Helpers;
 using Fortedle.Server.Models.DTOs;
 using Fortedle.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Fortedle.Server.Controllers;
 
@@ -22,38 +22,13 @@ public class EmployeeWeeksController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Extract user email from JWT token claims
-    /// Tries preferred_username, email, or User.Identity.Name
-    /// </summary>
-    private string? GetUserEmail()
-    {
-        // Try preferred_username first (most common in Azure AD v2.0 tokens)
-        var preferredUsername = User.FindFirst("preferred_username")?.Value;
-        if (!string.IsNullOrWhiteSpace(preferredUsername))
-        {
-            return preferredUsername;
-        }
-
-        // Try email claim
-        var email = User.FindFirst(ClaimTypes.Email)?.Value 
-                   ?? User.FindFirst("email")?.Value;
-        if (!string.IsNullOrWhiteSpace(email))
-        {
-            return email;
-        }
-
-        // Fallback to User.Identity.Name
-        return User.Identity?.Name;
-    }
-
     [HttpPost("sync")]
     public async Task<ActionResult<SyncHarvestResponse>> SyncFromHarvest()
     {
         try
         {
             // Extract user email from JWT token
-            var userEmail = GetUserEmail();
+            var userEmail = UserClaimsHelper.GetUserEmail(User);
             if (string.IsNullOrWhiteSpace(userEmail))
             {
                 _logger.LogWarning("Unable to extract user email from JWT token");
@@ -81,6 +56,8 @@ public class EmployeeWeeksController : ControllerBase
     {
         try
         {
+            // Note: userId here is the Harvest user ID (numeric), not the Azure AD email
+            // The data in employee_weeks is stored with Harvest user IDs
             if (string.IsNullOrWhiteSpace(userId))
             {
                 return BadRequest(new { error = "userId is required" });

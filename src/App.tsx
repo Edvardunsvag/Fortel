@@ -15,6 +15,7 @@ import { Sidebar } from "./features/sidebar/Sidebar/Sidebar";
 import { routes, routeToTab } from "./shared/routes";
 import { useEffect } from "react";
 import { AdminPage } from "./features/admin";
+import { ErrorBoundary } from "./shared/components";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -65,17 +66,19 @@ export const App = () => {
   return (
     <div className={styles.app}>
       <Sidebar />
-      <Routes>
-        <Route path={routes.play} element={<GamePage />} />
-        <Route path={routes.leaderboard} element={<GamePage />} />
-        <Route path={routes.rules} element={<GamePage />} />
-        <Route path={routes.employees} element={<GamePage />} />
-        <Route path={routes.lottery} element={<LotteryPage />} />
-        <Route path={routes.timebank} element={<TimeBankPage />} />
-        <Route path={routes.sync} element={isAdmin ? <Navigate to={routes.admin} replace /> : <Navigate to={routes.play} replace />} />
-        <Route path={routes.admin} element={isAdmin ? <AdminPage /> : <Navigate to={routes.play} replace />} />
-        <Route path="*" element={<Navigate to={routes.play} replace />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path={routes.play} element={<GamePage />} />
+          <Route path={routes.leaderboard} element={<GamePage />} />
+          <Route path={routes.rules} element={<GamePage />} />
+          <Route path={routes.employees} element={<GamePage />} />
+          <Route path={routes.lottery} element={<LotteryPage />} />
+          <Route path={routes.timebank} element={<TimeBankPage />} />
+          <Route path={routes.sync} element={isAdmin ? <Navigate to={routes.admin} replace /> : <Navigate to={routes.play} replace />} />
+          <Route path={routes.admin} element={isAdmin ? <AdminPage /> : <Navigate to={routes.play} replace />} />
+          <Route path="*" element={<Navigate to={routes.play} replace />} />
+        </Routes>
+      </ErrorBoundary>
     </div>
   );
 };

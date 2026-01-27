@@ -7,6 +7,7 @@ namespace Fortedle.Server.Repositories;
 public interface IEmployeeRepository
 {
     Task<List<Employee>> GetAllAsync();
+    Task<List<Employee>> GetAllWithEmailAsync();
     Task<Employee?> GetByIdAsync(string id);
     Task<bool> ExistsAsync(string id);
     Task<Employee> AddAsync(Employee employee);
@@ -29,6 +30,14 @@ public class EmployeeRepository : IEmployeeRepository
     {
         return await _context.Employees
             .OrderBy(e => e.Name)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<List<Employee>> GetAllWithEmailAsync()
+    {
+        return await _context.Employees
+            .Where(e => !string.IsNullOrEmpty(e.Email))
             .AsNoTracking()
             .ToListAsync();
     }

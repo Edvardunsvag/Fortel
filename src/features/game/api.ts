@@ -7,13 +7,12 @@ import type {
 } from "@/shared/api/generated/index";
 
 export const getCurrentRound = async (
-  userId: string,
   date: string | undefined,
   accessToken: string | null
 ): Promise<FortedleServerModelsDTOsRoundDto | null> => {
   try {
     const { roundsApi } = createApiClients(accessToken);
-    const response = await roundsApi.apiRoundsCurrentGet(userId, date);
+    const response = await roundsApi.apiRoundsCurrentGet(date);
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {

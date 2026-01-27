@@ -7,10 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2026-01-27]
 
+### Security
+- Controllers now extract userId from JWT claims instead of trusting client-provided data
+- Added tampering detection logging when request userId differs from authenticated user
+
 ### Refactored
 - Split HarvestApiService into focused services (HarvestOAuthService, HarvestTokenManager, HarvestApiClient, HarvestConfiguration)
 - Moved Harvest models to Models/Application/Harvest folder
 - Converted db-access command to Cursor skill
+- Extracted `WinnersService` and `LotteryStatisticsService` from `LotteryTicketsController`
+- Centralized JWT claim extraction into `UserClaimsHelper` helper class
+- Moved test data seeding logic from controller to `LotteryTicketService`
+- Added repository methods for lottery statistics and winner operations
+
+### Added
+- `ErrorBoundary` component for graceful React error handling in frontend
 
 ## [2026-01-26]
 

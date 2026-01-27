@@ -1,0 +1,108 @@
+@use "shared/styles/variables.scss" as *;
+
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--background-primary, #f5f5f5);
+}
+
+.errorContent {
+  max-width: 600px;
+  padding: 2.5rem;
+  background-color: var(--background-secondary, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.errorTitle {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary, #333333);
+}
+
+.errorMessage {
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+  color: var(--text-secondary, #666666);
+  line-height: 1.6;
+}
+
+.errorDetails {
+  margin-bottom: 1.5rem;
+  text-align: left;
+
+  summary {
+    cursor: pointer;
+    padding: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary, #666666);
+    user-select: none;
+
+    &:hover {
+      color: var(--text-primary, #333333);
+    }
+  }
+}
+
+.errorStack {
+  margin: 1rem 0 0;
+  padding: 1rem;
+  background-color: var(--background-tertiary, #f0f0f0);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-error, #dc3545);
+  text-align: left;
+}
+
+.errorActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.reloadButton,
+.resetButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: 2px solid var(--focus-ring, #4a90d9);
+    outline-offset: 2px;
+  }
+}
+
+.reloadButton {
+  background-color: var(--primary-color, #4a90d9);
+  color: #ffffff;
+
+  &:hover {
+    background-color: var(--primary-hover, #3a7bc8);
+  }
+}
+
+.resetButton {
+  background-color: transparent;
+  color: var(--text-secondary, #666666);
+  border: 1px solid var(--border-color, #cccccc);
+
+  &:hover {
+    background-color: var(--background-hover, #f0f0f0);
+    color: var(--text-primary, #333333);
+  }
+}

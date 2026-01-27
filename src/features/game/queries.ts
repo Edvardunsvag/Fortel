@@ -25,13 +25,14 @@ export const useCurrentRound = (userId: string, date?: string, enabled = true) =
   return useQuery<RoundDto | null>({
     queryKey: roundKeys.current(userId, date),
     queryFn: async () => {
-      const apiRound = await getCurrentRound(userId, date, accessToken);
+      // userId is extracted from JWT on backend, but we keep it in query key for cache
+      const apiRound = await getCurrentRound(date, accessToken);
       if (apiRound) {
         return roundFromDto(apiRound);
       }
       return null;
     },
-    enabled: enabled && !!accessToken, // Only fetch if enabled and we have a token
+    enabled: enabled && !!accessToken && !!userId, // Only fetch if enabled and we have a token and userId
     retry: (failureCount, error) => {
       // Don't retry on 401 errors (auth issues)
       if (error instanceof Error && error.message.includes("Unauthorized")) {

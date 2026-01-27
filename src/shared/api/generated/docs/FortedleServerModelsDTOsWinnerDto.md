@@ -10,6 +10,8 @@ Name | Type | Description | Notes
 **image** | **string** |  | [optional] [default to undefined]
 **week** | **string** |  | [optional] [default to undefined]
 **createdAt** | **string** |  | [optional] [default to undefined]
+**winningTicketId** | **number** |  | [optional] [default to undefined]
+**prizeClaimed** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -22,6 +24,8 @@ const instance: FortedleServerModelsDTOsWinnerDto = {
     image,
     week,
     createdAt,
+    winningTicketId,
+    prizeClaimed,
 };
 ```
 

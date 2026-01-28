@@ -1,0 +1,14 @@
+query GetAllUserPosts {
+  UserPost {
+    items {
+      id
+      title
+      text
+      image {
+        url
+        name
+      }
+      publishedDate
+    }
+  }
+}

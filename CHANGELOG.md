@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-28]
+
+### Added
+- OIDC authentication for Hangfire dashboard with Azure AD redirect
+- `HangfireOidcChallengeMiddleware` to redirect unauthenticated users to Azure login
+- `EmptyAuthorizationFilter` for Hangfire when auth is handled by ASP.NET Core
+- Microsoft.Identity.Web package for OIDC support
+
+### Changed
+- Hangfire dashboard now uses ASP.NET Core endpoint authorization with `HangfirePolicy`
+- Authentication configured with both JWT (API) and OIDC (Hangfire dashboard) schemes
+
 ## [2026-01-27]
 
 ### Added

@@ -33,7 +33,8 @@ builder.Services.AddDatabase(connectionString);
 // Register application services (repositories, services, HttpClient)
 builder.Services.AddApplicationServices();
 
-// Configure Azure AD Authentication
+// Configure Azure AD Authentication with OIDC
+// NOTE: This will set up the authentication middleware for both JWT and OIDC.
 builder.Services.AddAzureAdAuthentication(builder.Configuration, earlyLogger);
 
 // Configure Hangfire

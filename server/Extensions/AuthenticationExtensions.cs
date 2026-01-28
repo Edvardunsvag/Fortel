@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Fortedle.Server.Extensions;
 
@@ -17,7 +22,13 @@ public static class AuthenticationExtensions
 
         if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            // Default scheme remains JWT so API and [Authorize] controllers use Bearer tokens
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(options =>
                 {
                     options.Authority = $"{instance}{tenantId}/v2.0";
@@ -77,13 +88,37 @@ public static class AuthenticationExtensions
                             return Task.CompletedTask;
                         }
                     };
-                });
+                })
+                .AddMicrosoftIdentityWebApp(
+                    azureAdSection,
+                    OpenIdConnectDefaults.AuthenticationScheme,
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    subscribeToOpenIdConnectMiddlewareDiagnosticsEvents: false,
+                    displayName: "Azure AD");
+
+            // OIDC cookies and response: must be sent when callback hits /signin-oidc even though challenge was from /hangfire.
+            // Path=/, SameSite=Lax, response_mode=query so callback is GET with query string (state in URL, not fragment).
+            // Explicit ResponseType=Code so state/code are in query string; hybrid/implicit can put them in fragment (not sent to server).
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.ResponseMode = OpenIdConnectResponseMode.Query;
+                options.CorrelationCookie.Path = "/";
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.NonceCookie.Path = "/";
+                options.NonceCookie.SameSite = SameSiteMode.Lax;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            });
 
             services.AddAuthorization(options =>
             {
-                // Add a policy for Hangfire dashboard that requires authentication
+                // HangfirePolicy: OIDC first so unauthenticated requests get redirect to Azure (not 401)
                 options.AddPolicy("HangfirePolicy", policy =>
                 {
+                    policy.AddAuthenticationSchemes(
+                        OpenIdConnectDefaults.AuthenticationScheme,
+                        JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                 });
             });

@@ -46,30 +46,34 @@ public static class ApplicationBuilderExtensions
 
         // Authentication and Authorization must be after routing but before endpoints
         app.UseAuthentication();
+
+        // For /hangfire, challenge with OIDC (redirect to Azure) when not authenticated instead of 401
+        app.UseMiddleware<HangfireOidcChallengeMiddleware>();
+
         app.UseAuthorization();
 
-        // Hangfire Dashboard - requires Azure AD authentication if configured
+        // Hangfire Dashboard - requires Azure AD authentication via endpoint authorization
         var azureAdSection = configuration.GetSection("AzureAd");
         var clientId = azureAdSection["ClientId"];
         var tenantId = azureAdSection["TenantId"];
         var audience = azureAdSection["Audience"];
 
-        var dashboardOptions = new DashboardOptions();
+        var dashboardOptions = new DashboardOptions
+        {
+            // Empty filter: auth is handled by ASP.NET Core RequireAuthorization below
+            Authorization = new[] { new EmptyAuthorizationFilter() }
+        };
+
         if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(tenantId) && !string.IsNullOrEmpty(audience))
         {
-            // Use custom authorization filter that checks if user is authenticated
-            // This works with JWT tokens from cookies, query parameters, or Authorization header
-            dashboardOptions.Authorization = new[]
-            {
-                new HangfireJwtAuthorizationFilter()
-            };
+            // HangfirePolicy has OIDC first so unauthenticated requests redirect to Azure
+            app.MapHangfireDashboard("/hangfire", dashboardOptions)
+                .RequireAuthorization("HangfirePolicy");
         }
         else
         {
-            // No authentication required if Azure AD is not configured
-            dashboardOptions.Authorization = Array.Empty<IDashboardAuthorizationFilter>();
+            app.MapHangfireDashboard("/hangfire", dashboardOptions);
         }
-        app.MapHangfireDashboard("/hangfire", dashboardOptions);
 
         // Enable Swagger in both Development and Production
         app.UseSwagger(c =>

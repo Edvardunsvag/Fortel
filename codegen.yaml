@@ -1,0 +1,12 @@
+schema: https://cg.optimizely.com/content/v2?auth=${VITE_OPTIMIZELY_SINGLE_KEY}
+documents: './src/features/optimizely/**/*.graphql'
+generates:
+  ./src/features/optimizely/generated.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-query
+    config:
+      withHooks: true
+      fetcher:
+        endpoint: 'https://cg.optimizely.com/content/v2?auth=${VITE_OPTIMIZELY_SINGLE_KEY}'

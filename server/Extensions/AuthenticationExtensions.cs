@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+//Comment for build fix
 namespace Fortedle.Server.Extensions;
 
 public static class AuthenticationExtensions
